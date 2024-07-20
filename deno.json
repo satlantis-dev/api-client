@@ -1,6 +1,6 @@
 {
   "name": "@satlantis/api-client",
-  "version": "0.0.0-rc2",
+  "version": "0.0.0-rc3",
   "exports": "./api.ts",
   "imports": {
     "@std/assert": "jsr:@std/assert@1.0.0"

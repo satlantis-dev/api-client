@@ -7,7 +7,7 @@ const client = Client("http://localhost:8080")
 // so that we always have up to date client SDK
 Deno.test("/place", async () => {
     const result = await client.getPlace_V2({
-        osm_id: "1852574",
+        osm_id: 1852574,
         countryCode: "cz",
         placeSlug: "prague",
         regionCode: "-"

@@ -41,10 +41,10 @@ const getPlace = (urlArg: string | URL) => async (args: {
 }
 
 const getPlace_V2 = (urlArg: string | URL) => async (args: {
-    osm_id: string,
-    countryCode: "cz"
-    regionCode: "-",
-    placeSlug: "prague"
+    osm_id: number,
+    countryCode: string
+    regionCode: string,
+    placeSlug: string
 }): Promise<Place_V2 | TypeError | DOMException | SyntaxError | ApiError>  => {
     // constructing a new URL so that we don't modify the input
     const url = newURL(urlArg)
