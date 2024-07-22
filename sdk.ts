@@ -1,77 +1,23 @@
-import { FetchResult, safeFetch } from "./fetch.ts";
+import { getPlace } from "./api/place.ts";
+import { PlaceLevel, OSMType } from "./api/share_types.ts";
+import { safeFetch } from "./fetch.ts";
 
-class ApiError extends Error {
+export function Client(baseURL: string | URL) {
+    return {
+        getPlace: getPlace(baseURL),
+        getPlace_V2: getPlace(baseURL),
+        GetNotesOfPlace: GetNotesOfPlace(baseURL)
+    }
+}
+
+export class ApiError extends Error {
     constructor(public readonly status: number, public readonly text: string) {
         super(`status ${status}, body ${text}`)
         this.name = ApiError.name;
     }
 }
 
-
-// https://github.com/satlantis-dev/api/blob/main/rest/public_routes.go#L28
-const getPlace = (urlArg: string | URL) => async (args: {
-    osm_id: string,
-    countryCode: "cz"
-    regionCode: "-",
-    placeSlug: "prague"
-}): Promise<Place | TypeError | DOMException | SyntaxError | ApiError>  => {
-    // constructing a new URL so that we don't modify the input
-    const url = newURL(urlArg)
-    if(url instanceof TypeError) {
-        return url
-    }
-    url.pathname = `/place/${args.countryCode}/${args.regionCode}/${args.placeSlug}/${args.osm_id}`
-    const response = await safeFetch(url)
-    if(response instanceof Error) {
-        return response
-    }
-    if(response.status != 200) {
-        const t = await response.text()
-        if(t instanceof Error) {
-            return t;
-        }
-        return new ApiError(response.status, t)
-    }
-    const result = await response.json()
-    if(result instanceof Error) {
-        return result
-    }
-
-    return result as Place // consider zod for runtime type checks
-}
-
-const getPlace_V2 = (urlArg: string | URL) => async (args: {
-    osm_id: number,
-    countryCode: string
-    regionCode: string,
-    placeSlug: string
-}): Promise<Place_V2 | TypeError | DOMException | SyntaxError | ApiError>  => {
-    // constructing a new URL so that we don't modify the input
-    const url = newURL(urlArg)
-    if(url instanceof TypeError) {
-        return url
-    }
-    url.pathname = `/v2/place/${args.countryCode}/${args.regionCode}/${args.placeSlug}/${args.osm_id}`
-    const response = await safeFetch(url)
-    if(response instanceof Error) {
-        return response
-    }
-    if(response.status != 200) {
-        const t = await response.text()
-        if(t instanceof Error) {
-            return t;
-        }
-        return new ApiError(response.status, t)
-    }
-    const result = await response.json()
-    if(result instanceof Error) {
-        return result
-    }
-
-    return result as Place_V2 // consider zod for runtime type checks
-}
-
-function newURL(url: string | URL) {
+export function newURL(url: string | URL) {
     try {
         return new URL(url)
     } catch (e) {
@@ -80,15 +26,7 @@ function newURL(url: string | URL) {
     }
 }
 
-export function Client(baseURL: string | URL) {
-    return {
-        getPlace: getPlace(baseURL),
-        getPlace_V2: getPlace_V2(baseURL)
-    }
-}
 
-type PlaceLevel = "region" | "city" | "neighborhood"
-type OSMType = "node" | "relation" | "way"
 
 interface Place_V2 {
     id: number;
