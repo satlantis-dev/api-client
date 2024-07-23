@@ -1,5 +1,0 @@
-{
-    "deno.enable": true,
-    "deno.path": "/root/.deno/bin/deno",
-    "deno.lint": false
-}
