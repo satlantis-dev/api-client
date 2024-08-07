@@ -27,4 +27,4 @@ Currently we don't have a GitHub Action setup.
 
 Do `make publish` manually.
 
-[![tutorial](https://github.com/user-attachments/assets/9c7448d8-e4a3-495e-95d8-a8009302492c)]
+[![]()](https://github.com/user-attachments/assets/9c7448d8-e4a3-495e-95d8-a8009302492c)
