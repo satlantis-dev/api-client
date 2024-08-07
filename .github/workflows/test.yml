@@ -1,0 +1,30 @@
+name: Test
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["*"]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    timeout-minutes: 2
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: setup repo
+        uses: actions/checkout@v3
+
+      - name: setup deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: 1.45.3
+
+      - name: check formats
+        run: deno fmt --check
+
+      - name: run tests
+        run: deno test --allow-net test.ts
