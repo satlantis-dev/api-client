@@ -159,3 +159,14 @@ Deno.test("getRegion", async () => {
     }
     console.log(result);
 });
+
+Deno.test("this_is_a_new_API", async () => {
+    const result = await clientNoAuth.this_is_a_new_API({
+        arguments_here
+    });
+    if (result instanceof Error) {
+        console.log(result);
+        fail();
+    }
+    console.log(result);
+});

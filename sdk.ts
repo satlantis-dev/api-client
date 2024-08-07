@@ -1,6 +1,6 @@
 import { newURL } from "./_helper.ts";
 import { deleteAccountRole } from "./api/account.ts";
-import { getPlaceEvent } from "./api/event.ts";
+import { getPlaceEvent, this_is_a_new_API } from "./api/event.ts";
 import { loginNostr } from "./api/login.ts";
 import { getAccountPlaceRoles } from "./api/people.ts";
 import {
@@ -29,6 +29,7 @@ export class Client {
     getRegion: ReturnType<typeof getRegion>;
     deleteAccountRole: ReturnType<typeof deleteAccountRole> | (() => Error);
     loginNostr: ReturnType<typeof loginNostr>;
+    this_is_a_new_API: ReturnType<typeof this_is_a_new_API>;
 
     private constructor(
         public readonly url: URL,
@@ -46,6 +47,7 @@ export class Client {
         this.getLocationsWithinBoundingBox = getLocationsWithinBoundingBox(url);
         this.getRegion = getRegion(url);
         this.loginNostr = loginNostr(url);
+        this.this_is_a_new_API = this_is_a_new_API(url);
 
         if (this.jwtToken) {
             this.deleteAccountRole = deleteAccountRole(url, this.jwtToken);
