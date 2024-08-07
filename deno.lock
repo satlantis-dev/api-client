@@ -4,7 +4,7 @@
     "specifiers": {
       "jsr:@blowater/collections@^0.0.0-rc1": "jsr:@blowater/collections@0.0.0-rc3",
       "jsr:@blowater/csp@1.0.0": "jsr:@blowater/csp@1.0.0",
-      "jsr:@blowater/nostr-sdk@^0.0.9": "jsr:@blowater/nostr-sdk@0.0.9",
+      "jsr:@blowater/nostr-sdk@0.0.9": "jsr:@blowater/nostr-sdk@0.0.9",
       "jsr:@noble/secp256k1@2.1.0": "jsr:@noble/secp256k1@2.1.0",
       "jsr:@std/assert@0.226.0": "jsr:@std/assert@0.226.0",
       "jsr:@std/assert@1.0.0": "jsr:@std/assert@1.0.0",
@@ -227,7 +227,7 @@
   "remote": {},
   "workspace": {
     "dependencies": [
-      "jsr:@blowater/nostr-sdk@^0.0.9",
+      "jsr:@blowater/nostr-sdk@0.0.9",
       "jsr:@std/assert@1.0.0"
     ]
   }
