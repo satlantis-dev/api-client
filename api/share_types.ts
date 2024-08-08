@@ -77,10 +77,10 @@ export interface ChatMembership {
     note: Note;
 }
 
-export interface Discussion extends ChatMembership {
+export type Discussion = ChatMembership & {
     lastMessage: Note;
     notSeenCount: number;
-}
+};
 
 export interface CalendarEventRSVP {
     id: number;
