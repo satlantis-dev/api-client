@@ -358,4 +358,4 @@ export type ProcessedTag = {
   readonly values: string[];
 };
 
-export type TagType = "g" | "d" | "name" | "r" | "t";
+export type TagType = "g" | "d" | "name" | "r" | "t" | "a";
