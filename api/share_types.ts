@@ -39,6 +39,7 @@ export enum NoteType {
     REACTION,
     DELETE_NOTE,
     REPLY_NOTE,
+    MediaNote,
 }
 
 export type Note = {
@@ -75,6 +76,11 @@ export interface ChatMembership {
     noteId: number;
     note: Note;
 }
+
+export type Discussion = ChatMembership & {
+    lastMessage: Note;
+    notSeenCount: number;
+};
 
 export interface CalendarEventRSVP {
     id: number;
@@ -352,4 +358,4 @@ export type ProcessedTag = {
     readonly values: string[];
 };
 
-export type TagType = "g" | "d" | "name" | "r" | "t";
+export type TagType = "g" | "d" | "name" | "r" | "t" | "a";

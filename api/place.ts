@@ -5,10 +5,7 @@ import { Place, PlaceCategoryScore, PlaceMetric, PlaceNote, Region } from "./sha
 /**
  * get the place based on OSM ID or ID, only 1 is needed
  */
-export const getPlace = (urlArg: URL) =>
-async (args: {
-    osmRef: string | number;
-}) => {
+export const getPlace = (urlArg: URL) => async (args: { osmRef: string | number }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getPlace/${args.osmRef}`;
     const response = await safeFetch(url);
@@ -21,10 +18,7 @@ async (args: {
 /**
  * GET getPlaceNoteFeed/{placeID}
  */
-export const getPlaceNoteFeed = (urlArg: URL) =>
-async (args: {
-    placeID: string | number;
-}) => {
+export const getPlaceNoteFeed = (urlArg: URL) => async (args: { placeID: string | number }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getPlaceNoteFeed/${args.placeID}`;
     const response = await safeFetch(url);
@@ -37,10 +31,7 @@ async (args: {
 /**
  * GET /getPlaceMetrics/{placeID}
  */
-export const getPlaceMetrics = (urlArg: URL) =>
-async (args: {
-    placeID: string | number;
-}) => {
+export const getPlaceMetrics = (urlArg: URL) => async (args: { placeID: string | number }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getPlaceMetrics/${args.placeID}`;
     const response = await safeFetch(url);
@@ -53,10 +44,7 @@ async (args: {
 /**
  * GET /getPlaceGallery/{placeID}
  */
-export const getPlaceGallery = (urlArg: URL) =>
-async (args: {
-    placeID: string | number;
-}) => {
+export const getPlaceGallery = (urlArg: URL) => async (args: { placeID: string | number }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getPlaceGallery/${args.placeID}`;
     console.log(url.toString());
@@ -64,16 +52,13 @@ async (args: {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<unknown[]>(response);
+    return handleResponse<PlaceNote[]>(response);
 };
 
 /**
  * GET /getPlaceCalendarEvents/{placeID}
  */
-export const getPlaceCalendarEvents = (urlArg: URL) =>
-async (args: {
-    placeID: string | number;
-}) => {
+export const getPlaceCalendarEvents = (urlArg: URL) => async (args: { placeID: string | number }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getPlaceCalendarEvents/${args.placeID}`;
     console.log(url.toString());
@@ -81,16 +66,13 @@ async (args: {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<unknown[]>(response);
+    return handleResponse<PlaceNote[]>(response);
 };
 
 /**
  * GET /getPlaceChats/{placeID}
  */
-export const getPlaceChats = (urlArg: URL) =>
-async (args: {
-    placeID: string | number;
-}) => {
+export const getPlaceChats = (urlArg: URL) => async (args: { placeID: string | number }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getPlaceChats/${args.placeID}`;
     console.log(url.toString());
@@ -98,16 +80,13 @@ async (args: {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<unknown[]>(response);
+    return handleResponse<PlaceNote[]>(response);
 };
 
 /**
  * GET /getPlaceCategoryScores/{placeID}
  */
-export const getPlaceCategoryScores = (urlArg: URL) =>
-async (args: {
-    placeID: string | number;
-}) => {
+export const getPlaceCategoryScores = (urlArg: URL) => async (args: { placeID: string | number }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getPlaceCategoryScores/${args.placeID}`;
     console.log(url.toString());
@@ -148,10 +127,7 @@ async (args: {
     return x;
 };
 
-export const getRegion = (urlArg: URL) =>
-async (args: {
-    regionID: number;
-}) => {
+export const getRegion = (urlArg: URL) => async (args: { regionID: number }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getRegion/${args.regionID}`;
     const response = await safeFetch(url);
