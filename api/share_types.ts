@@ -155,7 +155,6 @@ export interface Country {
 export type Account = {
     id: number;
     about: string;
-    accountType: AccountType;
     following: Account[];
     followedBy: Account[];
     npub: string;
@@ -209,13 +208,6 @@ export interface AuthDetail {
     accountid: number;
     provideruid: string;
     password: string;
-}
-
-export enum AccountType {
-    BASIC = 1,
-    AMBASSADOR,
-    FOUNDER,
-    ADMIN,
 }
 
 export interface NostrEvent {
