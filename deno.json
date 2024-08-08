@@ -1,14 +1,14 @@
 {
-  "name": "@satlantis/api-client",
-  "version": "0.0.2",
-  "exports": "./sdk.ts",
-  "imports": {
-    "@blowater/nostr-sdk": "jsr:@blowater/nostr-sdk@0.0.9",
-    "@std/assert": "jsr:@std/assert@1.0.0"
-  },
-  "fmt": {
-    "indentWidth": 4,
-    "lineWidth": 110,
-    "exclude": ["cov_profile"]
-  }
+    "name": "@satlantis/api-client",
+    "version": "0.0.2",
+    "exports": "./sdk.ts",
+    "imports": {
+        "@blowater/nostr-sdk": "jsr:@blowater/nostr-sdk@0.0.9",
+        "@std/assert": "jsr:@std/assert@1.0.0"
+    },
+    "fmt": {
+        "indentWidth": 4,
+        "lineWidth": 110,
+        "exclude": ["cov_profile"]
+    }
 }
