@@ -1,5 +1,6 @@
+import { Signer } from "@blowater/nostr-sdk";
 import { newURL } from "./_helper.ts";
-import { deleteAccountRole } from "./api/account.ts";
+import { deleteAccountRole, postAccountRole } from "./api/account.ts";
 import { getPlaceEvent } from "./api/event.ts";
 import { loginNostr } from "./api/login.ts";
 import { getAccountPlaceRoles } from "./api/people.ts";
@@ -27,12 +28,16 @@ export class Client {
     getPlaceCategoryScores: ReturnType<typeof getPlaceCategoryScores>;
     getLocationsWithinBoundingBox: ReturnType<typeof getLocationsWithinBoundingBox>;
     getRegion: ReturnType<typeof getRegion>;
-    deleteAccountRole: ReturnType<typeof deleteAccountRole> | (() => Error);
+    // acount role
+    deleteAccountRole: ReturnType<typeof deleteAccountRole>;
+    postAccountRole: ReturnType<typeof postAccountRole>;
+    // auth
     loginNostr: ReturnType<typeof loginNostr>;
 
     private constructor(
         public readonly url: URL,
         public readonly jwtToken: string | undefined,
+        public readonly getNostrSigner: undefined | (() => Signer | Error),
     ) {
         this.getPlace = getPlace(url);
         this.getAccountPlaceRoles = getAccountPlaceRoles(url);
@@ -47,21 +52,29 @@ export class Client {
         this.getRegion = getRegion(url);
         this.loginNostr = loginNostr(url);
 
-        if (this.jwtToken) {
-            this.deleteAccountRole = deleteAccountRole(url, this.jwtToken);
-        } else {
-            this.deleteAccountRole = () => {
-                return new Error("No jwt token is provided to the client");
-            };
-        }
+        // authed APIs
+        this.deleteAccountRole = deleteAccountRole(
+            url,
+            this.jwtToken,
+            this.getNostrSigner || (() => new Error("nostr signer is not provided")),
+        );
+        this.postAccountRole = postAccountRole(
+            url,
+            this.jwtToken,
+            this.getNostrSigner || (() => new Error("nostr signer is not provided")),
+        );
     }
 
-    static New(args: { baseURL: string | URL; jwtToken?: string }) {
+    static New(args: {
+        baseURL: string | URL;
+        jwtToken?: string;
+        getNostrSigner?: () => Signer | Error;
+    }) {
         const validURL = newURL(args.baseURL);
         if (validURL instanceof Error) {
             return validURL;
         }
-        return new Client(validURL, args.jwtToken);
+        return new Client(validURL, args.jwtToken, args.getNostrSigner);
     }
 }
 
