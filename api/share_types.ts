@@ -171,6 +171,7 @@ export type Account = {
     emailVerified?: boolean;
     influenceScore?: number;
     interests?: object;
+    isAdmin?: boolean;
     isBusiness: boolean;
     locationRatings?: AccountLocationRating[];
     lud06?: string;
