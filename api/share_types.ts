@@ -82,6 +82,117 @@ export type Discussion = ChatMembership & {
     notSeenCount: number;
 };
 
+export enum EventType {
+    Conference = 1,
+    Meetup,
+    Hackathon,
+    Concert,
+    Workshop,
+    Party,
+    Play,
+    Sports,
+    Exhibition,
+    Festival,
+    Music,
+    Other,
+}
+
+export const getEventTypeUsingName = (id: string): EventType => {
+    switch (id) {
+        case "Conference":
+            return EventType.Conference;
+        case "Meetup":
+            return EventType.Meetup;
+        case "Hackathon":
+            return EventType.Hackathon;
+        case "Concert":
+            return EventType.Concert;
+        case "Workshop":
+            return EventType.Workshop;
+        case "Party":
+            return EventType.Party;
+        case "Play":
+            return EventType.Play;
+        case "Sports":
+            return EventType.Sports;
+        case "Exhibition":
+            return EventType.Exhibition;
+        case "Festival":
+            return EventType.Festival;
+        case "Music":
+            return EventType.Music;
+        default:
+            return EventType.Other;
+    }
+};
+
+// Get EventTypes as string
+export const EventTypesAsString = (): string[] => {
+    const names = [
+        "Conference",
+        "Meetup",
+        "Hackathon",
+        "Concert",
+        "Workshop",
+        "Party",
+        "Play",
+        "Sports",
+        "Exhibition",
+        "Festival",
+        "Music",
+        "Other",
+    ];
+
+    return names;
+};
+
+export const Hashtag = (c: EventType) => {
+    const names = [
+        "#conference",
+        "#meetup",
+        "#hackathon",
+        "#concert",
+        "#workshop",
+        "#party",
+        "#play",
+        "#sports",
+        "#exhibition",
+        "#festival",
+        "#music",
+        "#other",
+    ];
+
+    if (c < EventType.Conference || c > EventType.Other) {
+        return "Unknown";
+    }
+
+    return names[c - 1];
+};
+
+export interface CalendarEvent {
+    aTag: string;
+    dTag: string;
+    accountId: number;
+    account: Account;
+    calendarEventRsvps: CalendarEventRSVP[];
+    placeId?: number;
+    cost?: number;
+    currency?: string;
+    start: Date;
+    end?: Date;
+    startTimezone?: string;
+    endTimezone?: string;
+    description: string;
+    image: string;
+    location?: string;
+    noteId: number;
+    note: Note;
+    geohash?: string;
+    title: string;
+    type: EventType;
+    url: string;
+}
+
 export interface CalendarEventRSVP {
     id: number;
     accountId: number;
@@ -153,7 +264,7 @@ export interface Country {
 }
 
 export type Account = {
-    id: number;
+    id?: number;
     about: string;
     following: Account[];
     followedBy: Account[];
