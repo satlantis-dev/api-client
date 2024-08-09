@@ -44,7 +44,7 @@ export const addAccountRole =
 export const removeAccountRole =
     (urlArg: URL, jwtToken: string | undefined, getSigner: () => Signer | Error) =>
     async (args: {
-        placeID: number;
+        placeId: number;
         type: AccountPlaceRoleTypeEnum;
     }) => {
         if (jwtToken == undefined || jwtToken == "") {

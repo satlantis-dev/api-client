@@ -116,7 +116,7 @@ Deno.test("AccountRole", async () => {
     {
         // test fot the failure cases
         const res = await clientNoAuth.removeAccountRole({
-            placeID: 23949,
+            placeId: 23949,
             type: AccountPlaceRoleTypeEnum.AMBASSADOR,
         }) as Error;
         assertEquals(res.message, "jwt token is empty");
@@ -142,10 +142,11 @@ Deno.test("AccountRole", async () => {
 
     // leave the place
     const res2 = await client.removeAccountRole({
-        placeID: 23949,
+        placeId: 23949,
         type: AccountPlaceRoleTypeEnum.FOLLOWER,
     });
     if (res2 instanceof Error) fail(res2.message);
+    console.log(res2);
 });
 
 Deno.test("getPlaceEvent", async () => {
