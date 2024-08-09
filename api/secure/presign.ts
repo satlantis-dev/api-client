@@ -1,6 +1,5 @@
 import { copyURL, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
-import { PlaceEvent } from "../share_types.ts";
 
 export const presign = (urlArg: URL, jwtToken: string | undefined) =>
 async (args: {
