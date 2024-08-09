@@ -2,7 +2,6 @@ import { copyURL, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
 import { PlaceEvent } from "../share_types.ts";
 
-
 export const presign = (urlArg: URL, jwtToken: string | undefined) =>
 async (args: {
     filename: string;
@@ -16,10 +15,10 @@ async (args: {
     const response = await safeFetch(url, {
         method: "POST",
         body: JSON.stringify(args),
-        headers
+        headers,
     });
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{url: string}>(response);
+    return handleResponse<{ url: string }>(response);
 };

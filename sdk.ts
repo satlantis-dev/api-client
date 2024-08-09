@@ -40,7 +40,7 @@ export class Client {
     postAccountRole: ReturnType<typeof postAccountRole>;
 
     // s3
-    presign: ReturnType<typeof presign>
+    presign: ReturnType<typeof presign>;
 
     private constructor(
         public readonly url: URL,
@@ -71,7 +71,7 @@ export class Client {
             this.jwtToken,
             this.getNostrSigner || (() => new Error("nostr signer is not provided")),
         );
-        this.presign =presign(url, jwtToken)
+        this.presign = presign(url, jwtToken);
     }
 
     static New(args: {
