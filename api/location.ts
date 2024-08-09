@@ -29,12 +29,24 @@ async (args: {
     const url = copyURL(urlArg);
     url.pathname = `/getLocationsWithinBoundingBox`;
 
+    let tags = "";
+    if (args.tags !== undefined) {
+        const tagsArray: string[] = [];
+
+        for (const tag of args.tags) {
+            tagsArray.push(`${tag.key}-${tag.value}`);
+        }
+
+        tags = tagsArray.join(",");
+    }
+
     url.searchParams.set("sw_lat", String(args.sw_lat));
     url.searchParams.set("sw_lng", String(args.sw_lng));
     url.searchParams.set("ne_lat", String(args.ne_lat));
     url.searchParams.set("ne_lng", String(args.ne_lng));
-    url.searchParams.set("search", String(args.search));
     url.searchParams.set("category", String(args.category));
+    url.searchParams.set("tags", tags);
+    url.searchParams.set("search", String(args.search));
 
     const response = await safeFetch(url);
     if (response instanceof Error) {
