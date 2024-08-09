@@ -111,11 +111,11 @@ Deno.test("/getLocationsWithinBoundingBox", async () => {
     console.log(result);
 });
 
-Deno.test("/deleteAccountRole", async () => {
+Deno.test("AccountRole", async () => {
     const signer = InMemoryAccountContext.Generate();
     {
         // test fot the failure cases
-        const res = await clientNoAuth.deleteAccountRole({
+        const res = await clientNoAuth.removeAccountRole({
             placeID: 23949,
             type: AccountPlaceRoleTypeEnum.AMBASSADOR,
         }) as Error;
@@ -134,18 +134,18 @@ Deno.test("/deleteAccountRole", async () => {
     }) as Client;
 
     // join the place as a follower
-    const res1 = await client.postAccountRole({
+    const res1 = await client.addAccountRole({
         placeId: 23949,
         type: AccountPlaceRoleTypeEnum.FOLLOWER,
     });
-    console.log(res1);
+    if (res1 instanceof Error) fail(res1.message);
 
     // leave the place
-    const res2 = await client.deleteAccountRole({
+    const res2 = await client.removeAccountRole({
         placeID: 23949,
         type: AccountPlaceRoleTypeEnum.FOLLOWER,
     });
-    console.log(res2);
+    if (res2 instanceof Error) fail(res2.message);
 });
 
 Deno.test("getPlaceEvent", async () => {

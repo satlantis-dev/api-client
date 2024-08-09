@@ -1,6 +1,5 @@
 import { Signer } from "@blowater/nostr-sdk";
 import { newURL } from "./helpers/_helper.ts";
-import { deleteAccountRole, postAccountRole } from "./api/secure/account.ts";
 import { getPlaceEvent } from "./api/event.ts";
 import { loginNostr } from "./api/login.ts";
 import { getAccountPlaceRoles } from "./api/people.ts";
@@ -16,6 +15,7 @@ import {
     getRegion,
 } from "./api/place.ts";
 import { presign } from "./api/secure/presign.ts";
+import { addAccountRole, removeAccountRole } from "./api/secure/account.ts";
 
 export class Client {
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
@@ -36,8 +36,8 @@ export class Client {
     // authed APIs //
     /////////////////
     // acount role
-    deleteAccountRole: ReturnType<typeof deleteAccountRole>;
-    postAccountRole: ReturnType<typeof postAccountRole>;
+    removeAccountRole: ReturnType<typeof removeAccountRole>;
+    addAccountRole: ReturnType<typeof addAccountRole>;
 
     // s3
     presign: ReturnType<typeof presign>;
@@ -61,12 +61,12 @@ export class Client {
         this.loginNostr = loginNostr(url);
 
         // authed APIs
-        this.deleteAccountRole = deleteAccountRole(
+        this.removeAccountRole = removeAccountRole(
             url,
             this.jwtToken,
             this.getNostrSigner || (() => new Error("nostr signer is not provided")),
         );
-        this.postAccountRole = postAccountRole(
+        this.addAccountRole = addAccountRole(
             url,
             this.jwtToken,
             this.getNostrSigner || (() => new Error("nostr signer is not provided")),

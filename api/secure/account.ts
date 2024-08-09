@@ -1,12 +1,12 @@
 import { copyURL, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
 import { AccountPlaceRole, AccountPlaceRoleTypeEnum } from "../share_types.ts";
-import { NostrEvent, NostrKind, prepareNormalNostrEvent, Signer } from "@blowater/nostr-sdk";
+import { NostrKind, prepareNormalNostrEvent, Signer } from "@blowater/nostr-sdk";
 
-export const deleteAccountRole =
+export const addAccountRole =
     (urlArg: URL, jwtToken: string | undefined, getSigner: () => Signer | Error) =>
     async (args: {
-        placeID: number;
+        placeId: number;
         type: AccountPlaceRoleTypeEnum;
     }) => {
         if (jwtToken == undefined || jwtToken == "") {
@@ -17,13 +17,14 @@ export const deleteAccountRole =
             return signer;
         }
         const url = copyURL(urlArg);
-        url.pathname = `/account/account-role`;
+        url.pathname = `/secure/addAccountRole`;
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
+
         const response = await safeFetch(
             url,
             {
-                method: "DELETE",
+                method: "POST",
                 body: JSON.stringify({
                     ...args,
                     event: await prepareNormalNostrEvent(signer, {
@@ -40,10 +41,10 @@ export const deleteAccountRole =
         return handleResponse<AccountPlaceRole>(response);
     };
 
-export const postAccountRole =
+export const removeAccountRole =
     (urlArg: URL, jwtToken: string | undefined, getSigner: () => Signer | Error) =>
     async (args: {
-        placeId: number;
+        placeID: number;
         type: AccountPlaceRoleTypeEnum;
     }) => {
         if (jwtToken == undefined || jwtToken == "") {
@@ -54,14 +55,13 @@ export const postAccountRole =
             return signer;
         }
         const url = copyURL(urlArg);
-        url.pathname = `/account/account-role`;
+        url.pathname = `/secure/removeAccountRole`;
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
-
         const response = await safeFetch(
             url,
             {
-                method: "POST",
+                method: "DELETE",
                 body: JSON.stringify({
                     ...args,
                     event: await prepareNormalNostrEvent(signer, {
