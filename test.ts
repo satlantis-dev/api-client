@@ -112,28 +112,38 @@ Deno.test("/getLocationsWithinBoundingBox", async () => {
 });
 
 Deno.test("/deleteAccountRole", async () => {
+    const signer = InMemoryAccountContext.Generate();
     {
         // test fot the failure cases
         const res = await clientNoAuth.deleteAccountRole({
             placeID: 23949,
             type: AccountPlaceRoleTypeEnum.AMBASSADOR,
         }) as Error;
-        assertEquals(res.message, "No jwt token is provided to the client");
+        assertEquals(res.message, "jwt token is empty");
     }
 
     // login with a new nostr key
-    const res = await clientNoAuth.loginNostr(InMemoryAccountContext.Generate());
+    const res = await clientNoAuth.loginNostr(signer);
     if (res instanceof Error) fail(res.message);
-    console.log(res.account);
+    assertEquals(res.account.npub, signer.publicKey.bech32());
 
     const client = Client.New({
         baseURL: "https://api-dev.satlantis.io",
         jwtToken: res.token,
+        getNostrSigner: () => signer,
     }) as Client;
 
+    // join the place as a follower
+    const res1 = await client.postAccountRole({
+        placeId: 23949,
+        type: AccountPlaceRoleTypeEnum.FOLLOWER,
+    });
+    console.log(res1);
+
+    // leave the place
     const res2 = await client.deleteAccountRole({
         placeID: 23949,
-        type: AccountPlaceRoleTypeEnum.AMBASSADOR,
+        type: AccountPlaceRoleTypeEnum.FOLLOWER,
     });
     console.log(res2);
 });
