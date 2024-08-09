@@ -1,6 +1,6 @@
-import { copyURL, handleResponse } from "../_helper.ts";
-import { safeFetch } from "../safe-fetch.ts";
-import { AccountPlaceRole, AccountPlaceRoleTypeEnum } from "./share_types.ts";
+import { copyURL, handleResponse } from "../../helpers/_helper.ts";
+import { safeFetch } from "../../helpers/safe-fetch.ts";
+import { AccountPlaceRole, AccountPlaceRoleTypeEnum } from "../share_types.ts";
 import { NostrEvent, NostrKind, prepareNormalNostrEvent, Signer } from "@blowater/nostr-sdk";
 
 export const deleteAccountRole =

@@ -1,5 +1,5 @@
-import { ApiError, copyURL, handleResponse } from "../_helper.ts";
-import { safeFetch } from "../safe-fetch.ts";
+import { ApiError, copyURL, handleResponse } from "../helpers/_helper.ts";
+import { safeFetch } from "../helpers/safe-fetch.ts";
 import { Place, PlaceCategoryScore, PlaceMetric, PlaceNote, Region } from "./share_types.ts";
 
 /**

@@ -1,5 +1,5 @@
 import { InMemoryAccountContext } from "@blowater/nostr-sdk";
-import { AccountPlaceRoleTypeEnum, Client } from "./sdk.ts";
+import { AccountPlaceRoleTypeEnum, Client } from "../sdk.ts";
 import { assertEquals, fail } from "@std/assert";
 
 const clientNoAuth = Client.New({ baseURL: "https://api-dev.satlantis.io" });
@@ -162,6 +162,26 @@ Deno.test("getPlaceEvent", async () => {
 Deno.test("getRegion", async () => {
     const result = await clientNoAuth.getRegion({
         regionID: 1170,
+    });
+    if (result instanceof Error) {
+        console.log(result);
+        fail();
+    }
+    console.log(result);
+});
+
+Deno.test("presign", async () => {
+    const signer = InMemoryAccountContext.Generate();
+    const res = await clientNoAuth.loginNostr(signer);
+    if (res instanceof Error) fail(res.message);
+    const client = Client.New({
+        baseURL: "https://api-dev.satlantis.io",
+        jwtToken: res.token,
+        getNostrSigner: () => signer,
+    }) as Client;
+
+    const result = await client.presign({
+        filename: "1723171862272-robot.png",
     });
     if (result instanceof Error) {
         console.log(result);

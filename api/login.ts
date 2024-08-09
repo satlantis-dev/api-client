@@ -1,6 +1,6 @@
 import { prepareNormalNostrEvent, Signer } from "@blowater/nostr-sdk";
-import { copyURL, handleResponse } from "../_helper.ts";
-import { safeFetch } from "../safe-fetch.ts";
+import { copyURL, handleResponse } from "../helpers/_helper.ts";
+import { safeFetch } from "../helpers/safe-fetch.ts";
 import { Account } from "./share_types.ts";
 
 export const loginNostr = (urlArg: URL) => async (signer: Signer) => {
