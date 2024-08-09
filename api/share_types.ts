@@ -16,7 +16,7 @@ export type Place = {
     osmId: number;
     osmRef: string;
     regionId: number;
-    region?: Region;
+    region: Region;
     slug: string;
     name: string;
     countryId: number;
@@ -44,7 +44,7 @@ export enum NoteType {
     REACTION,
     DELETE_NOTE,
     REPLY_NOTE,
-    MediaNote,
+    MEDIA,
 }
 
 export type Note = {
@@ -87,6 +87,14 @@ export type Discussion = ChatMembership & {
     notSeenCount: number;
 };
 
+export interface Chat {
+    id?: number;
+    about?: string;
+    name?: string;
+    picture?: string;
+    members?: ChatMembership[];
+}
+
 export interface CalendarEventRSVP {
     id: number;
     accountId: number;
@@ -111,9 +119,10 @@ export interface PlaceMetric {
 
 export type Weather = {
     id: number;
-    main: string;
-    description: string;
-    icon: string;
+    placeId: number;
+    humidity: number;
+    pressure: number;
+    temp: number;
 };
 
 export type AccountPlaceRole = {
@@ -123,7 +132,7 @@ export type AccountPlaceRole = {
     placeId: number;
     active: boolean;
     type: AccountPlaceRoleTypeEnum;
-    place?: Place;
+    place: Place;
 };
 
 export enum AccountPlaceRoleTypeEnum {
@@ -159,7 +168,7 @@ export interface Country {
 
 export type Account = {
     id: number;
-    about: string;
+    about?: string;
     following: Account[];
     followedBy: Account[];
     npub: string;
@@ -301,6 +310,92 @@ export interface RegionMetric {
     score: number;
 }
 
+export enum BusinessStatus {
+    CLOSED_PERMANENTLY = "CLOSED_PERMANENTLY",
+    CLOSED_TEMPORARILY = "CLOSED_TEMPORARILY",
+    OPERATIONAL = "OPERATIONAL",
+}
+
+export enum PriceLevel {
+    PRICE_LEVEL_UNSPECIFIED = "PRICE_LEVEL_UNSPECIFIED",
+    PRICE_LEVEL_FREE = "PRICE_LEVEL_FREE",
+    PRICE_LEVEL_INEXPENSIVE = "PRICE_LEVEL_INEXPENSIVE",
+    PRICE_LEVEL_MODERATE = "PRICE_LEVEL_MODERATE",
+    PRICE_LEVEL_EXPENSIVE = "PRICE_LEVEL_EXPENSIVE",
+    PRICE_LEVEL_VERY_EXPENSIVE = "PRICE_LEVEL_VERY_EXPENSIVE",
+}
+
+export interface OpeningHours {
+    monday: string;
+    tuesday: string;
+    wednesday: string;
+    thursday: string;
+    friday: string;
+    saturday: string;
+    sunday: string;
+}
+
+export interface Address {
+    streetNumber: string;
+    route: string;
+    locality: string;
+    postalCode: string;
+    country: string;
+}
+
+export interface LocationNote {
+    id: number;
+    locationId: number;
+    noteId: number;
+    note: Note;
+    type: NoteType;
+}
+
+export interface LocationTag {
+    id?: number;
+    category: string;
+    key: string;
+    value: string;
+    locations?: Location[];
+}
+
+export enum LocationAccountTypeEnum {
+    OWNER = "owner",
+    MANAGER = "manager",
+    MEMBER = "member",
+    VISITOR = "visitor",
+}
+
+export interface LocationAccount {
+    locationId: number;
+    accountId: number;
+    type: LocationAccountTypeEnum;
+}
+
+export interface Location {
+    id: number;
+    name: string;
+    accounts: LocationAccount[];
+    lat: number;
+    lng: number;
+    locationTags: LocationTag[];
+    osmRef: string;
+    googleId: string;
+    placeId: number;
+    eventId: number;
+    event: NostrEvent;
+    score: number;
+    address: Address;
+    phone: string;
+    notes: LocationNote[];
+    businessStatus: BusinessStatus;
+    openingHours: OpeningHours;
+    priceLevel: PriceLevel;
+    googleRating: number;
+    googleUserRatingCount: number;
+    websiteUrl: string;
+}
+
 export interface Metric {
     id: number;
     categoryId: number;
@@ -357,3 +452,115 @@ export type ProcessedTag = {
 };
 
 export type TagType = "g" | "d" | "name" | "r" | "t" | "a";
+
+export enum CalendarEventType {
+    Conference = 1,
+    Meetup,
+    Hackathon,
+    Concert,
+    Workshop,
+    Party,
+    Play,
+    Sports,
+    Exhibition,
+    Festival,
+    Music,
+    Other,
+}
+
+export const getEventTypeUsingName = (id: string): CalendarEventType => {
+    switch (id) {
+        case "Conference":
+            return CalendarEventType.Conference;
+        case "Meetup":
+            return CalendarEventType.Meetup;
+        case "Hackathon":
+            return CalendarEventType.Hackathon;
+        case "Concert":
+            return CalendarEventType.Concert;
+        case "Workshop":
+            return CalendarEventType.Workshop;
+        case "Party":
+            return CalendarEventType.Party;
+        case "Play":
+            return CalendarEventType.Play;
+        case "Sports":
+            return CalendarEventType.Sports;
+        case "Exhibition":
+            return CalendarEventType.Exhibition;
+        case "Festival":
+            return CalendarEventType.Festival;
+        case "Music":
+            return CalendarEventType.Music;
+        default:
+            return CalendarEventType.Other;
+    }
+};
+
+// Get EventTypes as string
+export const EventTypesAsString = (): string[] => {
+    const names = [
+        "Conference",
+        "Meetup",
+        "Hackathon",
+        "Concert",
+        "Workshop",
+        "Party",
+        "Play",
+        "Sports",
+        "Exhibition",
+        "Festival",
+        "Music",
+        "Other",
+    ];
+
+    return names;
+};
+
+export const Hashtag = (c: CalendarEventType) => {
+    const names = [
+        "#conference",
+        "#meetup",
+        "#hackathon",
+        "#concert",
+        "#workshop",
+        "#party",
+        "#play",
+        "#sports",
+        "#exhibition",
+        "#festival",
+        "#music",
+        "#other",
+    ];
+
+    if (c < CalendarEventType.Conference || c > CalendarEventType.Other) {
+        return "Unknown";
+    }
+
+    return names[c - 1];
+};
+
+// Interface
+export interface CalendarEvent {
+    aTag: string;
+    dTag: string;
+    accountId: number;
+    account: Account;
+    calendarEventRsvps: CalendarEventRSVP[];
+    placeId?: number;
+    cost?: number;
+    currency?: string;
+    start: Date;
+    end?: Date;
+    startTimezone?: string;
+    endTimezone?: string;
+    description: string;
+    image: string;
+    location?: string;
+    noteId: number;
+    note: Note;
+    geohash?: string;
+    title: string;
+    type: CalendarEventType;
+    url: string;
+}
