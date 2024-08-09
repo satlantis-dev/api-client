@@ -352,11 +352,12 @@ export interface LocationNote {
 }
 
 export interface LocationTag {
-    id?: number;
+    id: number;
     category: string;
     key: string;
     value: string;
-    locations?: Location[];
+    eligible: boolean;
+    locations: Location[] | null | undefined;
 }
 
 export enum LocationAccountTypeEnum {

@@ -16,6 +16,7 @@ import {
 } from "./api/place.ts";
 import { presign } from "./api/secure/presign.ts";
 import { addAccountRole, removeAccountRole } from "./api/secure/account.ts";
+import { getLocationTags } from "./api/location.ts";
 
 export class Client {
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
@@ -85,6 +86,10 @@ export class Client {
         }
         return new Client(validURL, args.jwtToken, args.getNostrSigner);
     }
+
+    getLocationTags = () => {
+        return getLocationTags(this.url)();
+    };
 }
 
 export * from "./api/place.ts";
