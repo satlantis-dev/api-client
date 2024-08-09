@@ -27,4 +27,4 @@ jobs:
         run: deno fmt --check
 
       - name: run tests
-        run: deno test --allow-net test.ts
+        run: make test
