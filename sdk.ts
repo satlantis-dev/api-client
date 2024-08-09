@@ -1,6 +1,6 @@
 import { Signer } from "@blowater/nostr-sdk";
-import { newURL } from "./_helper.ts";
-import { deleteAccountRole, postAccountRole } from "./api/account.ts";
+import { newURL } from "./helpers/_helper.ts";
+import { deleteAccountRole, postAccountRole } from "./api/secure/account.ts";
 import { getPlaceEvent } from "./api/event.ts";
 import { loginNostr } from "./api/login.ts";
 import { getAccountPlaceRoles } from "./api/people.ts";
@@ -15,6 +15,7 @@ import {
     getPlaceNoteFeed,
     getRegion,
 } from "./api/place.ts";
+import { presign } from "./api/secure/presign.ts";
 
 export class Client {
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
@@ -28,11 +29,18 @@ export class Client {
     getPlaceCategoryScores: ReturnType<typeof getPlaceCategoryScores>;
     getLocationsWithinBoundingBox: ReturnType<typeof getLocationsWithinBoundingBox>;
     getRegion: ReturnType<typeof getRegion>;
+
+    // auth
+    loginNostr: ReturnType<typeof loginNostr>;
+    /////////////////
+    // authed APIs //
+    /////////////////
     // acount role
     deleteAccountRole: ReturnType<typeof deleteAccountRole>;
     postAccountRole: ReturnType<typeof postAccountRole>;
-    // auth
-    loginNostr: ReturnType<typeof loginNostr>;
+
+    // s3
+    presign: ReturnType<typeof presign>
 
     private constructor(
         public readonly url: URL,
@@ -63,6 +71,7 @@ export class Client {
             this.jwtToken,
             this.getNostrSigner || (() => new Error("nostr signer is not provided")),
         );
+        this.presign =presign(url, jwtToken)
     }
 
     static New(args: {
