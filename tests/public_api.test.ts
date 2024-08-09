@@ -96,20 +96,6 @@ Deno.test("/getPlaceCategoryScores", async () => {
     console.log(result);
 });
 
-Deno.test("/getLocationsWithinBoundingBox", async () => {
-    const result = await clientNoAuth.getLocationsWithinBoundingBox({
-        sw_lat: 32,
-        sw_lng: -16,
-        ne_lat: 32,
-        ne_lng: 16,
-    });
-    if (result instanceof Error) {
-        console.log(result);
-        fail();
-    }
-    console.log(result);
-});
-
 Deno.test("getPlaceEvent", async () => {
     const result = await clientNoAuth.getPlaceEvent({
         placeID: 23949,
@@ -124,6 +110,20 @@ Deno.test("getPlaceEvent", async () => {
 Deno.test("getRegion", async () => {
     const result = await clientNoAuth.getRegion({
         regionID: 1170,
+    });
+    if (result instanceof Error) {
+        console.log(result);
+        fail();
+    }
+    console.log(result);
+});
+
+Deno.test("/getLocationsWithinBoundingBox", async () => {
+    const result = await clientNoAuth.getLocationsWithinBoundingBox({
+        sw_lat: 32,
+        sw_lng: -16,
+        ne_lat: 32,
+        ne_lng: 16,
     });
     if (result instanceof Error) {
         console.log(result);
