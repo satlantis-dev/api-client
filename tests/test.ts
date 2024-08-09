@@ -111,12 +111,12 @@ Deno.test("/getLocationsWithinBoundingBox", async () => {
     console.log(result);
 });
 
-Deno.test("/deleteAccountRole", async () => {
+Deno.test("AccountRole", async () => {
     const signer = InMemoryAccountContext.Generate();
     {
         // test fot the failure cases
-        const res = await clientNoAuth.deleteAccountRole({
-            placeID: 23949,
+        const res = await clientNoAuth.removeAccountRole({
+            placeId: 23949,
             type: AccountPlaceRoleTypeEnum.AMBASSADOR,
         }) as Error;
         assertEquals(res.message, "jwt token is empty");
@@ -134,17 +134,18 @@ Deno.test("/deleteAccountRole", async () => {
     }) as Client;
 
     // join the place as a follower
-    const res1 = await client.postAccountRole({
+    const res1 = await client.addAccountRole({
         placeId: 23949,
         type: AccountPlaceRoleTypeEnum.FOLLOWER,
     });
-    console.log(res1);
+    if (res1 instanceof Error) fail(res1.message);
 
     // leave the place
-    const res2 = await client.deleteAccountRole({
-        placeID: 23949,
+    const res2 = await client.removeAccountRole({
+        placeId: 23949,
         type: AccountPlaceRoleTypeEnum.FOLLOWER,
     });
+    if (res2 instanceof Error) fail(res2.message);
     console.log(res2);
 });
 
