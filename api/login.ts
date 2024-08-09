@@ -3,6 +3,9 @@ import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import { Account } from "./share_types.ts";
 
+/**
+ * @unstable The signature is subject to change
+ */
 export const loginNostr = (urlArg: URL) => async (signer: Signer) => {
     const url = copyURL(urlArg);
     url.pathname = `/login/nostr`;

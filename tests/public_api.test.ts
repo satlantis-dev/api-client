@@ -1,6 +1,5 @@
-import { InMemoryAccountContext } from "@blowater/nostr-sdk";
-import { AccountPlaceRoleTypeEnum, Client } from "../sdk.ts";
-import { assertEquals, fail } from "@std/assert";
+import { fail } from "@std/assert";
+import { Client } from "../sdk.ts";
 
 const clientNoAuth = Client.New({ baseURL: "https://api-dev.satlantis.io" });
 if (clientNoAuth instanceof Error) {
@@ -97,58 +96,6 @@ Deno.test("/getPlaceCategoryScores", async () => {
     console.log(result);
 });
 
-Deno.test("/getLocationsWithinBoundingBox", async () => {
-    const result = await clientNoAuth.getLocationsWithinBoundingBox({
-        sw_lat: 32,
-        sw_lng: -16,
-        ne_lat: 32,
-        ne_lng: 16,
-    });
-    if (result instanceof Error) {
-        console.log(result);
-        fail();
-    }
-    console.log(result);
-});
-
-Deno.test("AccountRole", async () => {
-    const signer = InMemoryAccountContext.Generate();
-    {
-        // test fot the failure cases
-        const res = await clientNoAuth.removeAccountRole({
-            placeId: 23949,
-            type: AccountPlaceRoleTypeEnum.AMBASSADOR,
-        }) as Error;
-        assertEquals(res.message, "jwt token is empty");
-    }
-
-    // login with a new nostr key
-    const res = await clientNoAuth.loginNostr(signer);
-    if (res instanceof Error) fail(res.message);
-    assertEquals(res.account.npub, signer.publicKey.bech32());
-
-    const client = Client.New({
-        baseURL: "https://api-dev.satlantis.io",
-        jwtToken: res.token,
-        getNostrSigner: () => signer,
-    }) as Client;
-
-    // join the place as a follower
-    const res1 = await client.addAccountRole({
-        placeId: 23949,
-        type: AccountPlaceRoleTypeEnum.FOLLOWER,
-    });
-    if (res1 instanceof Error) fail(res1.message);
-
-    // leave the place
-    const res2 = await client.removeAccountRole({
-        placeId: 23949,
-        type: AccountPlaceRoleTypeEnum.FOLLOWER,
-    });
-    if (res2 instanceof Error) fail(res2.message);
-    console.log(res2);
-});
-
 Deno.test("getPlaceEvent", async () => {
     const result = await clientNoAuth.getPlaceEvent({
         placeID: 23949,
@@ -171,22 +118,24 @@ Deno.test("getRegion", async () => {
     console.log(result);
 });
 
-Deno.test("presign", async () => {
-    const signer = InMemoryAccountContext.Generate();
-    const res = await clientNoAuth.loginNostr(signer);
-    if (res instanceof Error) fail(res.message);
-    const client = Client.New({
-        baseURL: "https://api-dev.satlantis.io",
-        jwtToken: res.token,
-        getNostrSigner: () => signer,
-    }) as Client;
-
-    const result = await client.presign({
-        filename: "1723171862272-robot.png",
+Deno.test("/getLocationsWithinBoundingBox", async () => {
+    const result = await clientNoAuth.getLocationsWithinBoundingBox({
+        sw_lat: 32,
+        sw_lng: -16,
+        ne_lat: 32,
+        ne_lng: 16,
     });
     if (result instanceof Error) {
         console.log(result);
         fail();
+    }
+    console.log(result);
+});
+
+Deno.test("getLocationTags", async () => {
+    const result = await clientNoAuth.getLocationTags();
+    if (result instanceof Error) {
+        fail(result.message);
     }
     console.log(result);
 });
