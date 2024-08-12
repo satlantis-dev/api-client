@@ -31,14 +31,14 @@ export const getNip5 = async (args: {
     const key = res.names[args.name];
     if (key) {
         const pub = PublicKey.FromHex(key);
-        if(pub instanceof Error) {
+        if (pub instanceof Error) {
             return pub;
         }
-        const relays = res.nip46[pub.hex]
+        const relays = res.nip46[pub.hex];
         return {
             pubkey: pub,
-            relays: relays || []
-        }
+            relays: relays || [],
+        };
     }
     return undefined;
 };
