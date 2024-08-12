@@ -27,7 +27,9 @@ export class Client {
     getPlaceCalendarEvents: ReturnType<typeof getPlaceCalendarEvents>;
     getPlaceChats: ReturnType<typeof getPlaceChats>;
     getPlaceCategoryScores: ReturnType<typeof getPlaceCategoryScores>;
-    getLocationsWithinBoundingBox: ReturnType<typeof getLocationsWithinBoundingBox>;
+    getLocationsWithinBoundingBox: ReturnType<
+        typeof getLocationsWithinBoundingBox
+    >;
     getRegion: ReturnType<typeof getRegion>;
 
     // auth
@@ -91,6 +93,7 @@ export class Client {
     };
 }
 
+export * from "./api/note.ts";
 export * from "./api/place.ts";
 export * from "./api/share_types.ts";
 export * from "./api/nip5.ts";
