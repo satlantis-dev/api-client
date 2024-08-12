@@ -10,7 +10,7 @@ export type Nip5Result = {
 
 export type Relays = {};
 
-export const getNip5PublicKey = async (args: {
+export const getNip5 = async (args: {
     domain: string;
     name: string;
 }) => {
@@ -30,7 +30,15 @@ export const getNip5PublicKey = async (args: {
     }
     const key = res.names[args.name];
     if (key) {
-        return PublicKey.FromHex(key);
+        const pub = PublicKey.FromHex(key);
+        if(pub instanceof Error) {
+            return pub;
+        }
+        const relays = res.nip46[pub.hex]
+        return {
+            pubkey: pub,
+            relays: relays || []
+        }
     }
     return undefined;
 };
