@@ -93,3 +93,4 @@ export class Client {
 
 export * from "./api/place.ts";
 export * from "./api/share_types.ts";
+export * from "./api/nip5.ts";
