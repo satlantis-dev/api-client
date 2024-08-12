@@ -97,3 +97,4 @@ export * from "./api/note.ts";
 export * from "./api/place.ts";
 export * from "./api/share_types.ts";
 export * from "./api/nip5.ts";
+export * from "./api/secure/account.ts";
