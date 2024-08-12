@@ -1,6 +1,47 @@
-import { ApiError, copyURL, handleResponse } from "../helpers/_helper.ts";
+import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
-import { LocationTag, Place, PlaceCategoryScore, PlaceMetric, PlaceNote, Region } from "./share_types.ts";
+import { PlaceNote } from "./note.ts";
+import { AccountPlaceRole } from "./secure/account.ts";
+import { Country, Metric, NostrEvent, PlaceCategoryScore, Region, Topic, Weather } from "./share_types.ts";
+
+export type PlaceLevel = "region" | "city" | "neighborhood";
+export type OSMType = "node" | "relation" | "way";
+
+export type Place = {
+    id: number;
+    accountRoles: AccountPlaceRole[];
+    banner: string;
+    categoryScores: PlaceCategoryScore[];
+    description: string;
+    eventId: number;
+    event?: NostrEvent;
+    lat: number;
+    level: PlaceLevel;
+    lng: number;
+    metrics: PlaceMetric[];
+    osmId: number;
+    osmRef: string;
+    regionId: number;
+    region: Region;
+    slug: string;
+    name: string;
+    countryId: number;
+    country: Country;
+    weather: Weather;
+};
+
+export interface PlaceMetric {
+    dataPoints: number;
+    cityId: number;
+    metricId: number;
+    metric: Metric;
+    updatedAt?: Date;
+    score: number;
+    topicId: number;
+    topic: Topic;
+    value: number;
+    valueStr: string;
+}
 
 /**
  * get the place based on OSM ID or ID, only 1 is needed

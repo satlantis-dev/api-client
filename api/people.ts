@@ -1,6 +1,6 @@
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
-import { AccountPlaceRole } from "./share_types.ts";
+import { AccountPlaceRole } from "./secure/account.ts";
 
 export const getAccountPlaceRoles = (urlArg: URL) =>
 async (args: {
