@@ -1,70 +1,6 @@
-export type PlaceLevel = "region" | "city" | "neighborhood";
-export type OSMType = "node" | "relation" | "way";
-
-export type Place = {
-    id: number;
-    accountRoles: AccountPlaceRole[];
-    banner: string;
-    categoryScores: PlaceCategoryScore[];
-    description: string;
-    eventId: number;
-    event?: NostrEvent;
-    lat: number;
-    level: PlaceLevel;
-    lng: number;
-    metrics: PlaceMetric[];
-    osmId: number;
-    osmRef: string;
-    regionId: number;
-    region: Region;
-    slug: string;
-    name: string;
-    countryId: number;
-    country: Country;
-    weather: Weather;
-};
-
-export interface PlaceNote {
-    id: number;
-    placeId: number;
-    noteId: number;
-    note: Note;
-    type: NoteType;
-}
-
-export enum NoteType {
-    BASIC = 1,
-    REVIEW,
-    GALLERY,
-    PUBLIC_CHAT,
-    PRIVATE_CHAT,
-    CALENDAR_EVENT,
-    CALENDAR,
-    PING,
-    REACTION,
-    DELETE_NOTE,
-    REPLY_NOTE,
-    MEDIA,
-}
-
-export type Note = {
-    id: number;
-    accountId: number;
-    account: Account;
-    ancestorId: number;
-    calendarEventRsvps: CalendarEventRSVP[];
-    chatMemberships: ChatMembership[];
-    descendants: Note[];
-    depth: number;
-    descendantId: number;
-    eventId: number;
-    event: NostrEvent;
-    type: NoteType;
-    reactions: Reaction[];
-    repostedNoteId?: number;
-    reposts: unknown[];
-    zaps: unknown[];
-};
+import { Note, NoteType } from "./note.ts";
+import { OSMType, Place } from "./place.ts";
+import { Account } from "./secure/account.ts";
 
 export interface Reaction {
     id: number;
@@ -104,19 +40,6 @@ export interface CalendarEventRSVP {
     status: string;
 }
 
-export interface PlaceMetric {
-    dataPoints: number;
-    cityId: number;
-    metricId: number;
-    metric: Metric;
-    updatedAt?: Date;
-    score: number;
-    topicId: number;
-    topic: Topic;
-    value: number;
-    valueStr: string;
-}
-
 export type Weather = {
     id: number;
     placeId: number;
@@ -124,23 +47,6 @@ export type Weather = {
     pressure: number;
     temp: number;
 };
-
-export type AccountPlaceRole = {
-    id: number;
-    accountId: number;
-    account: Account;
-    placeId: number;
-    active: boolean;
-    type: AccountPlaceRoleTypeEnum;
-    place: Place;
-};
-
-export enum AccountPlaceRoleTypeEnum {
-    FOLLOWER = 1,
-    VISITOR,
-    INHABITANT,
-    AMBASSADOR,
-}
 
 export interface PlaceCategoryScore {
     categoryId: number;
@@ -164,57 +70,6 @@ export interface Country {
     id: number;
     code: string;
     name: string;
-}
-
-export type Account = {
-    id: number;
-    about?: string;
-    following: Account[];
-    followedBy: Account[];
-    npub: string;
-    pubKey: string;
-    accountPlaceRoles?: AccountPlaceRole[];
-    authDetails?: AuthDetail[];
-    banner?: string;
-    chatMemberships?: ChatMembership[];
-    currencyId?: number;
-    currency?: Currency;
-    displayName?: string;
-    email?: string;
-    emailVerified?: boolean;
-    influenceScore?: number;
-    interests?: object;
-    isAdmin?: boolean;
-    isBusiness: boolean;
-    locationRatings?: AccountLocationRating[];
-    lud06?: string;
-    lud16?: string;
-    name?: string;
-    nip05?: string;
-    picture?: string;
-    phone?: string;
-    placeRatings?: AccountPlaceRating[];
-    website?: string;
-};
-
-export interface AccountPlaceRating {
-    accountId: number;
-    placeId: number;
-    review: string;
-    ratings: object;
-}
-
-export interface AccountLocationRating {
-    accountId: number;
-    locationId: number;
-    review: string;
-    ratings: object;
-}
-
-interface Currency {
-    code: string;
-    name: string;
-    symbol: string;
 }
 
 export interface AuthDetail {

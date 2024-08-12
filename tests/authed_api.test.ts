@@ -1,7 +1,8 @@
 import { InMemoryAccountContext } from "@blowater/nostr-sdk";
 import { fail } from "jsr:@std/assert@0.226.0/fail";
-import { AccountPlaceRoleTypeEnum, Client } from "../sdk.ts";
+import { Client } from "../sdk.ts";
 import { assertEquals } from "jsr:@std/assert@0.226.0/assert-equals";
+import { AccountPlaceRoleTypeEnum } from "../api/secure/account.ts";
 
 const clientNoAuth = Client.New({ baseURL: "https://api-dev.satlantis.io" });
 if (clientNoAuth instanceof Error) {
