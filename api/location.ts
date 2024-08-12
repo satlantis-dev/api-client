@@ -22,9 +22,10 @@ async (args: {
     sw_lng: number;
     ne_lat: number;
     ne_lng: number;
-    category?: string;
-    tags?: LocationTag[];
+    google_rating?: number;
     search?: string;
+    tag_category?: string;
+    tags?: LocationTag[];
 }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getLocationsWithinBoundingBox`;
@@ -44,7 +45,8 @@ async (args: {
     url.searchParams.set("sw_lng", String(args.sw_lng));
     url.searchParams.set("ne_lat", String(args.ne_lat));
     url.searchParams.set("ne_lng", String(args.ne_lng));
-    url.searchParams.set("category", String(args.category));
+    url.searchParams.set("google_rating", String(args.google_rating));
+    url.searchParams.set("tag_category", String(args.tag_category));
     url.searchParams.set("tags", tags);
     url.searchParams.set("search", String(args.search));
 
