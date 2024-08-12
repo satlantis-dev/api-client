@@ -1,5 +1,5 @@
 import { fail } from "@std/assert";
-import { Client, nip5 } from "../sdk.ts";
+import { Client, getNip5PublicKey } from "../sdk.ts";
 
 const clientNoAuth = Client.New({ baseURL: "https://api-dev.satlantis.io" });
 if (clientNoAuth instanceof Error) {
@@ -140,11 +140,10 @@ Deno.test("getLocationTags", async () => {
     console.log(result);
 });
 
-
 Deno.test("nip5", async () => {
-    const result = await nip5({name: "albert", domain: 'https://www.satlantis.io'});
+    const result = await getNip5PublicKey({ name: "_", domain: "https://www.satlantis.io" });
     if (result instanceof Error) {
-        console.log(result)
+        console.log(result);
         fail();
     }
     console.log(result);
