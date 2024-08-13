@@ -96,7 +96,7 @@ async (args: {
     };
     limit: number;
     page: number;
-    sortColumn: "score";
+    sortColumn: "score" | "id";
     sortDirection: "desc";
 }) => {
     const url = copyURL(urlArg);
