@@ -139,7 +139,7 @@ Deno.test("/getLocationsWithinBoundingBox", async () => {
         ne_lat: 32.766068258492425,
         ne_lng: -16.800802131347382,
         sw_lng: -17.04730786865258,
-        google_rating: 3,
+        google_rating: 0,
     });
     if (result instanceof Error) {
         console.log(result);

@@ -108,9 +108,7 @@ async (args: {
     url.searchParams.set("sw_lng", String(args.sw_lng));
     url.searchParams.set("ne_lat", String(args.ne_lat));
     url.searchParams.set("ne_lng", String(args.ne_lng));
-    if (args.google_rating) {
-        url.searchParams.set("google_rating", String(args.google_rating));
-    }
+    url.searchParams.set("google_rating", String(args.google_rating));
     if (args.tag_category) {
         url.searchParams.set("tag_category", args.tag_category);
     }
