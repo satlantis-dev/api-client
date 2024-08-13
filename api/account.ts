@@ -1,6 +1,6 @@
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
-import { Account } from "./secure/account.ts";
+import { Account } from "../models/account.ts";
 
 export const getAccount = (urlArg: URL) =>
 async (args: {

@@ -1,5 +1,6 @@
-import { Category, Country, NostrEvent, OSMType, Place, Topic } from "../sdk.ts";
+import { Category, Country, NostrEvent, Topic } from "../sdk.ts";
 import { Metric } from "./metric.ts";
+import { OSMType, Place } from "./place.ts";
 
 export type RegionMetric = {
     dataPoints: number;

@@ -103,7 +103,6 @@ export class Client {
 }
 
 export * from "./api/calendar.ts";
-export * from "./api/chat.ts";
 export * from "./api/location.ts";
 export * from "./api/login.ts";
 export * from "./api/nip5.ts";
