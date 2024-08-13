@@ -1,3 +1,4 @@
+import { CalendarEventType } from "./calendar.ts";
 import { Note, NoteType } from "./note.ts";
 import { OSMType, Place } from "./place.ts";
 import { Account } from "./secure/account.ts";
@@ -7,37 +8,6 @@ export interface Reaction {
     accountId: number;
     eventId: number;
     event: NostrEvent;
-}
-
-export interface ChatMembership {
-    id: number;
-    accountId: number;
-    account: Account;
-    lastReadNoteId: number;
-    noteId: number;
-    note: Note;
-}
-
-export type Discussion = ChatMembership & {
-    lastMessage: Note;
-    notSeenCount: number;
-};
-
-export interface Chat {
-    id?: number;
-    about?: string;
-    name?: string;
-    picture?: string;
-    members?: ChatMembership[];
-}
-
-export interface CalendarEventRSVP {
-    id: number;
-    accountId: number;
-    account: Account;
-    eventId: number;
-    event: NostrEvent;
-    status: string;
 }
 
 export type Weather = {
@@ -309,50 +279,6 @@ export type ProcessedTag = {
 
 export type TagType = "g" | "d" | "name" | "r" | "t" | "a";
 
-export enum CalendarEventType {
-    Conference = 1,
-    Meetup,
-    Hackathon,
-    Concert,
-    Workshop,
-    Party,
-    Play,
-    Sports,
-    Exhibition,
-    Festival,
-    Music,
-    Other,
-}
-
-export const getEventTypeUsingName = (id: string): CalendarEventType => {
-    switch (id) {
-        case "Conference":
-            return CalendarEventType.Conference;
-        case "Meetup":
-            return CalendarEventType.Meetup;
-        case "Hackathon":
-            return CalendarEventType.Hackathon;
-        case "Concert":
-            return CalendarEventType.Concert;
-        case "Workshop":
-            return CalendarEventType.Workshop;
-        case "Party":
-            return CalendarEventType.Party;
-        case "Play":
-            return CalendarEventType.Play;
-        case "Sports":
-            return CalendarEventType.Sports;
-        case "Exhibition":
-            return CalendarEventType.Exhibition;
-        case "Festival":
-            return CalendarEventType.Festival;
-        case "Music":
-            return CalendarEventType.Music;
-        default:
-            return CalendarEventType.Other;
-    }
-};
-
 // Get EventTypes as string
 export const EventTypesAsString = (): string[] => {
     const names = [
@@ -372,51 +298,3 @@ export const EventTypesAsString = (): string[] => {
 
     return names;
 };
-
-export const Hashtag = (c: CalendarEventType) => {
-    const names = [
-        "#conference",
-        "#meetup",
-        "#hackathon",
-        "#concert",
-        "#workshop",
-        "#party",
-        "#play",
-        "#sports",
-        "#exhibition",
-        "#festival",
-        "#music",
-        "#other",
-    ];
-
-    if (c < CalendarEventType.Conference || c > CalendarEventType.Other) {
-        return "Unknown";
-    }
-
-    return names[c - 1];
-};
-
-// Interface
-export interface CalendarEvent {
-    aTag: string;
-    dTag: string;
-    accountId: number;
-    account: Account;
-    calendarEventRsvps: CalendarEventRSVP[];
-    placeId?: number;
-    cost?: number;
-    currency?: string;
-    start: Date;
-    end?: Date;
-    startTimezone?: string;
-    endTimezone?: string;
-    description: string;
-    image: string;
-    location?: string;
-    noteId: number;
-    note: Note;
-    geohash?: string;
-    title: string;
-    type: CalendarEventType;
-    url: string;
-}

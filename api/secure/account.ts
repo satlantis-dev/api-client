@@ -2,7 +2,8 @@ import { copyURL, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
 import { NostrKind, prepareNormalNostrEvent, Signer } from "@blowater/nostr-sdk";
 import { Place } from "../place.ts";
-import { AuthDetail, ChatMembership } from "../share_types.ts";
+import { AuthDetail } from "../share_types.ts";
+import { ChatMembership } from "../chat.ts";
 
 export type Account = {
     id: number;

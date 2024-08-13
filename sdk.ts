@@ -93,8 +93,15 @@ export class Client {
     };
 }
 
+export * from "./api/calendar.ts";
+export * from "./api/chat.ts";
+export * from "./api/event.ts";
+export * from "./api/location.ts";
+export * from "./api/login.ts";
+export * from "./api/nip5.ts";
 export * from "./api/note.ts";
+export * from "./api/people.ts";
 export * from "./api/place.ts";
 export * from "./api/share_types.ts";
-export * from "./api/nip5.ts";
 export * from "./api/secure/account.ts";
+export * from "./api/secure/presign.ts";
