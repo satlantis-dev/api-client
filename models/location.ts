@@ -22,7 +22,7 @@ export type Location = {
     googleRating: number;
     googleUserRatingCount: number;
     websiteUrl: string;
-}
+};
 
 export interface Address {
     streetNumber: string;
