@@ -1,9 +1,9 @@
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
-import { Place } from "../sdk.ts";
-import { CalendarEventRSVP } from "./calendar.ts";
-import { ChatMembership } from "./chat.ts";
-import { Account } from "./secure/account.ts";
+import { Account } from "../models/account.ts";
+import { CalendarEventRSVP } from "../models/calendar.ts";
+import { ChatMembership } from "../models/chat.ts";
+
 import { NostrEvent, Reaction } from "./share_types.ts";
 
 export interface PlaceNote {

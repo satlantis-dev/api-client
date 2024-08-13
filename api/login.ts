@@ -1,7 +1,7 @@
 import { prepareNostrEvent, Signer } from "@blowater/nostr-sdk";
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
-import { Account } from "./secure/account.ts";
+import { Account } from "../models/account.ts";
 
 /**
  * @unstable The signature is subject to change

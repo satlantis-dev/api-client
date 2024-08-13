@@ -103,7 +103,6 @@ export class Client {
 }
 
 export * from "./api/calendar.ts";
-export * from "./api/chat.ts";
 export * from "./api/location.ts";
 export * from "./api/login.ts";
 export * from "./api/nip5.ts";
@@ -113,3 +112,10 @@ export * from "./api/place.ts";
 export * from "./api/share_types.ts";
 export * from "./api/secure/account.ts";
 export * from "./api/secure/presign.ts";
+export * from "./models/account.ts";
+export * from "./models/calendar.ts";
+export * from "./models/chat.ts";
+export * from "./models/location.ts";
+export * from "./models/metric.ts";
+export * from "./models/place.ts";
+export * from "./models/region.ts";

@@ -1,21 +1,4 @@
-import { Note } from "./note.ts";
-import { Account } from "./secure/account.ts";
-import { NostrEvent } from "./share_types.ts";
-
-export enum CalendarEventType {
-    Conference = 1,
-    Meetup,
-    Hackathon,
-    Concert,
-    Workshop,
-    Party,
-    Play,
-    Sports,
-    Exhibition,
-    Festival,
-    Music,
-    Other,
-}
+import { CalendarEventType } from "../models/calendar.ts";
 
 export const getEventTypeUsingName = (id: string): CalendarEventType => {
     switch (id) {
@@ -44,39 +27,6 @@ export const getEventTypeUsingName = (id: string): CalendarEventType => {
         default:
             return CalendarEventType.Other;
     }
-};
-
-export interface CalendarEventRSVP {
-    id: number;
-    accountId: number;
-    account: Account;
-    eventId: number;
-    event: NostrEvent;
-    status: string;
-}
-
-export type CalendarEvent = {
-    aTag: string;
-    dTag: string;
-    accountId: number;
-    account: Account;
-    calendarEventRsvps: CalendarEventRSVP[];
-    placeId?: number;
-    cost?: number;
-    currency?: string;
-    start: Date;
-    end?: Date;
-    startTimezone?: string;
-    endTimezone?: string;
-    description: string;
-    image: string;
-    location?: string;
-    noteId: number;
-    note: Note;
-    geohash?: string;
-    title: string;
-    type: CalendarEventType;
-    url: string;
 };
 
 export function Hashtag(c: CalendarEventType) {
