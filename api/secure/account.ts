@@ -1,6 +1,6 @@
 import { copyURL, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
-import { NostrKind, prepareNormalNostrEvent, Signer } from "@blowater/nostr-sdk";
+import { NostrKind, prepareNostrEvent, Signer } from "@blowater/nostr-sdk";
 import { Place } from "../place.ts";
 import { AuthDetail } from "../share_types.ts";
 import { ChatMembership } from "../chat.ts";
@@ -97,7 +97,7 @@ export const addAccountRole =
                 method: "POST",
                 body: JSON.stringify({
                     ...args,
-                    event: await prepareNormalNostrEvent(signer, {
+                    event: await prepareNostrEvent(signer, {
                         kind: 10016 as NostrKind,
                         content: "",
                     }),
@@ -134,7 +134,7 @@ export const removeAccountRole =
                 method: "DELETE",
                 body: JSON.stringify({
                     ...args,
-                    event: await prepareNormalNostrEvent(signer, {
+                    event: await prepareNostrEvent(signer, {
                         kind: 10016 as NostrKind,
                         content: "",
                     }),
