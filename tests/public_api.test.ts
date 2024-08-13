@@ -38,7 +38,7 @@ Deno.test("/getPlaceNoteFeed", async () => {
         console.log(result);
         fail();
     }
-    assertEquals(result.length > 0, true)
+    assertEquals(result.length > 0, true);
 });
 
 Deno.test("/getPlaceCalendarEvents", async () => {
