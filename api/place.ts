@@ -96,8 +96,8 @@ async (args: {
     };
     limit: number;
     page: number;
-    sortColumn: "score" | "id";
-    sortDirection: "desc";
+    sortColumn: "score" | "id" | "price";
+    sortDirection: "desc" | "asc";
 }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getPlaces`;
