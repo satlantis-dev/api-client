@@ -1,10 +1,7 @@
 {
     "name": "@satlantis/api-client",
     "version": "0.0.22",
-    "exports": {
-        ".": "./sdk.ts",
-        "./models": "./models/*.ts"
-    },
+    "exports": "./sdk.ts",
     "imports": {
         "@blowater/nostr-sdk": "jsr:@blowater/nostr-sdk@0.0.10",
         "@std/assert": "jsr:@std/assert@1.0.0"
