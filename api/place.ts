@@ -1,8 +1,11 @@
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
+
+import { Metric } from "./metric.ts";
 import { PlaceNote } from "./note.ts";
+import { Region } from "./region.ts";
 import { AccountPlaceRole } from "./secure/account.ts";
-import { Country, Metric, NostrEvent, PlaceCategoryScore, Region, Topic, Weather } from "./share_types.ts";
+import { Category, Country, NostrEvent, ProcessedTag, Topic, Weather } from "./share_types.ts";
 
 export type PlaceLevel = "region" | "city" | "neighborhood";
 export type OSMType = "node" | "relation" | "way";
@@ -42,6 +45,36 @@ export interface PlaceMetric {
     value: number;
     valueStr: string;
 }
+
+export interface PlaceCategoryScore {
+    categoryId: number;
+    category: Category;
+    cityId: number;
+    score: number;
+    topicScores: PlaceTopicScore[];
+    updatedAt: Date;
+}
+
+export interface PlaceTopicScore {
+    categoryId: number;
+    cityId: number;
+    score: number;
+    topicId: number;
+    topic: Topic;
+    updatedAt: Date;
+}
+
+export type PlaceEvent = {
+    readonly id: number;
+    readonly nostrId: string;
+    readonly createdAt: number;
+    readonly content: string;
+    readonly kind: 37515;
+    readonly pubkey: string;
+    readonly sig: string;
+    readonly tags: ProcessedTag[];
+    readonly reconciled: boolean;
+};
 
 /**
  * get the place based on OSM ID or ID, only 1 is needed
@@ -102,7 +135,6 @@ export const getPlaceGallery = (urlArg: URL) => async (args: { placeID: string |
 export const getPlaceCalendarEvents = (urlArg: URL) => async (args: { placeID: string | number }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getPlaceCalendarEvents/${args.placeID}`;
-    console.log(url.toString());
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;
@@ -130,7 +162,6 @@ export const getPlaceChats = (urlArg: URL) => async (args: { placeID: string | n
 export const getPlaceCategoryScores = (urlArg: URL) => async (args: { placeID: string | number }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getPlaceCategoryScores/${args.placeID}`;
-    console.log(url.toString());
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;
@@ -146,4 +177,17 @@ export const getRegion = (urlArg: URL) => async (args: { regionID: number }) => 
         return response;
     }
     return handleResponse<Region>(response);
+};
+
+export const getPlaceEvent = (urlArg: URL) =>
+async (args: {
+    placeID: number;
+}) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getPlaceEvent/${args.placeID}`;
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<PlaceEvent>(response);
 };

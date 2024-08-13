@@ -1,6 +1,5 @@
 import { Signer } from "@blowater/nostr-sdk";
 import { newURL } from "./helpers/_helper.ts";
-import { getPlaceEvent } from "./api/event.ts";
 import { loginNostr } from "./api/login.ts";
 import { getAccountPlaceRoles } from "./api/people.ts";
 import {
@@ -8,6 +7,7 @@ import {
     getPlaceCalendarEvents,
     getPlaceCategoryScores,
     getPlaceChats,
+    getPlaceEvent,
     getPlaceGallery,
     getPlaceMetrics,
     getPlaceNoteFeed,
@@ -93,8 +93,14 @@ export class Client {
     };
 }
 
+export * from "./api/calendar.ts";
+export * from "./api/chat.ts";
+export * from "./api/location.ts";
+export * from "./api/login.ts";
+export * from "./api/nip5.ts";
 export * from "./api/note.ts";
+export * from "./api/people.ts";
 export * from "./api/place.ts";
 export * from "./api/share_types.ts";
-export * from "./api/nip5.ts";
 export * from "./api/secure/account.ts";
+export * from "./api/secure/presign.ts";
