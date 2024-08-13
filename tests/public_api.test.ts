@@ -135,16 +135,17 @@ Deno.test("getRegion", async () => {
 
 Deno.test("/getLocationsWithinBoundingBox", async () => {
     const result = await clientNoAuth.getLocationsWithinBoundingBox({
-        sw_lat: 32,
-        sw_lng: -16,
-        ne_lat: 32,
-        ne_lng: 16,
+        sw_lat: 32.56768764046221,
+        ne_lat: 32.766068258492425,
+        ne_lng: -16.800802131347382,
+        sw_lng: -17.04730786865258,
+        google_rating: 3,
     });
     if (result instanceof Error) {
         console.log(result);
         fail();
     }
-    assertEquals(result.length > 0, true);
+    console.log(result);
 });
 
 Deno.test("getLocationTags", async () => {

@@ -85,7 +85,7 @@ async (args: {
     sw_lng: number;
     ne_lat: number;
     ne_lng: number;
-    google_rating?: number;
+    google_rating: number;
     search?: string;
     tag_category?: string;
     tags?: LocationTag[];
