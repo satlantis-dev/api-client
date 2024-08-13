@@ -1,6 +1,6 @@
 import { BusinessStatus, NostrEvent, Note, NoteType, OpeningHours, PriceLevel } from "../sdk.ts";
 
-export interface Location {
+export type Location = {
     id: number;
     name: string;
     accounts: LocationAccount[];
@@ -22,7 +22,7 @@ export interface Location {
     googleRating: number;
     googleUserRatingCount: number;
     websiteUrl: string;
-}
+};
 
 export interface Address {
     streetNumber: string;
