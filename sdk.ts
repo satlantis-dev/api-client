@@ -11,6 +11,7 @@ import {
     getPlaceGallery,
     getPlaceMetrics,
     getPlaceNoteFeed,
+    getPlaces,
     getRegion,
 } from "./api/place.ts";
 import { presign } from "./api/secure/presign.ts";
@@ -20,6 +21,7 @@ import { getLocationsWithinBoundingBox, getLocationTags } from "./api/location.t
 export class Client {
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
     getPlace: ReturnType<typeof getPlace>;
+    getPlaces: ReturnType<typeof getPlaces>;
     getPlaceEvent: ReturnType<typeof getPlaceEvent>;
     getPlaceNoteFeed: ReturnType<typeof getPlaceNoteFeed>;
     getPlaceMetrics: ReturnType<typeof getPlaceMetrics>;
@@ -50,6 +52,7 @@ export class Client {
         public readonly getNostrSigner: undefined | (() => Signer | Error),
     ) {
         this.getPlace = getPlace(url);
+        this.getPlaces = getPlaces(url);
         this.getAccountPlaceRoles = getAccountPlaceRoles(url);
         this.getPlaceNoteFeed = getPlaceNoteFeed(url);
         this.getPlaceMetrics = getPlaceMetrics(url);
