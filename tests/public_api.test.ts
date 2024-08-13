@@ -1,4 +1,4 @@
-import { fail } from "@std/assert";
+import { assertEquals, fail } from "@std/assert";
 import { Client, getNip5 } from "../sdk.ts";
 
 const clientNoAuth = Client.New({ baseURL: "https://api-dev.satlantis.io" });
@@ -38,7 +38,7 @@ Deno.test("/getPlaceNoteFeed", async () => {
         console.log(result);
         fail();
     }
-    console.log(result);
+    assertEquals(result.length > 0, true)
 });
 
 Deno.test("/getPlaceCalendarEvents", async () => {
