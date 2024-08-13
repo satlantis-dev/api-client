@@ -1,3 +1,6 @@
+import { copyURL, handleResponse } from "../helpers/_helper.ts";
+import { safeFetch } from "../helpers/safe-fetch.ts";
+import { Place } from "../sdk.ts";
 import { CalendarEventRSVP } from "./calendar.ts";
 import { ChatMembership } from "./chat.ts";
 import { Account } from "./secure/account.ts";
@@ -43,4 +46,22 @@ export type Note = {
     repostedNoteId?: number;
     reposts: unknown[];
     zaps: unknown[];
+};
+
+export const getNotes = (urlArg: URL) =>
+async (args: {
+    npub: string;
+    page: number;
+    limit: number;
+}) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getNotes/${args.npub}`;
+    url.searchParams.set("page", String(args.page));
+    url.searchParams.set("limit", String(args.limit));
+
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<Note[]>(response);
 };

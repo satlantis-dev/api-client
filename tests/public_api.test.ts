@@ -174,3 +174,16 @@ Deno.test("getAccount", async () => {
     }
     console.log(result);
 });
+
+Deno.test("getNotes", async () => {
+    const result = await clientNoAuth.getNotes({
+        npub: "npub1le59glyc3r9zsddury0fu8wyqu69ckvj78fn4425m5xn9zd0zpdssjtd53",
+        limit: 10,
+        page: 0,
+    });
+    if (result instanceof Error) {
+        console.log(result);
+        fail();
+    }
+    assertEquals(result.length > 0, true);
+});
