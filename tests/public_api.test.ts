@@ -49,7 +49,7 @@ Deno.test("/getPlaceCalendarEvents", async () => {
         console.log(result);
         fail();
     }
-    console.log(result);
+    assertEquals(result.length > 0, true);
 });
 
 Deno.test("/getPlaceMetrics", async () => {
@@ -60,7 +60,7 @@ Deno.test("/getPlaceMetrics", async () => {
         console.log(result);
         fail();
     }
-    console.log(result);
+    assertEquals(result.length > 0, true);
 });
 
 Deno.test("/getPlaceCalenderEvents", async () => {
@@ -71,7 +71,7 @@ Deno.test("/getPlaceCalenderEvents", async () => {
         console.log(result);
         fail();
     }
-    console.log(result);
+    assertEquals(result.length > 0, true);
 });
 
 Deno.test("/getPlaceChats", async () => {
@@ -93,7 +93,7 @@ Deno.test("/getPlaceCategoryScores", async () => {
         console.log(result);
         fail();
     }
-    console.log(result);
+    assertEquals(result.length > 0, true);
 });
 
 Deno.test("getPlaceEvent", async () => {
@@ -115,7 +115,7 @@ Deno.test("getRegion", async () => {
         console.log(result);
         fail();
     }
-    console.log(result);
+    assertEquals(result.places.length > 0, true);
 });
 
 Deno.test("/getLocationsWithinBoundingBox", async () => {
@@ -129,7 +129,7 @@ Deno.test("/getLocationsWithinBoundingBox", async () => {
         console.log(result);
         fail();
     }
-    console.log(result);
+    assertEquals(result.length > 0, true);
 });
 
 Deno.test("getLocationTags", async () => {
@@ -137,7 +137,7 @@ Deno.test("getLocationTags", async () => {
     if (result instanceof Error) {
         fail(result.message);
     }
-    console.log(result);
+    assertEquals(result.length > 0, true);
 });
 
 Deno.test("nip5", async () => {
