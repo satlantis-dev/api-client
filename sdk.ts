@@ -17,6 +17,7 @@ import {
 import { presign } from "./api/secure/presign.ts";
 import { addAccountRole, removeAccountRole } from "./api/secure/account.ts";
 import { getLocationsWithinBoundingBox, getLocationTags } from "./api/location.ts";
+import { getAccount } from "./api/account.ts";
 
 export class Client {
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
@@ -33,6 +34,7 @@ export class Client {
         typeof getLocationsWithinBoundingBox
     >;
     getRegion: ReturnType<typeof getRegion>;
+    getAccount: ReturnType<typeof getAccount>
 
     // auth
     loginNostr: ReturnType<typeof loginNostr>;
@@ -64,6 +66,7 @@ export class Client {
         this.getLocationsWithinBoundingBox = getLocationsWithinBoundingBox(url);
         this.getRegion = getRegion(url);
         this.loginNostr = loginNostr(url);
+        this.getAccount = getAccount(url);
 
         // authed APIs
         this.removeAccountRole = removeAccountRole(

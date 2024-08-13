@@ -1,4 +1,4 @@
-import { prepareNormalNostrEvent, Signer } from "@blowater/nostr-sdk";
+import { prepareNostrEvent, Signer } from "@blowater/nostr-sdk";
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import { Account } from "./secure/account.ts";
@@ -14,7 +14,7 @@ export const loginNostr = (urlArg: URL) => async (signer: Signer) => {
         {
             method: "POST",
             body: JSON.stringify(
-                await prepareNormalNostrEvent(signer, {
+                await prepareNostrEvent(signer, {
                     // @ts-ignore
                     kind: 27236,
                     content: "{}",
