@@ -108,11 +108,19 @@ async (args: {
     url.searchParams.set("sw_lng", String(args.sw_lng));
     url.searchParams.set("ne_lat", String(args.ne_lat));
     url.searchParams.set("ne_lng", String(args.ne_lng));
-    url.searchParams.set("google_rating", String(args.google_rating));
-    url.searchParams.set("tag_category", String(args.tag_category));
-    url.searchParams.set("tags", tags);
-    url.searchParams.set("search", String(args.search));
-
+    if (args.google_rating) {
+        url.searchParams.set("google_rating", String(args.google_rating));
+    }
+    if (args.tag_category) {
+        url.searchParams.set("tag_category", args.tag_category);
+    }
+    if (tags) {
+        url.searchParams.set("tags", tags);
+    }
+    if (args.search) {
+        url.searchParams.set("search", args.search);
+    }
+    console.log(url.toString());
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;

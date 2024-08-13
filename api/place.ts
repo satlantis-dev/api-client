@@ -89,6 +89,31 @@ export const getPlace = (urlArg: URL) => async (args: { osmRef: string | number 
     return handleResponse<Place>(response);
 };
 
+export const getPlaces = (urlArg: URL) =>
+async (args: {
+    filters: {
+        name: string;
+    };
+    limit: number;
+    page: number;
+    sortColumn: "score";
+    sortDirection: "desc";
+}) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getPlaces`;
+    url.searchParams.append("name", JSON.stringify(args.filters));
+    url.searchParams.append("limit", JSON.stringify(args.limit));
+    url.searchParams.append("page", JSON.stringify(args.page));
+    url.searchParams.append("sortColumn", args.sortColumn);
+    url.searchParams.append("sortDirection", args.sortDirection);
+
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<Place[]>(response);
+};
+
 /**
  * GET getPlaceNoteFeed/{placeID}
  */

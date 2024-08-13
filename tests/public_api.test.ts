@@ -8,7 +8,7 @@ if (clientNoAuth instanceof Error) {
 
 // we can run this test suit in github action
 // so that we always have up to date client SDK
-Deno.test("/getPlace", async () => {
+Deno.test("getPlace", async () => {
     const result = await clientNoAuth.getPlace({
         osmRef: "R8421413",
     });
@@ -17,6 +17,21 @@ Deno.test("/getPlace", async () => {
         fail();
     }
     console.log(result.regionId);
+});
+
+Deno.test("getPlaces", async () => {
+    const result = await clientNoAuth.getPlaces({
+        filters: { name: "" },
+        limit: 10,
+        page: 1,
+        sortColumn: "score",
+        sortDirection: "desc",
+    });
+    if (result instanceof Error) {
+        console.log(result);
+        fail();
+    }
+    console.log(result.length);
 });
 
 Deno.test("/getPeopleOfPlace", async () => {
