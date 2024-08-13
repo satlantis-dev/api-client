@@ -4,7 +4,7 @@ import { Account } from "./secure/account.ts";
 
 export const getAccount = (urlArg: URL) =>
 async (args: {
-    npub: string
+    npub: string;
 }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getAccount/${args.npub}`;

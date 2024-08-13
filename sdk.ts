@@ -34,7 +34,7 @@ export class Client {
         typeof getLocationsWithinBoundingBox
     >;
     getRegion: ReturnType<typeof getRegion>;
-    getAccount: ReturnType<typeof getAccount>
+    getAccount: ReturnType<typeof getAccount>;
 
     // auth
     loginNostr: ReturnType<typeof loginNostr>;

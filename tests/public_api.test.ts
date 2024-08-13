@@ -165,7 +165,9 @@ Deno.test("nip5", async () => {
 });
 
 Deno.test("getAccount", async () => {
-    const result = await clientNoAuth.getAccount({ npub: "npub1le59glyc3r9zsddury0fu8wyqu69ckvj78fn4425m5xn9zd0zpdssjtd53" });
+    const result = await clientNoAuth.getAccount({
+        npub: "npub1le59glyc3r9zsddury0fu8wyqu69ckvj78fn4425m5xn9zd0zpdssjtd53",
+    });
     if (result instanceof Error) {
         console.log(result);
         fail();
