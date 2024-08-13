@@ -1,5 +1,7 @@
+import { CalendarEventRSVP } from "./calendar.ts";
+import { ChatMembership } from "./chat.ts";
 import { Account } from "./secure/account.ts";
-import { CalendarEventRSVP, ChatMembership, NostrEvent, Reaction } from "./share_types.ts";
+import { NostrEvent, Reaction } from "./share_types.ts";
 
 export interface PlaceNote {
     id: number;
