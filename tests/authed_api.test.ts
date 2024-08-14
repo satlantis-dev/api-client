@@ -1,4 +1,4 @@
-import { InMemoryAccountContext } from "@blowater/nostr-sdk";
+import { InMemoryAccountContext, NostrKind, prepareNostrEvent } from "@blowater/nostr-sdk";
 import { fail } from "jsr:@std/assert@0.226.0/fail";
 import { Client } from "../sdk.ts";
 import { assertEquals } from "jsr:@std/assert@0.226.0/assert-equals";
@@ -45,6 +45,18 @@ Deno.test("AccountRole", async () => {
     });
     if (res2 instanceof Error) fail(res2.message);
     console.log(res2);
+
+    // update contact list
+    const event = await prepareNostrEvent(signer, {
+        kind: NostrKind.CONTACTS,
+        content: "",
+        tags: [
+            ["p", signer.publicKey.hex],
+        ],
+    });
+    const res3 = await client.updateAccountFollowingList({ event });
+    if (res3 instanceof Error) fail(res3.message);
+    assertEquals(true, res3);
 });
 
 Deno.test("presign", async () => {
