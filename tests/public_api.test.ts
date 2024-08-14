@@ -1,5 +1,5 @@
 import { assertEquals, fail } from "@std/assert";
-import { Client, getNip5 } from "../sdk.ts";
+import { Client, getNip5, Place } from "../sdk.ts";
 
 const clientNoAuth = Client.New({ baseURL: "https://api-dev.satlantis.io" });
 if (clientNoAuth instanceof Error) {
@@ -21,9 +21,9 @@ Deno.test("getPlace", async () => {
 
 Deno.test("getPlaces", async () => {
     const result = await clientNoAuth.getPlaces({
-        filters: { name: "" },
-        limit: 10,
-        page: 1,
+        filters: { name: "Riga" },
+        limit: 1,
+        page: 0,
         sortColumn: "score",
         sortDirection: "desc",
     });
@@ -31,7 +31,8 @@ Deno.test("getPlaces", async () => {
         console.log(result);
         fail();
     }
-    console.log(result.length);
+    const ok = result.find((p) => p.name == "Riga") as Place
+    assertEquals(ok.name, "Riga")
 });
 
 Deno.test("/getPeopleOfPlace", async () => {

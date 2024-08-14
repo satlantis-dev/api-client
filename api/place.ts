@@ -30,11 +30,13 @@ async (args: {
 }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getPlaces`;
-    url.searchParams.append("name", JSON.stringify(args.filters));
+    url.searchParams.append("filters", JSON.stringify(args.filters));
     url.searchParams.append("limit", JSON.stringify(args.limit));
     url.searchParams.append("page", JSON.stringify(args.page));
     url.searchParams.append("sortColumn", args.sortColumn);
     url.searchParams.append("sortDirection", args.sortDirection);
+
+    console.log(url.toString())
 
     const response = await safeFetch(url);
     if (response instanceof Error) {
