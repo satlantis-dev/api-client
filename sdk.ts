@@ -52,8 +52,8 @@ export class Client {
 
     private constructor(
         public readonly url: URL,
-        public readonly jwtToken: string | undefined,
-        public readonly getNostrSigner: undefined | (() => Signer | Error),
+        public readonly getJwt: () => string,
+        public readonly getNostrSigner: () => Signer | Error,
     ) {
         this.getPlace = getPlace(url);
         this.getPlaces = getPlaces(url);
@@ -74,27 +74,33 @@ export class Client {
         // authed APIs
         this.removeAccountRole = removeAccountRole(
             url,
-            this.jwtToken,
-            this.getNostrSigner || (() => new Error("nostr signer is not provided")),
+            this.getJwt,
+            this.getNostrSigner,
         );
         this.addAccountRole = addAccountRole(
             url,
-            this.jwtToken,
-            this.getNostrSigner || (() => new Error("nostr signer is not provided")),
+            this.getJwt,
+            this.getNostrSigner,
         );
-        this.presign = presign(url, jwtToken);
+        this.presign = presign(url, getJwt);
     }
 
     static New(args: {
         baseURL: string | URL;
-        jwtToken?: string;
+        getJwt?: () => string;
         getNostrSigner?: () => Signer | Error;
     }) {
         const validURL = newURL(args.baseURL);
         if (validURL instanceof Error) {
             return validURL;
         }
-        return new Client(validURL, args.jwtToken, args.getNostrSigner);
+        if (args.getJwt == undefined) {
+            args.getJwt = () => "";
+        }
+        if (args.getNostrSigner == undefined) {
+            args.getNostrSigner = () => new Error("nostr signer is not provided");
+        }
+        return new Client(validURL, args.getJwt, args.getNostrSigner);
     }
 
     getLocationTags = () => {
