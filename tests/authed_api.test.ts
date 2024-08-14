@@ -56,7 +56,7 @@ Deno.test("AccountRole", async () => {
     });
     const res3 = await client.updateAccountFollowingList({ event });
     if (res3 instanceof Error) fail(res3.message);
-    console.log(res3);
+    assertEquals(true, res3);
 });
 
 Deno.test("presign", async () => {

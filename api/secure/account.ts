@@ -108,5 +108,8 @@ export const updateAccountFollowingList =
         if (response instanceof Error) {
             return response;
         }
-        return handleResponse<AccountPlaceRole>(response);
+        const ok = await handleResponse<string>(response);
+        if (ok instanceof Error) return ok;
+
+        return ok.toLowerCase() == "success";
     };
