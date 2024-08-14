@@ -55,7 +55,7 @@ async (args: {
     if (args.search) {
         url.searchParams.set("search", args.search);
     }
-    console.log(url.toString());
+
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;

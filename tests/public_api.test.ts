@@ -31,8 +31,8 @@ Deno.test("getPlaces", async () => {
         console.log(result);
         fail();
     }
-    const ok = result.find((p) => p.name == "Riga") as Place
-    assertEquals(ok.name, "Riga")
+    const ok = result.find((p) => p.name == "Riga") as Place;
+    assertEquals(ok.name, "Riga");
 });
 
 Deno.test("/getPeopleOfPlace", async () => {

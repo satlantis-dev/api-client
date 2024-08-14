@@ -36,8 +36,6 @@ async (args: {
     url.searchParams.append("sortColumn", args.sortColumn);
     url.searchParams.append("sortDirection", args.sortDirection);
 
-    console.log(url.toString())
-
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;
@@ -77,7 +75,7 @@ export const getPlaceMetrics = (urlArg: URL) => async (args: { placeID: string |
 export const getPlaceGallery = (urlArg: URL) => async (args: { placeID: string | number }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getPlaceGallery/${args.placeID}`;
-    console.log(url.toString());
+
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;
@@ -104,7 +102,7 @@ export const getPlaceCalendarEvents = (urlArg: URL) => async (args: { placeID: s
 export const getPlaceChats = (urlArg: URL) => async (args: { placeID: string | number }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getPlaceChats/${args.placeID}`;
-    console.log(url.toString());
+
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;
