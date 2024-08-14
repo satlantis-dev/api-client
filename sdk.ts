@@ -15,7 +15,7 @@ import {
     getRegion,
 } from "./api/place.ts";
 import { presign } from "./api/secure/presign.ts";
-import { addAccountRole, removeAccountRole } from "./api/secure/account.ts";
+import { addAccountRole, removeAccountRole, updateAccountFollowingList } from "./api/secure/account.ts";
 import { getLocationsWithinBoundingBox, getLocationTags } from "./api/location.ts";
 import { getAccount } from "./api/account.ts";
 import { getNotes } from "./api/note.ts";
@@ -46,6 +46,7 @@ export class Client {
     // acount role
     removeAccountRole: ReturnType<typeof removeAccountRole>;
     addAccountRole: ReturnType<typeof addAccountRole>;
+    updateAccountFollowingList: ReturnType<typeof updateAccountFollowingList>;
 
     // s3
     presign: ReturnType<typeof presign>;
@@ -82,6 +83,7 @@ export class Client {
             this.getJwt,
             this.getNostrSigner,
         );
+        this.updateAccountFollowingList = updateAccountFollowingList(url, this.getJwt, this.getNostrSigner);
         this.presign = presign(url, getJwt);
     }
 
