@@ -27,7 +27,7 @@ Deno.test("AccountRole", async () => {
 
     const client = Client.New({
         baseURL: "https://api-dev.satlantis.io",
-        jwtToken: res.token,
+        getJwt: () => res.token,
         getNostrSigner: () => signer,
     }) as Client;
 
@@ -53,7 +53,7 @@ Deno.test("presign", async () => {
     if (res instanceof Error) fail(res.message);
     const client = Client.New({
         baseURL: "https://api-dev.satlantis.io",
-        jwtToken: res.token,
+        getJwt: () => res.token,
         getNostrSigner: () => signer,
     }) as Client;
 

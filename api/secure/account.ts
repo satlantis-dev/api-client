@@ -4,12 +4,13 @@ import { NostrKind, prepareNostrEvent, Signer } from "@blowater/nostr-sdk";
 import { AccountPlaceRole, AccountPlaceRoleTypeEnum } from "../../models/account.ts";
 
 export const addAccountRole =
-    (urlArg: URL, jwtToken: string | undefined, getSigner: () => Signer | Error) =>
+    (urlArg: URL, getJwt: () => string, getSigner: () => Signer | Error) =>
     async (args: {
         placeId: number;
         type: AccountPlaceRoleTypeEnum;
     }) => {
-        if (jwtToken == undefined || jwtToken == "") {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
             return new Error("jwt token is empty");
         }
         const signer = getSigner();
@@ -42,12 +43,13 @@ export const addAccountRole =
     };
 
 export const removeAccountRole =
-    (urlArg: URL, jwtToken: string | undefined, getSigner: () => Signer | Error) =>
+    (urlArg: URL, getJwt: () => string, getSigner: () => Signer | Error) =>
     async (args: {
         placeId: number;
         type: AccountPlaceRoleTypeEnum;
     }) => {
-        if (jwtToken == undefined || jwtToken == "") {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
             return new Error("jwt token is empty");
         }
         const signer = getSigner();
