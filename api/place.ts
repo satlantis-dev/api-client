@@ -30,7 +30,7 @@ async (args: {
 }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getPlaces`;
-    url.searchParams.append("name", JSON.stringify(args.filters));
+    url.searchParams.append("filters", JSON.stringify(args.filters));
     url.searchParams.append("limit", JSON.stringify(args.limit));
     url.searchParams.append("page", JSON.stringify(args.page));
     url.searchParams.append("sortColumn", args.sortColumn);
@@ -75,7 +75,7 @@ export const getPlaceMetrics = (urlArg: URL) => async (args: { placeID: string |
 export const getPlaceGallery = (urlArg: URL) => async (args: { placeID: string | number }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getPlaceGallery/${args.placeID}`;
-    console.log(url.toString());
+
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;
@@ -102,7 +102,7 @@ export const getPlaceCalendarEvents = (urlArg: URL) => async (args: { placeID: s
 export const getPlaceChats = (urlArg: URL) => async (args: { placeID: string | number }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getPlaceChats/${args.placeID}`;
-    console.log(url.toString());
+
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;
