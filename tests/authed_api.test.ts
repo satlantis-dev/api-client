@@ -78,3 +78,32 @@ Deno.test("presign", async () => {
     }
     console.log(result);
 });
+
+Deno.test("postReaction", async () => {
+    const signer = InMemoryAccountContext.Generate();
+    const res = await clientNoAuth.loginNostr(signer);
+    if (res instanceof Error) fail(res.message);
+    const client = Client.New({
+        baseURL: "https://api-dev.satlantis.io",
+        getJwt: () => res.token,
+        getNostrSigner: () => signer,
+    }) as Client;
+    {
+        const event = await prepareNostrEvent(signer, {
+            content: "test reaction",
+            kind: NostrKind.REACTION,
+        });
+        const result = await client.postReaction({
+            accountId: res.account.id,
+            event,
+            noteId: 2539732,
+            noteType: 9,
+            parentId: 2539732,
+        });
+        if (result instanceof Error) {
+            console.log(result);
+            fail();
+        }
+        console.log(result);
+    }
+});

@@ -19,6 +19,7 @@ import { addAccountRole, removeAccountRole, updateAccountFollowingList } from ".
 import { getLocationsWithinBoundingBox, getLocationTags } from "./api/location.ts";
 import { getAccount } from "./api/account.ts";
 import { getNotes } from "./api/note.ts";
+import { postNote, postReaction } from "./api/secure/note.ts";
 
 export class Client {
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
@@ -47,6 +48,10 @@ export class Client {
     removeAccountRole: ReturnType<typeof removeAccountRole>;
     addAccountRole: ReturnType<typeof addAccountRole>;
     updateAccountFollowingList: ReturnType<typeof updateAccountFollowingList>;
+
+    // nostr note
+    postNote: ReturnType<typeof postNote>;
+    postReaction: ReturnType<typeof postReaction>;
 
     // s3
     presign: ReturnType<typeof presign>;
@@ -85,6 +90,8 @@ export class Client {
         );
         this.updateAccountFollowingList = updateAccountFollowingList(url, this.getJwt, this.getNostrSigner);
         this.presign = presign(url, getJwt);
+        this.postReaction = postReaction(url, this.getJwt);
+        this.postNote = postNote(url, this.getJwt);
     }
 
     static New(args: {
