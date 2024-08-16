@@ -14,12 +14,12 @@ export type ReactionPost = {
 
 export interface NotePost {
     placeId: number;
-	event: NostrEvent;
+    event: NostrEvent;
     noteType: NoteType;
-	accountId?: number;
-	noteId?: number;
-	parentId?: number;
-	repostedNoteId?: number;
+    accountId?: number;
+    noteId?: number;
+    parentId?: number;
+    repostedNoteId?: number;
 }
 
 export const postNote = (urlArg: URL, getJwt: () => string) => async (args: NotePost) => {
@@ -44,7 +44,6 @@ export const postNote = (urlArg: URL, getJwt: () => string) => async (args: Note
     }
     return handleResponse<{ url: string }>(response);
 };
-
 
 export const postReaction = (urlArg: URL, getJwt: () => string) => async (args: ReactionPost) => {
     const jwtToken = getJwt();
