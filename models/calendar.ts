@@ -1,4 +1,5 @@
 import { NostrEvent, Note } from "../sdk.ts";
+
 import { Account } from "./account.ts";
 
 export interface CalendarEventRSVP {

@@ -1,4 +1,5 @@
 import { AuthDetail } from "../sdk.ts";
+
 import { ChatMembership } from "./chat.ts";
 import { Place } from "./place.ts";
 

@@ -1,4 +1,5 @@
 import { assertEquals, fail } from "@std/assert";
+
 import { Client, getNip5, Place } from "../sdk.ts";
 
 const clientNoAuth = Client.New({ baseURL: "https://api-dev.satlantis.io" });

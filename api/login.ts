@@ -1,4 +1,5 @@
 import { prepareNostrEvent, Signer } from "@blowater/nostr-sdk";
+
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import { Account } from "../models/account.ts";

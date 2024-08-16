@@ -1,6 +1,9 @@
 import { Signer } from "@blowater/nostr-sdk";
-import { newURL } from "./helpers/_helper.ts";
+
+import { getAccount } from "./api/account.ts";
+import { getLocationsWithinBoundingBox, getLocationTags } from "./api/location.ts";
 import { loginNostr } from "./api/login.ts";
+import { getNotes } from "./api/note.ts";
 import { getAccountPlaceRoles } from "./api/people.ts";
 import {
     getPlace,
@@ -14,12 +17,10 @@ import {
     getPlaces,
     getRegion,
 } from "./api/place.ts";
-import { presign } from "./api/secure/presign.ts";
 import { addAccountRole, removeAccountRole, updateAccountFollowingList } from "./api/secure/account.ts";
-import { getLocationsWithinBoundingBox, getLocationTags } from "./api/location.ts";
-import { getAccount } from "./api/account.ts";
-import { getNotes } from "./api/note.ts";
 import { postNote, postReaction } from "./api/secure/note.ts";
+import { presign } from "./api/secure/presign.ts";
+import { newURL } from "./helpers/_helper.ts";
 
 export class Client {
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;

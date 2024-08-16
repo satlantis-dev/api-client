@@ -1,7 +1,8 @@
 import { NostrEvent, NostrKind } from "@blowater/nostr-sdk";
+
 import { copyURL, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
-import { NoteType } from "../note.ts";
+import { Note, NoteType } from "../note.ts";
 
 export type ReactionPost = {
     accountId: number;
@@ -21,6 +22,26 @@ export interface NotePost {
     parentId?: number;
     repostedNoteId?: number;
 }
+
+export type PostNoteResult = {
+    id: number;
+    accountId: number;
+    ancestorId: number;
+    descendants: Note[];
+    eventId: number;
+    event: {
+        id: number;
+        nostrId: string;
+        createdAt: number;
+        content: string;
+        kind: number;
+        pubkey: string;
+        sig: string;
+        tags: string[][];
+        reconciled: boolean;
+    };
+    type: NoteType;
+};
 
 export const postNote = (urlArg: URL, getJwt: () => string) => async (args: NotePost) => {
     const jwtToken = getJwt();
@@ -42,7 +63,7 @@ export const postNote = (urlArg: URL, getJwt: () => string) => async (args: Note
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{ url: string }>(response);
+    return handleResponse<PostNoteResult>(response);
 };
 
 export const postReaction = (urlArg: URL, getJwt: () => string) => async (args: ReactionPost) => {
@@ -65,5 +86,10 @@ export const postReaction = (urlArg: URL, getJwt: () => string) => async (args: 
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{ url: string }>(response);
+    return handleResponse<{
+        id: number;
+        accountId: number;
+        eventId: number;
+        noteId: number; // the id of the note that it is reacting to
+    }>(response);
 };
