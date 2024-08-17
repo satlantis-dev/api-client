@@ -14,11 +14,11 @@ export type ReactionPost = {
 };
 
 export interface NotePost {
-    placeId: number;
     event: NostrEvent;
     noteType: NoteType;
-    accountId?: number;
     noteId?: number;
+    placeId?: number;
+    accountId?: number;
     parentId?: number;
     repostedNoteId?: number;
 }
