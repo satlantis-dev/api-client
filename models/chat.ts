@@ -1,6 +1,6 @@
-import { Note } from "../api/note.ts";
+import { type Note } from "../api/note.ts";
 
-import { Account } from "./account.ts";
+import { type Account } from "./account.ts";
 
 export type ChatMembership = {
     id: number;

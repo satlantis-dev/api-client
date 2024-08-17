@@ -1,4 +1,4 @@
-import { Aborted, FetchResult } from "../helpers/safe-fetch.ts";
+import { Aborted, type FetchResult } from "../helpers/safe-fetch.ts";
 
 export class ApiError extends Error {
     constructor(public readonly status: number, public readonly text: string) {

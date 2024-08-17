@@ -1,6 +1,6 @@
 import { assertEquals, fail } from "@std/assert";
 
-import { Client, getNip5, Place } from "../sdk.ts";
+import { Client, getNip5, type Place } from "../sdk.ts";
 
 const clientNoAuth = Client.New({ baseURL: "https://api-dev.satlantis.io" });
 if (clientNoAuth instanceof Error) {

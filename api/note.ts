@@ -1,10 +1,10 @@
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
-import { Account } from "../models/account.ts";
-import { CalendarEventRSVP } from "../models/calendar.ts";
-import { ChatMembership } from "../models/chat.ts";
+import type { Account } from "../models/account.ts";
+import type { CalendarEventRSVP } from "../models/calendar.ts";
+import type { ChatMembership } from "../models/chat.ts";
 
-import { NostrEvent, Reaction } from "./share_types.ts";
+import type { NostrEvent, Reaction } from "./share_types.ts";
 
 export interface PlaceNote {
     id: number;

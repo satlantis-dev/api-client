@@ -1,8 +1,8 @@
-import { Category, Country, NostrEvent, ProcessedTag, Topic, Weather } from "../sdk.ts";
+import type { Category, Country, NostrEvent, ProcessedTag, Topic, Weather } from "../sdk.ts";
 
-import { AccountPlaceRole } from "./account.ts";
-import { Metric } from "./metric.ts";
-import { Region } from "./region.ts";
+import type { AccountPlaceRole } from "./account.ts";
+import type { Metric } from "./metric.ts";
+import type { Region } from "./region.ts";
 
 export type PlaceLevel = "region" | "city" | "neighborhood";
 export type OSMType = "node" | "relation" | "way";

@@ -1,4 +1,4 @@
-import { Category, Topic } from "../api/share_types.ts";
+import type { Category, Topic } from "../api/share_types.ts";
 
 export interface Metric {
     id: number;

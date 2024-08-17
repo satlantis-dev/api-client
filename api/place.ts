@@ -1,9 +1,9 @@
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
-import { Place, PlaceCategoryScore, PlaceEvent, PlaceMetric } from "../models/place.ts";
-import { Region } from "../models/region.ts";
+import type { Place, PlaceCategoryScore, PlaceEvent, PlaceMetric } from "../models/place.ts";
+import { type Region } from "../models/region.ts";
 
-import { PlaceNote } from "./note.ts";
+import { type PlaceNote } from "./note.ts";
 
 /**
  * get the place based on OSM ID or ID, only 1 is needed

@@ -1,8 +1,8 @@
-import { prepareNostrEvent, Signer } from "@blowater/nostr-sdk";
+import { prepareNostrEvent, type Signer } from "@blowater/nostr-sdk";
 
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
-import { Account } from "../models/account.ts";
+import type { Account } from "../models/account.ts";
 
 /**
  * @unstable The signature is subject to change

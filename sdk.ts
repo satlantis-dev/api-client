@@ -1,4 +1,4 @@
-import { Signer } from "@blowater/nostr-sdk";
+import { type Signer } from "@blowater/nostr-sdk";
 
 import { getAccount } from "./api/account.ts";
 import { getLocationsWithinBoundingBox, getLocationTags } from "./api/location.ts";
