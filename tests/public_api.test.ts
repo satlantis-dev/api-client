@@ -190,3 +190,12 @@ Deno.test("getNotes", async () => {
     }
     assertEquals(result.length > 0, true);
 });
+
+Deno.test("getIpInfo", async () => {
+    const result = await clientNoAuth.getIpInfo();
+    if (result instanceof Error) {
+        console.log(result);
+        fail();
+    }
+    console.log(JSON.stringify(result));
+});

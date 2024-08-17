@@ -21,6 +21,7 @@ import { addAccountRole, removeAccountRole, updateAccountFollowingList } from ".
 import { postNote, postReaction } from "./api/secure/note.ts";
 import { presign } from "./api/secure/presign.ts";
 import { newURL } from "./helpers/_helper.ts";
+import { getIpInfo } from "./api/ip.ts";
 
 export class Client {
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
@@ -39,6 +40,7 @@ export class Client {
     getRegion: ReturnType<typeof getRegion>;
     getAccount: ReturnType<typeof getAccount>;
     getNotes: ReturnType<typeof getNotes>;
+    getIpInfo: ReturnType<typeof getIpInfo>;
 
     // auth
     loginNostr: ReturnType<typeof loginNostr>;
@@ -77,6 +79,7 @@ export class Client {
         this.loginNostr = loginNostr(url);
         this.getAccount = getAccount(url);
         this.getNotes = getNotes(url);
+        this.getIpInfo = getIpInfo(url);
 
         // authed APIs
         this.removeAccountRole = removeAccountRole(
