@@ -1,6 +1,9 @@
-import { Signer } from "@blowater/nostr-sdk";
-import { newURL } from "./helpers/_helper.ts";
+import { type Signer } from "@blowater/nostr-sdk";
+
+import { getAccount } from "./api/account.ts";
+import { getLocationsWithinBoundingBox, getLocationTags } from "./api/location.ts";
 import { loginNostr } from "./api/login.ts";
+import { getNotes } from "./api/note.ts";
 import { getAccountPlaceRoles } from "./api/people.ts";
 import {
     getPlace,
@@ -14,11 +17,10 @@ import {
     getPlaces,
     getRegion,
 } from "./api/place.ts";
-import { presign } from "./api/secure/presign.ts";
 import { addAccountRole, removeAccountRole, updateAccountFollowingList } from "./api/secure/account.ts";
-import { getLocationsWithinBoundingBox, getLocationTags } from "./api/location.ts";
-import { getAccount } from "./api/account.ts";
-import { getNotes } from "./api/note.ts";
+import { postNote, postReaction } from "./api/secure/note.ts";
+import { presign } from "./api/secure/presign.ts";
+import { newURL } from "./helpers/_helper.ts";
 
 export class Client {
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
@@ -47,6 +49,10 @@ export class Client {
     removeAccountRole: ReturnType<typeof removeAccountRole>;
     addAccountRole: ReturnType<typeof addAccountRole>;
     updateAccountFollowingList: ReturnType<typeof updateAccountFollowingList>;
+
+    // nostr note
+    postNote: ReturnType<typeof postNote>;
+    postReaction: ReturnType<typeof postReaction>;
 
     // s3
     presign: ReturnType<typeof presign>;
@@ -85,6 +91,8 @@ export class Client {
         );
         this.updateAccountFollowingList = updateAccountFollowingList(url, this.getJwt, this.getNostrSigner);
         this.presign = presign(url, getJwt);
+        this.postReaction = postReaction(url, this.getJwt);
+        this.postNote = postNote(url, this.getJwt);
     }
 
     static New(args: {

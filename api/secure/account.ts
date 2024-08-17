@@ -1,7 +1,8 @@
+import { type NostrEvent, NostrKind, prepareNostrEvent, type Signer } from "@blowater/nostr-sdk";
+
 import { copyURL, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
-import { NostrEvent, NostrKind, prepareNostrEvent, Signer } from "@blowater/nostr-sdk";
-import { AccountPlaceRole, AccountPlaceRoleTypeEnum } from "../../models/account.ts";
+import type { AccountPlaceRole, AccountPlaceRoleTypeEnum } from "../../models/account.ts";
 
 export const addAccountRole =
     (urlArg: URL, getJwt: () => string, getSigner: () => Signer | Error) =>

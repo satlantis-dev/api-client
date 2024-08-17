@@ -1,8 +1,9 @@
 import { InMemoryAccountContext, NostrKind, prepareNostrEvent } from "@blowater/nostr-sdk";
-import { fail } from "jsr:@std/assert@0.226.0/fail";
-import { Client } from "../sdk.ts";
 import { assertEquals } from "jsr:@std/assert@0.226.0/assert-equals";
+import { fail } from "jsr:@std/assert@0.226.0/fail";
+
 import { AccountPlaceRoleTypeEnum } from "../models/account.ts";
+import { Client, NoteType } from "../sdk.ts";
 
 const clientNoAuth = Client.New({ baseURL: "https://api-dev.satlantis.io" });
 if (clientNoAuth instanceof Error) {
@@ -77,4 +78,47 @@ Deno.test("presign", async () => {
         fail();
     }
     console.log(result);
+});
+
+Deno.test("post notes", async () => {
+    const signer = InMemoryAccountContext.Generate();
+    const res = await clientNoAuth.loginNostr(signer);
+    if (res instanceof Error) fail(res.message);
+    const client = Client.New({
+        baseURL: "https://api-dev.satlantis.io",
+        getJwt: () => res.token,
+        getNostrSigner: () => signer,
+    }) as Client;
+    {
+        const root_event = await prepareNostrEvent(signer, {
+            content: "test reaction",
+            kind: NostrKind.REACTION,
+        });
+        const rootNote = await client.postNote({
+            placeId: 23949,
+            accountId: res.account.id,
+            event: root_event,
+            noteType: NoteType.BASIC,
+        });
+        if (rootNote instanceof Error) fail(rootNote.message);
+        console.log(rootNote);
+        assertEquals(rootNote.event.nostrId, root_event.id);
+
+        const reaction_event = await prepareNostrEvent(signer, {
+            content: "test reaction",
+            kind: NostrKind.REACTION,
+        });
+        const result = await client.postReaction({
+            accountId: res.account.id,
+            event: reaction_event,
+            noteId: rootNote.id,
+            noteType: NoteType.REACTION,
+            parentId: rootNote.id,
+        });
+        if (result instanceof Error) {
+            fail(result.message);
+        }
+        console.log(result);
+        assertEquals(result.noteId, rootNote.id);
+    }
 });

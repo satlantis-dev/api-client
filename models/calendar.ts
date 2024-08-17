@@ -1,5 +1,6 @@
-import { NostrEvent, Note } from "../sdk.ts";
-import { Account } from "./account.ts";
+import type { NostrEvent, Note } from "../sdk.ts";
+
+import type { Account } from "./account.ts";
 
 export interface CalendarEventRSVP {
     id: number;

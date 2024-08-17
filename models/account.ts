@@ -1,6 +1,7 @@
-import { AuthDetail } from "../sdk.ts";
-import { ChatMembership } from "./chat.ts";
-import { Place } from "./place.ts";
+import type { AuthDetail } from "../sdk.ts";
+
+import type { ChatMembership } from "./chat.ts";
+import type { Place } from "./place.ts";
 
 export type Account = {
     id: number;
