@@ -22,7 +22,7 @@ Deno.test("getPlace", async () => {
 
 Deno.test("getPlaces", async () => {
     const result = await clientNoAuth.getPlaces({
-        filters: { name: "Riga" },
+        filters: { name: "london" },
         limit: 1,
         page: 0,
         sortColumn: "score",
@@ -32,8 +32,9 @@ Deno.test("getPlaces", async () => {
         console.log(result);
         fail();
     }
-    const ok = result.find((p) => p.name == "Riga") as Place;
-    assertEquals(ok.name, "Riga");
+
+    const ok = result.find((p) => p.name.toLowerCase() == "london") as Place;
+    assertEquals(ok.name.toLowerCase(), "london");
 });
 
 Deno.test("/getPeopleOfPlace", async () => {
@@ -168,14 +169,15 @@ Deno.test("nip5", async () => {
 });
 
 Deno.test("getAccount", async () => {
+    const npub = "npub1le59glyc3r9zsddury0fu8wyqu69ckvj78fn4425m5xn9zd0zpdssjtd53";
     const result = await clientNoAuth.getAccount({
-        npub: "npub1le59glyc3r9zsddury0fu8wyqu69ckvj78fn4425m5xn9zd0zpdssjtd53",
+        npub,
     });
     if (result instanceof Error) {
         console.log(result);
         fail();
     }
-    console.log(result);
+    assertEquals(result.npub, npub);
 });
 
 Deno.test("getNotes", async () => {
