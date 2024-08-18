@@ -180,17 +180,26 @@ Deno.test("getAccount", async () => {
     assertEquals(result.npub, npub);
 });
 
-Deno.test("getNotes", async () => {
+Deno.test("get notes", async () => {
     const result = await clientNoAuth.getNotes({
         npub: "npub1le59glyc3r9zsddury0fu8wyqu69ckvj78fn4425m5xn9zd0zpdssjtd53",
-        limit: 10,
+        limit: 2,
         page: 0,
     });
     if (result instanceof Error) {
         console.log(result);
         fail();
     }
-    assertEquals(result.length > 0, true);
+    assertEquals(result.length == 2, true);
+
+    const note = await clientNoAuth.getNote({ noteID: result[0].id });
+    if (note instanceof Error) fail(note.message);
+    if (note == undefined) fail(`${result[0].id} should be present`);
+
+    // should be the same ntoe
+    assertEquals(note.id, result[0].id);
+    assertEquals(note.event.content, result[0].event.content);
+    assertEquals(note.event.sig, result[0].event.sig);
 });
 
 Deno.test("getIpInfo", async () => {

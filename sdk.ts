@@ -4,7 +4,7 @@ import { getAccount } from "./api/account.ts";
 import { getIpInfo } from "./api/ip.ts";
 import { getLocationsWithinBoundingBox, getLocationTags } from "./api/location.ts";
 import { loginNostr } from "./api/login.ts";
-import { getNotes } from "./api/note.ts";
+import { getNote, getNotes } from "./api/note.ts";
 import { getAccountPlaceRoles } from "./api/people.ts";
 import {
     getPlace,
@@ -42,6 +42,7 @@ export class Client {
     getRegion: ReturnType<typeof getRegion>;
     getAccount: ReturnType<typeof getAccount>;
     getNotes: ReturnType<typeof getNotes>;
+    getNote: ReturnType<typeof getNote>;
     getIpInfo: ReturnType<typeof getIpInfo>;
 
     // auth
@@ -81,6 +82,7 @@ export class Client {
         this.loginNostr = loginNostr(url);
         this.getAccount = getAccount(url);
         this.getNotes = getNotes(url);
+        this.getNote = getNote(url);
         this.getIpInfo = getIpInfo(url);
 
         // authed APIs
