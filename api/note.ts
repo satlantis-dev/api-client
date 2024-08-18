@@ -4,7 +4,7 @@ import type { Account } from "../models/account.ts";
 import type { CalendarEventRSVP } from "../models/calendar.ts";
 import type { ChatMembership } from "../models/chat.ts";
 
-import type { ReshapedNostrEvent, Reaction } from "./share_types.ts";
+import type { Reaction, ReshapedNostrEvent } from "./share_types.ts";
 
 export interface PlaceNote {
     id: number;

@@ -1,4 +1,4 @@
-import type { Category, Country, ReshapedNostrEvent, ProcessedTag, Topic, Weather } from "../sdk.ts";
+import type { Category, Country, ProcessedTag, ReshapedNostrEvent, Topic, Weather } from "../sdk.ts";
 
 import type { AccountPlaceRole } from "./account.ts";
 import type { Metric } from "./metric.ts";

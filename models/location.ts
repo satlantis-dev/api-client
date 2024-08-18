@@ -1,4 +1,4 @@
-import type { BusinessStatus, ReshapedNostrEvent, Note, NoteType, OpeningHours, PriceLevel } from "../sdk.ts";
+import type { BusinessStatus, Note, NoteType, OpeningHours, PriceLevel, ReshapedNostrEvent } from "../sdk.ts";
 
 export type Location = {
     id: number;
