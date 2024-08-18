@@ -23,6 +23,8 @@ import { presign } from "./api/secure/presign.ts";
 import { newURL } from "./helpers/_helper.ts";
 import { getIpInfo } from "./api/ip.ts";
 
+export type func_GetNostrSigner = () => Promise<Signer | Error>;
+
 export class Client {
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
     getPlace: ReturnType<typeof getPlace>;
@@ -62,7 +64,7 @@ export class Client {
     private constructor(
         public readonly url: URL,
         public readonly getJwt: () => string,
-        public readonly getNostrSigner: () => Signer | Error,
+        public readonly getNostrSigner: func_GetNostrSigner,
     ) {
         this.getPlace = getPlace(url);
         this.getPlaces = getPlaces(url);
@@ -101,7 +103,7 @@ export class Client {
     static New(args: {
         baseURL: string | URL;
         getJwt?: () => string;
-        getNostrSigner?: () => Signer | Error;
+        getNostrSigner?: func_GetNostrSigner;
     }) {
         const validURL = newURL(args.baseURL);
         if (validURL instanceof Error) {
@@ -111,7 +113,7 @@ export class Client {
             args.getJwt = () => "";
         }
         if (args.getNostrSigner == undefined) {
-            args.getNostrSigner = () => new Error("nostr signer is not provided");
+            args.getNostrSigner = async () => new Error("nostr signer is not provided");
         }
         return new Client(validURL, args.getJwt, args.getNostrSigner);
     }
