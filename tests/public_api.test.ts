@@ -195,11 +195,11 @@ Deno.test("get notes", async () => {
     const note = await clientNoAuth.getNote({ noteID: result[0].id });
     if (note instanceof Error) fail(note.message);
     if (note == undefined) fail(`${result[0].id} should be present`);
-
+    console.log(note);
     // should be the same ntoe
-    assertEquals(note.id, result[0].id);
-    assertEquals(note.event.content, result[0].event.content);
-    assertEquals(note.event.sig, result[0].event.sig);
+    assertEquals(note.itself.id, result[0].id);
+    assertEquals(note.itself.event.content, result[0].event.content);
+    assertEquals(note.itself.event.sig, result[0].event.sig);
 });
 
 Deno.test("getIpInfo", async () => {

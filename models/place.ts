@@ -1,4 +1,4 @@
-import type { Category, Country, NostrEvent, ProcessedTag, Topic, Weather } from "../sdk.ts";
+import type { Category, Country, ProcessedTag, ReshapedNostrEvent, Topic, Weather } from "../sdk.ts";
 
 import type { AccountPlaceRole } from "./account.ts";
 import type { Metric } from "./metric.ts";
@@ -14,7 +14,7 @@ export type Place = {
     categoryScores: PlaceCategoryScore[];
     description: string;
     eventId: number;
-    event?: NostrEvent;
+    event?: ReshapedNostrEvent;
     lat: number;
     level: PlaceLevel;
     lng: number;

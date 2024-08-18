@@ -1,4 +1,4 @@
-import type { Category, Country, NostrEvent, Topic } from "../sdk.ts";
+import type { Category, Country, ReshapedNostrEvent, Topic } from "../sdk.ts";
 
 import type { Metric } from "./metric.ts";
 import type { OSMType, Place } from "./place.ts";
@@ -23,7 +23,7 @@ export interface Region {
     country: Country;
     description: string;
     eventId: number;
-    event: NostrEvent;
+    event: ReshapedNostrEvent;
     lat: number;
     lng: number;
     metrics: RegionMetric[];
