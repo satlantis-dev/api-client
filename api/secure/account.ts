@@ -3,9 +3,10 @@ import { type NostrEvent, NostrKind, prepareNostrEvent, type Signer } from "@blo
 import { copyURL, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
 import type { AccountPlaceRole, AccountPlaceRoleTypeEnum } from "../../models/account.ts";
+import type { func_GetNostrSigner } from "../../sdk.ts";
 
 export const addAccountRole =
-    (urlArg: URL, getJwt: () => string, getSigner: () => Signer | Error) =>
+    (urlArg: URL, getJwt: () => string, getSigner: func_GetNostrSigner) =>
     async (args: {
         placeId: number;
         type: AccountPlaceRoleTypeEnum;
@@ -14,7 +15,7 @@ export const addAccountRole =
         if (jwtToken == "") {
             return new Error("jwt token is empty");
         }
-        const signer = getSigner();
+        const signer = await getSigner();
         if (signer instanceof Error) {
             return signer;
         }
@@ -44,7 +45,7 @@ export const addAccountRole =
     };
 
 export const removeAccountRole =
-    (urlArg: URL, getJwt: () => string, getSigner: () => Signer | Error) =>
+    (urlArg: URL, getJwt: () => string, getSigner: func_GetNostrSigner) =>
     async (args: {
         placeId: number;
         type: AccountPlaceRoleTypeEnum;
@@ -53,7 +54,7 @@ export const removeAccountRole =
         if (jwtToken == "") {
             return new Error("jwt token is empty");
         }
-        const signer = getSigner();
+        const signer = await getSigner();
         if (signer instanceof Error) {
             return signer;
         }
@@ -82,7 +83,7 @@ export const removeAccountRole =
     };
 
 export const updateAccountFollowingList =
-    (urlArg: URL, getJwt: () => string, getSigner: () => Signer | Error) =>
+    (urlArg: URL, getJwt: () => string, getSigner: func_GetNostrSigner) =>
     async (args: {
         event: NostrEvent<NostrKind.CONTACTS>;
     }) => {
@@ -90,7 +91,7 @@ export const updateAccountFollowingList =
         if (jwtToken == "") {
             return new Error("jwt token is empty");
         }
-        const signer = getSigner();
+        const signer = await getSigner();
         if (signer instanceof Error) {
             return signer;
         }

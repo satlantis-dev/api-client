@@ -29,7 +29,7 @@ Deno.test("AccountRole", async () => {
     const client = Client.New({
         baseURL: "https://api-dev.satlantis.io",
         getJwt: () => res.token,
-        getNostrSigner: () => signer,
+        getNostrSigner: async () => signer,
     }) as Client;
 
     // join the place as a follower
@@ -67,7 +67,7 @@ Deno.test("presign", async () => {
     const client = Client.New({
         baseURL: "https://api-dev.satlantis.io",
         getJwt: () => res.token,
-        getNostrSigner: () => signer,
+        getNostrSigner: async () => signer,
     }) as Client;
 
     const result = await client.presign({
@@ -87,7 +87,7 @@ Deno.test("post notes", async () => {
     const client = Client.New({
         baseURL: "https://api-dev.satlantis.io",
         getJwt: () => res.token,
-        getNostrSigner: () => signer,
+        getNostrSigner: async () => signer,
     }) as Client;
     {
         const root_event = await prepareNostrEvent(signer, {
