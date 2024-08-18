@@ -19,7 +19,7 @@ import {
     getRegion,
 } from "./api/place.ts";
 import { addAccountRole, removeAccountRole, updateAccountFollowingList } from "./api/secure/account.ts";
-import { updatePlace } from './api/secure/place.ts';
+import { updatePlace } from "./api/secure/place.ts";
 import { postNote, postReaction } from "./api/secure/note.ts";
 import { presign } from "./api/secure/presign.ts";
 import { newURL } from "./helpers/_helper.ts";
@@ -65,7 +65,6 @@ export class Client {
 
     // place
     updatePlace: ReturnType<typeof updatePlace>;
-
 
     private constructor(
         public readonly url: URL,
