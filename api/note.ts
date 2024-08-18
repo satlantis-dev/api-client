@@ -65,3 +65,21 @@ async (args: {
     }
     return handleResponse<Note[]>(response);
 };
+
+export const getNote = (urlArg: URL) => async (args: { noteID: number }) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getNote/${args.noteID}`;
+
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    const notes = await handleResponse<Note[]>(response);
+    if (notes instanceof Error) {
+        return notes;
+    }
+    if (notes.length == 0) {
+        return undefined;
+    }
+    return notes[0];
+};
