@@ -1,6 +1,7 @@
 import { type Signer } from "@blowater/nostr-sdk";
 
 import { getAccount } from "./api/account.ts";
+import { getIpInfo } from "./api/ip.ts";
 import { getLocationsWithinBoundingBox, getLocationTags } from "./api/location.ts";
 import { loginNostr } from "./api/login.ts";
 import { getNotes } from "./api/note.ts";
@@ -21,7 +22,6 @@ import { addAccountRole, removeAccountRole, updateAccountFollowingList } from ".
 import { postNote, postReaction } from "./api/secure/note.ts";
 import { presign } from "./api/secure/presign.ts";
 import { newURL } from "./helpers/_helper.ts";
-import { getIpInfo } from "./api/ip.ts";
 
 export type func_GetNostrSigner = () => Promise<Signer | Error>;
 
