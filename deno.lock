@@ -4,7 +4,7 @@
     "specifiers": {
       "jsr:@blowater/collections@^0.0.0-rc1": "jsr:@blowater/collections@0.0.0-rc3",
       "jsr:@blowater/csp@1.0.0": "jsr:@blowater/csp@1.0.0",
-      "jsr:@blowater/nostr-sdk@0.0.12": "jsr:@blowater/nostr-sdk@0.0.12",
+      "jsr:@blowater/nostr-sdk@^0.0.14": "jsr:@blowater/nostr-sdk@0.0.14",
       "jsr:@noble/secp256k1@2.1.0": "jsr:@noble/secp256k1@2.1.0",
       "jsr:@std/assert@0.226.0": "jsr:@std/assert@0.226.0",
       "jsr:@std/assert@1.0.0": "jsr:@std/assert@1.0.0",
@@ -27,8 +27,8 @@
       "@blowater/csp@1.0.0": {
         "integrity": "415d4e8bf1656e4a508997fb8e725e9372e1e39b2b714afa76e86efd733f8c4c"
       },
-      "@blowater/nostr-sdk@0.0.12": {
-        "integrity": "655426aac8f1cec249858ccfbb8ca1d100530dc7abe1bc4e88a31961f25cecc1",
+      "@blowater/nostr-sdk@0.0.14": {
+        "integrity": "612cea53acc5411de9677c8f15814e87dbc700154b282858e447a9f880ac1823",
         "dependencies": [
           "jsr:@blowater/collections@^0.0.0-rc1",
           "jsr:@blowater/csp@1.0.0",
@@ -227,7 +227,7 @@
   "remote": {},
   "workspace": {
     "dependencies": [
-      "jsr:@blowater/nostr-sdk@0.0.12",
+      "jsr:@blowater/nostr-sdk@^0.0.14",
       "jsr:@std/assert@1.0.0"
     ]
   }
