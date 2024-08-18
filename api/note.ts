@@ -4,7 +4,7 @@ import type { Account } from "../models/account.ts";
 import type { CalendarEventRSVP } from "../models/calendar.ts";
 import type { ChatMembership } from "../models/chat.ts";
 
-import type { NostrEvent, Reaction } from "./share_types.ts";
+import type { ReshapedNostrEvent, Reaction } from "./share_types.ts";
 
 export interface PlaceNote {
     id: number;
@@ -36,11 +36,10 @@ export type Note = {
     ancestorId: number;
     calendarEventRsvps: CalendarEventRSVP[];
     chatMemberships: ChatMembership[];
-    descendants: Note[];
     depth: number;
     descendantId: number;
     eventId: number;
-    event: NostrEvent;
+    event: ReshapedNostrEvent;
     type: NoteType;
     reactions: Reaction[];
     repostedNoteId?: number;
@@ -81,5 +80,8 @@ export const getNote = (urlArg: URL) => async (args: { noteID: number }) => {
     if (notes.length == 0) {
         return undefined;
     }
-    return notes[0];
+    return {
+        itself: notes[0],
+        descendants: notes.slice(1),
+    };
 };

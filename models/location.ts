@@ -1,4 +1,4 @@
-import type { BusinessStatus, NostrEvent, Note, NoteType, OpeningHours, PriceLevel } from "../sdk.ts";
+import type { BusinessStatus, ReshapedNostrEvent, Note, NoteType, OpeningHours, PriceLevel } from "../sdk.ts";
 
 export type Location = {
     id: number;
@@ -11,7 +11,7 @@ export type Location = {
     googleId: string;
     placeId: number;
     eventId: number;
-    event: NostrEvent;
+    event: ReshapedNostrEvent;
     score: number;
     address: Address;
     phone: string;

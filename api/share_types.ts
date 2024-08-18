@@ -2,7 +2,7 @@ export interface Reaction {
     id: number;
     accountId: number;
     eventId: number;
-    event: NostrEvent;
+    event: ReshapedNostrEvent;
 }
 
 export type Weather = {
@@ -26,7 +26,7 @@ export interface AuthDetail {
     password: string;
 }
 
-export interface NostrEvent {
+export interface ReshapedNostrEvent {
     id: number;
     content: string;
     createdAt: number;
