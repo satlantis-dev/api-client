@@ -8,6 +8,7 @@ import { getNote, getNotes } from "./api/note.ts";
 import { getAccountPlaceRoles } from "./api/people.ts";
 import {
     getPlace,
+    getPlaceByID,
     getPlaceCalendarEvents,
     getPlaceCategoryScores,
     getPlaceChats,
@@ -28,6 +29,7 @@ export type func_GetNostrSigner = () => Promise<Signer | Error>;
 export class Client {
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
     getPlace: ReturnType<typeof getPlace>;
+    getPlaceByID: ReturnType<typeof getPlaceByID>;
     getPlaces: ReturnType<typeof getPlaces>;
     getPlaceEvent: ReturnType<typeof getPlaceEvent>;
     getPlaceNoteFeed: ReturnType<typeof getPlaceNoteFeed>;
@@ -68,6 +70,7 @@ export class Client {
         public readonly getNostrSigner: func_GetNostrSigner,
     ) {
         this.getPlace = getPlace(url);
+        this.getPlaceByID = getPlaceByID(url);
         this.getPlaces = getPlaces(url);
         this.getAccountPlaceRoles = getAccountPlaceRoles(url);
         this.getPlaceNoteFeed = getPlaceNoteFeed(url);

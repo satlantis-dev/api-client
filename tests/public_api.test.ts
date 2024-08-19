@@ -17,7 +17,14 @@ Deno.test("getPlace", async () => {
         console.log(result);
         fail();
     }
-    console.log(result.regionId);
+    const place = await clientNoAuth.getPlaceByID({placeID: result.id})
+    if (place instanceof Error) {
+        fail(place.message);
+    }
+    assertEquals(place.id, result.id)
+    assertEquals(place.name, result.name)
+    // todo: wait for https://linear.app/sat-lantis/issue/SAT-736/getplace-and-getplacebyid-returns-different-data
+    // assertEquals(place, result)
 });
 
 Deno.test("getPlaces", async () => {
@@ -68,6 +75,7 @@ Deno.test("/getPlaceCalendarEvents", async () => {
         fail();
     }
     assertEquals(result.length > 0, true);
+    console.log(result[0])
 });
 
 Deno.test("/getPlaceMetrics", async () => {

@@ -18,6 +18,16 @@ export const getPlace = (urlArg: URL) => async (args: { osmRef: string | number 
     return handleResponse<Place>(response);
 };
 
+export const getPlaceByID = (urlArg: URL) => async (args: { placeID: number }) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getPlaceById/${args.placeID}`;
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<Place>(response);
+};
+
 export const getPlaces = (urlArg: URL) =>
 async (args: {
     filters: {

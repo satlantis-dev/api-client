@@ -1,6 +1,6 @@
 {
     "name": "@satlantis/api-client",
-    "version": "0.0.30",
+    "version": "0.0.31",
     "exports": "./sdk.ts",
     "imports": {
         "@blowater/nostr-sdk": "jsr:@blowater/nostr-sdk@^0.0.14",
