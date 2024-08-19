@@ -14,10 +14,10 @@ Deno.test("AccountRole", async () => {
     const signer = InMemoryAccountContext.Generate();
     {
         // test fot the failure cases
-        const res = await clientNoAuth.removeAccountRole({
+        const res = (await clientNoAuth.removeAccountRole({
             placeId: 23949,
             type: AccountPlaceRoleTypeEnum.AMBASSADOR,
-        }) as Error;
+        })) as Error;
         assertEquals(res.message, "jwt token is empty");
     }
 
@@ -51,9 +51,7 @@ Deno.test("AccountRole", async () => {
     const event = await prepareNostrEvent(signer, {
         kind: NostrKind.CONTACTS,
         content: "",
-        tags: [
-            ["p", signer.publicKey.hex],
-        ],
+        tags: [["p", signer.publicKey.hex]],
     });
     const res3 = await client.updateAccountFollowingList({ event });
     if (res3 instanceof Error) fail(res3.message);
@@ -120,5 +118,26 @@ Deno.test("post notes", async () => {
         }
         console.log(result);
         assertEquals(result.noteId, rootNote.id);
+    }
+});
+
+Deno.test("update place", async () => {
+    const signer = InMemoryAccountContext.Generate();
+    const res = await clientNoAuth.loginNostr(signer);
+    if (res instanceof Error) fail(res.message);
+    const client = Client.New({
+        baseURL: "https://api-dev.satlantis.io",
+        getJwt: () => res.token,
+        getNostrSigner: () => signer,
+    }) as Client;
+    {
+        const result = await client.updatePlace({
+            id: 23751,
+            name: "Florianópolis",
+        });
+        if (result instanceof Error) {
+            fail(result.message);
+        }
+        assertEquals(result.id, 23751);
     }
 });
