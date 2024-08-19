@@ -131,13 +131,39 @@ Deno.test("update place", async () => {
         getNostrSigner: () => signer,
     }) as Client;
     {
-        const result = await client.updatePlace({
-            id: 23751,
-            name: "Florianópolis",
+        const originalPlace = await client.getPlace({ osmRef: "R296561" });
+        if (originalPlace instanceof Error) {
+            fail(originalPlace.message);
+        }
+
+        let result = await client.updatePlace({
+            id: originalPlace.id,
+            name: "RandomTestName",
         });
         if (result instanceof Error) {
             fail(result.message);
         }
-        assertEquals(result.id, 23751);
+
+        let updatedPlace = await client.getPlace({ osmRef: originalPlace.osmRef });
+        if (updatedPlace instanceof Error) {
+            fail(updatedPlace.message);
+        } else if (updatedPlace.name !== "RandomTestName") {
+            fail("Place name not updated");
+        }
+
+        result = await client.updatePlace({
+            id: originalPlace.id,
+            name: originalPlace.name,
+        });
+        if (result instanceof Error) {
+            fail(result.message);
+        }
+
+        updatedPlace = await client.getPlace({ osmRef: originalPlace.osmRef });
+        if (updatedPlace instanceof Error) {
+            fail(updatedPlace.message);
+        } else if (updatedPlace.name !== originalPlace.name) {
+            fail("Place name not updated");
+        }
     }
 });
