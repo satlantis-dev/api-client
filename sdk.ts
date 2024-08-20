@@ -130,6 +130,7 @@ export class Client {
     };
 }
 
+// api
 export * from "./api/calendar.ts";
 export * from "./api/location.ts";
 export * from "./api/login.ts";
@@ -148,3 +149,5 @@ export * from "./models/location.ts";
 export * from "./models/metric.ts";
 export * from "./models/place.ts";
 export * from "./models/region.ts";
+// event handling
+export * from "./event-handling/parser.ts";
