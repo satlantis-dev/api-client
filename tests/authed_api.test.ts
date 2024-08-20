@@ -128,7 +128,7 @@ Deno.test("update place", async () => {
     const client = Client.New({
         baseURL: "https://api-dev.satlantis.io",
         getJwt: () => res.token,
-        getNostrSigner: () => signer,
+        getNostrSigner: async () => signer,
     }) as Client;
     {
         const originalPlace = await client.getPlace({ osmRef: "R296561" });
@@ -147,9 +147,8 @@ Deno.test("update place", async () => {
         let updatedPlace = await client.getPlace({ osmRef: originalPlace.osmRef });
         if (updatedPlace instanceof Error) {
             fail(updatedPlace.message);
-        } else if (updatedPlace.name !== "RandomTestName") {
-            fail("Place name not updated");
         }
+        assertEquals(updatedPlace.name, "RandomTestName");
 
         result = await client.updatePlace({
             id: originalPlace.id,
@@ -162,8 +161,7 @@ Deno.test("update place", async () => {
         updatedPlace = await client.getPlace({ osmRef: originalPlace.osmRef });
         if (updatedPlace instanceof Error) {
             fail(updatedPlace.message);
-        } else if (updatedPlace.name !== originalPlace.name) {
-            fail("Place name not updated");
         }
+        assertEquals(updatedPlace, originalPlace);
     }
 });
