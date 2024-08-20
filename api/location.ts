@@ -65,16 +65,20 @@ async (args: {
 };
 
 // Get location reviews
-export const getLocationReviews =
-    (urlArg: URL) => async (args: { locationId: number; limit: number; page: number }) => {
-        const url = copyURL(urlArg);
-        url.pathname = `/getLocationReviews/${args.locationId}`;
-        url.searchParams.append("limit", JSON.stringify(args.limit));
-        url.searchParams.append("page", JSON.stringify(args.page));
+export const getLocationReviews = (urlArg: URL) =>
+async (args: {
+    locationId: number;
+    limit: number;
+    page: number;
+}) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getLocationReviews/${args.locationId}`;
+    url.searchParams.append("limit", JSON.stringify(args.limit));
+    url.searchParams.append("page", JSON.stringify(args.page));
 
-        const response = await safeFetch(url);
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse(response);
-    };
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse(response);
+};

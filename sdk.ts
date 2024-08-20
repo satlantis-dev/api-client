@@ -2,7 +2,7 @@ import { type Signer } from "@blowater/nostr-sdk";
 
 import { getAccount } from "./api/account.ts";
 import { getIpInfo } from "./api/ip.ts";
-import { getLocationsWithinBoundingBox, getLocationTags } from "./api/location.ts";
+import { getLocationReviews, getLocationsWithinBoundingBox, getLocationTags } from "./api/location.ts";
 import { loginNostr } from "./api/login.ts";
 import { getNote, getNotes } from "./api/note.ts";
 import { getAccountPlaceRoles } from "./api/people.ts";
@@ -45,6 +45,7 @@ export class Client {
     getNotes: ReturnType<typeof getNotes>;
     getNote: ReturnType<typeof getNote>;
     getIpInfo: ReturnType<typeof getIpInfo>;
+    getLocationReviews: ReturnType<typeof getLocationReviews>;
 
     // auth
     loginNostr: ReturnType<typeof loginNostr>;
@@ -88,6 +89,7 @@ export class Client {
         this.getNotes = getNotes(url);
         this.getNote = getNote(url);
         this.getIpInfo = getIpInfo(url);
+        this.getLocationReviews = getLocationReviews(url);
 
         // authed APIs
         this.removeAccountRole = removeAccountRole(

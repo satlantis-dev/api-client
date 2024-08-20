@@ -210,3 +210,13 @@ Deno.test("getIpInfo", async () => {
     }
     console.log(JSON.stringify(result));
 });
+
+Deno.test("getLocationReviews", async () => {
+    const result = await clientNoAuth.getLocationReviews({
+        limit: 2,
+        page: 0,
+        locationId: 2313,
+    });
+    if (result instanceof Error) fail(result.message);
+    console.log(result);
+});
