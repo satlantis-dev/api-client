@@ -19,6 +19,7 @@ import {
     getRegion,
 } from "./api/place.ts";
 import { addAccountRole, removeAccountRole, updateAccountFollowingList } from "./api/secure/account.ts";
+import { updatePlace } from "./api/secure/place.ts";
 import { postNote, postReaction } from "./api/secure/note.ts";
 import { presign } from "./api/secure/presign.ts";
 import { newURL } from "./helpers/_helper.ts";
@@ -62,6 +63,9 @@ export class Client {
     // s3
     presign: ReturnType<typeof presign>;
 
+    // place
+    updatePlace: ReturnType<typeof updatePlace>;
+
     private constructor(
         public readonly url: URL,
         public readonly getJwt: () => string,
@@ -97,9 +101,10 @@ export class Client {
             this.getNostrSigner,
         );
         this.updateAccountFollowingList = updateAccountFollowingList(url, this.getJwt, this.getNostrSigner);
-        this.presign = presign(url, getJwt);
+        this.presign = presign(url, this.getJwt);
         this.postReaction = postReaction(url, this.getJwt);
         this.postNote = postNote(url, this.getJwt);
+        this.updatePlace = updatePlace(url, this.getJwt);
     }
 
     static New(args: {
@@ -135,6 +140,7 @@ export * from "./api/place.ts";
 export * from "./api/share_types.ts";
 export * from "./api/secure/account.ts";
 export * from "./api/secure/presign.ts";
+export * from "./api/secure/place.ts";
 export * from "./models/account.ts";
 export * from "./models/calendar.ts";
 export * from "./models/chat.ts";
