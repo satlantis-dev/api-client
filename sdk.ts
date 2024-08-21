@@ -23,6 +23,7 @@ import { updatePlace } from "./api/secure/place.ts";
 import { postNote, postReaction } from "./api/secure/note.ts";
 import { presign } from "./api/secure/presign.ts";
 import { newURL } from "./helpers/_helper.ts";
+import { addressLookup } from "./api/address.ts";
 
 export type func_GetNostrSigner = () => Promise<Signer | Error>;
 
@@ -46,6 +47,7 @@ export class Client {
     getNote: ReturnType<typeof getNote>;
     getIpInfo: ReturnType<typeof getIpInfo>;
     getLocationReviews: ReturnType<typeof getLocationReviews>;
+    addressLookup: ReturnType<typeof addressLookup>;
 
     // auth
     loginNostr: ReturnType<typeof loginNostr>;
@@ -90,6 +92,7 @@ export class Client {
         this.getNote = getNote(url);
         this.getIpInfo = getIpInfo(url);
         this.getLocationReviews = getLocationReviews(url);
+        this.addressLookup = addressLookup(url);
 
         // authed APIs
         this.removeAccountRole = removeAccountRole(

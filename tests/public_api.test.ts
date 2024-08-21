@@ -220,3 +220,18 @@ Deno.test("getLocationReviews", async () => {
     if (result instanceof Error) fail(result.message);
     console.log(result);
 });
+
+Deno.test("addressLookup", async () => {
+    const result = await clientNoAuth.addressLookup({
+        address: "Pa",
+    });
+    if (result instanceof Error) fail(result.message);
+    assertEquals(result, [
+        {
+            displayName: { text: "Paris", languageCode: "en" },
+            formattedAddress: "Paris, France",
+            geometry: { location: { lat: 0, lng: 0 } },
+            priceLevel: "",
+        },
+    ]);
+});
