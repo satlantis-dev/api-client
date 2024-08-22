@@ -299,9 +299,51 @@ Deno.test("inline parse", async (t) => {
                 text: "pubkey error: nostr:npub1xxxxxxxxrhgtk4fgqdmpuqxv05u9raau3w0shay7msmr0dzs4m7sxxxxxx",
             }],
         },
+        {
+            input: `#topic #中文`,
+            output: [
+                {
+                    type: "hashtag",
+                    text: "#topic",
+                },
+                {
+                    type: "raw",
+                    text: " ",
+                },
+                {
+                    type: "hashtag",
+                    text: "#中文",
+                },
+            ],
+        },
+        {
+            input: `##你好#はじめまして#안녕하세요##`,
+            output: [
+                {
+                    type: "raw",
+                    text: "#",
+                },
+                {
+                    type: "hashtag",
+                    text: "#你好",
+                },
+                {
+                    type: "hashtag",
+                    text: "#はじめまして",
+                },
+                {
+                    type: "hashtag",
+                    text: "#안녕하세요",
+                },
+                {
+                    type: "raw",
+                    text: "##",
+                },
+            ],
+        },
     ];
     for (const test of data) {
-        await t.step(`t-${test.input}`, () => {
+        await t.step(`${test.input}`, () => {
             assertEquals(Array.from(parseContent(test.input)), test.output);
         });
     }
