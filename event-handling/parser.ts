@@ -153,7 +153,8 @@ function match_first(content: string) {
         { name: "note", regex: /(nostr:)?note[0-9a-z]{59}/ },
         { name: "nevent", regex: /(nostr:)?nevent[0-9a-z]+/ },
         { name: "tag", regex: /#\[[0-9]+\]/ },
-        // support latin letter and Chinese, will add other languages
+        // support latin letter and Chinese, Japanese, Korean
+        // will add other languages
         { name: "hashtag", regex: /#[\w\u4e00-\u9fff\u3040-\u309F\u30A0-\u30FF\uAC00-\uD7AF]+/ },
     ];
 
