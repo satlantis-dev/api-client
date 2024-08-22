@@ -184,13 +184,36 @@ Deno.test("createAccount", async () => {
     const result = await clientNoAuth.createAccount({
         email: "user@email.com",
         password: "simple",
-        username: "hi"
+        username: "hi",
     });
     if (result instanceof Error) {
         console.log(result);
         fail();
     }
-    console.log(result)
+    console.log(result);
+});
+
+Deno.test("login", async () => {
+    {
+        const result = await clientNoAuth.login({
+            username: randomString(),
+            password: "password",
+        });
+        if (result instanceof Error) {
+            fail(result.message);
+        }
+        assertEquals(result, undefined)
+    }
+    {
+        const result = await clientNoAuth.login({
+            username: "albert",
+            password: "12345678",
+        });
+        if (result instanceof Error) {
+            fail(result.message);
+        }
+        assertEquals(result, "invalid password");
+    }
 });
 
 Deno.test("get notes", async () => {
@@ -248,3 +271,7 @@ Deno.test("addressLookup", async () => {
         },
     ]);
 });
+
+function randomString() {
+    return String(Math.random());
+}
