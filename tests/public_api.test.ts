@@ -180,6 +180,19 @@ Deno.test("getAccount", async () => {
     assertEquals(result.npub, npub);
 });
 
+Deno.test("createAccount", async () => {
+    const result = await clientNoAuth.createAccount({
+        email: "user@email.com",
+        password: "simple",
+        username: "hi"
+    });
+    if (result instanceof Error) {
+        console.log(result);
+        fail();
+    }
+    console.log(result)
+});
+
 Deno.test("get notes", async () => {
     const result = await clientNoAuth.getNotes({
         npub: "npub1le59glyc3r9zsddury0fu8wyqu69ckvj78fn4425m5xn9zd0zpdssjtd53",

@@ -1,6 +1,6 @@
 import { type Signer } from "@blowater/nostr-sdk";
 
-import { getAccount } from "./api/account.ts";
+import { createAccount, getAccount } from "./api/account.ts";
 import { getIpInfo } from "./api/ip.ts";
 import { getLocationReviews, getLocationsWithinBoundingBox, getLocationTags } from "./api/location.ts";
 import { loginNostr } from "./api/login.ts";
@@ -28,6 +28,7 @@ import { addressLookup } from "./api/address.ts";
 export type func_GetNostrSigner = () => Promise<Signer | Error>;
 
 export class Client {
+    // Place
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
     getPlace: ReturnType<typeof getPlace>;
     getPlaces: ReturnType<typeof getPlaces>;
@@ -42,7 +43,9 @@ export class Client {
         typeof getLocationsWithinBoundingBox
     >;
     getRegion: ReturnType<typeof getRegion>;
+    // Account
     getAccount: ReturnType<typeof getAccount>;
+    createAccount: ReturnType<typeof createAccount>
     getNotes: ReturnType<typeof getNotes>;
     getNote: ReturnType<typeof getNote>;
     getIpInfo: ReturnType<typeof getIpInfo>;
@@ -88,6 +91,7 @@ export class Client {
         this.getRegion = getRegion(url);
         this.loginNostr = loginNostr(url);
         this.getAccount = getAccount(url);
+        this.createAccount = createAccount(url)
         this.getNotes = getNotes(url);
         this.getNote = getNote(url);
         this.getIpInfo = getIpInfo(url);
