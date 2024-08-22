@@ -169,7 +169,7 @@ Deno.test("update place", async () => {
 
 Deno.test({
     name: "signEvent",
-    ignore: true,
+    // ignore: true,
     fn: async () => {
         const signer = InMemoryAccountContext.Generate();
         const res = await loginNostr(url)(signer);
