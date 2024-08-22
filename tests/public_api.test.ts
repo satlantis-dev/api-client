@@ -180,6 +180,46 @@ Deno.test("getAccount", async () => {
     assertEquals(result.npub, npub);
 });
 
+Deno.test({
+    name: "createAccount",
+    ignore: true,
+    fn: async () => {
+        const result = await clientNoAuth.createAccount({
+            email: "user@email.com",
+            password: "simple",
+            username: "hi",
+        });
+        if (result instanceof Error) {
+            console.log(result);
+            fail();
+        }
+        console.log(result);
+    },
+});
+
+Deno.test("login", async () => {
+    {
+        const result = await clientNoAuth.login({
+            username: randomString(),
+            password: "password",
+        });
+        if (result instanceof Error) {
+            fail(result.message);
+        }
+        assertEquals(result, undefined);
+    }
+    {
+        const result = await clientNoAuth.login({
+            username: "albert",
+            password: "12345678",
+        });
+        if (result instanceof Error) {
+            fail(result.message);
+        }
+        assertEquals(result, "invalid password");
+    }
+});
+
 Deno.test("get notes", async () => {
     const result = await clientNoAuth.getNotes({
         npub: "npub1le59glyc3r9zsddury0fu8wyqu69ckvj78fn4425m5xn9zd0zpdssjtd53",
@@ -235,3 +275,7 @@ Deno.test("addressLookup", async () => {
         },
     ]);
 });
+
+function randomString() {
+    return String(Math.random());
+}

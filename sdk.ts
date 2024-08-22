@@ -1,6 +1,6 @@
 import { type Signer } from "@blowater/nostr-sdk";
 
-import { getAccount } from "./api/account.ts";
+import { createAccount, getAccount, login } from "./api/account.ts";
 import { getIpInfo } from "./api/ip.ts";
 import { getLocationReviews, getLocationsWithinBoundingBox, getLocationTags } from "./api/location.ts";
 import { loginNostr } from "./api/login.ts";
@@ -24,10 +24,13 @@ import { postNote, postReaction } from "./api/secure/note.ts";
 import { presign } from "./api/secure/presign.ts";
 import { newURL } from "./helpers/_helper.ts";
 import { addressLookup } from "./api/address.ts";
+import { signEvent } from "./api/nostr_event.ts";
 
 export type func_GetNostrSigner = () => Promise<Signer | Error>;
+export type func_GetJwt = () => string;
 
 export class Client {
+    // Place
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
     getPlace: ReturnType<typeof getPlace>;
     getPlaces: ReturnType<typeof getPlaces>;
@@ -42,7 +45,10 @@ export class Client {
         typeof getLocationsWithinBoundingBox
     >;
     getRegion: ReturnType<typeof getRegion>;
+    // Account
     getAccount: ReturnType<typeof getAccount>;
+    createAccount: ReturnType<typeof createAccount>;
+    login: ReturnType<typeof login>;
     getNotes: ReturnType<typeof getNotes>;
     getNote: ReturnType<typeof getNote>;
     getIpInfo: ReturnType<typeof getIpInfo>;
@@ -62,6 +68,7 @@ export class Client {
     // nostr note
     postNote: ReturnType<typeof postNote>;
     postReaction: ReturnType<typeof postReaction>;
+    signEvent: ReturnType<typeof signEvent>;
 
     // s3
     presign: ReturnType<typeof presign>;
@@ -71,7 +78,7 @@ export class Client {
 
     private constructor(
         public readonly url: URL,
-        public readonly getJwt: () => string,
+        public readonly getJwt: func_GetJwt,
         public readonly getNostrSigner: func_GetNostrSigner,
     ) {
         this.getPlace = getPlace(url);
@@ -88,6 +95,8 @@ export class Client {
         this.getRegion = getRegion(url);
         this.loginNostr = loginNostr(url);
         this.getAccount = getAccount(url);
+        this.createAccount = createAccount(url);
+        this.login = login(url);
         this.getNotes = getNotes(url);
         this.getNote = getNote(url);
         this.getIpInfo = getIpInfo(url);
@@ -109,6 +118,7 @@ export class Client {
         this.presign = presign(url, this.getJwt);
         this.postReaction = postReaction(url, this.getJwt);
         this.postNote = postNote(url, this.getJwt);
+        this.signEvent = signEvent(url, getJwt);
         this.updatePlace = updatePlace(url, this.getJwt);
     }
 
