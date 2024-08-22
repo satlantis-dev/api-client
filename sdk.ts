@@ -24,8 +24,10 @@ import { postNote, postReaction } from "./api/secure/note.ts";
 import { presign } from "./api/secure/presign.ts";
 import { newURL } from "./helpers/_helper.ts";
 import { addressLookup } from "./api/address.ts";
+import { uploadFileS3 } from "./api/upload.ts";
 
 export type func_GetNostrSigner = () => Promise<Signer | Error>;
+export type func_GetJwt = () => string;
 
 export class Client {
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
@@ -65,6 +67,7 @@ export class Client {
 
     // s3
     presign: ReturnType<typeof presign>;
+    uploadFileS3: ReturnType<typeof uploadFileS3>
 
     // place
     updatePlace: ReturnType<typeof updatePlace>;
@@ -107,6 +110,7 @@ export class Client {
         );
         this.updateAccountFollowingList = updateAccountFollowingList(url, this.getJwt, this.getNostrSigner);
         this.presign = presign(url, this.getJwt);
+        this.uploadFileS3 = uploadFileS3(url, getJwt);
         this.postReaction = postReaction(url, this.getJwt);
         this.postNote = postNote(url, this.getJwt);
         this.updatePlace = updatePlace(url, this.getJwt);
