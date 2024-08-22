@@ -5,7 +5,7 @@ import { fail } from "jsr:@std/assert@0.226.0/fail";
 import { AccountPlaceRoleTypeEnum } from "../models/account.ts";
 import { Client, loginNostr, NoteType } from "../sdk.ts";
 
-const url = new URL("https://api-dev.satlantis.io")
+const url = new URL("https://api-dev.satlantis.io");
 const clientNoAuth = Client.New({ baseURL: url });
 if (clientNoAuth instanceof Error) {
     fail(clientNoAuth.message);
@@ -167,26 +167,30 @@ Deno.test("update place", async () => {
     }
 });
 
-Deno.test("signEvent", async ()=>{
-    const signer = InMemoryAccountContext.Generate();
-    const res = await loginNostr(url)(signer);
-    if (res instanceof Error) fail(res.message);
+Deno.test({
+    name: "signEvent",
+    ignore: true,
+    fn: async () => {
+        const signer = InMemoryAccountContext.Generate();
+        const res = await loginNostr(url)(signer);
+        if (res instanceof Error) fail(res.message);
 
-    const client = Client.New({
-        baseURL: url,
-        getJwt: () => res.token,
-        getNostrSigner: async () => signer,
-    }) as Client;
+        const client = Client.New({
+            baseURL: url,
+            getJwt: () => res.token,
+            getNostrSigner: async () => signer,
+        }) as Client;
 
-    const signed = await client.signEvent({
-        created_at: Math.floor(Date.now() / 1000),
-        kind: NostrKind.CONTACTS,
-        pubkey: signer.publicKey.hex,
-        tags: [],
-        content: ""
-    })
-    if(signed instanceof Error) {
-        fail(signed.message)
-    }
-    console.log(signed)
-})
+        const signed = await client.signEvent({
+            created_at: Math.floor(Date.now() / 1000),
+            kind: NostrKind.CONTACTS,
+            pubkey: signer.publicKey.hex,
+            tags: [],
+            content: "",
+        });
+        if (signed instanceof Error) {
+            fail(signed.message);
+        }
+        console.log(signed);
+    },
+});

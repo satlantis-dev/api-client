@@ -27,7 +27,7 @@ import { addressLookup } from "./api/address.ts";
 import { signEvent } from "./api/nostr_event.ts";
 
 export type func_GetNostrSigner = () => Promise<Signer | Error>;
-export type func_GetJwt = () => string
+export type func_GetJwt = () => string;
 
 export class Client {
     // Place
@@ -68,7 +68,7 @@ export class Client {
     // nostr note
     postNote: ReturnType<typeof postNote>;
     postReaction: ReturnType<typeof postReaction>;
-    signEvent: ReturnType<typeof signEvent>
+    signEvent: ReturnType<typeof signEvent>;
 
     // s3
     presign: ReturnType<typeof presign>;
@@ -118,7 +118,7 @@ export class Client {
         this.presign = presign(url, this.getJwt);
         this.postReaction = postReaction(url, this.getJwt);
         this.postNote = postNote(url, this.getJwt);
-        this.signEvent = signEvent(url, getJwt)
+        this.signEvent = signEvent(url, getJwt);
         this.updatePlace = updatePlace(url, this.getJwt);
     }
 
