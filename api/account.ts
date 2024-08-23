@@ -58,7 +58,7 @@ async (args: {
     const res = await handleResponse<{ status: "success" }>(response);
     if (res instanceof ApiError) {
         if (res.status == 400) {
-            return "Email already exists";
+            return "Username or email already exists";
         }
     }
     if (res instanceof Error) {

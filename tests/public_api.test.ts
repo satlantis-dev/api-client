@@ -1,9 +1,10 @@
 import { assert, assertEquals, assertNotEquals, fail } from "@std/assert";
 
-import { Client, getNip5, type Place } from "../sdk.ts";
-import { PublicKey } from "@blowater/nostr-sdk";
+import { Client, getNip5, loginNostr, type Place } from "../sdk.ts";
+import { InMemoryAccountContext, PublicKey } from "@blowater/nostr-sdk";
 
-const clientNoAuth = Client.New({ baseURL: "https://api-dev.satlantis.io" });
+const url = new URL("https://api-dev.satlantis.io");
+const clientNoAuth = Client.New({ baseURL: url });
 if (clientNoAuth instanceof Error) {
     fail(clientNoAuth.message);
 }
@@ -149,7 +150,7 @@ Deno.test("/getLocationsWithinBoundingBox", async () => {
         console.log(result);
         fail();
     }
-    console.log(result);
+    assertEquals(result.length > 0, true);
 });
 
 Deno.test("getLocationTags", async () => {
@@ -195,13 +196,13 @@ Deno.test({
                 console.log(result);
                 fail(result.message);
             }
-            assertEquals(result, "Email already exists");
+            assertEquals(result, "Username or email already exists");
         }
         {
             const result = await clientNoAuth.createAccount({
                 email: `${randomString()}@email.com`,
                 password: "simple",
-                username: "hi",
+                username: randomString(),
             });
             if (result instanceof Error) {
                 console.log(result);
@@ -210,6 +211,12 @@ Deno.test({
             assertEquals(result, true);
         }
     },
+});
+
+Deno.test("loginNostr", async () => {
+    const signer = InMemoryAccountContext.Generate();
+    const res = await loginNostr(url)(signer);
+    if (res instanceof Error) fail(res.message);
 });
 
 Deno.test("login", async () => {
@@ -224,7 +231,7 @@ Deno.test("login", async () => {
         assertEquals(result, undefined);
     }
     {
-        const username = "hi";
+        const username = randomString();
         const password = "simple";
         // create account
         const ok = await clientNoAuth.createAccount({
@@ -302,7 +309,7 @@ Deno.test("getLocationReviews", async () => {
 
 Deno.test("addressLookup", async () => {
     const result = await clientNoAuth.addressLookup({
-        address: "Pa",
+        address: "paris",
     });
     if (result instanceof Error) fail(result.message);
     assertEquals(result, [
@@ -315,6 +322,6 @@ Deno.test("addressLookup", async () => {
     ]);
 });
 
-function randomString() {
-    return String(Math.random());
+export function randomString() {
+    return String(Date.now());
 }

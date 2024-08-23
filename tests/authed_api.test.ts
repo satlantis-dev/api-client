@@ -1,9 +1,17 @@
-import { InMemoryAccountContext, NostrKind, prepareNostrEvent } from "@blowater/nostr-sdk";
+import {
+    InMemoryAccountContext,
+    type NostrEvent,
+    NostrKind,
+    prepareNostrEvent,
+    PrivateKey,
+    verifyEvent,
+} from "@blowater/nostr-sdk";
 import { assertEquals } from "jsr:@std/assert@0.226.0/assert-equals";
 import { fail } from "jsr:@std/assert@0.226.0/fail";
 
 import { AccountPlaceRoleTypeEnum } from "../models/account.ts";
 import { Client, loginNostr, NoteType } from "../sdk.ts";
+import { randomString } from "./public_api.test.ts";
 
 const url = new URL("https://api-dev.satlantis.io");
 const clientNoAuth = Client.New({ baseURL: url });
@@ -170,27 +178,83 @@ Deno.test("update place", async () => {
 Deno.test({
     name: "signEvent",
     // ignore: true,
-    fn: async () => {
-        const signer = InMemoryAccountContext.Generate();
-        const res = await loginNostr(url)(signer);
-        if (res instanceof Error) fail(res.message);
+    fn: async (t) => {
+        const result = await clientNoAuth.createAccount({
+            email: `${randomString()}@email.com`,
+            password: "simple",
+            username: "hi",
+        });
+        if (result instanceof Error) fail(result.message);
+
+        const login = await clientNoAuth.login({
+            password: "simple",
+            username: "hi",
+        });
+        if (login instanceof Error) fail(login.message);
+        if (login == undefined || login == "invalid password") fail("wrong");
 
         const client = Client.New({
             baseURL: url,
-            getJwt: () => res.token,
-            getNostrSigner: async () => signer,
+            getJwt: () => login.token,
         }) as Client;
 
-        const signed = await client.signEvent({
-            created_at: Math.floor(Date.now() / 1000),
-            kind: NostrKind.CONTACTS,
-            pubkey: signer.publicKey.hex,
-            tags: [],
-            content: "",
+        await t.step("sign the event with a wrong pubkey", async () => {
+            const signed = await client.signEvent({
+                created_at: Math.floor(Date.now() / 1000),
+                kind: NostrKind.CONTACTS,
+                pubkey: PrivateKey.Generate().toPublicKey().hex,
+                tags: [],
+                content: "",
+            });
+            if (signed instanceof Error) {
+                fail(signed.message);
+            }
+            assertEquals(signed, {
+                type: 401,
+                data: "status 401, body Event pubkey does not match account pubkey\n",
+            });
         });
-        if (signed instanceof Error) {
-            fail(signed.message);
-        }
-        console.log(signed);
+        await t.step("sign the event with an existing account", async () => {
+            const signed = await client.signEvent({
+                created_at: Math.floor(Date.now() / 1000),
+                kind: NostrKind.CONTACTS,
+                pubkey: login.account.pubKey,
+                tags: [],
+                content: "",
+            });
+            if (signed instanceof Error) {
+                fail(signed.message);
+            }
+            assertEquals(signed.type, true);
+            assertEquals(await verifyEvent(signed.data as NostrEvent), true);
+        });
+
+        await t.step({
+            name: "sign the event with a new pubkey",
+            ignore: true,
+            fn: async () => {
+                const signer = InMemoryAccountContext.Generate();
+                const res = await loginNostr(url)(signer);
+                if (res instanceof Error) fail(res.message);
+
+                const client = Client.New({
+                    baseURL: url,
+                    getJwt: () => res.token,
+                    getNostrSigner: async () => signer,
+                }) as Client;
+
+                const signed = await client.signEvent({
+                    created_at: Math.floor(Date.now() / 1000),
+                    kind: NostrKind.CONTACTS,
+                    pubkey: signer.publicKey.hex,
+                    tags: [],
+                    content: "",
+                });
+                if (signed instanceof Error) {
+                    fail(signed.message);
+                }
+                console.log(signed);
+            },
+        });
     },
 });
