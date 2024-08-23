@@ -230,7 +230,7 @@ Deno.test({
         });
 
         await t.step({
-            name: "sign the event with a new pubkey",
+            name: "sign the event with a new pubkey that has not been registerred in backend",
             ignore: true,
             fn: async () => {
                 const signer = InMemoryAccountContext.Generate();
