@@ -8,5 +8,5 @@ publish:
 fmt:
 	deno fmt
 
-test:
+test: fmt
 	deno test --allow-net

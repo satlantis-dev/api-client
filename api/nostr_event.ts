@@ -1,5 +1,5 @@
-import type { UnsignedNostrEvent } from "@blowater/nostr-sdk";
-import { copyURL, handleResponse } from "../helpers/_helper.ts";
+import type { NostrEvent, UnsignedNostrEvent } from "@blowater/nostr-sdk";
+import { ApiError, copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { Account, func_GetJwt } from "../sdk.ts";
 
@@ -16,5 +16,20 @@ export const signEvent = (urlArg: URL, getJwt: func_GetJwt) => async (args: Unsi
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<Account>(response);
+    const res = await handleResponse<NostrEvent>(response);
+    if (res instanceof ApiError) {
+        if (res.status == 401) {
+            return {
+                type: 401,
+                data: res.message,
+            };
+        }
+    }
+    if (res instanceof Error) {
+        return res;
+    }
+    return {
+        type: true,
+        data: res,
+    };
 };

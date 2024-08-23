@@ -10,21 +10,22 @@ import type { Account } from "../models/account.ts";
 export const loginNostr = (urlArg: URL) => async (signer: Signer) => {
     const url = copyURL(urlArg);
     url.pathname = `/login/nostr`;
+    const body = JSON.stringify(
+        await prepareNostrEvent(signer, {
+            // @ts-ignore
+            kind: 27236,
+            content: "{}",
+            tags: [[
+                "auth",
+                "satlantis",
+            ]],
+        }),
+    );
     const response = await safeFetch(
         url,
         {
             method: "POST",
-            body: JSON.stringify(
-                await prepareNostrEvent(signer, {
-                    // @ts-ignore
-                    kind: 27236,
-                    content: "{}",
-                    tags: [[
-                        "auth",
-                        "satlantis",
-                    ]],
-                }),
-            ),
+            body,
         },
     );
     if (response instanceof Error) {

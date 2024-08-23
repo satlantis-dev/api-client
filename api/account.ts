@@ -29,7 +29,7 @@ async (args: {
     if (response instanceof Error) {
         return response;
     }
-    const result = await handleResponse<Account>(response);
+    const result = await handleResponse<{ account: Account; token: string }>(response);
     if (result instanceof ApiError) {
         if (result.status == 404) {
             return undefined;
@@ -55,5 +55,17 @@ async (args: {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<Account>(response);
+    const res = await handleResponse<{ status: "success" }>(response);
+    if (res instanceof ApiError) {
+        if (res.status == 400) {
+            return "Username or email already exists";
+        }
+    }
+    if (res instanceof Error) {
+        return res;
+    }
+    if (res.status == "success") {
+        return true;
+    }
+    return new Error("unexpected result", { cause: res });
 };
