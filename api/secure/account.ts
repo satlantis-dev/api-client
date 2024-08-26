@@ -1,4 +1,4 @@
-import { type NostrEvent, NostrKind, prepareNostrEvent, type Signer } from "@blowater/nostr-sdk";
+import { type NostrEvent, NostrKind, prepareNostrEvent } from "@blowater/nostr-sdk";
 
 import { copyURL, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
