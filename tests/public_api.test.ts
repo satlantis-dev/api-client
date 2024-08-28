@@ -162,7 +162,7 @@ Deno.test("getLocationTags", async () => {
 });
 
 Deno.test("nip5", async () => {
-    const result = await getNip5({ name: "_", domain: "https://www.satlantis.io" });
+    const result = await getNip5({ name: "_", domain: "https://dev.satlantis.io" });
     if (result instanceof Error) {
         console.log(result);
         fail();
