@@ -1,6 +1,6 @@
 import { assert, assertEquals, assertNotEquals, fail } from "@std/assert";
 
-import { Client, getNip5, loginNostr, type Place } from "../sdk.ts";
+import { Client, getPubkeyByNip05, loginNostr, type Place } from "../sdk.ts";
 import { InMemoryAccountContext, PublicKey } from "@blowater/nostr-sdk";
 
 const url = new URL("https://api-dev.satlantis.io");
@@ -162,12 +162,25 @@ Deno.test("getLocationTags", async () => {
 });
 
 Deno.test("nip5", async () => {
-    const result = await getNip5({ name: "_", domain: "https://dev.satlantis.io" });
-    if (result instanceof Error) {
-        console.log(result);
-        fail();
+    {
+        const result = await getPubkeyByNip05({ name: randomString(), domain: "https://dev.satlantis.io" });
+        if (result instanceof Error) {
+            console.log(result);
+            fail();
+        }
+        assertEquals(result, undefined);
     }
-    console.log(result);
+    {
+        const result = await getPubkeyByNip05({ name: "123", domain: "https://www.dev.satlantis.io" });
+        if (result instanceof Error) {
+            console.log(result);
+            fail();
+        }
+        assertEquals(
+            result,
+            PublicKey.FromHex("65dff7c1f841ed83380ddd069c2d4a2dcbea3c968b4ffc80769b4eb5518fe2d8"),
+        );
+    }
 });
 
 Deno.test("getAccount", async () => {
