@@ -79,7 +79,7 @@ async (args: {
     const response = await safeFetch(url, {
         method: "PUT",
         body: JSON.stringify({
-            username: `${args.username}@satlantis.io`,
+            username: `${args.username}`,
         }),
     });
     if (response instanceof Error) {
