@@ -2,6 +2,7 @@ import { assert, assertEquals, assertNotEquals, fail } from "@std/assert";
 
 import { Client, getPubkeyByNip05, loginNostr, type Place } from "../sdk.ts";
 import { InMemoryAccountContext, PublicKey } from "@blowater/nostr-sdk";
+import type { ApiError } from "../helpers/_helper.ts";
 
 const url = new URL("https://api-dev.satlantis.io");
 const clientNoAuth = Client.New({ baseURL: url });
@@ -337,10 +338,19 @@ Deno.test("addressLookup", async () => {
 
 Deno.test("initiatePasswordReset", async () => {
     const result = await clientNoAuth.initiatePasswordReset({
-        username: "albert"
+        username: "albert",
     });
     if (result instanceof Error) fail(result.message);
     console.log(result);
+});
+
+Deno.test("verifyEmail", async () => {
+    const result = await clientNoAuth.verifyEmail({
+        token:
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjI1NTU1NywiZXhwIjoxNzI0OTg5MDU4fQ.TH_YBHlVXkOhl2ZjPop-Xkt7tCgUi0aUMND-W0oD5rk",
+    }) as ApiError;
+    assertEquals(result.status, 403);
+    assertEquals(result.message, "status 403, body Token doesn't exist\n");
 });
 
 export function randomString() {

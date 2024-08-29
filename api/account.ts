@@ -85,5 +85,18 @@ async (args: {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{success: boolean}>(response);
+    return handleResponse<{ success: boolean }>(response);
+};
+
+export const verifyEmail = (urlArg: URL) =>
+async (args: {
+    token: string;
+}) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/verifyEmail/${args.token}`;
+    const response = await safeFetch(url, { method: "PUT" });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{ success: boolean }>(response);
 };

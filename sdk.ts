@@ -1,6 +1,6 @@
 import { type Signer } from "@blowater/nostr-sdk";
 
-import { createAccount, getAccount, initiatePasswordReset, login } from "./api/account.ts";
+import { createAccount, getAccount, initiatePasswordReset, login, verifyEmail } from "./api/account.ts";
 import { getIpInfo } from "./api/ip.ts";
 import { getLocationReviews, getLocationsWithinBoundingBox, getLocationTags } from "./api/location.ts";
 import { loginNostr } from "./api/login.ts";
@@ -58,6 +58,7 @@ export class Client {
     loginNostr: ReturnType<typeof loginNostr>;
     login: ReturnType<typeof login>;
     initiatePasswordReset: ReturnType<typeof initiatePasswordReset>;
+    verifyEmail: ReturnType<typeof verifyEmail>;
     /////////////////
     // authed APIs //
     /////////////////
@@ -126,6 +127,7 @@ export class Client {
         this.login = login(url);
         this.loginNostr = loginNostr(url);
         this.initiatePasswordReset = initiatePasswordReset(this.url);
+        this.verifyEmail = verifyEmail(this.url);
     }
 
     static New(args: {
