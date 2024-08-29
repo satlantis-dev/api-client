@@ -335,6 +335,14 @@ Deno.test("addressLookup", async () => {
     ]);
 });
 
+Deno.test("initiatePasswordReset", async () => {
+    const result = await clientNoAuth.initiatePasswordReset({
+        username: "albert"
+    });
+    if (result instanceof Error) fail(result.message);
+    console.log(result);
+});
+
 export function randomString() {
     return String(Date.now());
 }

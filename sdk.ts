@@ -1,6 +1,6 @@
 import { type Signer } from "@blowater/nostr-sdk";
 
-import { createAccount, getAccount, login } from "./api/account.ts";
+import { createAccount, getAccount, initiatePasswordReset, login } from "./api/account.ts";
 import { getIpInfo } from "./api/ip.ts";
 import { getLocationReviews, getLocationsWithinBoundingBox, getLocationTags } from "./api/location.ts";
 import { loginNostr } from "./api/login.ts";
@@ -48,7 +48,6 @@ export class Client {
     // Account
     getAccount: ReturnType<typeof getAccount>;
     createAccount: ReturnType<typeof createAccount>;
-    login: ReturnType<typeof login>;
     getNotes: ReturnType<typeof getNotes>;
     getNote: ReturnType<typeof getNote>;
     getIpInfo: ReturnType<typeof getIpInfo>;
@@ -57,6 +56,8 @@ export class Client {
 
     // auth
     loginNostr: ReturnType<typeof loginNostr>;
+    login: ReturnType<typeof login>;
+    initiatePasswordReset: ReturnType<typeof initiatePasswordReset>;
     /////////////////
     // authed APIs //
     /////////////////
@@ -93,10 +94,10 @@ export class Client {
         this.getPlaceEvent = getPlaceEvent(url);
         this.getLocationsWithinBoundingBox = getLocationsWithinBoundingBox(url);
         this.getRegion = getRegion(url);
-        this.loginNostr = loginNostr(url);
+
         this.getAccount = getAccount(url);
         this.createAccount = createAccount(url);
-        this.login = login(url);
+
         this.getNotes = getNotes(url);
         this.getNote = getNote(url);
         this.getIpInfo = getIpInfo(url);
@@ -120,6 +121,11 @@ export class Client {
         this.postNote = postNote(url, this.getJwt);
         this.signEvent = signEvent(url, getJwt);
         this.updatePlace = updatePlace(url, this.getJwt);
+
+        // sign-in / sign-up
+        this.login = login(url);
+        this.loginNostr = loginNostr(url);
+        this.initiatePasswordReset = initiatePasswordReset(this.url);
     }
 
     static New(args: {
