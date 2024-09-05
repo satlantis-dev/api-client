@@ -61,7 +61,7 @@ Deno.test("AccountRole", async () => {
         kind: NostrKind.CONTACTS,
         content: "",
         tags: [["p", signer.publicKey.hex]],
-    });
+    }) as NostrEvent<NostrKind.CONTACTS>;
     const res3 = await client.updateAccountFollowingList({ event });
     if (res3 instanceof Error) fail(res3.message);
     assertEquals(true, res3);
@@ -100,7 +100,7 @@ Deno.test("post notes", async () => {
         const root_event = await prepareNostrEvent(signer, {
             content: "test reaction",
             kind: NostrKind.REACTION,
-        });
+        }) as NostrEvent;
         const rootNote = await client.postNote({
             placeId: 23949,
             accountId: res.account.id,
@@ -114,7 +114,7 @@ Deno.test("post notes", async () => {
         const reaction_event = await prepareNostrEvent(signer, {
             content: "test reaction",
             kind: NostrKind.REACTION,
-        });
+        }) as NostrEvent;
         const result = await client.postReaction({
             accountId: res.account.id,
             event: reaction_event,
