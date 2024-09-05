@@ -25,6 +25,7 @@ import { presign } from "./api/secure/presign.ts";
 import { newURL } from "./helpers/_helper.ts";
 import { addressLookup } from "./api/address.ts";
 import { signEvent } from "./api/nostr_event.ts";
+import { getInterests } from "./api/secure/interests.ts";
 
 export type func_GetNostrSigner = () => Promise<Signer | Error>;
 export type func_GetJwt = () => string;
@@ -66,6 +67,7 @@ export class Client {
     removeAccountRole: ReturnType<typeof removeAccountRole>;
     addAccountRole: ReturnType<typeof addAccountRole>;
     updateAccountFollowingList: ReturnType<typeof updateAccountFollowingList>;
+    getInterests: ReturnType<typeof getInterests>;
 
     // nostr note
     postNote: ReturnType<typeof postNote>;
@@ -128,6 +130,7 @@ export class Client {
         this.loginNostr = loginNostr(url);
         this.initiatePasswordReset = initiatePasswordReset(this.url);
         this.verifyEmail = verifyEmail(this.url);
+        this.getInterests = getInterests(this.url, this.getJwt);
     }
 
     static New(args: {
