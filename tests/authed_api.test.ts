@@ -258,3 +258,19 @@ Deno.test({
         });
     },
 });
+
+Deno.test("getInterests", async () => {
+    const signer = InMemoryAccountContext.Generate();
+    const res = await clientNoAuth.loginNostr(signer);
+    if (res instanceof Error) fail(res.message);
+
+    const client = Client.New({
+        baseURL: "https://api-dev.satlantis.io",
+        getJwt: () => res.token,
+        getNostrSigner: async () => signer,
+    }) as Client;
+
+    const interests = await client.getInterests();
+    if (interests instanceof Error) fail(interests.message);
+    assertEquals(interests.length > 0, true);
+});
