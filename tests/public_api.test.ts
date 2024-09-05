@@ -164,7 +164,10 @@ Deno.test("getLocationTags", async () => {
 
 Deno.test("nip5", async () => {
     {
-        const result = await getPubkeyByNip05({ name: randomString(), domain: "https://dev.satlantis.io" });
+        const result = await getPubkeyByNip05({
+            name: randomString(),
+            domain: "https://dev.satlantis.io",
+        });
         if (result instanceof Error) {
             console.log(result);
             fail();
@@ -355,11 +358,21 @@ Deno.test("initiatePasswordReset", async () => {
     console.log(result);
 });
 
+Deno.test("resetPassword", async () => {
+    const result = await clientNoAuth.resetPassword({
+        password: "********",
+        token:
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjI2OTkxNCwiZXhwIjoxNzI1NjMzMzc0fQ.ihDjFSde5HS2qCbMquNy4qjwDPlFRAZx4km7tCF04kI",
+    });
+    if (result instanceof Error) fail(result.message);
+    console.log(result);
+});
+
 Deno.test("verifyEmail", async () => {
-    const result = await clientNoAuth.verifyEmail({
+    const result = (await clientNoAuth.verifyEmail({
         token:
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjI1NTU1NywiZXhwIjoxNzI0OTg5MDU4fQ.TH_YBHlVXkOhl2ZjPop-Xkt7tCgUi0aUMND-W0oD5rk",
-    }) as ApiError;
+    })) as ApiError;
     assertEquals(result.status, 403);
     assertEquals(result.message, "status 403, body Token doesn't exist\n");
 });
