@@ -1,16 +1,6 @@
 import { copyURL, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
-
-type Interests = {
-    readonly id: number;
-    readonly name: string;
-    readonly description: string;
-    readonly recommendationsByNpub: string[] | null | undefined;
-    readonly recommendationsById: null | undefined;
-    readonly autofollowsByNpub: null | undefined;
-    readonly autofollowsById: null | undefined;
-    readonly hashtags: string[] | null | undefined;
-};
+import type { Interest } from "../../models/interest.ts";
 
 export const getInterests = (urlArg: URL) => async () => {
     const url = copyURL(urlArg);
@@ -22,5 +12,5 @@ export const getInterests = (urlArg: URL) => async () => {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<Interests[]>(response);
+    return handleResponse<Interest[]>(response);
 };

@@ -168,6 +168,7 @@ export * from "./api/share_types.ts";
 export * from "./api/secure/account.ts";
 export * from "./api/secure/presign.ts";
 export * from "./api/secure/place.ts";
+// types
 export * from "./models/account.ts";
 export * from "./models/calendar.ts";
 export * from "./models/chat.ts";
@@ -175,5 +176,6 @@ export * from "./models/location.ts";
 export * from "./models/metric.ts";
 export * from "./models/place.ts";
 export * from "./models/region.ts";
+export * from "./models/interest.ts";
 // event handling
 export * from "./event-handling/parser.ts";
