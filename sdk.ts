@@ -1,4 +1,4 @@
-import { type Signer } from "@blowater/nostr-sdk";
+import { type NostrAccountContext, type Signer } from "@blowater/nostr-sdk";
 
 import { createAccount, getAccount, initiatePasswordReset, login, verifyEmail } from "./api/account.ts";
 import { getIpInfo } from "./api/ip.ts";
@@ -24,7 +24,7 @@ import { postNote, postReaction } from "./api/secure/note.ts";
 import { presign } from "./api/secure/presign.ts";
 import { newURL } from "./helpers/_helper.ts";
 import { addressLookup } from "./api/address.ts";
-import { signEvent } from "./api/nostr_event.ts";
+import { encryptEvent, signEvent } from "./api/remote_nostr_signer.ts";
 import { getInterests } from "./api/secure/interests.ts";
 
 export type func_GetNostrSigner = () => Promise<Signer | Error>;
@@ -72,7 +72,10 @@ export class Client {
     // nostr note
     postNote: ReturnType<typeof postNote>;
     postReaction: ReturnType<typeof postReaction>;
+
+    // remote nostr signer
     signEvent: ReturnType<typeof signEvent>;
+    encryptEvent: ReturnType<typeof encryptEvent>;
 
     // s3
     presign: ReturnType<typeof presign>;
@@ -122,7 +125,7 @@ export class Client {
         this.presign = presign(url, this.getJwt);
         this.postReaction = postReaction(url, this.getJwt);
         this.postNote = postNote(url, this.getJwt);
-        this.signEvent = signEvent(url, getJwt);
+
         this.updatePlace = updatePlace(url, this.getJwt);
 
         // sign-in / sign-up
@@ -131,6 +134,10 @@ export class Client {
         this.initiatePasswordReset = initiatePasswordReset(this.url);
         this.verifyEmail = verifyEmail(this.url);
         this.getInterests = getInterests(this.url);
+
+        // remote nostr signer
+        this.signEvent = signEvent(url, getJwt);
+        this.encryptEvent = encryptEvent(url, getJwt);
     }
 
     static New(args: {

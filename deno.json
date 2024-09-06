@@ -13,5 +13,6 @@
     },
     "compilerOptions": {
         "verbatimModuleSyntax": true
-    }
+    },
+    "license": "MIT"
 }

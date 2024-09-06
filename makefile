@@ -3,7 +3,7 @@
 # or https://github.com/alberlantis
 # to grant you access
 publish:
-	deno publish --allow-slow-types
+	deno publish --allow-slow-types --allow-dirty
 
 fmt:
 	deno fmt
