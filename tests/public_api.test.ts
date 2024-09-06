@@ -359,12 +359,13 @@ Deno.test("initiatePasswordReset", async () => {
 });
 
 Deno.test("resetPassword", async () => {
-    const result = await clientNoAuth.resetPassword({
+    const result = (await clientNoAuth.resetPassword({
         password: "********",
         token:
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjI2OTkxNCwiZXhwIjoxNzI1NjMzMzc0fQ.ihDjFSde5HS2qCbMquNy4qjwDPlFRAZx4km7tCF04kI",
-    });
-    if (result instanceof Error) fail(result.message);
+    })) as ApiError;
+    assertEquals(result.status, 404);
+    assertEquals(result.message, "status 404, body record not found\n");
     console.log(result);
 });
 

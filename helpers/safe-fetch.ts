@@ -20,7 +20,7 @@ export async function safeFetch(input: RequestInfo | URL, init?: RequestInit) {
     return {
         headers: response.headers,
         status: response.status,
-        text: () => {
+        text: async () => {
             try {
                 return response.text();
             } catch (e) {
