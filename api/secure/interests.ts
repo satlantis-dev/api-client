@@ -12,21 +12,12 @@ type Interests = {
     readonly hashtags: string[] | null | undefined;
 };
 
-export const getInterests = (urlArg: URL, getJwt: () => string) => async () => {
-    const jwtToken = getJwt();
-    if (jwtToken == "") {
-        return new Error("jwt token is empty");
-    }
-
+export const getInterests = (urlArg: URL) => async () => {
     const url = copyURL(urlArg);
-    url.pathname = `/secure/interests`;
-
-    const headers = new Headers();
-    headers.set("Authorization", `Bearer ${jwtToken}`);
+    url.pathname = `/interests`;
 
     const response = await safeFetch(url, {
         method: "GET",
-        headers,
     });
     if (response instanceof Error) {
         return response;
