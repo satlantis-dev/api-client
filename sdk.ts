@@ -130,7 +130,7 @@ export class Client {
         this.loginNostr = loginNostr(url);
         this.initiatePasswordReset = initiatePasswordReset(this.url);
         this.verifyEmail = verifyEmail(this.url);
-        this.getInterests = getInterests(this.url, this.getJwt);
+        this.getInterests = getInterests(this.url);
     }
 
     static New(args: {
