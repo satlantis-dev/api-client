@@ -33,31 +33,30 @@ export const login = (urlArg: URL) => async (args: { username: string; password:
     return result;
 };
 
-export const createAccount =
-    (urlArg: URL) => async (args: { username: string; password: string; email: string }) => {
-        const url = copyURL(urlArg);
-        url.pathname = `/createAccount`;
-        const response = await safeFetch(url, {
-            method: "POST",
-            body: JSON.stringify(args),
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        const res = await handleResponse<{ status: "success" }>(response);
-        if (res instanceof ApiError) {
-            if (res.status == 400) {
-                return "Username or email already exists";
-            }
-        }
-        if (res instanceof Error) {
-            return res;
-        }
-        if (res.status == "success") {
-            return true;
-        }
-        return new Error("unexpected result", { cause: res });
-    };
+export const createAccount = (urlArg: URL) =>
+async (args: {
+    username: string;
+    password: string;
+    email: string;
+}) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/createAccount`;
+    const response = await safeFetch(url, {
+        method: "POST",
+        body: JSON.stringify(args),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    const res = await handleResponse<{ status: "success" }>(response);
+    if (res instanceof Error) {
+        return res;
+    }
+    if (res.status == "success") {
+        return true;
+    }
+    return new Error("unexpected result", { cause: res });
+};
 
 export const initiatePasswordReset = (urlArg: URL) => async (args: { username: string }) => {
     const url = copyURL(urlArg);
