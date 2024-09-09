@@ -358,6 +358,7 @@ Deno.test("initiatePasswordReset", async () => {
 });
 
 Deno.test("resetPassword", async () => {
+    // todo: this is not testing anything
     const result = (await clientNoAuth.resetPassword({
         password: "********",
         token:
