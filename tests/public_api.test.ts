@@ -164,7 +164,10 @@ Deno.test("getLocationTags", async () => {
 
 Deno.test("nip5", async () => {
     {
-        const result = await getPubkeyByNip05({ name: randomString(), domain: "https://dev.satlantis.io" });
+        const result = await getPubkeyByNip05({
+            name: randomString(),
+            domain: "https://dev.satlantis.io",
+        });
         if (result instanceof Error) {
             console.log(result);
             fail();
@@ -217,11 +220,10 @@ Deno.test({
                 password: "simple",
                 username: "hi",
             });
-            if (result instanceof Error) {
-                console.log(result);
-                fail(result.message);
+            if (!(result instanceof Error)) {
+                fail("shoud be error");
             }
-            assertEquals(result, "Username or email already exists");
+            assertEquals(result.message, "Username or email already exists");
         }
         {
             const result = await clientNoAuth.createAccount({
@@ -291,7 +293,7 @@ Deno.test("login", async () => {
     }
 });
 
-Deno.test("get notes", async () => {
+Deno.test("getNotes", async () => {
     const result = await clientNoAuth.getNotes({
         npub: "npub1le59glyc3r9zsddury0fu8wyqu69ckvj78fn4425m5xn9zd0zpdssjtd53",
         limit: 2,
@@ -355,11 +357,22 @@ Deno.test("initiatePasswordReset", async () => {
     console.log(result);
 });
 
+Deno.test("resetPassword", async () => {
+    // todo: this is not testing anything
+    const result = (await clientNoAuth.resetPassword({
+        password: "********",
+        token:
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjI2OTkxNCwiZXhwIjoxNzI1NjMzMzc0fQ.ihDjFSde5HS2qCbMquNy4qjwDPlFRAZx4km7tCF04kI",
+    })) as ApiError;
+    assertEquals(result.status, 404);
+    assertEquals(result.message, "status 404, body record not found\n");
+});
+
 Deno.test("verifyEmail", async () => {
-    const result = await clientNoAuth.verifyEmail({
+    const result = (await clientNoAuth.verifyEmail({
         token:
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjI1NTU1NywiZXhwIjoxNzI0OTg5MDU4fQ.TH_YBHlVXkOhl2ZjPop-Xkt7tCgUi0aUMND-W0oD5rk",
-    }) as ApiError;
+    })) as ApiError;
     assertEquals(result.status, 403);
     assertEquals(result.message, "status 403, body Token doesn't exist\n");
 });

@@ -4,10 +4,7 @@ export type FetchResult = {
     text: () => Promise<string | Aborted>;
 };
 
-export async function safeFetch(
-    input: RequestInfo | URL,
-    init?: RequestInit,
-) {
+export async function safeFetch(input: RequestInfo | URL, init?: RequestInit) {
     let response: Response;
     try {
         response = await fetch(input, init);

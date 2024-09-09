@@ -56,11 +56,6 @@ async (args: {
         return response;
     }
     const res = await handleResponse<{ status: "success" }>(response);
-    if (res instanceof ApiError) {
-        if (res.status == 400) {
-            return "Username or email already exists";
-        }
-    }
     if (res instanceof Error) {
         return res;
     }
@@ -88,10 +83,23 @@ async (args: {
     return handleResponse<{ success: boolean }>(response);
 };
 
-export const verifyEmail = (urlArg: URL) =>
-async (args: {
-    token: string;
-}) => {
+export const resetPassword = (urlArg: URL) => async (args: { token: string; password: string }) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/resetPassword`;
+    const response = await safeFetch(url, {
+        method: "PUT",
+        body: JSON.stringify({
+            password: args.password,
+            token: args.token,
+        }),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{ success: boolean }>(response);
+};
+
+export const verifyEmail = (urlArg: URL) => async (args: { token: string }) => {
     const url = copyURL(urlArg);
     url.pathname = `/verifyEmail/${args.token}`;
     const response = await safeFetch(url, { method: "PUT" });

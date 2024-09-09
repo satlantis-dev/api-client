@@ -1,6 +1,13 @@
 import { type Signer } from "@blowater/nostr-sdk";
 
-import { createAccount, getAccount, initiatePasswordReset, login, verifyEmail } from "./api/account.ts";
+import {
+    createAccount,
+    getAccount,
+    initiatePasswordReset,
+    login,
+    resetPassword,
+    verifyEmail,
+} from "./api/account.ts";
 import { getIpInfo } from "./api/ip.ts";
 import { getLocationReviews, getLocationsWithinBoundingBox, getLocationTags } from "./api/location.ts";
 import { loginNostr } from "./api/login.ts";
@@ -42,9 +49,7 @@ export class Client {
     getPlaceCalendarEvents: ReturnType<typeof getPlaceCalendarEvents>;
     getPlaceChats: ReturnType<typeof getPlaceChats>;
     getPlaceCategoryScores: ReturnType<typeof getPlaceCategoryScores>;
-    getLocationsWithinBoundingBox: ReturnType<
-        typeof getLocationsWithinBoundingBox
-    >;
+    getLocationsWithinBoundingBox: ReturnType<typeof getLocationsWithinBoundingBox>;
     getRegion: ReturnType<typeof getRegion>;
     // Account
     getAccount: ReturnType<typeof getAccount>;
@@ -59,6 +64,7 @@ export class Client {
     loginNostr: ReturnType<typeof loginNostr>;
     login: ReturnType<typeof login>;
     initiatePasswordReset: ReturnType<typeof initiatePasswordReset>;
+    resetPassword: ReturnType<typeof resetPassword>;
     verifyEmail: ReturnType<typeof verifyEmail>;
     /////////////////
     // authed APIs //
@@ -108,17 +114,13 @@ export class Client {
         this.addressLookup = addressLookup(url);
 
         // authed APIs
-        this.removeAccountRole = removeAccountRole(
+        this.removeAccountRole = removeAccountRole(url, this.getJwt, this.getNostrSigner);
+        this.addAccountRole = addAccountRole(url, this.getJwt, this.getNostrSigner);
+        this.updateAccountFollowingList = updateAccountFollowingList(
             url,
             this.getJwt,
             this.getNostrSigner,
         );
-        this.addAccountRole = addAccountRole(
-            url,
-            this.getJwt,
-            this.getNostrSigner,
-        );
-        this.updateAccountFollowingList = updateAccountFollowingList(url, this.getJwt, this.getNostrSigner);
         this.presign = presign(url, this.getJwt);
         this.postReaction = postReaction(url, this.getJwt);
         this.postNote = postNote(url, this.getJwt);
@@ -129,6 +131,7 @@ export class Client {
         this.login = login(url);
         this.loginNostr = loginNostr(url);
         this.initiatePasswordReset = initiatePasswordReset(this.url);
+        this.resetPassword = resetPassword(this.url);
         this.verifyEmail = verifyEmail(this.url);
         this.getInterests = getInterests(this.url);
     }

@@ -15,19 +15,13 @@ export const loginNostr = (urlArg: URL) => async (signer: Signer) => {
             // @ts-ignore
             kind: 27236,
             content: "{}",
-            tags: [[
-                "auth",
-                "satlantis",
-            ]],
+            tags: [["auth", "satlantis"]],
         }),
     );
-    const response = await safeFetch(
-        url,
-        {
-            method: "POST",
-            body,
-        },
-    );
+    const response = await safeFetch(url, {
+        method: "POST",
+        body,
+    });
     if (response instanceof Error) {
         return response;
     }
