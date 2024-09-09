@@ -220,11 +220,10 @@ Deno.test({
                 password: "simple",
                 username: "hi",
             });
-            if (result instanceof Error) {
-                console.log(result);
-                fail(result.message);
+            if (!(result instanceof Error)) {
+                fail("shoud be error");
             }
-            assertEquals(result, "Username or email already exists");
+            assertEquals(result.message, "Username or email already exists");
         }
         {
             const result = await clientNoAuth.createAccount({
@@ -366,7 +365,6 @@ Deno.test("resetPassword", async () => {
     })) as ApiError;
     assertEquals(result.status, 404);
     assertEquals(result.message, "status 404, body record not found\n");
-    console.log(result);
 });
 
 Deno.test("verifyEmail", async () => {
