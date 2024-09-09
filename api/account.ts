@@ -2,7 +2,10 @@ import { ApiError, copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { Account } from "../models/account.ts";
 
-export const getAccount = (urlArg: URL) => async (args: { npub: string }) => {
+export const getAccount = (urlArg: URL) =>
+async (args: {
+    npub: string;
+}) => {
     const url = copyURL(urlArg);
     url.pathname = `/getAccount/${args.npub}`;
     const response = await safeFetch(url);
@@ -12,7 +15,11 @@ export const getAccount = (urlArg: URL) => async (args: { npub: string }) => {
     return handleResponse<Account>(response);
 };
 
-export const login = (urlArg: URL) => async (args: { username: string; password: string }) => {
+export const login = (urlArg: URL) =>
+async (args: {
+    username: string;
+    password: string;
+}) => {
     const url = copyURL(urlArg);
     url.pathname = `/login`;
     const response = await safeFetch(url, {
