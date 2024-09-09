@@ -65,7 +65,10 @@ async (args: {
     return new Error("unexpected result", { cause: res });
 };
 
-export const initiatePasswordReset = (urlArg: URL) => async (args: { username: string }) => {
+export const initiatePasswordReset = (urlArg: URL) =>
+async (args: {
+    username: string;
+}) => {
     const url = copyURL(urlArg);
     url.pathname = `/initiatePasswordReset`;
     const response = await safeFetch(url, {
