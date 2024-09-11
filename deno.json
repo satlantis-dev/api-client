@@ -1,6 +1,6 @@
 {
     "name": "@satlantis/api-client",
-    "version": "0.0.38",
+    "version": "0.0.39",
     "exports": "./sdk.ts",
     "imports": {
         "@blowater/nostr-sdk": "jsr:@blowater/nostr-sdk@^0.0.16",
@@ -13,5 +13,6 @@
     },
     "compilerOptions": {
         "verbatimModuleSyntax": true
-    }
+    },
+    "license": "MIT"
 }
