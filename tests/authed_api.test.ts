@@ -182,13 +182,13 @@ Deno.test({
         const result = await clientNoAuth.createAccount({
             email: `${randomString()}@email.com`,
             password: "simple",
-            username: "hi",
+            username: "hi3",
         });
         if (result instanceof Error) fail(result.message);
 
         const login = await clientNoAuth.login({
             password: "simple",
-            username: "hi",
+            username: "hi3",
         });
         if (login instanceof Error) fail(login.message);
         if (login == undefined || login == "invalid password") fail("wrong");
