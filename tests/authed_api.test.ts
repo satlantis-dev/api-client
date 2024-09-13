@@ -179,16 +179,18 @@ Deno.test({
     name: "signEvent",
     // ignore: true,
     fn: async (t) => {
+        const password = randomString();
+        const username = randomString();
         const result = await clientNoAuth.createAccount({
             email: `${randomString()}@email.com`,
-            password: "simple",
-            username: "hi3",
+            password,
+            username,
         });
         if (result instanceof Error) fail(result.message);
 
         const login = await clientNoAuth.login({
-            password: "simple",
-            username: "hi3",
+            password,
+            username,
         });
         if (login instanceof Error) fail(login.message);
         if (login == undefined || login == "invalid password") fail("wrong");
