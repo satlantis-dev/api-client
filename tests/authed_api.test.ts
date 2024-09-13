@@ -107,7 +107,9 @@ Deno.test("post notes", async () => {
             event: root_event,
             noteType: NoteType.BASIC,
         });
-        if (rootNote instanceof Error) fail(rootNote.message);
+        if (rootNote instanceof Error) {
+            fail(rootNote.message);
+        }
         console.log(rootNote);
         assertEquals(rootNote.event.nostrId, root_event.id);
 
