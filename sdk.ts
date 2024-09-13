@@ -6,6 +6,7 @@ import {
     initiatePasswordReset,
     login,
     resetPassword,
+    updateAccount,
     verifyEmail,
 } from "./api/account.ts";
 import { getIpInfo } from "./api/ip.ts";
@@ -51,9 +52,12 @@ export class Client {
     getPlaceCategoryScores: ReturnType<typeof getPlaceCategoryScores>;
     getLocationsWithinBoundingBox: ReturnType<typeof getLocationsWithinBoundingBox>;
     getRegion: ReturnType<typeof getRegion>;
+
     // Account
     getAccount: ReturnType<typeof getAccount>;
     createAccount: ReturnType<typeof createAccount>;
+    updateAccount: ReturnType<typeof updateAccount>
+
     getNotes: ReturnType<typeof getNotes>;
     getNote: ReturnType<typeof getNote>;
     getIpInfo: ReturnType<typeof getIpInfo>;
@@ -106,6 +110,7 @@ export class Client {
 
         this.getAccount = getAccount(url);
         this.createAccount = createAccount(url);
+        this.updateAccount = updateAccount(url);
 
         this.getNotes = getNotes(url);
         this.getNote = getNote(url);
