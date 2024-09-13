@@ -151,5 +151,5 @@ async (args: {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{ status: "success" }>(response);
+    return handleResponse<Account>(response);
 };
