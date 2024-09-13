@@ -3,7 +3,7 @@ import { type NostrEvent, NostrKind, prepareNostrEvent } from "@blowater/nostr-s
 import { copyURL, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
 import type { AccountPlaceRole, AccountPlaceRoleTypeEnum } from "../../models/account.ts";
-import type { func_GetJwt, func_GetNostrSigner } from "../../sdk.ts";
+import type { Account, func_GetJwt, func_GetNostrSigner } from "../../sdk.ts";
 
 export const addAccountRole =
     (urlArg: URL, getJwt: func_GetJwt, getSigner: func_GetNostrSigner) =>
@@ -120,3 +120,36 @@ export const updateAccountFollowingList =
 
         return ok.toLowerCase() == "success";
     };
+
+// Update account
+interface IUpdateAccountPut {
+    countryCode?: string;
+    email?: string;
+    kind0: NostrEvent<NostrKind.META_DATA>;
+    phone?: string;
+}
+
+export const updateAccount = (urlArg: URL, getJwt: func_GetJwt) =>
+async (args: {
+    npub: string;
+    account: Account | IUpdateAccountPut;
+}) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+
+    const url = copyURL(urlArg);
+    url.pathname = `/updateAccount/${args.npub}`;
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    const response = await safeFetch(url, {
+        method: "PUT",
+        body: JSON.stringify(args.account),
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{ status: "success" }>(response);
+};

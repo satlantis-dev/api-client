@@ -6,7 +6,6 @@ import {
     initiatePasswordReset,
     login,
     resetPassword,
-    updateAccount,
     verifyEmail,
 } from "./api/account.ts";
 import { getIpInfo } from "./api/ip.ts";
@@ -26,7 +25,12 @@ import {
     getPlaces,
     getRegion,
 } from "./api/place.ts";
-import { addAccountRole, removeAccountRole, updateAccountFollowingList } from "./api/secure/account.ts";
+import {
+    addAccountRole,
+    removeAccountRole,
+    updateAccount,
+    updateAccountFollowingList,
+} from "./api/secure/account.ts";
 import { updatePlace } from "./api/secure/place.ts";
 import { postNote, postReaction } from "./api/secure/note.ts";
 import { presign } from "./api/secure/presign.ts";
@@ -56,7 +60,7 @@ export class Client {
     // Account
     getAccount: ReturnType<typeof getAccount>;
     createAccount: ReturnType<typeof createAccount>;
-    updateAccount: ReturnType<typeof updateAccount>
+    updateAccount: ReturnType<typeof updateAccount>;
 
     getNotes: ReturnType<typeof getNotes>;
     getNote: ReturnType<typeof getNote>;
@@ -110,7 +114,7 @@ export class Client {
 
         this.getAccount = getAccount(url);
         this.createAccount = createAccount(url);
-        this.updateAccount = updateAccount(url);
+        this.updateAccount = updateAccount(url, getJwt);
 
         this.getNotes = getNotes(url);
         this.getNote = getNote(url);

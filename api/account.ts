@@ -1,6 +1,8 @@
+import type { NostrEvent, NostrKind } from "@blowater/nostr-sdk";
 import { ApiError, copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { Account } from "../models/account.ts";
+import type { func_GetJwt } from "../sdk.ts";
 
 export const getAccount = (urlArg: URL) => async (args: { npub: string }) => {
     const url = copyURL(urlArg);
@@ -53,20 +55,6 @@ export const createAccount =
         }
         return new Error("unexpected result", { cause: res });
     };
-
-// Update account
-export const updateAccount = (urlArg: URL) => async (args: { npub: string; account: Account }) => {
-    const url = copyURL(urlArg);
-    url.pathname = `/updateAccount/${args.npub}`;
-    const response = await safeFetch(url, {
-        method: "PUT",
-        body: JSON.stringify(args.account),
-    });
-    if (response instanceof Error) {
-        return response;
-    }
-    return handleResponse<{ status: "success" }>(response);
-};
 
 export const initiatePasswordReset = (urlArg: URL) => async (args: { username: string }) => {
     const url = copyURL(urlArg);
