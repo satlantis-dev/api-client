@@ -56,9 +56,11 @@ export const postNote = (urlArg: URL, getJwt: () => string) => async (args: Note
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
+    const body = JSON.stringify(args);
+
     const response = await safeFetch(url, {
         method: "POST",
-        body: JSON.stringify(args),
+        body,
         headers,
     });
     if (response instanceof Error) {

@@ -218,12 +218,23 @@ Deno.test({
             const result = await clientNoAuth.createAccount({
                 email: "user@email.com",
                 password: "simple",
+                username: "hi3",
+            });
+            if (!(result instanceof Error)) {
+                fail("shoud be error");
+            }
+            assertEquals(result.message, "status 400, body Username or email already exists\n");
+        }
+        {
+            const result = await clientNoAuth.createAccount({
+                email: "user@email.com",
+                password: "simple",
                 username: "hi",
             });
             if (!(result instanceof Error)) {
                 fail("shoud be error");
             }
-            assertEquals(result.message, "Username or email already exists");
+            assertEquals(result.message, "status 400, body Username must be at least 3 characters\n");
         }
         {
             const result = await clientNoAuth.createAccount({
