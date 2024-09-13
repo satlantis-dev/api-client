@@ -140,7 +140,7 @@ async (args: {
     }
 
     const url = copyURL(urlArg);
-    url.pathname = `/updateAccount/${args.npub}`;
+    url.pathname = `/secure/updateAccount/${args.npub}`;
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
     const response = await safeFetch(url, {
