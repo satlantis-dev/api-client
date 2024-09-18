@@ -1,20 +1,22 @@
-import { type NostrEvent, NostrKind, prepareNostrEvent } from "@blowater/nostr-sdk";
+import { NostrKind, prepareNostrEvent } from "@blowater/nostr-sdk";
 import { copyURL, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
-import { type Account, type func_GetJwt, type func_GetNostrSigner, Hashtag } from "../../sdk.ts";
-import type { CalendarEvent } from "../../models/calendar.ts";
+import { type Account, type func_GetJwt, type func_GetNostrSigner } from "../../sdk.ts";
 
 export const postCalendarEventRSVP =
     (urlArg: URL, getJwt: func_GetJwt, getSigner: func_GetNostrSigner) =>
-    async (calendarEvent: {
-        dTag: string;
-        note: {
-            event: {
-                pubkey: string;
+    async (args: {
+        response: "accepted" | "maybe" | "declined" | "tentative";
+        calendarEvent: {
+            dTag: string;
+            note: {
+                event: {
+                    pubkey: string;
+                };
             };
+            accountId: number;
+            noteId: number;
         };
-        accountId: number;
-        noteId: number;
     }) => {
         const jwtToken = getJwt();
         if (jwtToken == "") {
@@ -27,8 +29,8 @@ export const postCalendarEventRSVP =
         }
 
         const uuid = crypto.randomUUID();
-        const dTag = calendarEvent.dTag;
-        const aTag = `${NostrKind.Calendar_Time}:${calendarEvent.note.event.pubkey}:${dTag}`;
+        const dTag = args.calendarEvent.dTag;
+        const aTag = `${NostrKind.Calendar_Time}:${args.calendarEvent.note.event.pubkey}:${dTag}`;
 
         const event = await prepareNostrEvent(signer, {
             kind: 91925 as NostrKind,
@@ -52,10 +54,10 @@ export const postCalendarEventRSVP =
         const response = await safeFetch(url, {
             method: "POST",
             body: JSON.stringify({
-                accountId: calendarEvent.accountId,
+                accountId: args.calendarEvent.accountId,
                 event,
-                noteId: calendarEvent.noteId,
-                status: "accepted",
+                noteId: args.calendarEvent.noteId,
+                status: args.response,
             }),
             headers,
         });
