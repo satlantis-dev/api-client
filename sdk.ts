@@ -38,6 +38,7 @@ import { newURL } from "./helpers/_helper.ts";
 import { addressLookup } from "./api/address.ts";
 import { signEvent } from "./api/nostr_event.ts";
 import { getInterests } from "./api/secure/interests.ts";
+import { postCalendarEventRSVP } from "./api/secure/calendar.ts";
 
 export type func_GetNostrSigner = () => Promise<Signer | Error>;
 export type func_GetJwt = () => string;
@@ -51,11 +52,14 @@ export class Client {
     getPlaceNoteFeed: ReturnType<typeof getPlaceNoteFeed>;
     getPlaceMetrics: ReturnType<typeof getPlaceMetrics>;
     getPlaceGallery: ReturnType<typeof getPlaceGallery>;
-    getPlaceCalendarEvents: ReturnType<typeof getPlaceCalendarEvents>;
     getPlaceChats: ReturnType<typeof getPlaceChats>;
     getPlaceCategoryScores: ReturnType<typeof getPlaceCategoryScores>;
     getLocationsWithinBoundingBox: ReturnType<typeof getLocationsWithinBoundingBox>;
     getRegion: ReturnType<typeof getRegion>;
+
+    // Calendar Events
+    getPlaceCalendarEvents: ReturnType<typeof getPlaceCalendarEvents>;
+    postCalendarEventRSVP: ReturnType<typeof postCalendarEventRSVP>;
 
     // Account
     getAccount: ReturnType<typeof getAccount>;
@@ -105,12 +109,15 @@ export class Client {
         this.getPlaceNoteFeed = getPlaceNoteFeed(url);
         this.getPlaceMetrics = getPlaceMetrics(url);
         this.getPlaceGallery = getPlaceGallery(url);
-        this.getPlaceCalendarEvents = getPlaceCalendarEvents(url);
         this.getPlaceChats = getPlaceChats(url);
         this.getPlaceCategoryScores = getPlaceCategoryScores(url);
         this.getPlaceEvent = getPlaceEvent(url);
         this.getLocationsWithinBoundingBox = getLocationsWithinBoundingBox(url);
         this.getRegion = getRegion(url);
+
+        // Calendar Events
+        this.getPlaceCalendarEvents = getPlaceCalendarEvents(url);
+        this.postCalendarEventRSVP = postCalendarEventRSVP(url, getJwt);
 
         this.getAccount = getAccount(url);
         this.createAccount = createAccount(url);
