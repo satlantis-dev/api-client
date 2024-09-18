@@ -10,7 +10,7 @@ export async function safeFetch(input: RequestInfo | URL, init?: RequestInit) {
         response = await fetch(input, init);
     } catch (e) {
         // https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch#exceptions
-        if (e instanceof DOMException) {
+        if (globalThis.DOMException && e instanceof DOMException) {
             if (e.name == "AbortError") {
                 return new Aborted(e);
             }
@@ -25,7 +25,7 @@ export async function safeFetch(input: RequestInfo | URL, init?: RequestInit) {
                 return response.text();
             } catch (e) {
                 // https://developer.mozilla.org/en-US/docs/Web/API/Response/text#exceptions
-                if (e instanceof DOMException) {
+                if (globalThis.DOMException && e instanceof DOMException) {
                     if (e.name == "AbortError") {
                         return new Aborted(e);
                     }
