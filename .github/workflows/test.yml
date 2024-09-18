@@ -28,3 +28,15 @@ jobs:
 
       - name: run tests
         run: make test
+
+  react_native_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: React Native CI
+        uses: aslamanver/react-native-docker@v1
+
+      - name: Install NPM Dependencies
+        run: hermes
