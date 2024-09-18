@@ -227,7 +227,10 @@ export class Client {
             event,
             noteType: NoteType.CALENDAR_EVENT,
         });
-        return res;
+        if(res instanceof Error) {
+            return res;
+        }
+        return {postResult: res, event};
     };
 }
 

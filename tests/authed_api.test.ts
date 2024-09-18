@@ -1,4 +1,5 @@
 import {
+getTags,
     InMemoryAccountContext,
     type NostrEvent,
     NostrKind,
@@ -345,13 +346,14 @@ Deno.test("calendar events", async () => {
         if(res instanceof Error) {
             fail(res.message)
         }
-        await client.postCalendarEventRSVP({
+        const res2 = await client.postCalendarEventRSVP({
             accountId: account.id,
-            dTag: res.event.tags,
+            dTag: getTags(res.event).d as string,
             note: {
                 event: res.event
             },
-            noteId: res.id
+            noteId: res.postResult.id
         })
+        console.log(res2)
     }
 });
