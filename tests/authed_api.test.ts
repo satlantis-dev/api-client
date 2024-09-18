@@ -12,6 +12,7 @@ import { fail } from "jsr:@std/assert@0.226.0/fail";
 import { AccountPlaceRoleTypeEnum } from "../models/account.ts";
 import { Client, loginNostr, NoteType } from "../sdk.ts";
 import { randomString } from "./public_api.test.ts";
+import { CalendarEventType } from "../models/calendar.ts";
 
 const url = new URL("https://api-dev.satlantis.io");
 const clientNoAuth = Client.New({ baseURL: url });
@@ -316,14 +317,41 @@ Deno.test("updateAccount: edit profile", async () => {
 
 Deno.test("calendar events", async () => {
     const signer = InMemoryAccountContext.Generate();
+
     const res = await clientNoAuth.loginNostr(signer);
     if (res instanceof Error) fail(res.message);
 
+    const account = res.account;
     const client = Client.New({
         baseURL: "https://api-dev.satlantis.io",
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
     }) as Client;
 
-    client.createCalendarEvent({});
+    {
+        const res = await client.createCalendarEvent({
+            calendarEventType: CalendarEventType.Concert,
+            description: "a concert",
+            endDate: "end date",
+            geoHash: "rwerwr",
+            imageURL: "",
+            location: "somewhere",
+            placeATag: "",
+            startDate: "",
+            timezone: "",
+            title: "song",
+            url: ""
+        });
+        if(res instanceof Error) {
+            fail(res.message)
+        }
+        await client.postCalendarEventRSVP({
+            accountId: account.id,
+            dTag: res.event.tags,
+            note: {
+                event: res.event
+            },
+            noteId: res.id
+        })
+    }
 });

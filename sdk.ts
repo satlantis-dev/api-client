@@ -39,6 +39,8 @@ import { addressLookup } from "./api/address.ts";
 import { signEvent } from "./api/nostr_event.ts";
 import { getInterests } from "./api/secure/interests.ts";
 import { postCalendarEventRSVP } from "./api/secure/calendar.ts";
+import type { CalendarEventType } from "./models/calendar.ts";
+import { Hashtag } from "./api/calendar.ts";
 
 export type func_GetNostrSigner = () => Promise<Signer | Error>;
 export type func_GetJwt = () => string;
@@ -177,7 +179,7 @@ export class Client {
     createCalendarEvent = async (args: {
         description: string;
         placeATag: string;
-        calendarEventType: string;
+        calendarEventType: CalendarEventType;
         url: string;
         title: string;
         imageURL: string;
@@ -187,7 +189,7 @@ export class Client {
         timezone: string;
         geoHash: string;
         location: string;
-        placeID: number;
+        placeID?: number;
     }) => {
         const jwtToken = this.getJwt();
         if (jwtToken == "") {
@@ -205,7 +207,7 @@ export class Client {
             tags: [
                 ["a", args.placeATag],
                 ["d", crypto.randomUUID()],
-                ["t", args.calendarEventType],
+                ["t", Hashtag(args.calendarEventType)],
                 ["r", args.url],
                 ["title", args.title],
                 ["image", args.imageURL],

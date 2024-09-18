@@ -1,4 +1,4 @@
-import { NostrKind, prepareNostrEvent } from "@blowater/nostr-sdk";
+import { NostrKind, prepareNostrEvent, type NostrEvent } from "@blowater/nostr-sdk";
 import { copyURL, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
 import { type Account, type func_GetJwt, type func_GetNostrSigner, Hashtag } from "../../sdk.ts";
@@ -6,7 +6,16 @@ import type { CalendarEvent } from "../../models/calendar.ts";
 
 export const postCalendarEventRSVP =
     (urlArg: URL, getJwt: func_GetJwt, getSigner: func_GetNostrSigner) =>
-    async (calendarEvent: CalendarEvent) => {
+    async (calendarEvent: {
+        dTag: string,
+        note: {
+            event: {
+                pubkey: string
+            }
+        },
+        accountId: number
+        noteId: number
+    }) => {
         const jwtToken = getJwt();
         if (jwtToken == "") {
             return new Error("jwt token is empty");
