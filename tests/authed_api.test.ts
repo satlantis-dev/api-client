@@ -347,12 +347,15 @@ Deno.test("calendar events", async () => {
             fail(res.message);
         }
         const res2 = await client.postCalendarEventRSVP({
-            accountId: account.id,
-            dTag: getTags(res.event).d as string,
-            note: {
-                event: res.event,
+            response: "accepted",
+            calendarEvent: {
+                accountId: account.id,
+                dTag: getTags(res.event).d as string,
+                note: {
+                    event: res.event,
+                },
+                noteId: res.postResult.id,
             },
-            noteId: res.postResult.id,
         });
         console.log(res2);
     }
