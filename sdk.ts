@@ -1,4 +1,4 @@
-import { type Signer } from "@blowater/nostr-sdk";
+import { NostrKind, prepareNostrEvent, type Signer } from "@blowater/nostr-sdk";
 
 import {
     createAccount,
@@ -11,7 +11,7 @@ import {
 import { getIpInfo } from "./api/ip.ts";
 import { getLocationReviews, getLocationsWithinBoundingBox, getLocationTags } from "./api/location.ts";
 import { loginNostr } from "./api/login.ts";
-import { getNote, getNotes } from "./api/note.ts";
+import { getNote, getNotes, NoteType } from "./api/note.ts";
 import { getAccountPlaceRoles } from "./api/people.ts";
 import {
     getPlace,
@@ -117,7 +117,7 @@ export class Client {
 
         // Calendar Events
         this.getPlaceCalendarEvents = getPlaceCalendarEvents(url);
-        this.postCalendarEventRSVP = postCalendarEventRSVP(url, getJwt);
+        this.postCalendarEventRSVP = postCalendarEventRSVP(url, getJwt, getNostrSigner);
 
         this.getAccount = getAccount(url);
         this.createAccount = createAccount(url);
@@ -172,6 +172,60 @@ export class Client {
 
     getLocationTags = () => {
         return getLocationTags(this.url)();
+    };
+
+    createCalendarEvent = async (args: {
+        description: string;
+        placeATag: string;
+        calendarEventType: string;
+        url: string;
+        title: string;
+        imageURL: string;
+        // todo: use RFC3339 / ISO8601 format
+        startDate: string;
+        endDate: string;
+        timezone: string;
+        geoHash: string;
+        location: string;
+        placeID: number;
+    }) => {
+        const jwtToken = this.getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const signer = await this.getNostrSigner();
+        if (signer instanceof Error) {
+            return signer;
+        }
+
+        const event = await prepareNostrEvent(signer, {
+            kind: NostrKind.Calendar_Time,
+            content: args.description,
+            tags: [
+                ["a", args.placeATag],
+                ["d", crypto.randomUUID()],
+                ["t", args.calendarEventType],
+                ["r", args.url],
+                ["title", args.title],
+                ["image", args.imageURL],
+                ["start", Math.floor(new Date(args.startDate).getTime() / 1000).toString()],
+                ["end", Math.floor(new Date(args.endDate).getTime() / 1000).toString()],
+                ["start_tzid", args.timezone],
+                ["g", args.geoHash],
+                ["location", args.location],
+            ],
+        });
+        if (event instanceof Error) {
+            return event;
+        }
+
+        const res = await this.postNote({
+            placeId: args.placeID,
+            event,
+            noteType: NoteType.CALENDAR_EVENT,
+        });
+        return res;
     };
 }
 
