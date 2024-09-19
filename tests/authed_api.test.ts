@@ -5,6 +5,7 @@ import {
     NostrKind,
     prepareNostrEvent,
     PrivateKey,
+    SingleRelayConnection,
     verifyEvent,
 } from "@blowater/nostr-sdk";
 import { assertEquals } from "jsr:@std/assert@0.226.0/assert-equals";
@@ -16,7 +17,11 @@ import { randomString } from "./public_api.test.ts";
 import { CalendarEventType } from "../models/calendar.ts";
 
 const url = new URL("https://api-dev.satlantis.io");
-const clientNoAuth = Client.New({ baseURL: url });
+const relay_url = "wss://relay.satlantis.io";
+const clientNoAuth = Client.New({
+    baseURL: url,
+    relay_url,
+});
 if (clientNoAuth instanceof Error) {
     fail(clientNoAuth.message);
 }
@@ -41,6 +46,7 @@ Deno.test("AccountRole", async () => {
         baseURL: "https://api-dev.satlantis.io",
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
+        relay_url,
     }) as Client;
 
     // join the place as a follower
@@ -77,6 +83,7 @@ Deno.test("presign", async () => {
         baseURL: "https://api-dev.satlantis.io",
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
+        relay_url,
     }) as Client;
 
     const result = await client.presign({
@@ -97,6 +104,7 @@ Deno.test("post notes", async () => {
         baseURL: "https://api-dev.satlantis.io",
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
+        relay_url,
     }) as Client;
     {
         const root_event = await prepareNostrEvent(signer, {
@@ -142,6 +150,7 @@ Deno.test("update place", async () => {
         baseURL: "https://api-dev.satlantis.io",
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
+        relay_url,
     }) as Client;
     {
         const originalPlace = await client.getPlace({ osmRef: "R296561" });
@@ -202,6 +211,7 @@ Deno.test({
         const client = Client.New({
             baseURL: url,
             getJwt: () => login.token,
+            relay_url,
         }) as Client;
 
         await t.step("sign the event with a wrong pubkey", async () => {
@@ -247,6 +257,7 @@ Deno.test({
                     baseURL: url,
                     getJwt: () => res.token,
                     getNostrSigner: async () => signer,
+                    relay_url,
                 }) as Client;
 
                 const signed = await client.signEvent({
@@ -274,6 +285,7 @@ Deno.test("getInterests", async () => {
         baseURL: "https://api-dev.satlantis.io",
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
+        relay_url,
     }) as Client;
 
     const interests = await client.getInterests();
@@ -290,6 +302,7 @@ Deno.test("updateAccount: edit profile", async () => {
         baseURL: "https://api-dev.satlantis.io",
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
+        relay_url,
     }) as Client;
 
     const newName = "new name";
@@ -327,6 +340,7 @@ Deno.test("calendar events", async () => {
         baseURL: "https://api-dev.satlantis.io",
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
+        relay_url,
     }) as Client;
 
     {

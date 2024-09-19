@@ -3,7 +3,7 @@
     "version": "0.0.44",
     "exports": "./sdk.ts",
     "imports": {
-        "@blowater/nostr-sdk": "jsr:@blowater/nostr-sdk@^0.0.18",
+        "@blowater/nostr-sdk": "jsr:@blowater/nostr-sdk@^0.0.20",
         "@std/assert": "jsr:@std/assert@1.0.0"
     },
     "fmt": {
