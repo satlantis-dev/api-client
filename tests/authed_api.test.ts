@@ -17,7 +17,7 @@ import { randomString } from "./public_api.test.ts";
 import { CalendarEventType } from "../models/calendar.ts";
 
 const url = new URL("https://api-dev.satlantis.io");
-const relay = SingleRelayConnection.New("wss://relay.satlantis.io") as SingleRelayConnection;
+const relay_url = "wss://relay.satlantis.io"
 const clientNoAuth = Client.New({
     baseURL: url,
     relay_url,
