@@ -29,7 +29,7 @@ export const getPubkeyByNip05 = async (args: {
     if (res instanceof Error) {
         return res;
     }
-    console.log(res);
+
     const key = res.names[args.name];
     if (key) {
         return PublicKey.FromHex(key);

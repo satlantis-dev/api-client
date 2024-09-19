@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertNotEquals, fail } from "@std/assert";
+import { assertEquals, fail } from "@std/assert";
 
 import { Client, getPubkeyByNip05, loginNostr, type Place } from "../sdk.ts";
-import { InMemoryAccountContext, PublicKey } from "@blowater/nostr-sdk";
+import { InMemoryAccountContext, PublicKey, SingleRelayConnection } from "@blowater/nostr-sdk";
 import type { ApiError } from "../helpers/_helper.ts";
 
 const url = new URL("https://api-dev.satlantis.io");
-const clientNoAuth = Client.New({ baseURL: url });
+const relay = SingleRelayConnection.New("wss://relay.satlantis.io") as SingleRelayConnection
+const clientNoAuth = Client.New({ baseURL: url, relay });
 if (clientNoAuth instanceof Error) {
     fail(clientNoAuth.message);
 }

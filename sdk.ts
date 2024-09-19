@@ -50,6 +50,7 @@ import { getInterests } from "./api/secure/interests.ts";
 import { postCalendarEventRSVP } from "./api/secure/calendar.ts";
 import type { CalendarEventType } from "./models/calendar.ts";
 import { Hashtag } from "./api/calendar.ts";
+import { getInterestsOf } from "./nostr-helpers.ts";
 
 export type func_GetNostrSigner = () => Promise<Signer | Error>;
 export type func_GetJwt = () => string;
@@ -111,6 +112,7 @@ export class Client {
 
     private constructor(
         public readonly url: URL,
+        public readonly relayConnection: SingleRelayConnection,
         public readonly getJwt: func_GetJwt,
         public readonly getNostrSigner: func_GetNostrSigner,
     ) {
@@ -167,6 +169,7 @@ export class Client {
         baseURL: string | URL;
         getJwt?: () => string;
         getNostrSigner?: func_GetNostrSigner;
+        relay: SingleRelayConnection
     }) {
         const validURL = newURL(args.baseURL);
         if (validURL instanceof Error) {
@@ -178,7 +181,7 @@ export class Client {
         if (args.getNostrSigner == undefined) {
             args.getNostrSigner = async () => new Error("nostr signer is not provided");
         }
-        return new Client(validURL, args.getJwt, args.getNostrSigner);
+        return new Client(validURL, args.relay, args.getJwt, args.getNostrSigner);
     }
 
     getLocationTags = () => {
@@ -241,158 +244,32 @@ export class Client {
         }
         return { postResult: res, event };
     };
+
+    getInterestsOf(pubkey: PublicKey) {
+        return getInterestsOf(this.relayConnection, pubkey)
+    }
+
+    async publishInterest(interests: Iterable<string>) {
+        const signer = await this.getNostrSigner()
+        if(signer instanceof Error) {
+            return signer;
+        }
+        const interest_tags: Tag[] = []
+        for(const interest of interests) {
+            interest_tags.push(["t", interest])
+        }
+        const event = await prepareNostrEvent(signer, {
+            kind: NostrKind.Interests,
+            content: "",
+            tags: interest_tags
+        })
+        if(event instanceof Error) {
+            return event
+        }
+        return this.relayConnection.sendEvent(event)
+    }
 }
 
-export async function getContactList(satlantis_relay: string, pubKey: string | PublicKey) {
-    let pub: PublicKey;
-    if (typeof pubKey == "string") {
-        const _pubKey = PublicKey.FromString(pubKey);
-        if (_pubKey instanceof Error) {
-            return _pubKey;
-        }
-        pub = _pubKey;
-    } else {
-        pub = pubKey;
-    }
-    const relay = SingleRelayConnection.New(satlantis_relay, { log: false });
-    let event;
-    {
-        if (relay instanceof Error) {
-            return relay;
-        }
-        event = await relay.getReplaceableEvent(pub, NostrKind.CONTACTS);
-    }
-
-    await relay.close();
-    return event;
-}
-
-export async function followPubkeys(
-    satlantis_relay_url: string,
-    me: Signer,
-    toFollow: PublicKey[],
-    apiClient: Client,
-) {
-    const followEvent = await getContactList(satlantis_relay_url, me.publicKey);
-    if (followEvent instanceof Error) {
-        return followEvent;
-    }
-
-    const follows = new Set<string>();
-    if (followEvent) {
-        for (const p of getTags(followEvent).p) {
-            follows.add(p);
-        }
-    }
-    for (const pub of toFollow) {
-        follows.add(pub.hex);
-    }
-
-    const tags: Tag[] = [];
-    for (const p of follows) {
-        tags.push(["p", p]);
-    }
-
-    const new_event = await prepareNostrEvent(me, {
-        kind: NostrKind.CONTACTS,
-        content: "",
-        tags,
-    });
-    if (new_event instanceof Error) {
-        return new_event;
-    }
-
-    const err = await publishEvent(satlantis_relay_url, new_event);
-    if (err instanceof Error) {
-        return err;
-    }
-
-    const ok = await apiClient.updateAccountFollowingList({ event: new_event });
-    if (ok instanceof Error) {
-        return ok;
-    }
-
-    return ok;
-}
-
-export async function publishEvent(satlantis_relay_url: string, event: NostrEvent) {
-    const relay = SingleRelayConnection.New(satlantis_relay_url, { log: false });
-    if (relay instanceof Error) {
-        return relay;
-    }
-    const ok = await relay.sendEvent(event);
-    if (ok instanceof Error) {
-        return ok;
-    }
-    await relay.close();
-}
-
-export async function getFollowingPubkeys(satlantis_relay_url: string, pubkey: string | PublicKey) {
-    const list = new Set<string>();
-    const event = await getContactList(satlantis_relay_url, pubkey);
-    if (event instanceof Error) {
-        return event;
-    }
-    if (event == undefined) {
-        return list;
-    }
-    const tags = getTags(event);
-    for (const pubkey of tags.p) {
-        list.add(pubkey);
-    }
-    return list;
-}
-
-export async function isUserAFollowingUserB(satlantis_relay_url: string, a: string, b: string) {
-    const event = await getContactList(satlantis_relay_url, a);
-    if (event instanceof Error) {
-        return event;
-    }
-    if (event == undefined) {
-        return false;
-    }
-    const tags = getTags(event);
-    for (const pubkey of tags.p) {
-        if (pubkey == b) {
-            return true;
-        }
-    }
-    return false;
-}
-
-export async function getProfile(satlantis_relay_url: string, pubKey: string) {
-    const relay = SingleRelayConnection.New(satlantis_relay_url, { log: false });
-    let event;
-    {
-        if (relay instanceof Error) {
-            return relay;
-        }
-        const pubkey = PublicKey.FromString(pubKey);
-        if (pubkey instanceof Error) {
-            return pubkey;
-        }
-        event = await relay.getReplaceableEvent(pubkey, NostrKind.META_DATA);
-    }
-    await relay.close();
-    return event;
-}
-
-export async function getPlaceFollowList(satlantis_relay_url: string, pubKey: string) {
-    const relay = SingleRelayConnection.New(satlantis_relay_url, { log: false });
-    let event;
-    {
-        if (relay instanceof Error) {
-            return relay;
-        }
-        const pubkey = PublicKey.FromString(pubKey);
-        if (pubkey instanceof Error) {
-            return pubkey;
-        }
-        event = relay.getReplaceableEvent(pubkey, 10016 as NostrKind);
-    }
-    await relay.close();
-    return event;
-}
 
 // api
 export * from "./api/calendar.ts";
@@ -415,5 +292,6 @@ export * from "./models/metric.ts";
 export * from "./models/place.ts";
 export * from "./models/region.ts";
 export * from "./models/interest.ts";
-// event handling
+// nostr helpers
 export * from "./event-handling/parser.ts";
+export * from "./nostr-helpers.ts";
