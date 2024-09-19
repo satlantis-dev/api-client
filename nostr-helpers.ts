@@ -8,7 +8,7 @@ import {
     SingleRelayConnection,
     type Tag,
 } from "@blowater/nostr-sdk";
-import type { Client } from "./sdk.ts";
+import type { Client, UserProfile } from "./sdk.ts";
 
 const Kind_PlaceFollowList = 10016;
 
@@ -129,21 +129,29 @@ export async function isUserAFollowingUserB(satlantis_relay_url: string, a: stri
     return false;
 }
 
-export async function getProfile(satlantis_relay_url: string, pubKey: string) {
+export async function getProfile(satlantis_relay_url: string, pubkey: PublicKey): Promise<UserProfile | Error> {
     const relay = SingleRelayConnection.New(satlantis_relay_url, { log: false });
     let event;
     {
         if (relay instanceof Error) {
             return relay;
         }
-        const pubkey = PublicKey.FromString(pubKey);
-        if (pubkey instanceof Error) {
-            return pubkey;
-        }
         event = await relay.getReplaceableEvent(pubkey, NostrKind.META_DATA);
     }
     await relay.close();
-    return event;
+    if(event instanceof Error) {
+        return event
+    }
+    if(event == undefined) {
+        return {
+            pubkey
+        }
+    }
+    const obj = JSON.parse(event.content)
+    return {
+        ...obj,
+        pubkey
+    }
 }
 
 export async function getPlaceFollowList(satlantis_relay_url: string, pubKey: string) {

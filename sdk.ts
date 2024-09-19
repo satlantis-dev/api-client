@@ -50,7 +50,7 @@ import { getInterests } from "./api/secure/interests.ts";
 import { postCalendarEventRSVP } from "./api/secure/calendar.ts";
 import type { CalendarEventType } from "./models/calendar.ts";
 import { Hashtag } from "./api/calendar.ts";
-import { getInterestsOf } from "./nostr-helpers.ts";
+import { getInterestsOf, getProfile } from "./nostr-helpers.ts";
 
 export type func_GetNostrSigner = () => Promise<Signer | Error>;
 export type func_GetJwt = () => string;
@@ -283,6 +283,21 @@ export class Client {
         }
         return event;
     }
+
+    /**
+     *
+     * @param pubkey can be hex or bech32
+     */
+    async getProfile(pubkey: string | PublicKey) {
+        if(pubkey instanceof PublicKey == false) {
+            const _pubkey = PublicKey.FromString(pubkey)
+            if(_pubkey instanceof Error) {
+                return _pubkey
+            }
+            pubkey = _pubkey
+        }
+        return getProfile(this.relay_url, pubkey)
+    }
 }
 
 // api
@@ -308,4 +323,3 @@ export * from "./models/region.ts";
 export * from "./models/interest.ts";
 // nostr helpers
 export * from "./event-handling/parser.ts";
-export * from "./nostr-helpers.ts";

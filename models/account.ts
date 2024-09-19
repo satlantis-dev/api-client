@@ -1,3 +1,4 @@
+import type { PublicKey } from "@blowater/nostr-sdk";
 import type { AuthDetail } from "../sdk.ts";
 
 import type { ChatMembership } from "./chat.ts";
@@ -34,6 +35,22 @@ export type Account = {
     placeRatings?: AccountPlaceRating[];
     website?: string;
 };
+
+/**
+ * A pure client side concept, no direct mapping in Backend
+ */
+export type UserProfile = {
+    pubkey: PublicKey;
+    about?: string;
+    banner?: string;
+    displayName?: string;
+    lud06?: string;
+    lud16?: string;
+    name?: string;
+    nip05?: string;
+    picture?: string;
+    website?: string;
+}
 
 export type AccountPlaceRole = {
     id: number;
