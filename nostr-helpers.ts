@@ -1,4 +1,4 @@
-import { NostrKind, prepareNostrEvent, PublicKey, SingleRelayConnection, type NostrEvent, type Signer, type Tag } from "@blowater/nostr-sdk";
+import { getTags, NostrKind, prepareNostrEvent, PublicKey, SingleRelayConnection, type NostrEvent, type Signer, type Tag } from "@blowater/nostr-sdk";
 import type { Client } from "./sdk.ts";
 
 const Kind_PlaceFollowList = 10016;
@@ -163,40 +163,4 @@ export const getInterestsOf = async (relay: SingleRelayConnection, pubkey: Publi
         event,
         interests: event? getTags(event).t: []
     }
-}
-
-export type ParsedTags = {
-    p: string[];
-    e: string[];
-    t: string[];
-    d?: string;
-    client?: string;
-};
-
-function getTags(event: NostrEvent): ParsedTags {
-    const tags: ParsedTags = {
-        p: [],
-        e: [],
-        t: []
-    };
-    for (const tag of event.tags) {
-        switch (tag[0]) {
-            case "p":
-                tags.p.push(tag[1]);
-                break;
-            case "e":
-                tags.e.push(tag[1]);
-                break;
-            case "d":
-                tags.d = tag[1];
-                break;
-            case "client":
-                tags.client = tag[1];
-                break;
-            case "t":
-                tags.t.push(tag[1]);
-                break;
-        }
-    }
-    return tags;
 }
