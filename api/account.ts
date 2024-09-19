@@ -1,8 +1,6 @@
-import type { NostrEvent, NostrKind } from "@blowater/nostr-sdk";
 import { ApiError, copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { Account } from "../models/account.ts";
-import type { func_GetJwt } from "../sdk.ts";
 
 export const getAccount = (urlArg: URL) => async (args: { npub: string }) => {
     const url = copyURL(urlArg);

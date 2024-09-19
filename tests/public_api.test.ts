@@ -5,8 +5,14 @@ import { InMemoryAccountContext, PublicKey, SingleRelayConnection } from "@blowa
 import type { ApiError } from "../helpers/_helper.ts";
 
 const url = new URL("https://api-dev.satlantis.io");
-const relay = SingleRelayConnection.New("wss://relay.satlantis.io") as SingleRelayConnection
-const clientNoAuth = Client.New({ baseURL: url, relay });
+const signer = InMemoryAccountContext.Generate();
+const clientNoAuth = Client.New({
+    baseURL: url,
+    relay_url: "wss://relay.satlantis.io",
+    getNostrSigner: async () => {
+        return signer;
+    },
+});
 if (clientNoAuth instanceof Error) {
     fail(clientNoAuth.message);
 }
@@ -387,6 +393,19 @@ Deno.test("verifyEmail", async () => {
     })) as ApiError;
     assertEquals(result.status, 403);
     assertEquals(result.message, "status 403, body Token doesn't exist\n");
+});
+
+Deno.test("interests", async () => {
+    const event = await clientNoAuth.publishInterest(["food", "travel"]);
+    if (event instanceof Error) {
+        fail(event.message);
+    }
+    const res = await clientNoAuth.getInterestsOf(signer.publicKey);
+    if (res instanceof Error) {
+        fail(res.message);
+    }
+    assertEquals(res.event, event);
+    assertEquals(res.interests, ["food", "travel"]);
 });
 
 export function randomString() {

@@ -112,7 +112,7 @@ export class Client {
 
     private constructor(
         public readonly url: URL,
-        public readonly relayConnection: SingleRelayConnection,
+        public readonly relay_url: string,
         public readonly getJwt: func_GetJwt,
         public readonly getNostrSigner: func_GetNostrSigner,
     ) {
@@ -167,9 +167,9 @@ export class Client {
 
     static New(args: {
         baseURL: string | URL;
+        relay_url: string;
         getJwt?: () => string;
         getNostrSigner?: func_GetNostrSigner;
-        relay: SingleRelayConnection
     }) {
         const validURL = newURL(args.baseURL);
         if (validURL instanceof Error) {
@@ -181,7 +181,7 @@ export class Client {
         if (args.getNostrSigner == undefined) {
             args.getNostrSigner = async () => new Error("nostr signer is not provided");
         }
-        return new Client(validURL, args.relay, args.getJwt, args.getNostrSigner);
+        return new Client(validURL, args.relay_url, args.getJwt, args.getNostrSigner);
     }
 
     getLocationTags = () => {
@@ -245,31 +245,45 @@ export class Client {
         return { postResult: res, event };
     };
 
-    getInterestsOf(pubkey: PublicKey) {
-        return getInterestsOf(this.relayConnection, pubkey)
+    async getInterestsOf(pubkey: PublicKey) {
+        const relay = SingleRelayConnection.New(this.relay_url);
+        if (relay instanceof Error) {
+            return relay;
+        }
+        const res = await getInterestsOf(relay, pubkey);
+        await relay.close();
+        return res;
     }
 
     async publishInterest(interests: Iterable<string>) {
-        const signer = await this.getNostrSigner()
-        if(signer instanceof Error) {
+        const signer = await this.getNostrSigner();
+        if (signer instanceof Error) {
             return signer;
         }
-        const interest_tags: Tag[] = []
-        for(const interest of interests) {
-            interest_tags.push(["t", interest])
+        const interest_tags: Tag[] = [];
+        for (const interest of interests) {
+            interest_tags.push(["t", interest]);
         }
         const event = await prepareNostrEvent(signer, {
             kind: NostrKind.Interests,
             content: "",
-            tags: interest_tags
-        })
-        if(event instanceof Error) {
-            return event
+            tags: interest_tags,
+        });
+        if (event instanceof Error) {
+            return event;
         }
-        return this.relayConnection.sendEvent(event)
+        const relay = SingleRelayConnection.New(this.relay_url, { log: false });
+        if (relay instanceof Error) {
+            return relay;
+        }
+        const res = await relay.sendEvent(event);
+        await relay.close();
+        if (res instanceof Error) {
+            return res;
+        }
+        return event;
     }
 }
-
 
 // api
 export * from "./api/calendar.ts";

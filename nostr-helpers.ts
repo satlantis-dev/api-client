@@ -1,4 +1,13 @@
-import { getTags, NostrKind, prepareNostrEvent, PublicKey, SingleRelayConnection, type NostrEvent, type Signer, type Tag } from "@blowater/nostr-sdk";
+import {
+    getTags,
+    type NostrEvent,
+    NostrKind,
+    prepareNostrEvent,
+    PublicKey,
+    type Signer,
+    SingleRelayConnection,
+    type Tag,
+} from "@blowater/nostr-sdk";
 import type { Client } from "./sdk.ts";
 
 const Kind_PlaceFollowList = 10016;
@@ -155,12 +164,12 @@ export async function getPlaceFollowList(satlantis_relay_url: string, pubKey: st
 }
 
 export const getInterestsOf = async (relay: SingleRelayConnection, pubkey: PublicKey) => {
-    const event = await relay.getReplaceableEvent(pubkey, NostrKind.Interests)
-    if(event instanceof Error) {
-        return event
+    const event = await relay.getReplaceableEvent(pubkey, NostrKind.Interests);
+    if (event instanceof Error) {
+        return event;
     }
     return {
         event,
-        interests: event? getTags(event).t: []
-    }
-}
+        interests: event ? getTags(event).t : [],
+    };
+};
