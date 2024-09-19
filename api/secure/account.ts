@@ -121,18 +121,20 @@ export const updateAccountFollowingList =
         return ok.toLowerCase() == "success";
     };
 
-// Update account
-interface IUpdateAccountPut {
-    countryCode?: string;
-    email?: string;
-    kind0: NostrEvent<NostrKind.META_DATA>;
-    phone?: string;
-}
-
 export const updateAccount = (urlArg: URL, getJwt: func_GetJwt) =>
 async (args: {
     npub: string;
-    account: Account | IUpdateAccountPut;
+    account: {
+        about?: string;
+        banner?: string;
+        displayName?: string;
+        lud06?: string;
+        lud16?: string;
+        name?: string;
+        picture?: string;
+        phone?: string;
+        website?: string;
+    };
 }) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {

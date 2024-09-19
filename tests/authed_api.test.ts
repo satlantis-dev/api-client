@@ -306,15 +306,10 @@ Deno.test("updateAccount: edit profile", async () => {
     }) as Client;
 
     const newName = "new name";
-    const kind0 = await prepareNostrEvent(signer, {
-        kind: NostrKind.META_DATA,
-        content: `{"name": "${newName}"}`,
-    }) as NostrEvent<NostrKind.META_DATA>;
-
     const updateRes = await client.updateAccount({
         npub: signer.publicKey.bech32(),
         account: {
-            kind0,
+            name: newName,
         },
     });
     if (updateRes instanceof Error) {
