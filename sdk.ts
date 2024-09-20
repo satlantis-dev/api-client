@@ -1,4 +1,5 @@
 import {
+    getTags,
     NostrKind,
     prepareNostrEvent,
     PublicKey,
@@ -303,8 +304,76 @@ export class Client {
         return false;
     };
 
+    /**
+     * get following list of the current pubkey
+     */
+    getFollowingPubkeys = async () => {
+        const signer = await this.getNostrSigner();
+        if (signer instanceof Error) {
+            return signer;
+        }
+        const relay = SingleRelayConnection.New(this.relay_url);
+        if (relay instanceof Error) {
+            return relay;
+        }
+        {
+            const followEvent = await getContactList(relay, signer.publicKey);
+            if (followEvent instanceof Error) {
+                await relay.close();
+                return followEvent;
+            }
+            if (followEvent == undefined) {
+                await relay.close();
+                return new Set<string>();
+            }
+            await relay.close();
+            return new Set(getTags(followEvent).p);
+        }
+    };
+
     followPubkeys = async (toFollow: PublicKey[]) => {
         return followPubkeys(this.relay_url, toFollow, this);
+    };
+
+    unfollowPubkey = async (pubkeyToUnfollow: PublicKey) => {
+        const relay = SingleRelayConnection.New(this.relay_url);
+        if (relay instanceof Error) {
+            return relay;
+        }
+        const signer = await this.getNostrSigner();
+        if (signer instanceof Error) {
+            return signer;
+        }
+        {
+            const followingKeys = await this.getFollowingPubkeys();
+            if (followingKeys instanceof Error) {
+                return followingKeys;
+            }
+
+            // remove pubkey in tags
+            followingKeys.delete(pubkeyToUnfollow.hex);
+            const tags: Tag[] = Array.from(followingKeys).map((p) => ["p", p]);
+            const new_event = await prepareNostrEvent(signer, {
+                kind: NostrKind.CONTACTS,
+                content: "",
+                tags,
+            });
+            if (new_event instanceof Error) {
+                return new_event;
+            }
+
+            const err = await relay.sendEvent(new_event);
+            if (err instanceof Error) {
+                return err;
+            }
+
+            const ok = await this.updateAccountFollowingList({ event: new_event });
+            if (ok instanceof Error) {
+                return ok;
+            }
+            await relay.close();
+            return ok;
+        }
     };
 }
 
@@ -332,3 +401,17 @@ export * from "./models/interest.ts";
 // nostr helpers
 export * from "./event-handling/parser.ts";
 export * from "./nostr-helpers.ts";
+
+async function getContactList(relay: SingleRelayConnection, pubKey: string | PublicKey) {
+    let pub: PublicKey;
+    if (typeof pubKey == "string") {
+        const _pubKey = PublicKey.FromString(pubKey);
+        if (_pubKey instanceof Error) {
+            return _pubKey;
+        }
+        pub = _pubKey;
+    } else {
+        pub = pubKey;
+    }
+    return await relay.getReplaceableEvent(pub, NostrKind.CONTACTS);
+}

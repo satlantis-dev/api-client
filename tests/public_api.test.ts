@@ -1,26 +1,26 @@
 import { assertEquals, fail } from "@std/assert";
 
 import { Client, loginNostr, type Place } from "../sdk.ts";
-import { InMemoryAccountContext, PublicKey } from "@blowater/nostr-sdk";
+import { InMemoryAccountContext, PrivateKey, PublicKey } from "@blowater/nostr-sdk";
 import type { ApiError } from "../helpers/_helper.ts";
 
 const url = new URL("https://api-dev.satlantis.io");
 const signer = InMemoryAccountContext.Generate();
-const clientNoAuth = Client.New({
+const client = Client.New({
     baseURL: url,
     relay_url: "wss://relay.satlantis.io",
     getNostrSigner: async () => {
         return signer;
     },
 });
-if (clientNoAuth instanceof Error) {
-    fail(clientNoAuth.message);
+if (client instanceof Error) {
+    fail(client.message);
 }
 
 // we can run this test suit in github action
 // so that we always have up to date client SDK
 Deno.test("getPlace", async () => {
-    const result = await clientNoAuth.getPlace({
+    const result = await client.getPlace({
         osmRef: "R8421413",
     });
     if (result instanceof Error) {
@@ -31,7 +31,7 @@ Deno.test("getPlace", async () => {
 });
 
 Deno.test("getPlaces", async () => {
-    const result = await clientNoAuth.getPlaces({
+    const result = await client.getPlaces({
         filters: { name: "london" },
         limit: 1,
         page: 0,
@@ -48,7 +48,7 @@ Deno.test("getPlaces", async () => {
 });
 
 Deno.test("/getPeopleOfPlace", async () => {
-    const result = await clientNoAuth.getAccountPlaceRoles({
+    const result = await client.getAccountPlaceRoles({
         placeID: 23949,
     });
     if (result instanceof Error) {
@@ -59,7 +59,7 @@ Deno.test("/getPeopleOfPlace", async () => {
 });
 
 Deno.test("/getPlaceNoteFeed", async () => {
-    const result = await clientNoAuth.getPlaceNoteFeed({
+    const result = await client.getPlaceNoteFeed({
         placeID: 23949,
     });
     if (result instanceof Error) {
@@ -70,7 +70,7 @@ Deno.test("/getPlaceNoteFeed", async () => {
 });
 
 Deno.test("/getPlaceCalendarEvents", async () => {
-    const result = await clientNoAuth.getPlaceCalendarEvents({
+    const result = await client.getPlaceCalendarEvents({
         placeID: 23949,
     });
     if (result instanceof Error) {
@@ -81,7 +81,7 @@ Deno.test("/getPlaceCalendarEvents", async () => {
 });
 
 Deno.test("/getPlaceMetrics", async () => {
-    const result = await clientNoAuth.getPlaceMetrics({
+    const result = await client.getPlaceMetrics({
         placeID: 23949,
     });
     if (result instanceof Error) {
@@ -92,7 +92,7 @@ Deno.test("/getPlaceMetrics", async () => {
 });
 
 Deno.test("/getPlaceCalenderEvents", async () => {
-    const result = await clientNoAuth.getPlaceCalendarEvents({
+    const result = await client.getPlaceCalendarEvents({
         placeID: 23949,
     });
     if (result instanceof Error) {
@@ -103,7 +103,7 @@ Deno.test("/getPlaceCalenderEvents", async () => {
 });
 
 Deno.test("/getPlaceChats", async () => {
-    const result = await clientNoAuth.getPlaceChats({
+    const result = await client.getPlaceChats({
         placeID: 23949,
     });
     if (result instanceof Error) {
@@ -114,7 +114,7 @@ Deno.test("/getPlaceChats", async () => {
 });
 
 Deno.test("/getPlaceCategoryScores", async () => {
-    const result = await clientNoAuth.getPlaceCategoryScores({
+    const result = await client.getPlaceCategoryScores({
         placeID: 23949,
     });
     if (result instanceof Error) {
@@ -125,7 +125,7 @@ Deno.test("/getPlaceCategoryScores", async () => {
 });
 
 Deno.test("getPlaceEvent", async () => {
-    const result = await clientNoAuth.getPlaceEvent({
+    const result = await client.getPlaceEvent({
         placeID: 23949,
     });
     if (result instanceof Error) {
@@ -136,7 +136,7 @@ Deno.test("getPlaceEvent", async () => {
 });
 
 Deno.test("getRegion", async () => {
-    const result = await clientNoAuth.getRegion({
+    const result = await client.getRegion({
         regionID: 1170,
     });
     if (result instanceof Error) {
@@ -147,7 +147,7 @@ Deno.test("getRegion", async () => {
 });
 
 Deno.test("/getLocationsWithinBoundingBox", async () => {
-    const result = await clientNoAuth.getLocationsWithinBoundingBox({
+    const result = await client.getLocationsWithinBoundingBox({
         sw_lat: 32.56768764046221,
         ne_lat: 32.766068258492425,
         ne_lng: -16.800802131347382,
@@ -162,7 +162,7 @@ Deno.test("/getLocationsWithinBoundingBox", async () => {
 });
 
 Deno.test("getLocationTags", async () => {
-    const result = await clientNoAuth.getLocationTags();
+    const result = await client.getLocationTags();
     if (result instanceof Error) {
         fail(result.message);
     }
@@ -171,14 +171,14 @@ Deno.test("getLocationTags", async () => {
 
 Deno.test("checkUsernameAvailability", async () => {
     {
-        const result = await clientNoAuth.checkUsernameAvailability(randomString());
+        const result = await client.checkUsernameAvailability(randomString());
         if (result instanceof Error) {
             fail(result.message);
         }
         assertEquals(result, true);
     }
     {
-        const result = await clientNoAuth.checkUsernameAvailability("123");
+        const result = await client.checkUsernameAvailability("123");
         if (result instanceof Error) {
             fail(result.message);
         }
@@ -188,7 +188,7 @@ Deno.test("checkUsernameAvailability", async () => {
 
 Deno.test("getAccount", async () => {
     const npub = "npub1le59glyc3r9zsddury0fu8wyqu69ckvj78fn4425m5xn9zd0zpdssjtd53";
-    const result = await clientNoAuth.getAccount({
+    const result = await client.getAccount({
         npub,
     });
     if (result instanceof Error) {
@@ -203,7 +203,7 @@ Deno.test({
     // ignore: true,
     fn: async () => {
         {
-            const result = await clientNoAuth.createAccount({
+            const result = await client.createAccount({
                 email: "user@email.com",
                 password: "simple",
                 username: "hi3",
@@ -214,7 +214,7 @@ Deno.test({
             assertEquals(result.message, "status 400, body Username or email already exists\n");
         }
         {
-            const result = await clientNoAuth.createAccount({
+            const result = await client.createAccount({
                 email: "user@email.com",
                 password: "simple",
                 username: "hi",
@@ -225,7 +225,7 @@ Deno.test({
             assertEquals(result.message, "status 400, body Username must be at least 3 characters\n");
         }
         {
-            const result = await clientNoAuth.createAccount({
+            const result = await client.createAccount({
                 email: `${randomString()}@email.com`,
                 password: "simple",
                 username: randomString(),
@@ -247,7 +247,7 @@ Deno.test("loginNostr", async () => {
 
 Deno.test("login", async () => {
     {
-        const result = await clientNoAuth.login({
+        const result = await client.login({
             username: randomString(),
             password: "password",
         });
@@ -260,7 +260,7 @@ Deno.test("login", async () => {
         const username = randomString();
         const password = "simple";
         // create account
-        const ok = await clientNoAuth.createAccount({
+        const ok = await client.createAccount({
             email: `${randomString()}@email.com`,
             password,
             username,
@@ -270,7 +270,7 @@ Deno.test("login", async () => {
         }
         assertEquals(ok, true);
         // login with this account
-        const result = await clientNoAuth.login({
+        const result = await client.login({
             username,
             password,
         });
@@ -293,7 +293,7 @@ Deno.test("login", async () => {
 });
 
 Deno.test("getNotes", async () => {
-    const result = await clientNoAuth.getNotes({
+    const result = await client.getNotes({
         npub: "npub1le59glyc3r9zsddury0fu8wyqu69ckvj78fn4425m5xn9zd0zpdssjtd53",
         limit: 2,
         page: 0,
@@ -304,7 +304,7 @@ Deno.test("getNotes", async () => {
     }
     assertEquals(result.length == 2, true);
 
-    const note = await clientNoAuth.getNote({ noteID: result[0].id });
+    const note = await client.getNote({ noteID: result[0].id });
     if (note instanceof Error) fail(note.message);
     if (note == undefined) fail(`${result[0].id} should be present`);
 
@@ -315,7 +315,7 @@ Deno.test("getNotes", async () => {
 });
 
 Deno.test("getIpInfo", async () => {
-    const result = await clientNoAuth.getIpInfo();
+    const result = await client.getIpInfo();
     if (result instanceof Error) {
         console.log(result);
         fail();
@@ -324,7 +324,7 @@ Deno.test("getIpInfo", async () => {
 });
 
 Deno.test("getLocationReviews", async () => {
-    const result = await clientNoAuth.getLocationReviews({
+    const result = await client.getLocationReviews({
         limit: 2,
         page: 0,
         locationId: 2313,
@@ -334,7 +334,7 @@ Deno.test("getLocationReviews", async () => {
 });
 
 Deno.test("addressLookup", async () => {
-    const result = await clientNoAuth.addressLookup({
+    const result = await client.addressLookup({
         address: "paris",
     });
     if (result instanceof Error) fail(result.message);
@@ -349,7 +349,7 @@ Deno.test("addressLookup", async () => {
 });
 
 Deno.test("initiatePasswordReset", async () => {
-    const result = await clientNoAuth.initiatePasswordReset({
+    const result = await client.initiatePasswordReset({
         username: "albert",
     });
     if (result instanceof Error) fail(result.message);
@@ -358,7 +358,7 @@ Deno.test("initiatePasswordReset", async () => {
 
 Deno.test("resetPassword", async () => {
     // todo: this is not testing anything
-    const result = (await clientNoAuth.resetPassword({
+    const result = (await client.resetPassword({
         password: "********",
         token:
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjI2OTkxNCwiZXhwIjoxNzI1NjMzMzc0fQ.ihDjFSde5HS2qCbMquNy4qjwDPlFRAZx4km7tCF04kI",
@@ -368,7 +368,7 @@ Deno.test("resetPassword", async () => {
 });
 
 Deno.test("verifyEmail", async () => {
-    const result = (await clientNoAuth.verifyEmail({
+    const result = (await client.verifyEmail({
         token:
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjI1NTU1NywiZXhwIjoxNzI0OTg5MDU4fQ.TH_YBHlVXkOhl2ZjPop-Xkt7tCgUi0aUMND-W0oD5rk",
     })) as ApiError;
@@ -377,16 +377,64 @@ Deno.test("verifyEmail", async () => {
 });
 
 Deno.test("interests", async () => {
-    const event = await clientNoAuth.publishInterest(["food", "travel"]);
+    const event = await client.publishInterest(["food", "travel"]);
     if (event instanceof Error) {
         fail(event.message);
     }
-    const res = await clientNoAuth.getInterestsOf(signer.publicKey);
+    const res = await client.getInterestsOf(signer.publicKey);
     if (res instanceof Error) {
         fail(res.message);
     }
     assertEquals(res.event, event);
     assertEquals(res.interests, ["food", "travel"]);
+});
+
+Deno.test("follow & unfollow", async () => {
+    const user1 = InMemoryAccountContext.Generate();
+    const pub1 = PrivateKey.Generate().toPublicKey();
+    const res = await client.loginNostr(user1);
+    if (res instanceof Error) {
+        fail(res.message);
+    }
+
+    const authedClient = Client.New({
+        baseURL: client.url,
+        relay_url: client.relay_url,
+        getJwt: () => res.token,
+        getNostrSigner: async () => user1,
+    }) as Client;
+
+    const follows = await authedClient.getFollowingPubkeys();
+    if (follows instanceof Error) {
+        fail(follows.message);
+    }
+    assertEquals(follows, new Set());
+
+    const err = await authedClient.followPubkeys([pub1]);
+    if (err instanceof Error) {
+        fail(err.message);
+    }
+    {
+        const follows = await authedClient.getFollowingPubkeys();
+        if (follows instanceof Error) {
+            fail(follows.message);
+        }
+        assertEquals(follows, new Set([pub1.hex]));
+    }
+    {
+        const err = await authedClient.unfollowPubkey(pub1);
+        if (err instanceof Error) {
+            console.log(err);
+            fail(err.message);
+        }
+    }
+    {
+        const follows = await authedClient.getFollowingPubkeys();
+        if (follows instanceof Error) {
+            fail(follows.message);
+        }
+        assertEquals(follows, new Set([]));
+    }
 });
 
 export function randomString() {
