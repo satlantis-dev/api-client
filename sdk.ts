@@ -50,7 +50,7 @@ import { getInterests } from "./api/secure/interests.ts";
 import { postCalendarEventRSVP } from "./api/secure/calendar.ts";
 import type { CalendarEventType } from "./models/calendar.ts";
 import { Hashtag } from "./api/calendar.ts";
-import { getInterestsOf } from "./nostr-helpers.ts";
+import { followPubkeys, getInterestsOf } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
 
 export type func_GetNostrSigner = () => Promise<Signer | Error>;
@@ -303,6 +303,10 @@ export class Client {
             return true;
         }
         return false;
+    };
+
+    followPubkeys = async (toFollow: PublicKey[]) => {
+        return followPubkeys(this.relay_url, toFollow, this);
     };
 }
 
