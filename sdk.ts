@@ -306,6 +306,50 @@ export class Client {
     followPubkeys = async (toFollow: PublicKey[]) => {
         return followPubkeys(this.relay_url, toFollow, this);
     };
+
+    unfollowPubkey = async (pubkeyToUnfollow: PublicKey) => {
+        const relay = SingleRelayConnection.New(this.relay_url);
+        if (relay instanceof Error) {
+            return relay;
+        }
+        const signer = await this.getNostrSigner();
+        if (signer instanceof Error) {
+            return signer;
+        }
+        {
+            const followEvent = await getContactList(relay, signer.publicKey);
+            if (followEvent instanceof Error) {
+                return followEvent;
+            }
+            if (!followEvent) {
+                // this user is not following any pubkeys
+                return;
+            }
+
+            // remove pubkey in tags
+            const tags: Tag[] = followEvent.tags.filter((tag) => tag[1] !== pubkeyToUnfollow.hex) as Tag[];
+            const new_event = await prepareNostrEvent(signer, {
+                kind: NostrKind.CONTACTS,
+                content: "",
+                tags,
+            });
+            if (new_event instanceof Error) {
+                return new_event;
+            }
+
+            const err = await relay.sendEvent(new_event);
+            if (err instanceof Error) {
+                return err;
+            }
+
+            const ok = await this.updateAccountFollowingList({ event: new_event });
+            if (ok instanceof Error) {
+                return ok;
+            }
+            await relay.close();
+            return ok;
+        }
+    };
 }
 
 // api
@@ -332,3 +376,17 @@ export * from "./models/interest.ts";
 // nostr helpers
 export * from "./event-handling/parser.ts";
 export * from "./nostr-helpers.ts";
+
+async function getContactList(relay: SingleRelayConnection, pubKey: string | PublicKey) {
+    let pub: PublicKey;
+    if (typeof pubKey == "string") {
+        const _pubKey = PublicKey.FromString(pubKey);
+        if (_pubKey instanceof Error) {
+            return _pubKey;
+        }
+        pub = _pubKey;
+    } else {
+        pub = pubKey;
+    }
+    return await relay.getReplaceableEvent(pub, NostrKind.CONTACTS);
+}
