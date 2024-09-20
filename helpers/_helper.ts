@@ -7,13 +7,6 @@ export class ApiError extends Error {
     }
 }
 
-export class InvalidURL extends Error {
-    constructor(public readonly url: string) {
-        super(url);
-        this.name = InvalidURL.name;
-    }
-}
-
 export class InvalidJSON extends Error {
     constructor(public readonly source: SyntaxError) {
         super(source.message, { cause: source });

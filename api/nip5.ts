@@ -1,6 +1,6 @@
 import { PublicKey } from "@blowater/nostr-sdk";
 
-import { handleResponse, InvalidURL, newURL } from "../helpers/_helper.ts";
+import { handleResponse, newURL } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 
 export type Nip5Result = {
