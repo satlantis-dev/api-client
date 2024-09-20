@@ -1,6 +1,8 @@
 import {
+    type Encrypter,
     getTags,
     NostrKind,
+    prepareEncryptedNostrEvent,
     prepareNostrEvent,
     PublicKey,
     type Signer,
@@ -52,7 +54,7 @@ import { Hashtag } from "./api/calendar.ts";
 import { followPubkeys, getInterestsOf } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
 
-export type func_GetNostrSigner = () => Promise<Signer | Error>;
+export type func_GetNostrSigner = () => Promise<Signer & Encrypter | Error>;
 export type func_GetJwt = () => string;
 
 export class Client {
@@ -374,6 +376,60 @@ export class Client {
             await relay.close();
             return ok;
         }
+    };
+
+    submitAmbassadorApplication = async (args: {
+        place: string;
+        comment: string;
+        email?: string;
+        whatsapp?: string;
+        telegram?: string;
+        nostr_only: boolean;
+        satlantis_pubkey: PublicKey;
+    }) => {
+        const signer = await this.getNostrSigner();
+        if (signer instanceof Error) {
+            return signer;
+        }
+
+        let content = "#Ambassador Application\n" + `Place: ${args.place}\n\n` + args.comment + "\n\n";
+        if (args.nostr_only) {
+            content += "Contact: Nostr Only\n";
+        } else if (!args.email && !args.telegram && !args.whatsapp) {
+            return new Error("need at least 1 contact method");
+        } else {
+            if (args.email) {
+                content += `Email: ${args.email}\n`;
+            }
+            if (args.telegram) {
+                content += `Telegram: ${args.telegram}\n`;
+            }
+            if (args.whatsapp) {
+                content += `WhatsApp: ${args.whatsapp}\n`;
+            }
+        }
+
+        const signedEvent = await prepareEncryptedNostrEvent(signer, {
+            content,
+            kind: NostrKind.DIRECT_MESSAGE,
+            algorithm: "nip4",
+            tags: [["p", args.satlantis_pubkey.hex]],
+            encryptKey: args.satlantis_pubkey,
+        });
+        if (signedEvent instanceof Error) {
+            return signedEvent;
+        }
+
+        const relay = SingleRelayConnection.New(this.relay_url);
+        if (relay instanceof Error) {
+            return relay;
+        }
+        const err = await relay.sendEvent(signedEvent);
+        await relay.close();
+        if (err instanceof Error) {
+            return err;
+        }
+        return signedEvent;
     };
 }
 
