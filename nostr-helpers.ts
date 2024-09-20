@@ -9,6 +9,7 @@ import {
     type Tag,
 } from "@blowater/nostr-sdk";
 import type { Client } from "./sdk.ts";
+import { sign } from "jsr:@noble/secp256k1@2.1.0";
 
 const Kind_PlaceFollowList = 10016;
 
@@ -38,10 +39,14 @@ export async function getContactList(satlantis_relay: string, pubKey: string | P
 
 export async function followPubkeys(
     satlantis_relay_url: string,
-    me: Signer,
     toFollow: PublicKey[],
     apiClient: Client,
 ) {
+    const me = await apiClient.getNostrSigner();
+    if (me instanceof Error) {
+        return me;
+    }
+
     const followEvent = await getContactList(satlantis_relay_url, me.publicKey);
     if (followEvent instanceof Error) {
         return followEvent;
