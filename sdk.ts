@@ -51,6 +51,7 @@ import { postCalendarEventRSVP } from "./api/secure/calendar.ts";
 import type { CalendarEventType } from "./models/calendar.ts";
 import { Hashtag } from "./api/calendar.ts";
 import { getInterestsOf } from "./nostr-helpers.ts";
+import { getPubkeyByNip05 } from "./api/nip5.ts";
 
 export type func_GetNostrSigner = () => Promise<Signer | Error>;
 export type func_GetJwt = () => string;
@@ -283,6 +284,26 @@ export class Client {
         }
         return event;
     }
+
+    /**
+     * Checks the availability of a NIP05 address on a given domain.
+     */
+    checkUsernameAvailability = async (userName: string) => {
+        let domain;
+        if (this.url.host == "api-dev.satlantis.io") {
+            domain = "https://dev.satlantis.io";
+        } else {
+            domain = "https://www.satlantis.io";
+        }
+        const response = await getPubkeyByNip05({ domain, name: userName });
+        if (response instanceof Error) {
+            return response;
+        }
+        if (response == undefined) {
+            return true;
+        }
+        return false;
+    };
 }
 
 // api
