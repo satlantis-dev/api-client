@@ -169,40 +169,21 @@ Deno.test("getLocationTags", async () => {
     assertEquals(result.length > 0, true);
 });
 
-Deno.test("nip5", async () => {
+Deno.test("checkUsernameAvailability", async () => {
     {
-        const result = await getPubkeyByNip05({
-            name: randomString(),
-            domain: "https://dev.satlantis.io",
-        });
+        const result = await clientNoAuth.checkUsernameAvailability(randomString());
         if (result instanceof Error) {
-            console.log(result);
-            fail();
+            fail(result.message);
         }
-        assertEquals(result, undefined);
+        assertEquals(result, true);
     }
     {
-        const result = await getPubkeyByNip05({ name: "123", domain: "https://www.dev.satlantis.io" });
+        const result = await clientNoAuth.checkUsernameAvailability("123");
         if (result instanceof Error) {
-            console.log(result);
-            fail();
+            fail(result.message);
         }
-        assertEquals(
-            result,
-            PublicKey.FromHex("65dff7c1f841ed83380ddd069c2d4a2dcbea3c968b4ffc80769b4eb5518fe2d8"),
-        );
+        assertEquals(result, false);
     }
-    // {
-    //     const result = await getPubkeyByNip05({ name: "svetski", domain: "https://www.dev.satlantis.io" });
-    //     if (result instanceof Error) {
-    //         console.log(result);
-    //         fail();
-    //     }
-    //     assertEquals(
-    //         result,
-    //         PublicKey.FromHex("65dff7c1f841ed83380ddd069c2d4a2dcbea3c968b4ffc80769b4eb5518fe2d8"),
-    //     );
-    // }
 });
 
 Deno.test("getAccount", async () => {
