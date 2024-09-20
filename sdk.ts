@@ -409,6 +409,7 @@ export class Client {
             }
         }
 
+        console.log("before", signer);
         const signedEvent = await prepareEncryptedNostrEvent(signer, {
             content,
             kind: NostrKind.DIRECT_MESSAGE,
