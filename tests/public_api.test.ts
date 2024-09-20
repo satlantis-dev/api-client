@@ -1,16 +1,22 @@
 import { assertEquals, fail } from "@std/assert";
 
 import { Client, loginNostr, type Place } from "../sdk.ts";
-import { InMemoryAccountContext, PrivateKey, PublicKey } from "@blowater/nostr-sdk";
+import {
+    InMemoryAccountContext,
+    type NostrEvent,
+    PrivateKey,
+    PublicKey,
+    SingleRelayConnection,
+} from "@blowater/nostr-sdk";
 import type { ApiError } from "../helpers/_helper.ts";
 
 const url = new URL("https://api-dev.satlantis.io");
-const signer = InMemoryAccountContext.Generate();
+const testSigner = InMemoryAccountContext.Generate();
 const client = Client.New({
     baseURL: url,
     relay_url: "wss://relay.satlantis.io",
     getNostrSigner: async () => {
-        return signer;
+        return testSigner;
     },
 });
 if (client instanceof Error) {
@@ -381,7 +387,7 @@ Deno.test("interests", async () => {
     if (event instanceof Error) {
         fail(event.message);
     }
-    const res = await client.getInterestsOf(signer.publicKey);
+    const res = await client.getInterestsOf(testSigner.publicKey);
     if (res instanceof Error) {
         fail(res.message);
     }
@@ -435,6 +441,70 @@ Deno.test("follow & unfollow", async () => {
         }
         assertEquals(follows, new Set([]));
     }
+});
+
+Deno.test("submitAmbassadorApplication", async (t) => {
+    const receiver = InMemoryAccountContext.Generate();
+    await t.step("missing contact methods", async () => {
+        const event_sent = await client.submitAmbassadorApplication({
+            place: "New York",
+            comment: "I am a pro New Yorker",
+            satlantis_pubkey: receiver.publicKey,
+            nostr_only: false,
+        }) as Error;
+        assertEquals(event_sent.message, "need at least 1 contact method");
+    });
+    await t.step("nostr only", async () => {
+        const event_sent = await client.submitAmbassadorApplication({
+            place: "New York",
+            comment: "I am a pro New Yorker",
+            satlantis_pubkey: receiver.publicKey,
+            nostr_only: true,
+        }) as NostrEvent;
+        const text = await receiver.decrypt(event_sent.pubkey, event_sent.content);
+        assertEquals(
+            text,
+            `#Ambassador Application
+Place: New York
+
+I am a pro New Yorker
+
+Contact: Nostr Only
+`,
+        );
+    });
+    await t.step("success", async () => {
+        const event_sent = await client.submitAmbassadorApplication({
+            place: "New York",
+            comment: "I am a pro New Yorker",
+            email: "test@whatever.io",
+            telegram: "whoever",
+            whatsapp: "who?",
+            satlantis_pubkey: receiver.publicKey,
+            nostr_only: false,
+        });
+        if (event_sent instanceof Error) {
+            fail(event_sent.message);
+        }
+        const relay = SingleRelayConnection.New(client.relay_url) as SingleRelayConnection;
+        const event_received = await relay.getEvent(event_sent.id) as NostrEvent;
+        await relay.close();
+        assertEquals(event_received, event_sent);
+
+        const text = await receiver.decrypt(event_received.pubkey, event_received.content);
+        assertEquals(
+            text,
+            `#Ambassador Application
+Place: New York
+
+I am a pro New Yorker
+
+Email: test@whatever.io
+Telegram: whoever
+WhatsApp: who?
+`,
+        );
+    });
 });
 
 export function randomString() {

@@ -365,6 +365,8 @@ Deno.test("calendar events", async () => {
                 noteId: res.postResult.id,
             },
         });
-        console.log(res2);
+        if (res2 instanceof Error) {
+            fail(res2.message);
+        }
     }
 });
