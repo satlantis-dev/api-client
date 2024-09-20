@@ -1,4 +1,5 @@
 import {
+    getTags,
     NostrKind,
     prepareNostrEvent,
     PublicKey,
@@ -303,6 +304,33 @@ export class Client {
         return false;
     };
 
+    /**
+     * get following list of the current pubkey
+     */
+    getFollowingPubkeys = async () => {
+        const signer = await this.getNostrSigner();
+        if (signer instanceof Error) {
+            return signer;
+        }
+        const relay = SingleRelayConnection.New(this.relay_url);
+        if (relay instanceof Error) {
+            return relay;
+        }
+        {
+            const followEvent = await getContactList(relay, signer.publicKey);
+            if (followEvent instanceof Error) {
+                await relay.close();
+                return followEvent;
+            }
+            if (followEvent == undefined) {
+                await relay.close();
+                return new Set<string>();
+            }
+            await relay.close();
+            return new Set(getTags(followEvent).p);
+        }
+    };
+
     followPubkeys = async (toFollow: PublicKey[]) => {
         return followPubkeys(this.relay_url, toFollow, this);
     };
@@ -317,17 +345,14 @@ export class Client {
             return signer;
         }
         {
-            const followEvent = await getContactList(relay, signer.publicKey);
-            if (followEvent instanceof Error) {
-                return followEvent;
-            }
-            if (!followEvent) {
-                // this user is not following any pubkeys
-                return;
+            const followingKeys = await this.getFollowingPubkeys();
+            if (followingKeys instanceof Error) {
+                return followingKeys;
             }
 
             // remove pubkey in tags
-            const tags: Tag[] = followEvent.tags.filter((tag) => tag[1] !== pubkeyToUnfollow.hex) as Tag[];
+            followingKeys.delete(pubkeyToUnfollow.hex);
+            const tags: Tag[] = Array.from(followingKeys).map((p) => ["p", p]);
             const new_event = await prepareNostrEvent(signer, {
                 kind: NostrKind.CONTACTS,
                 content: "",

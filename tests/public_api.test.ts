@@ -390,10 +390,52 @@ Deno.test("interests", async () => {
 });
 
 Deno.test("follow & unfollow", async () => {
-    const pub1 = PrivateKey.Generate().toPublicKey()
-    const err = await client.followPubkeys([pub1])
-    console.log(err)
-})
+    const user1 = InMemoryAccountContext.Generate();
+    const pub1 = PrivateKey.Generate().toPublicKey();
+    const res = await client.loginNostr(user1);
+    if (res instanceof Error) {
+        fail(res.message);
+    }
+
+    const authedClient = Client.New({
+        baseURL: client.url,
+        relay_url: client.relay_url,
+        getJwt: () => res.token,
+        getNostrSigner: async () => user1,
+    }) as Client;
+
+    const follows = await authedClient.getFollowingPubkeys();
+    if (follows instanceof Error) {
+        fail(follows.message);
+    }
+    assertEquals(follows, new Set());
+
+    const err = await authedClient.followPubkeys([pub1]);
+    if (err instanceof Error) {
+        fail(err.message);
+    }
+    {
+        const follows = await authedClient.getFollowingPubkeys();
+        if (follows instanceof Error) {
+            fail(follows.message);
+        }
+        assertEquals(follows, new Set([pub1.hex]));
+    }
+    {
+        const err = await authedClient.unfollowPubkey(pub1);
+        if (err instanceof Error) {
+            console.log(err);
+            fail(err.message);
+        }
+    }
+    {
+        const follows = await authedClient.getFollowingPubkeys();
+        if (follows instanceof Error) {
+            fail(follows.message);
+        }
+        assertEquals(follows, new Set([]));
+    }
+});
 
 export function randomString() {
     return String(Date.now());
