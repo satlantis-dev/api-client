@@ -10,3 +10,7 @@ fmt:
 
 test: fmt
 	deno test --allow-net
+
+check:
+	deno fmt --check
+	deno lint

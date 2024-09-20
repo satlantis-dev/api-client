@@ -23,8 +23,8 @@ jobs:
         with:
           deno-version: 1.45.3
 
-      - name: check formats
-        run: deno fmt --check
+      - name: check
+        run: make check
 
       - name: run tests
         run: make test
