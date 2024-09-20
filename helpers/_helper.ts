@@ -7,13 +7,6 @@ export class ApiError extends Error {
     }
 }
 
-export class InvalidURL extends Error {
-    constructor(public readonly url: string) {
-        super(url);
-        this.name = InvalidURL.name;
-    }
-}
-
 export class InvalidJSON extends Error {
     constructor(public readonly source: SyntaxError) {
         super(source.message, { cause: source });
@@ -26,7 +19,7 @@ export function newURL(url: string | URL) {
         return new URL(url);
     } catch (e) {
         // https://developer.mozilla.org/en-US/docs/Web/API/URL/URL#exceptions
-        return new InvalidURL(url.toString());
+        return e as TypeError;
     }
 }
 

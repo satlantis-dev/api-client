@@ -21,7 +21,7 @@ export const signEvent =
         if (res instanceof ApiError) {
             if (res.status == 401) {
                 return {
-                    type: 401 as 401,
+                    type: 401 as const,
                     data: res.message,
                 };
             }

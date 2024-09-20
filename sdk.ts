@@ -1,6 +1,4 @@
 import {
-    getTags,
-    type NostrEvent,
     NostrKind,
     prepareNostrEvent,
     PublicKey,

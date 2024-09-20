@@ -4,12 +4,10 @@ import {
     NostrKind,
     prepareNostrEvent,
     PublicKey,
-    type Signer,
     SingleRelayConnection,
     type Tag,
 } from "@blowater/nostr-sdk";
 import type { Client } from "./sdk.ts";
-import { sign } from "jsr:@noble/secp256k1@2.1.0";
 
 const Kind_PlaceFollowList = 10016;
 
