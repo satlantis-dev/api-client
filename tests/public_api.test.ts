@@ -2,12 +2,10 @@ import { assertEquals, fail } from "@std/assert";
 
 import { Client, loginNostr, type Place } from "../sdk.ts";
 import {
-    type Encrypter,
     InMemoryAccountContext,
     type NostrEvent,
     PrivateKey,
     PublicKey,
-    type Signer,
     SingleRelayConnection,
 } from "@blowater/nostr-sdk";
 import type { ApiError } from "../helpers/_helper.ts";
