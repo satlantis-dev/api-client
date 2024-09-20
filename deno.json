@@ -17,7 +17,7 @@
     "license": "MIT",
     "lint": {
         "rules": {
-            "exclude": ["no-slow-types", "require-await", "verbatim-module-syntax"]
+            "exclude": ["no-slow-types", "require-await", "verbatim-module-syntax", "ban-types"]
         }
     }
 }

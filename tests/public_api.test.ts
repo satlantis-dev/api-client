@@ -1,7 +1,7 @@
 import { assertEquals, fail } from "@std/assert";
 
-import { Client, getPubkeyByNip05, loginNostr, type Place } from "../sdk.ts";
-import { InMemoryAccountContext, PublicKey, SingleRelayConnection } from "@blowater/nostr-sdk";
+import { Client, loginNostr, type Place } from "../sdk.ts";
+import { InMemoryAccountContext, PublicKey } from "@blowater/nostr-sdk";
 import type { ApiError } from "../helpers/_helper.ts";
 
 const url = new URL("https://api-dev.satlantis.io");

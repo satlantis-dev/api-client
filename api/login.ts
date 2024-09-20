@@ -1,4 +1,4 @@
-import { prepareNostrEvent, type Signer } from "@blowater/nostr-sdk";
+import { NostrKind, prepareNostrEvent, type Signer } from "@blowater/nostr-sdk";
 
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
@@ -12,8 +12,7 @@ export const loginNostr = (urlArg: URL) => async (signer: Signer) => {
     url.pathname = `/login/nostr`;
     const body = JSON.stringify(
         await prepareNostrEvent(signer, {
-            // @ts-ignore
-            kind: 27236,
+            kind: 27236 as NostrKind,
             content: "{}",
             tags: [["auth", "satlantis"]],
         }),
