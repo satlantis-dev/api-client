@@ -16,7 +16,7 @@ export const getPubkeyByNip05 = async (args: {
     name: string;
 }) => {
     const url = newURL(args.domain);
-    if (url instanceof InvalidURL) {
+    if (url instanceof TypeError) {
         return url;
     }
     url.pathname = `/.well-known/nostr.json`;
