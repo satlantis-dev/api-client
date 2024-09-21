@@ -124,6 +124,7 @@ export const updateAccountFollowingList =
 export const updateAccount = (urlArg: URL, getJwt: func_GetJwt) =>
 async (args: {
     npub: string;
+    // according to https://github.com/satlantis-dev/api/blob/7091602016803474021e2869b818d94993a812e4/rest/account.go#L20
     update: {
         about: string;
         banner: string;
