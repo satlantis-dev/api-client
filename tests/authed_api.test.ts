@@ -309,6 +309,17 @@ Deno.test("updateAccount: edit profile", async () => {
         npub: signer.publicKey.bech32(),
         update: {
             name: newName,
+            about: "",
+            banner: "",
+            businessCategory: "",
+            displayName: "",
+            isBusiness: true,
+            lud06: "",
+            lud16: "",
+            nip05: "",
+            phone: "",
+            picture: "",
+            website: "",
         },
     });
     if (updateRes instanceof Error) {
