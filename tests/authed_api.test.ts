@@ -307,7 +307,7 @@ Deno.test("updateAccount: edit profile", async () => {
     const newName = "new name";
     const updateRes = await client.updateAccount({
         npub: signer.publicKey.bech32(),
-        account: {
+        update: {
             name: newName,
         },
     });
