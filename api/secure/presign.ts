@@ -1,7 +1,9 @@
 import { copyURL, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
+import type { func_GetJwt, func_GetNostrSigner } from "../../sdk.ts";
+import { randomIntegerBetween } from "@std/random";
 
-export const presign = (urlArg: URL, getJwt: () => string) =>
+export const presign = (urlArg: URL, getJwt: func_GetJwt, getSigner: func_GetNostrSigner) =>
 async (args: {
     filename: string;
 }) => {
@@ -10,15 +12,23 @@ async (args: {
         return new Error("jwt token is empty");
     }
 
+    const signer = await getSigner();
+    if (signer instanceof Error) {
+        return signer;
+    }
+
     const url = copyURL(urlArg);
     url.pathname = `/secure/presign`;
 
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
+    const newFileName = `${signer.publicKey.bech32()}-${randomIntegerBetween(1000, 10000)}-${args.filename}`;
     const response = await safeFetch(url, {
         method: "POST",
-        body: JSON.stringify(args),
+        body: JSON.stringify({
+            filename: newFileName,
+        }),
         headers,
     });
     if (response instanceof Error) {

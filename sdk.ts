@@ -53,6 +53,7 @@ import type { CalendarEventType } from "./models/calendar.ts";
 import { Hashtag } from "./api/calendar.ts";
 import { followPubkeys, getInterestsOf } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
+import { safeFetch } from "./helpers/safe-fetch.ts";
 
 export type func_GetNostrSigner = () => Promise<Signer & Encrypter | Error>;
 export type func_GetJwt = () => string;
@@ -152,7 +153,7 @@ export class Client {
             this.getJwt,
             this.getNostrSigner,
         );
-        this.presign = presign(url, this.getJwt);
+        this.presign = presign(url, getJwt, getNostrSigner);
         this.postReaction = postReaction(url, this.getJwt);
         this.postNote = postNote(url, this.getJwt);
         this.signEvent = signEvent(url, getJwt);
@@ -430,6 +431,34 @@ export class Client {
             return err;
         }
         return signedEvent;
+    };
+
+    uploadFile = async (args: { file: File }) => {
+        const res = await this.presign({ filename: args.file.name });
+        if (res instanceof Error) {
+            return res;
+        }
+
+        const response = await safeFetch(res.url, {
+            method: "PUT",
+            body: args.file,
+            headers: {
+                "Content-Type": args.file.type,
+            },
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        const _ = await response.text();
+        if (_ instanceof Error) {
+            return _;
+        }
+        const url = newURL(res.url);
+        if (url instanceof Error) {
+            return url;
+        }
+        url.search = "";
+        return url;
     };
 }
 
