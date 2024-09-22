@@ -15,10 +15,10 @@ import { Client, loginNostr, NoteType } from "../sdk.ts";
 import { randomString } from "./public_api.test.ts";
 import { CalendarEventType } from "../models/calendar.ts";
 
-const url = new URL("https://api-dev.satlantis.io");
+const testURL = new URL("https://api-dev.satlantis.io");
 const relay_url = "wss://relay.satlantis.io";
 const clientNoAuth = Client.New({
-    baseURL: url,
+    baseURL: testURL,
     relay_url,
 });
 if (clientNoAuth instanceof Error) {
@@ -93,6 +93,36 @@ Deno.test("presign", async () => {
         fail();
     }
     console.log(result);
+});
+
+Deno.test("upload file", async () => {
+    const signer = InMemoryAccountContext.Generate();
+    const res = await clientNoAuth.loginNostr(signer);
+    if (res instanceof Error) fail(res.message);
+
+    const client = Client.New({
+        baseURL: testURL,
+        getJwt: () => res.token,
+        getNostrSigner: async () => signer,
+        relay_url,
+    }) as Client;
+
+    const result = await client.uploadFile({
+        file: new File(
+            ["test content"],
+            "test-upload-file.txt",
+        ),
+    });
+    if (result instanceof Error) {
+        fail(result.message);
+    }
+
+    const file = await fetch(result);
+    if (!file.ok) {
+        fail(await file.text());
+    }
+
+    assertEquals(await file.text(), "test content");
 });
 
 Deno.test("post notes", async () => {
@@ -208,7 +238,7 @@ Deno.test({
         if (login == undefined || login == "invalid password") fail("wrong");
 
         const client = Client.New({
-            baseURL: url,
+            baseURL: testURL,
             getJwt: () => login.token,
             relay_url,
         }) as Client;
@@ -249,11 +279,11 @@ Deno.test({
             ignore: true,
             fn: async () => {
                 const signer = InMemoryAccountContext.Generate();
-                const res = await loginNostr(url)(signer);
+                const res = await loginNostr(testURL)(signer);
                 if (res instanceof Error) fail(res.message);
 
                 const client = Client.New({
-                    baseURL: url,
+                    baseURL: testURL,
                     getJwt: () => res.token,
                     getNostrSigner: async () => signer,
                     relay_url,

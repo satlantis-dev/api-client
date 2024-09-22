@@ -12,6 +12,7 @@
       "jsr:@std/encoding@0.224.3": "jsr:@std/encoding@0.224.3",
       "jsr:@std/internal@^1.0.0": "jsr:@std/internal@1.0.1",
       "jsr:@std/internal@^1.0.1": "jsr:@std/internal@1.0.1",
+      "jsr:@std/random@^0.1.0": "jsr:@std/random@0.1.0",
       "npm:@noble/ciphers@0.4.1": "npm:@noble/ciphers@0.4.1",
       "npm:@noble/curves@1.4.0": "npm:@noble/curves@1.4.0",
       "npm:@noble/hashes@1.4.0": "npm:@noble/hashes@1.4.0",
@@ -68,6 +69,9 @@
       },
       "@std/internal@1.0.1": {
         "integrity": "6f8c7544d06a11dd256c8d6ba54b11ed870aac6c5aeafff499892662c57673e6"
+      },
+      "@std/random@0.1.0": {
+        "integrity": "70a006be0ffb77d036bab54aa8ae6bd0119ba77ace0f2f56f63273d4262a5667"
       }
     },
     "npm": {
@@ -228,7 +232,8 @@
   "workspace": {
     "dependencies": [
       "jsr:@blowater/nostr-sdk@^0.1.2",
-      "jsr:@std/assert@1.0.0"
+      "jsr:@std/assert@1.0.0",
+      "jsr:@std/random@^0.1.0"
     ]
   }
 }
