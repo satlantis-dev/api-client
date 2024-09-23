@@ -1,16 +1,17 @@
 {
     "name": "@satlantis/api-client",
-    "version": "0.0.45",
+    "version": "0.0.46",
     "exports": "./sdk.ts",
     "imports": {
         "@blowater/nostr-sdk": "jsr:@blowater/nostr-sdk@^0.1.2",
-        "@std/assert": "jsr:@std/assert@1.0.0",
-        "@std/random": "jsr:@std/random@^0.1.0"
+        "@std/assert": "jsr:@std/assert@1.0.0"
     },
     "fmt": {
         "indentWidth": 4,
         "lineWidth": 110,
-        "exclude": ["cov_profile"]
+        "exclude": [
+            "cov_profile"
+        ]
     },
     "compilerOptions": {
         "verbatimModuleSyntax": true
@@ -18,7 +19,12 @@
     "license": "MIT",
     "lint": {
         "rules": {
-            "exclude": ["no-slow-types", "require-await", "verbatim-module-syntax", "ban-types"]
+            "exclude": [
+                "no-slow-types",
+                "require-await",
+                "verbatim-module-syntax",
+                "ban-types"
+            ]
         }
     }
 }

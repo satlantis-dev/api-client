@@ -108,7 +108,7 @@ export class Client {
     signEvent: ReturnType<typeof signEvent>;
 
     // s3
-    presign: ReturnType<typeof presign>;
+    private presign: ReturnType<typeof presign>;
 
     // place
     updatePlace: ReturnType<typeof updatePlace>;
