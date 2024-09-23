@@ -1,7 +1,9 @@
 import {
     type Encrypter,
     getTags,
+    type NostrEvent,
     NostrKind,
+    parseJSON,
     prepareEncryptedNostrEvent,
     prepareNostrEvent,
     PublicKey,
@@ -54,11 +56,14 @@ import { Hashtag } from "./api/calendar.ts";
 import { followPubkeys, getInterestsOf } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
 import { safeFetch } from "./helpers/safe-fetch.ts";
+import type { MetaData, UserProfile } from "./models/account.ts";
 
 export type func_GetNostrSigner = () => Promise<Signer & Encrypter | Error>;
 export type func_GetJwt = () => string;
 
 export class Client {
+    private myProfile: UserProfile | undefined = undefined;
+
     // Place
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
     getPlace: ReturnType<typeof getPlace>;
@@ -77,9 +82,15 @@ export class Client {
     postCalendarEventRSVP: ReturnType<typeof postCalendarEventRSVP>;
 
     // Account
+    /**
+     * @unstable
+     */
     getAccount: ReturnType<typeof getAccount>;
     createAccount: ReturnType<typeof createAccount>;
-    updateAccount: ReturnType<typeof updateAccount>;
+    /**
+     * @unstable
+     */
+    private updateAccount: ReturnType<typeof updateAccount>;
 
     getNotes: ReturnType<typeof getNotes>;
     getNote: ReturnType<typeof getNote>;
@@ -320,7 +331,7 @@ export class Client {
             return relay;
         }
         {
-            const followEvent = await getContactList(relay, signer.publicKey);
+            const followEvent = await get_kind3_ContactList(relay, signer.publicKey);
             if (followEvent instanceof Error) {
                 await relay.close();
                 return followEvent;
@@ -460,6 +471,90 @@ export class Client {
         url.search = "";
         return url;
     };
+
+    /**
+     * @param id
+     *      PublicKey: get the user profile by Nostr Public Key
+     * @returns
+     */
+    getUserProfile = async (pubkey: PublicKey): Promise<UserProfile | Error> => {
+        const relay = SingleRelayConnection.New(this.relay_url);
+        if (relay instanceof Error) {
+            return relay;
+        }
+        const profile = await getUserProfile(pubkey, relay);
+        await relay.close();
+        return profile;
+    };
+
+    getMyProfile = async (): Promise<UserProfile | Error> => {
+        const signer = await this.getNostrSigner();
+        if (signer instanceof Error) {
+            return signer;
+        }
+        const relay = SingleRelayConnection.New(this.relay_url);
+        if (relay instanceof Error) {
+            return relay;
+        }
+        const profile = await getUserProfile(signer.publicKey, relay);
+        await relay.close();
+        if (profile instanceof Error) {
+            return profile;
+        }
+        this.myProfile = profile;
+        return profile;
+    };
+
+    updateMyProfile = async (args: {
+        about?: string;
+        banner?: string;
+        displayName?: string;
+        lud06?: string;
+        lud16?: string;
+        name?: string;
+        picture?: string;
+        website?: string;
+    }) => {
+        const signer = await this.getNostrSigner();
+        if (signer instanceof Error) {
+            return signer;
+        }
+        const relay = SingleRelayConnection.New(this.relay_url);
+        if (relay instanceof Error) {
+            return relay;
+        }
+
+        if (this.myProfile == undefined) {
+            const currentProfile = await getUserProfile(signer.publicKey, relay);
+            if (currentProfile instanceof Error) {
+                await relay.close();
+                return currentProfile;
+            }
+            this.myProfile = currentProfile;
+        }
+
+        this.myProfile = {
+            ...this.myProfile,
+            ...args,
+        };
+
+        const kind0 = await prepareNostrEvent(signer, {
+            content: JSON.stringify(this.myProfile),
+            kind: NostrKind.META_DATA,
+        });
+        if (kind0 instanceof Error) {
+            await relay.close();
+            return kind0;
+        }
+
+        const res = await relay.sendEvent(kind0);
+        await relay.close();
+        if (res instanceof Error) {
+            return res;
+        }
+
+        return convertKind0ToProfile(signer.publicKey, kind0);
+    };
 }
 
 // api
@@ -487,7 +582,13 @@ export * from "./models/interest.ts";
 export * from "./event-handling/parser.ts";
 export * from "./nostr-helpers.ts";
 
-async function getContactList(relay: SingleRelayConnection, pubKey: string | PublicKey) {
+////////////////////////////////
+// Private/Unexported Helpers //
+////////////////////////////////
+/**
+ * also know as nostr following list
+ */
+async function get_kind3_ContactList(relay: SingleRelayConnection, pubKey: string | PublicKey) {
     let pub: PublicKey;
     if (typeof pubKey == "string") {
         const _pubKey = PublicKey.FromString(pubKey);
@@ -500,3 +601,45 @@ async function getContactList(relay: SingleRelayConnection, pubKey: string | Pub
     }
     return await relay.getReplaceableEvent(pub, NostrKind.CONTACTS);
 }
+
+/**
+ * also known as a nostr pubkey profile
+ */
+async function get_kind0_META_DATA(relay: SingleRelayConnection, pubkey: PublicKey) {
+    return await relay.getReplaceableEvent(pubkey, NostrKind.META_DATA);
+}
+
+function convertKind0ToProfile(pubkey: PublicKey, event: NostrEvent<NostrKind.META_DATA>) {
+    const metadata = parseJSON<MetaData>(event.content);
+    if (metadata instanceof Error) {
+        return metadata;
+    }
+    return {
+        ...metadata,
+        pubkey,
+    };
+}
+
+const getUserProfile = async (
+    pubkey: PublicKey,
+    relay: SingleRelayConnection,
+): Promise<UserProfile | Error> => {
+    const kind0 = await get_kind0_META_DATA(relay, pubkey);
+    if (kind0 instanceof Error) {
+        return kind0;
+    }
+    if (kind0 == undefined) {
+        return {
+            pubkey,
+        };
+    }
+
+    const metadata = parseJSON<MetaData>(kind0.content);
+    if (metadata instanceof Error) {
+        return metadata;
+    }
+    return {
+        ...metadata,
+        pubkey,
+    };
+};
