@@ -84,3 +84,14 @@ export type UserProfile = {
     picture?: string;
     website?: string;
 };
+
+export type MetaData = {
+    about?: string;
+    banner?: string;
+    name?: string;
+    displayName?: string;
+    lud06?: string;
+    lud16?: string;
+    picture?: string;
+    website?: string;
+};

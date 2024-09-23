@@ -1,6 +1,7 @@
 import {
     type Encrypter,
     getTags,
+    type NostrEvent,
     NostrKind,
     parseJSON,
     prepareEncryptedNostrEvent,
@@ -55,12 +56,14 @@ import { Hashtag } from "./api/calendar.ts";
 import { followPubkeys, getInterestsOf } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
 import { safeFetch } from "./helpers/safe-fetch.ts";
-import type { UserProfile } from "./models/account.ts";
+import type { MetaData, UserProfile } from "./models/account.ts";
 
 export type func_GetNostrSigner = () => Promise<Signer & Encrypter | Error>;
 export type func_GetJwt = () => string;
 
 export class Client {
+    private myProfile: UserProfile | undefined = undefined;
+
     // Place
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
     getPlace: ReturnType<typeof getPlace>;
@@ -469,24 +472,13 @@ export class Client {
      * @returns
      */
     getUserProfile = async (pubkey: PublicKey): Promise<UserProfile | Error> => {
-        const account = await this.getAccount({
-            npub: pubkey.bech32(),
-        });
-        if (account instanceof Error) {
-            return account;
+        const relay = SingleRelayConnection.New(this.relay_url);
+        if (relay instanceof Error) {
+            return relay;
         }
-        console.log(account)
-        return {
-            pubkey,
-            about: account.about,
-            banner: account.banner,
-            name: account.name,
-            displayName: account.displayName,
-            lud06: account.lud06,
-            lud16: account.lud16,
-            picture: account.picture,
-            website: account.website,
-        };
+        const profile = await getUserProfile(pubkey, relay);
+        await relay.close();
+        return profile;
     };
 
     getMyProfile = async (): Promise<UserProfile | Error> => {
@@ -494,7 +486,17 @@ export class Client {
         if (signer instanceof Error) {
             return signer;
         }
-        return this.getUserProfile(signer.publicKey);
+        const relay = SingleRelayConnection.New(this.relay_url);
+        if (relay instanceof Error) {
+            return relay;
+        }
+        const profile = await getUserProfile(signer.publicKey, relay);
+        await relay.close();
+        if (profile instanceof Error) {
+            return profile;
+        }
+        this.myProfile = profile;
+        return profile;
     };
 
     updateMyProfile = async (args: {
@@ -511,15 +513,41 @@ export class Client {
         if (signer instanceof Error) {
             return signer;
         }
+        const relay = SingleRelayConnection.New(this.relay_url);
+        if (relay instanceof Error) {
+            return relay;
+        }
 
-        const res = await this.updateAccount({
-            npub: signer.publicKey.bech32(),
-            account: args,
+        if (this.myProfile == undefined) {
+            const currentProfile = await getUserProfile(signer.publicKey, relay);
+            if (currentProfile instanceof Error) {
+                await relay.close();
+                return currentProfile;
+            }
+            this.myProfile = currentProfile;
+        }
+
+        this.myProfile = {
+            ...this.myProfile,
+            ...args,
+        };
+
+        const kind0 = await prepareNostrEvent(signer, {
+            content: JSON.stringify(this.myProfile),
+            kind: NostrKind.META_DATA,
         });
+        if (kind0 instanceof Error) {
+            await relay.close();
+            return kind0;
+        }
+
+        const res = await relay.sendEvent(kind0);
+        await relay.close();
         if (res instanceof Error) {
             return res;
         }
-        return this.getMyProfile();
+
+        return convertKind0ToProfile(signer.publicKey, kind0);
     };
 }
 
@@ -574,3 +602,38 @@ async function get_kind3_ContactList(relay: SingleRelayConnection, pubKey: strin
 async function get_kind0_META_DATA(relay: SingleRelayConnection, pubkey: PublicKey) {
     return await relay.getReplaceableEvent(pubkey, NostrKind.META_DATA);
 }
+
+function convertKind0ToProfile(pubkey: PublicKey, event: NostrEvent<NostrKind.META_DATA>) {
+    const metadata = parseJSON<MetaData>(event.content);
+    if (metadata instanceof Error) {
+        return metadata;
+    }
+    return {
+        ...metadata,
+        pubkey,
+    };
+}
+
+const getUserProfile = async (
+    pubkey: PublicKey,
+    relay: SingleRelayConnection,
+): Promise<UserProfile | Error> => {
+    const kind0 = await get_kind0_META_DATA(relay, pubkey);
+    if (kind0 instanceof Error) {
+        return kind0;
+    }
+    if (kind0 == undefined) {
+        return {
+            pubkey,
+        };
+    }
+
+    const metadata = parseJSON<MetaData>(kind0.content);
+    if (metadata instanceof Error) {
+        return metadata;
+    }
+    return {
+        ...metadata,
+        pubkey,
+    };
+};

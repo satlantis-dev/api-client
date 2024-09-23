@@ -369,35 +369,20 @@ Deno.test("getUserProfile & updateUserProfile", async () => {
         const p2 = client.getMyProfile();
         const profile1 = await p1;
         const profile2 = await p2;
+
         assertEquals(profile1, profile2);
         assertEquals(profile1, {
             pubkey: signer.publicKey,
-            about: "",
-            banner: "",
-            displayName: "",
-            lud06: "",
-            lud16: "",
-            name: "",
-            picture: "",
-            website: "",
         });
 
         await client.updateMyProfile({
             name: "this is a test",
         });
-
         const p3 = await client.getMyProfile() as UserProfile;
-        console.log(p3);
+
         assertEquals(p3, {
             pubkey: signer.publicKey,
             name: "this is a test",
-            banner: "",
-            displayName: "",
-            lud06: "",
-            lud16: "",
-            about: "",
-            picture: "",
-            website: "",
         });
     }
 });
