@@ -1,4 +1,3 @@
-import type { PublicKey } from "@blowater/nostr-sdk";
 import type { AuthDetail } from "../sdk.ts";
 
 import type { ChatMembership } from "./chat.ts";
@@ -73,19 +72,7 @@ type Currency = {
     symbol: string;
 };
 
-export type UserProfile = {
-    pubkey: PublicKey;
-    about?: string;
-    banner?: string;
-    name?: string;
-    displayName?: string;
-    lud06?: string;
-    lud16?: string;
-    picture?: string;
-    website?: string;
-};
-
-export type MetaData = {
+export type Kind0MetaData = {
     about?: string;
     banner?: string;
     name?: string;

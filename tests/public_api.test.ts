@@ -410,7 +410,7 @@ Deno.test("follow & unfollow", async () => {
         getNostrSigner: async () => user1,
     }) as Client;
 
-    const follows = await authedClient.getFollowingPubkeys();
+    const follows = await authedClient.getMyFollowingPubkeys();
     if (follows instanceof Error) {
         fail(follows.message);
     }
@@ -421,7 +421,7 @@ Deno.test("follow & unfollow", async () => {
         fail(err.message);
     }
     {
-        const follows = await authedClient.getFollowingPubkeys();
+        const follows = await authedClient.getMyFollowingPubkeys();
         if (follows instanceof Error) {
             fail(follows.message);
         }
@@ -435,7 +435,7 @@ Deno.test("follow & unfollow", async () => {
         }
     }
     {
-        const follows = await authedClient.getFollowingPubkeys();
+        const follows = await authedClient.getMyFollowingPubkeys();
         if (follows instanceof Error) {
             fail(follows.message);
         }

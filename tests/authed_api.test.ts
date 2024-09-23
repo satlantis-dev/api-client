@@ -11,9 +11,10 @@ import { assertEquals } from "jsr:@std/assert@0.226.0/assert-equals";
 import { fail } from "jsr:@std/assert@0.226.0/fail";
 
 import { AccountPlaceRoleTypeEnum } from "../models/account.ts";
-import { Client, loginNostr, NoteType, type UserProfile } from "../sdk.ts";
+import { Client, loginNostr, NoteType } from "../sdk.ts";
 import { randomString } from "./public_api.test.ts";
 import { CalendarEventType } from "../models/calendar.ts";
+import { UserResolver } from "../resolvers/user.ts";
 
 const testURL = new URL("https://api-dev.satlantis.io");
 const relay_url = "wss://relay.satlantis.io";
@@ -371,19 +372,24 @@ Deno.test("getUserProfile & updateUserProfile", async () => {
         const profile2 = await p2;
 
         assertEquals(profile1, profile2);
-        assertEquals(profile1, {
-            pubkey: signer.publicKey,
-        });
+        assertEquals(profile1, UserResolver.New(signer.publicKey, {}, { client }));
 
         await client.updateMyProfile({
             name: "this is a test",
         });
-        const p3 = await client.getMyProfile() as UserProfile;
-
-        assertEquals(p3, {
-            pubkey: signer.publicKey,
+        const p3 = await client.getMyProfile() as UserResolver;
+        const expected = UserResolver.New(signer.publicKey, {
             name: "this is a test",
-        });
+        }, { client });
+
+        console.log("expected", expected.pubkey);
+        assertEquals(
+            p3,
+            expected,
+        );
+
+        assertEquals(await p3.getNip05(), "");
+        assertEquals(await p3.getIsBusiness(), false);
     }
 });
 
