@@ -2,7 +2,6 @@ import { copyURL, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
 import type { func_GetJwt, func_GetNostrSigner } from "../../sdk.ts";
 
-
 export const presign = (urlArg: URL, getJwt: func_GetJwt, getSigner: func_GetNostrSigner) =>
 async (args: {
     filename: string;
