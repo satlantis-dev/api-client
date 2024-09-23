@@ -74,27 +74,6 @@ Deno.test("AccountRole", async () => {
     assertEquals(true, res3);
 });
 
-Deno.test("presign", async () => {
-    const signer = InMemoryAccountContext.Generate();
-    const res = await clientNoAuth.loginNostr(signer);
-    if (res instanceof Error) fail(res.message);
-    const client = Client.New({
-        baseURL: "https://api-dev.satlantis.io",
-        getJwt: () => res.token,
-        getNostrSigner: async () => signer,
-        relay_url,
-    }) as Client;
-
-    const result = await client.presign({
-        filename: "1723171862272-robot.png",
-    });
-    if (result instanceof Error) {
-        console.log(result);
-        fail();
-    }
-    console.log(result);
-});
-
 Deno.test("upload file", async () => {
     const signer = InMemoryAccountContext.Generate();
     const res = await clientNoAuth.loginNostr(signer);
