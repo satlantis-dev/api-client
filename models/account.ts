@@ -73,7 +73,7 @@ type Currency = {
     symbol: string;
 };
 
-export type MetaData = {
+export type Kind0MetaData = {
     about?: string;
     banner?: string;
     name?: string;

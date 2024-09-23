@@ -56,7 +56,8 @@ import { Hashtag } from "./api/calendar.ts";
 import { followPubkeys, getInterestsOf } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
 import { safeFetch } from "./helpers/safe-fetch.ts";
-import type { MetaData, UserProfile } from "./models/account.ts";
+import type { Kind0MetaData } from "./models/account.ts";
+import { UserProfile } from "./resolvers/user.ts";
 
 export type func_GetNostrSigner = () => Promise<Signer & Encrypter | Error>;
 export type func_GetJwt = () => string;
@@ -533,15 +534,9 @@ export class Client {
             this.myProfile = currentProfile;
         }
 
-        this.myProfile = {
-            ...this.myProfile,
-            ...args,
-        };
+        this.myProfile = UserProfile.New(signer.publicKey, args);
 
-        const kind0 = await prepareNostrEvent(signer, {
-            content: JSON.stringify(this.myProfile),
-            kind: NostrKind.META_DATA,
-        });
+        const kind0 = await prepareKind0(signer, this.myProfile.metadata);
         if (kind0 instanceof Error) {
             await relay.close();
             return kind0;
@@ -610,7 +605,7 @@ async function get_kind0_META_DATA(relay: SingleRelayConnection, pubkey: PublicK
 }
 
 function convertKind0ToProfile(pubkey: PublicKey, event: NostrEvent<NostrKind.META_DATA>) {
-    const metadata = parseJSON<MetaData>(event.content);
+    const metadata = parseJSON<Kind0MetaData>(event.content);
     if (metadata instanceof Error) {
         return metadata;
     }
@@ -629,17 +624,20 @@ const getUserProfile = async (
         return kind0;
     }
     if (kind0 == undefined) {
-        return {
-            pubkey,
-        };
+        return UserProfile.New(pubkey, {});
     }
 
-    const metadata = parseJSON<MetaData>(kind0.content);
+    const metadata = parseJSON<Kind0MetaData>(kind0.content);
     if (metadata instanceof Error) {
         return metadata;
     }
-    return {
-        ...metadata,
-        pubkey,
-    };
+    const profile = UserProfile.New(pubkey, metadata);
+    return profile;
 };
+
+async function prepareKind0(signer: Signer, metadata: Kind0MetaData) {
+    return await prepareNostrEvent(signer, {
+        content: JSON.stringify(metadata),
+        kind: NostrKind.META_DATA,
+    });
+}
