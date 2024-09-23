@@ -2,6 +2,7 @@ import {
     type Encrypter,
     getTags,
     NostrKind,
+    parseJSON,
     prepareEncryptedNostrEvent,
     prepareNostrEvent,
     PublicKey,
@@ -54,6 +55,7 @@ import { Hashtag } from "./api/calendar.ts";
 import { followPubkeys, getInterestsOf } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
 import { safeFetch } from "./helpers/safe-fetch.ts";
+import type { UserProfile } from "./models/account.ts";
 
 export type func_GetNostrSigner = () => Promise<Signer & Encrypter | Error>;
 export type func_GetJwt = () => string;
@@ -79,7 +81,7 @@ export class Client {
     // Account
     getAccount: ReturnType<typeof getAccount>;
     createAccount: ReturnType<typeof createAccount>;
-    updateAccount: ReturnType<typeof updateAccount>;
+    private updateAccount: ReturnType<typeof updateAccount>;
 
     getNotes: ReturnType<typeof getNotes>;
     getNote: ReturnType<typeof getNote>;
@@ -320,7 +322,7 @@ export class Client {
             return relay;
         }
         {
-            const followEvent = await getContactList(relay, signer.publicKey);
+            const followEvent = await get_kind3_ContactList(relay, signer.publicKey);
             if (followEvent instanceof Error) {
                 await relay.close();
                 return followEvent;
@@ -460,6 +462,65 @@ export class Client {
         url.search = "";
         return url;
     };
+
+    /**
+     * @param id
+     *      PublicKey: get the user profile by Nostr Public Key
+     * @returns
+     */
+    getUserProfile = async (pubkey: PublicKey): Promise<UserProfile | Error> => {
+        const account = await this.getAccount({
+            npub: pubkey.bech32(),
+        });
+        if (account instanceof Error) {
+            return account;
+        }
+        console.log(account)
+        return {
+            pubkey,
+            about: account.about,
+            banner: account.banner,
+            name: account.name,
+            displayName: account.displayName,
+            lud06: account.lud06,
+            lud16: account.lud16,
+            picture: account.picture,
+            website: account.website,
+        };
+    };
+
+    getMyProfile = async (): Promise<UserProfile | Error> => {
+        const signer = await this.getNostrSigner();
+        if (signer instanceof Error) {
+            return signer;
+        }
+        return this.getUserProfile(signer.publicKey);
+    };
+
+    updateMyProfile = async (args: {
+        about?: string;
+        banner?: string;
+        displayName?: string;
+        lud06?: string;
+        lud16?: string;
+        name?: string;
+        picture?: string;
+        website?: string;
+    }) => {
+        const signer = await this.getNostrSigner();
+        if (signer instanceof Error) {
+            return signer;
+        }
+
+        const res = await this.updateAccount({
+            npub: signer.publicKey.bech32(),
+            account: args,
+        });
+        if (res instanceof Error) {
+            return res;
+        }
+        return this.getMyProfile();
+    };
 }
 
 // api
@@ -487,7 +548,13 @@ export * from "./models/interest.ts";
 export * from "./event-handling/parser.ts";
 export * from "./nostr-helpers.ts";
 
-async function getContactList(relay: SingleRelayConnection, pubKey: string | PublicKey) {
+////////////////////////////////
+// Private/Unexported Helpers //
+////////////////////////////////
+/**
+ * also know as nostr following list
+ */
+async function get_kind3_ContactList(relay: SingleRelayConnection, pubKey: string | PublicKey) {
     let pub: PublicKey;
     if (typeof pubKey == "string") {
         const _pubKey = PublicKey.FromString(pubKey);
@@ -499,4 +566,11 @@ async function getContactList(relay: SingleRelayConnection, pubKey: string | Pub
         pub = pubKey;
     }
     return await relay.getReplaceableEvent(pub, NostrKind.CONTACTS);
+}
+
+/**
+ * also known as a nostr pubkey profile
+ */
+async function get_kind0_META_DATA(relay: SingleRelayConnection, pubkey: PublicKey) {
+    return await relay.getReplaceableEvent(pubkey, NostrKind.META_DATA);
 }

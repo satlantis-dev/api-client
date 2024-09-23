@@ -132,23 +132,6 @@ export async function isUserAFollowingUserB(satlantis_relay_url: string, a: stri
     return false;
 }
 
-export async function getProfile(satlantis_relay_url: string, pubKey: string) {
-    const relay = SingleRelayConnection.New(satlantis_relay_url, { log: false });
-    let event;
-    {
-        if (relay instanceof Error) {
-            return relay;
-        }
-        const pubkey = PublicKey.FromString(pubKey);
-        if (pubkey instanceof Error) {
-            return pubkey;
-        }
-        event = await relay.getReplaceableEvent(pubkey, NostrKind.META_DATA);
-    }
-    await relay.close();
-    return event;
-}
-
 export async function getPlaceFollowList(satlantis_relay_url: string, pubKey: string) {
     const relay = SingleRelayConnection.New(satlantis_relay_url, { log: false });
     let event;

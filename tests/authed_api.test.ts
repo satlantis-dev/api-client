@@ -11,7 +11,7 @@ import { assertEquals } from "jsr:@std/assert@0.226.0/assert-equals";
 import { fail } from "jsr:@std/assert@0.226.0/fail";
 
 import { AccountPlaceRoleTypeEnum } from "../models/account.ts";
-import { Client, loginNostr, NoteType } from "../sdk.ts";
+import { Client, loginNostr, NoteType, type UserProfile } from "../sdk.ts";
 import { randomString } from "./public_api.test.ts";
 import { CalendarEventType } from "../models/calendar.ts";
 
@@ -301,37 +301,6 @@ Deno.test("getInterests", async () => {
     assertEquals(interests.length > 0, true);
 });
 
-Deno.test("updateAccount: edit profile", async () => {
-    const signer = InMemoryAccountContext.Generate();
-    const res = await clientNoAuth.loginNostr(signer);
-    if (res instanceof Error) fail(res.message);
-
-    const client = Client.New({
-        baseURL: "https://api-dev.satlantis.io",
-        getJwt: () => res.token,
-        getNostrSigner: async () => signer,
-        relay_url,
-    }) as Client;
-
-    const newName = "new name";
-    const updateRes = await client.updateAccount({
-        npub: signer.publicKey.bech32(),
-        account: {
-            name: newName,
-        },
-    });
-    if (updateRes instanceof Error) {
-        fail(updateRes.message);
-    }
-
-    assertEquals(res.account.id, updateRes.id);
-    assertEquals(res.account.pubKey, updateRes.pubKey);
-    assertEquals(res.account.npub, updateRes.npub);
-    assertEquals(res.account.nip05, updateRes.nip05);
-    assertEquals(res.account.name, "");
-    assertEquals(updateRes.name, newName);
-});
-
 Deno.test("calendar events", async () => {
     const signer = InMemoryAccountContext.Generate();
 
@@ -377,5 +346,58 @@ Deno.test("calendar events", async () => {
         if (res2 instanceof Error) {
             fail(res2.message);
         }
+    }
+});
+
+Deno.test("getUserProfile & updateUserProfile", async () => {
+    // setup
+    const signer = InMemoryAccountContext.Generate();
+
+    const res = await clientNoAuth.loginNostr(signer);
+    if (res instanceof Error) fail(res.message);
+
+    const client = Client.New({
+        baseURL: "https://api-dev.satlantis.io",
+        getJwt: () => res.token,
+        getNostrSigner: async () => signer,
+        relay_url,
+    }) as Client;
+
+    // test
+    {
+        const p1 = client.getUserProfile(signer.publicKey);
+        const p2 = client.getMyProfile();
+        const profile1 = await p1;
+        const profile2 = await p2;
+        assertEquals(profile1, profile2);
+        assertEquals(profile1, {
+            pubkey: signer.publicKey,
+            about: "",
+            banner: "",
+            displayName: "",
+            lud06: "",
+            lud16: "",
+            name: "",
+            picture: "",
+            website: "",
+        });
+
+        await client.updateMyProfile({
+            name: "this is a test",
+        });
+
+        const p3 = await client.getMyProfile() as UserProfile;
+        console.log(p3);
+        assertEquals(p3, {
+            pubkey: signer.publicKey,
+            name: "this is a test",
+            banner: "",
+            displayName: "",
+            lud06: "",
+            lud16: "",
+            about: "",
+            picture: "",
+            website: "",
+        });
     }
 });
