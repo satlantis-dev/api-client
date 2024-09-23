@@ -82,6 +82,9 @@ export class Client {
     postCalendarEventRSVP: ReturnType<typeof postCalendarEventRSVP>;
 
     // Account
+    /**
+     * @unstable
+     */
     getAccount: ReturnType<typeof getAccount>;
     createAccount: ReturnType<typeof createAccount>;
     private updateAccount: ReturnType<typeof updateAccount>;
