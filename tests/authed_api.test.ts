@@ -372,7 +372,7 @@ Deno.test("getUserProfile & updateUserProfile", async () => {
         const profile2 = await p2;
 
         assertEquals(profile1, profile2);
-        assertEquals(profile1, UserProfile.New(signer.publicKey, {}));
+        assertEquals(profile1, UserProfile.New(signer.publicKey, {}, { client }));
 
         await client.updateMyProfile({
             name: "this is a test",
@@ -380,13 +380,16 @@ Deno.test("getUserProfile & updateUserProfile", async () => {
         const p3 = await client.getMyProfile() as UserProfile;
         const expected = UserProfile.New(signer.publicKey, {
             name: "this is a test",
-        });
-        console.log("p3", p3.pubkey);
+        }, { client });
+
         console.log("expected", expected.pubkey);
         assertEquals(
             p3,
             expected,
         );
+
+        assertEquals(await p3.getNip05(), "");
+        assertEquals(await p3.getIsBusiness(), false);
     }
 });
 

@@ -483,7 +483,7 @@ export class Client {
         if (relay instanceof Error) {
             return relay;
         }
-        const profile = await getUserProfile(pubkey, relay);
+        const profile = await getUserProfile(pubkey, relay, this);
         await relay.close();
         return profile;
     };
@@ -497,7 +497,7 @@ export class Client {
         if (relay instanceof Error) {
             return relay;
         }
-        const profile = await getUserProfile(signer.publicKey, relay);
+        const profile = await getUserProfile(signer.publicKey, relay, this);
         await relay.close();
         if (profile instanceof Error) {
             return profile;
@@ -526,7 +526,7 @@ export class Client {
         }
 
         if (this.myProfile == undefined) {
-            const currentProfile = await getUserProfile(signer.publicKey, relay);
+            const currentProfile = await getUserProfile(signer.publicKey, relay, this);
             if (currentProfile instanceof Error) {
                 await relay.close();
                 return currentProfile;
@@ -534,7 +534,9 @@ export class Client {
             this.myProfile = currentProfile;
         }
 
-        this.myProfile = UserProfile.New(signer.publicKey, args);
+        this.myProfile = UserProfile.New(signer.publicKey, args, {
+            client: this,
+        });
 
         const kind0 = await prepareKind0(signer, this.myProfile.metadata);
         if (kind0 instanceof Error) {
@@ -618,20 +620,21 @@ function convertKind0ToProfile(pubkey: PublicKey, event: NostrEvent<NostrKind.ME
 const getUserProfile = async (
     pubkey: PublicKey,
     relay: SingleRelayConnection,
+    client: Client,
 ): Promise<UserProfile | Error> => {
     const kind0 = await get_kind0_META_DATA(relay, pubkey);
     if (kind0 instanceof Error) {
         return kind0;
     }
     if (kind0 == undefined) {
-        return UserProfile.New(pubkey, {});
+        return UserProfile.New(pubkey, {}, { client });
     }
 
     const metadata = parseJSON<Kind0MetaData>(kind0.content);
     if (metadata instanceof Error) {
         return metadata;
     }
-    const profile = UserProfile.New(pubkey, metadata);
+    const profile = UserProfile.New(pubkey, metadata, { client });
     return profile;
 };
 
