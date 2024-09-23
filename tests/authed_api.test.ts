@@ -400,6 +400,7 @@ Deno.test("updateAccount: edit profile", async () => {
     }) as Client;
 
     const newName = "new name";
+    // @ts-ignore: updateAccount is unstable
     const updateRes = await client.updateAccount({
         npub: signer.publicKey.bech32(),
         account: {

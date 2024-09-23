@@ -87,6 +87,9 @@ export class Client {
      */
     getAccount: ReturnType<typeof getAccount>;
     createAccount: ReturnType<typeof createAccount>;
+    /**
+     * @unstable
+     */
     private updateAccount: ReturnType<typeof updateAccount>;
 
     getNotes: ReturnType<typeof getNotes>;
