@@ -386,3 +386,34 @@ Deno.test("getUserProfile & updateUserProfile", async () => {
         });
     }
 });
+
+Deno.test("updateAccount: edit profile", async () => {
+    const signer = InMemoryAccountContext.Generate();
+    const res = await clientNoAuth.loginNostr(signer);
+    if (res instanceof Error) fail(res.message);
+
+    const client = Client.New({
+        baseURL: "https://api-dev.satlantis.io",
+        getJwt: () => res.token,
+        getNostrSigner: async () => signer,
+        relay_url,
+    }) as Client;
+
+    const newName = "new name";
+    const updateRes = await client.updateAccount({
+        npub: signer.publicKey.bech32(),
+        account: {
+            name: newName,
+        },
+    });
+    if (updateRes instanceof Error) {
+        fail(updateRes.message);
+    }
+
+    assertEquals(res.account.id, updateRes.id);
+    assertEquals(res.account.pubKey, updateRes.pubKey);
+    assertEquals(res.account.npub, updateRes.npub);
+    assertEquals(res.account.nip05, updateRes.nip05);
+    assertEquals(res.account.name, "");
+    assertEquals(updateRes.name, newName);
+});
