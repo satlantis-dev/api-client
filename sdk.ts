@@ -1,6 +1,5 @@
 import {
     type Encrypter,
-    getTags,
     type NostrEvent,
     NostrKind,
     parseJSON,
@@ -53,17 +52,17 @@ import { getInterests } from "./api/secure/interests.ts";
 import { postCalendarEventRSVP } from "./api/secure/calendar.ts";
 import type { CalendarEventType } from "./models/calendar.ts";
 import { Hashtag } from "./api/calendar.ts";
-import { followPubkeys, getInterestsOf } from "./nostr-helpers.ts";
+import { followPubkeys, getFollowingPubkeys, getInterestsOf } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
 import { safeFetch } from "./helpers/safe-fetch.ts";
 import type { Kind0MetaData } from "./models/account.ts";
-import { UserProfile } from "./resolvers/user.ts";
+import { UserResolver } from "./resolvers/user.ts";
 
 export type func_GetNostrSigner = () => Promise<Signer & Encrypter | Error>;
 export type func_GetJwt = () => string;
 
 export class Client {
-    private myProfile: UserProfile | undefined = undefined;
+    private myProfile: UserResolver | undefined = undefined;
 
     // Place
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
@@ -322,7 +321,7 @@ export class Client {
     /**
      * get following list of the current pubkey
      */
-    getFollowingPubkeys = async () => {
+    getMyFollowingPubkeys = async () => {
         const signer = await this.getNostrSigner();
         if (signer instanceof Error) {
             return signer;
@@ -331,19 +330,9 @@ export class Client {
         if (relay instanceof Error) {
             return relay;
         }
-        {
-            const followEvent = await get_kind3_ContactList(relay, signer.publicKey);
-            if (followEvent instanceof Error) {
-                await relay.close();
-                return followEvent;
-            }
-            if (followEvent == undefined) {
-                await relay.close();
-                return new Set<string>();
-            }
-            await relay.close();
-            return new Set(getTags(followEvent).p);
-        }
+        const following = await getFollowingPubkeys(signer.publicKey, relay);
+        await relay.close();
+        return following;
     };
 
     followPubkeys = async (toFollow: PublicKey[]) => {
@@ -360,7 +349,7 @@ export class Client {
             return signer;
         }
         {
-            const followingKeys = await this.getFollowingPubkeys();
+            const followingKeys = await this.getMyFollowingPubkeys();
             if (followingKeys instanceof Error) {
                 return followingKeys;
             }
@@ -478,7 +467,7 @@ export class Client {
      *      PublicKey: get the user profile by Nostr Public Key
      * @returns
      */
-    getUserProfile = async (pubkey: PublicKey): Promise<UserProfile | Error> => {
+    getUserProfile = async (pubkey: PublicKey): Promise<UserResolver | Error> => {
         const relay = SingleRelayConnection.New(this.relay_url);
         if (relay instanceof Error) {
             return relay;
@@ -488,7 +477,7 @@ export class Client {
         return profile;
     };
 
-    getMyProfile = async (): Promise<UserProfile | Error> => {
+    getMyProfile = async (): Promise<UserResolver | Error> => {
         const signer = await this.getNostrSigner();
         if (signer instanceof Error) {
             return signer;
@@ -534,7 +523,7 @@ export class Client {
             this.myProfile = currentProfile;
         }
 
-        this.myProfile = UserProfile.New(signer.publicKey, args, {
+        this.myProfile = UserResolver.New(signer.publicKey, args, {
             client: this,
         });
 
@@ -577,27 +566,11 @@ export * from "./models/region.ts";
 export * from "./models/interest.ts";
 // nostr helpers
 export * from "./event-handling/parser.ts";
-export * from "./nostr-helpers.ts";
+export { followPubkeys, getContactList, isUserAFollowingUserB } from "./nostr-helpers.ts";
 
 ////////////////////////////////
 // Private/Unexported Helpers //
 ////////////////////////////////
-/**
- * also know as nostr following list
- */
-async function get_kind3_ContactList(relay: SingleRelayConnection, pubKey: string | PublicKey) {
-    let pub: PublicKey;
-    if (typeof pubKey == "string") {
-        const _pubKey = PublicKey.FromString(pubKey);
-        if (_pubKey instanceof Error) {
-            return _pubKey;
-        }
-        pub = _pubKey;
-    } else {
-        pub = pubKey;
-    }
-    return await relay.getReplaceableEvent(pub, NostrKind.CONTACTS);
-}
 
 /**
  * also known as a nostr pubkey profile
@@ -621,20 +594,20 @@ const getUserProfile = async (
     pubkey: PublicKey,
     relay: SingleRelayConnection,
     client: Client,
-): Promise<UserProfile | Error> => {
+): Promise<UserResolver | Error> => {
     const kind0 = await get_kind0_META_DATA(relay, pubkey);
     if (kind0 instanceof Error) {
         return kind0;
     }
     if (kind0 == undefined) {
-        return UserProfile.New(pubkey, {}, { client });
+        return UserResolver.New(pubkey, {}, { client });
     }
 
     const metadata = parseJSON<Kind0MetaData>(kind0.content);
     if (metadata instanceof Error) {
         return metadata;
     }
-    const profile = UserProfile.New(pubkey, metadata, { client });
+    const profile = UserResolver.New(pubkey, metadata, { client });
     return profile;
 };
 

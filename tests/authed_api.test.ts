@@ -14,7 +14,7 @@ import { AccountPlaceRoleTypeEnum } from "../models/account.ts";
 import { Client, loginNostr, NoteType } from "../sdk.ts";
 import { randomString } from "./public_api.test.ts";
 import { CalendarEventType } from "../models/calendar.ts";
-import { UserProfile } from "../resolvers/user.ts";
+import { UserResolver } from "../resolvers/user.ts";
 
 const testURL = new URL("https://api-dev.satlantis.io");
 const relay_url = "wss://relay.satlantis.io";
@@ -372,13 +372,13 @@ Deno.test("getUserProfile & updateUserProfile", async () => {
         const profile2 = await p2;
 
         assertEquals(profile1, profile2);
-        assertEquals(profile1, UserProfile.New(signer.publicKey, {}, { client }));
+        assertEquals(profile1, UserResolver.New(signer.publicKey, {}, { client }));
 
         await client.updateMyProfile({
             name: "this is a test",
         });
-        const p3 = await client.getMyProfile() as UserProfile;
-        const expected = UserProfile.New(signer.publicKey, {
+        const p3 = await client.getMyProfile() as UserResolver;
+        const expected = UserResolver.New(signer.publicKey, {
             name: "this is a test",
         }, { client });
 

@@ -1,4 +1,3 @@
-import type { PublicKey } from "@blowater/nostr-sdk";
 import type { AuthDetail } from "../sdk.ts";
 
 import type { ChatMembership } from "./chat.ts";

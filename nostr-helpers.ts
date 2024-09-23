@@ -99,22 +99,6 @@ async function publishEvent(satlantis_relay_url: string, event: NostrEvent) {
     await relay.close();
 }
 
-export async function getFollowingPubkeys(satlantis_relay_url: string, pubkey: string | PublicKey) {
-    const list = new Set<string>();
-    const event = await getContactList(satlantis_relay_url, pubkey);
-    if (event instanceof Error) {
-        return event;
-    }
-    if (event == undefined) {
-        return list;
-    }
-    const tags = getTags(event);
-    for (const pubkey of tags.p) {
-        list.add(pubkey);
-    }
-    return list;
-}
-
 export async function isUserAFollowingUserB(satlantis_relay_url: string, a: string, b: string) {
     const event = await getContactList(satlantis_relay_url, a);
     if (event instanceof Error) {
@@ -159,3 +143,31 @@ export const getInterestsOf = async (relay: SingleRelayConnection, pubkey: Publi
         interests: event ? getTags(event).t : [],
     };
 };
+
+export const getFollowingPubkeys = async (pubkey: PublicKey, relay: SingleRelayConnection) => {
+    const followEvent = await get_kind3_ContactList(relay, pubkey);
+    if (followEvent instanceof Error) {
+        return followEvent;
+    }
+    if (followEvent == undefined) {
+        return new Set<string>();
+    }
+    return new Set(getTags(followEvent).p);
+};
+
+/**
+ * also know as nostr following list
+ */
+async function get_kind3_ContactList(relay: SingleRelayConnection, pubKey: string | PublicKey) {
+    let pub: PublicKey;
+    if (typeof pubKey == "string") {
+        const _pubKey = PublicKey.FromString(pubKey);
+        if (_pubKey instanceof Error) {
+            return _pubKey;
+        }
+        pub = _pubKey;
+    } else {
+        pub = pubKey;
+    }
+    return await relay.getReplaceableEvent(pub, NostrKind.CONTACTS);
+}
