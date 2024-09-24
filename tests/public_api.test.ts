@@ -476,9 +476,9 @@ Deno.test("follow & unfollow alternative api", async () => {
         }
         assertEquals(follows, new Set([pub1.hex]));
 
-        const me = await authedClient.getMyProfile() as UserResolver
-        const following = await me.getFollowing() as UserResolver[]
-        assertEquals(following.map(u => u.pubkey.hex), [pub1.hex])
+        const me = await authedClient.getMyProfile() as UserResolver;
+        const following = await me.getFollowing() as UserResolver[];
+        assertEquals(following.map((u) => u.pubkey.hex), [pub1.hex]);
     }
 });
 
