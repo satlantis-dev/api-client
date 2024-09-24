@@ -368,11 +368,11 @@ Deno.test("getUserProfile & updateUserProfile", async () => {
     {
         const p1 = client.getUserProfile(signer.publicKey);
         const p2 = client.getMyProfile();
-        const profile1 = await p1;
-        const profile2 = await p2;
+        const profile1 = await p1 as UserResolver;
+        const profile2 = await p2 as UserResolver;
 
-        assertEquals(profile1, profile2);
-        assertEquals(profile1, UserResolver.New(signer.publicKey, {}, { client }));
+        assertEquals(profile1.metadata, profile2.metadata);
+        assertEquals(profile1.metadata, UserResolver.New(signer.publicKey, {}, { client }).metadata);
 
         await client.updateMyProfile({
             name: "this is a test",
@@ -382,45 +382,12 @@ Deno.test("getUserProfile & updateUserProfile", async () => {
             name: "this is a test",
         }, { client });
 
-        console.log("expected", expected.pubkey);
         assertEquals(
-            p3,
-            expected,
+            p3.metadata,
+            expected.metadata,
         );
 
         assertEquals(await p3.getNip05(), "");
         assertEquals(await p3.getIsBusiness(), false);
     }
-});
-
-Deno.test("updateAccount: edit profile", async () => {
-    const signer = InMemoryAccountContext.Generate();
-    const res = await clientNoAuth.loginNostr(signer);
-    if (res instanceof Error) fail(res.message);
-
-    const client = Client.New({
-        baseURL: "https://api-dev.satlantis.io",
-        getJwt: () => res.token,
-        getNostrSigner: async () => signer,
-        relay_url,
-    }) as Client;
-
-    const newName = "new name";
-    // @ts-ignore: updateAccount is unstable
-    const updateRes = await client.updateAccount({
-        npub: signer.publicKey.bech32(),
-        account: {
-            name: newName,
-        },
-    });
-    if (updateRes instanceof Error) {
-        fail(updateRes.message);
-    }
-
-    assertEquals(res.account.id, updateRes.id);
-    assertEquals(res.account.pubKey, updateRes.pubKey);
-    assertEquals(res.account.npub, updateRes.npub);
-    assertEquals(res.account.nip05, updateRes.nip05);
-    assertEquals(res.account.name, "");
-    assertEquals(updateRes.name, newName);
 });

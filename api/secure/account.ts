@@ -124,7 +124,8 @@ export const updateAccountFollowingList =
 export const updateAccount = (urlArg: URL, getJwt: func_GetJwt) =>
 async (args: {
     npub: string;
-    account: {
+    data: {
+        event: NostrEvent<NostrKind.META_DATA>;
         about?: string;
         banner?: string;
         displayName?: string;
@@ -147,7 +148,7 @@ async (args: {
     headers.set("Authorization", `Bearer ${jwtToken}`);
     const response = await safeFetch(url, {
         method: "PUT",
-        body: JSON.stringify(args.account),
+        body: JSON.stringify(args.data),
         headers,
     });
     if (response instanceof Error) {
