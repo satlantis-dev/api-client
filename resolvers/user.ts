@@ -1,7 +1,6 @@
-import { PublicKey, SingleRelayConnection } from "@blowater/nostr-sdk";
+import { PublicKey } from "@blowater/nostr-sdk";
 import type { Kind0MetaData } from "../models/account.ts";
 import { type Client } from "../sdk.ts";
-import { getFollowingPubkeys } from "../nostr-helpers.ts";
 
 export class UserResolver {
     metadata: Kind0MetaData = {};
