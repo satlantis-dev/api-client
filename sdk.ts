@@ -533,6 +533,19 @@ export class Client {
             return kind0;
         }
 
+        {
+            const res = await this.updateAccount({
+                npub: signer.publicKey.bech32(),
+                data: {
+                    ...args,
+                    event: kind0,
+                },
+            });
+            if (res instanceof Error) {
+                return res;
+            }
+        }
+
         const res = await relay.sendEvent(kind0);
         await relay.close();
         if (res instanceof Error) {
