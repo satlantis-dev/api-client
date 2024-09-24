@@ -53,22 +53,17 @@ export class UserResolver {
      * @unstable
      */
     async getFollowingPubkeys() {
-        const relay = SingleRelayConnection.New(this.client.relay_url);
-        if (relay instanceof Error) {
-            return relay;
-        }
-        const keys = await getFollowingPubkeys(this.pubkey, relay);
-        await relay.close();
-        if (keys instanceof Error) {
-            return keys;
+        const account = await this.client.getAccount({ npub: this.pubkey.bech32() });
+        if (account instanceof Error) {
+            return account;
         }
         const newList = [];
-        for (const key of keys) {
-            const pub = PublicKey.FromHex(key);
+        for (const a of account.following) {
+            const pub = PublicKey.FromHex(a.pubKey);
             if (pub instanceof Error) {
                 throw pub; // impossible
             }
-            newList.push(UserResolver.New(pub, {}, { client: this.client }));
+            newList.push(UserResolver.New(pub, a, { client: this.client }));
         }
         this.following = newList;
         return newList;
@@ -81,12 +76,12 @@ export class UserResolver {
             return account;
         }
         const newList = [];
-        for (const key of account.followedBy.map((a) => a.pubKey)) {
-            const pub = PublicKey.FromHex(key);
+        for (const a of account.followedBy) {
+            const pub = PublicKey.FromHex(a.pubKey);
             if (pub instanceof Error) {
                 throw pub; // impossible
             }
-            newList.push(UserResolver.New(pub, {}, { client: this.client }));
+            newList.push(UserResolver.New(pub, a, { client: this.client }));
         }
         this.followedBy = newList;
         return this.followedBy;
