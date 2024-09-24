@@ -52,7 +52,7 @@ export class UserResolver {
     /**
      * @unstable
      */
-    async getFollowingPubkeys() {
+    async getFollowing() {
         const account = await this.client.getAccount({ npub: this.pubkey.bech32() });
         if (account instanceof Error) {
             return account;
