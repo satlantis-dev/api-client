@@ -389,5 +389,12 @@ Deno.test("getUserProfile & updateUserProfile", async () => {
 
         assertEquals(await p3.getNip05(), "");
         assertEquals(await p3.getIsBusiness(), false);
+
+        await client.updateMyProfile({
+            isBusiness: true,
+        });
+        const p4 = await client.getMyProfile() as UserResolver;
+
+        assertEquals(await p4.getIsBusiness(), true);
     }
 });

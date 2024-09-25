@@ -135,6 +135,7 @@ async (args: {
         picture?: string;
         phone?: string;
         website?: string;
+        isBusiness?: boolean;
     };
 }) => {
     const jwtToken = getJwt();

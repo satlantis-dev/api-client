@@ -504,6 +504,8 @@ export class Client {
         name?: string;
         picture?: string;
         website?: string;
+        // only for satlantis
+        isBusiness?: boolean;
     }) => {
         const signer = await this.getNostrSigner();
         if (signer instanceof Error) {
@@ -523,8 +525,12 @@ export class Client {
             this.myProfile = currentProfile;
         }
 
-        this.myProfile = UserResolver.New(signer.publicKey, args, {
+        const { about, banner, displayName, lud06, lud16, name, picture, website, isBusiness } = args;
+        const metaData: Kind0MetaData = { about, banner, displayName, lud06, lud16, name, picture, website };
+
+        this.myProfile = UserResolver.New(signer.publicKey, metaData, {
             client: this,
+            isBusiness,
         });
 
         const kind0 = await prepareKind0(signer, this.myProfile.metadata);

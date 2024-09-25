@@ -17,7 +17,7 @@ export class UserResolver {
      * @unstable
      */
     static New(pubkey: PublicKey, metaData: Kind0MetaData, args: {
-        isBusines?: boolean;
+        isBusiness?: boolean;
         nip05?: string;
         client: Client;
     }) {
