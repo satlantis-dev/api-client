@@ -1,6 +1,5 @@
 import {
     type Encrypter,
-    type NostrEvent,
     NostrKind,
     parseJSON,
     prepareEncryptedNostrEvent,
