@@ -58,6 +58,8 @@ import { safeFetch } from "./helpers/safe-fetch.ts";
 import type { Kind0MetaData } from "./models/account.ts";
 import { UserResolver } from "./resolvers/user.ts";
 import type { Channel } from "jsr:@blowater/csp@1.0.0";
+import type { ProcessedTag } from "./api/share_types.ts";
+import type { PlaceEvent } from "./models/place.ts";
 
 export type func_GetNostrSigner = () => Promise<Signer & Encrypter | Error>;
 export type func_GetJwt = () => string;
@@ -118,7 +120,10 @@ export class Client {
     getInterests: ReturnType<typeof getInterests>;
 
     // nostr note
-    postNote: ReturnType<typeof postNote>;
+    /**
+     * @deprecated
+     */
+    _postNote: ReturnType<typeof postNote>;
     postReaction: ReturnType<typeof postReaction>;
     signEvent: ReturnType<typeof signEvent>;
 
@@ -170,7 +175,7 @@ export class Client {
         );
         this.presign = presign(url, getJwt, getNostrSigner);
         this.postReaction = postReaction(url, this.getJwt);
-        this.postNote = postNote(url, this.getJwt);
+        this._postNote = postNote(url, this.getJwt);
         this.signEvent = signEvent(url, getJwt);
         this.updatePlace = updatePlace(url, this.getJwt);
 
@@ -252,7 +257,7 @@ export class Client {
             return event;
         }
 
-        const res = await this.postNote({
+        const res = await this._postNote({
             placeId: args.placeID,
             event,
             noteType: NoteType.CALENDAR_EVENT,
@@ -577,47 +582,108 @@ export class Client {
      * @param args.page.after
      *      get notes after this time
      *      or from the beginning
+     *
+     * @unfinished
      */
     getNotesOf = async (args: {
-        pubkey: PublicKey,
+        pubkey: PublicKey;
         page: {
-            since?: Date,
-            until?: Date,
-            limit: number,
-            sort: 'ASC' | 'DESC'
-        }
+            since?: Date;
+            until?: Date;
+            limit: number;
+            sort: "ASC" | "DESC";
+        };
     }) => {
-        const relay = SingleRelayConnection.New(this.relay_url)
-        if(relay instanceof Error) return relay
+        const relay = SingleRelayConnection.New(this.relay_url);
+        if (relay instanceof Error) return relay;
 
-        const until = Math.floor(Number(args.page.until || 0) || Date.now())
-        const since = Math.floor(Number(args.page.since || 0)) || undefined
+        const until = Math.floor((Number(args.page.until || 0) || Date.now()) / 1000);
+        const since = Math.floor(Number(args.page.since || 0) / 1000) || undefined;
+
         const sub = await relay.newSub("getNotesOf", {
             kinds: [NostrKind.TEXT_NOTE],
             authors: [args.pubkey.hex],
             limit: args.page.limit,
             since,
             until,
-        })
-        if(sub instanceof Error) {
-            await relay.close()
+        });
+        if (sub instanceof Error) {
+            await relay.close();
             return sub;
         }
 
         async function* get(chan: Channel<RelayResponse_REQ_Message>, relay: SingleRelayConnection) {
             for await (const msg of chan) {
-                if(msg.type == "EOSE") {
-                    await relay.close()
+                if (msg.type == "EOSE") {
+                    await relay.close();
                     return;
-                } else if(msg.type == "EVENT") {
-                    yield msg.event
+                } else if (msg.type == "EVENT") {
+                    yield msg.event;
                 } else {
-                    console.info(msg)
+                    console.info(msg);
                 }
             }
         }
-        return get(sub.chan, relay)
-    }
+        return get(sub.chan, relay);
+    };
+
+    /**
+     * @param args.placeEvent required if posting under a place/city
+     */
+    postNote = async (args: {
+        content: string;
+        image: File;
+        placeEvent?: PlaceEvent;
+    }) => {
+        const signer = await this.getNostrSigner();
+        if (signer instanceof Error) {
+            return console.error(signer);
+        }
+
+        const tags: Tag[] = [];
+
+        if (args.placeEvent) {
+            const placeDTag = args.placeEvent.tags.find((tag: ProcessedTag) => tag.type === "d") ?? null;
+            const nostrId = args.placeEvent.nostrId;
+            if (!placeDTag) {
+                return new Error(`placeDTag does not exist for place event ${args.placeEvent.id}`);
+            }
+            const aTag = `${args.placeEvent.kind}:${nostrId}:${placeDTag?.values[0]}`;
+            tags.push(["a", aTag]);
+        }
+
+        const uploadedImageUrl = await this.uploadFile({ file: args.image });
+        if (uploadedImageUrl instanceof Error) {
+            return uploadedImageUrl;
+        }
+
+        const fullContent = `${uploadedImageUrl} ${args.content}`;
+
+        const event = await prepareNostrEvent(signer, {
+            kind: NostrKind.TEXT_NOTE,
+            tags,
+            content: fullContent,
+        });
+        if (event instanceof Error) {
+            return console.error(event);
+        }
+
+        const relay = SingleRelayConnection.New(this.relay_url);
+        if (relay instanceof Error) {
+            return relay;
+        }
+        const err = await relay.sendEvent(event);
+        await relay.close();
+        if (err instanceof Error) {
+            return err;
+        }
+
+        const res = await this._postNote({
+            event,
+            noteType: NoteType.BASIC,
+        });
+        return res;
+    };
 }
 
 // api

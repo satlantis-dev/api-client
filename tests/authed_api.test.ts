@@ -120,7 +120,7 @@ Deno.test("post notes", async () => {
             content: "test reaction",
             kind: NostrKind.REACTION,
         }) as NostrEvent;
-        const rootNote = await client.postNote({
+        const rootNote = await client._postNote({
             placeId: 23949,
             accountId: res.account.id,
             event: root_event,

@@ -321,34 +321,6 @@ Deno.test("getNotes", async () => {
     assertEquals(note.itself.event.sig, result[0].event.sig);
 });
 
-Deno.test("getNotesOf", async () => {
-    const result = await client.getNotesOf({
-        pubkey: PublicKey.FromBech32("npub1le59glyc3r9zsddury0fu8wyqu69ckvj78fn4425m5xn9zd0zpdssjtd53") as PublicKey,
-        page: {
-            limit: 10,
-            sort: "ASC"
-        }
-    });
-    if (result instanceof Error) {
-        console.log(result);
-        fail();
-    }
-    {
-        const data = await Array.fromAsync(result);
-        // assertEquals(data.length == 2, true);
-        console.log(data)
-        // const note = await client.getNote({ noteID: data[0].id });
-        // if (note instanceof Error) fail(note.message);
-        // if (note == undefined) fail(`${data[0].id} should be present`);
-
-        // // should be the same ntoe
-        // assertEquals(note.itself.id, data[0].id);
-        // assertEquals(note.itself.event.content, data[0].event.content);
-        // assertEquals(note.itself.event.sig, data[0].event.sig);
-    }
-
-});
-
 Deno.test("getIpInfo", async () => {
     const result = await client.getIpInfo();
     if (result instanceof Error) {
