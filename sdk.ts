@@ -57,7 +57,6 @@ import { getPubkeyByNip05 } from "./api/nip5.ts";
 import { safeFetch } from "./helpers/safe-fetch.ts";
 import type { Kind0MetaData } from "./models/account.ts";
 import { UserResolver } from "./resolvers/user.ts";
-import type { Channel } from "jsr:@blowater/csp@1.0.0";
 
 export type func_GetNostrSigner = () => Promise<Signer & Encrypter | Error>;
 export type func_GetJwt = () => string;
@@ -609,7 +608,7 @@ export class Client {
             return sub;
         }
 
-        async function* get(chan: Channel<RelayResponse_REQ_Message>, relay: SingleRelayConnection) {
+        async function* get(chan: AsyncIterable<RelayResponse_REQ_Message>, relay: SingleRelayConnection) {
             for await (const msg of chan) {
                 if (msg.type == "EOSE") {
                     await relay.close();
