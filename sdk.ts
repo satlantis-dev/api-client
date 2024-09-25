@@ -93,7 +93,10 @@ export class Client {
      */
     private updateAccount: ReturnType<typeof updateAccount>;
 
-    private getNotes: ReturnType<typeof getNotes>;
+    /**
+     * @deprecated new application logic should use getNotesOf
+     */
+    getNotes: ReturnType<typeof getNotes>;
     getNote: ReturnType<typeof getNote>;
     getIpInfo: ReturnType<typeof getIpInfo>;
     getLocationReviews: ReturnType<typeof getLocationReviews>;
