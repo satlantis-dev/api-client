@@ -591,7 +591,6 @@ export class Client {
             since?: Date;
             until?: Date;
             limit: number;
-            sort: "ASC" | "DESC";
         };
     }) => {
         const relay = SingleRelayConnection.New(this.relay_url);
@@ -629,6 +628,8 @@ export class Client {
 
     /**
      * @param args.placeEvent required if posting under a place/city
+     *
+     * @unstable
      */
     postNote = async (args: {
         content: string;
@@ -637,7 +638,7 @@ export class Client {
     }) => {
         const signer = await this.getNostrSigner();
         if (signer instanceof Error) {
-            return console.error(signer);
+            return signer;
         }
 
         const tags: Tag[] = [];
@@ -665,7 +666,7 @@ export class Client {
             content: fullContent,
         });
         if (event instanceof Error) {
-            return console.error(event);
+            return event;
         }
 
         const relay = SingleRelayConnection.New(this.relay_url);
@@ -680,7 +681,7 @@ export class Client {
 
         const res = await this._postNote({
             event,
-            noteType: NoteType.BASIC,
+            noteType: NoteType.MEDIA,
         });
         return res;
     };
