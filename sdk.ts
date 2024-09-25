@@ -551,13 +551,20 @@ export class Client {
         if (signer instanceof Error) {
             return signer;
         }
-        // this.getMyProfile()
-        // this.updateAccount({
-        //     npub: signer.publicKey.bech32(),
-        //     data: {
-        //         isBusiness: true
-        //     }
-        // })
+        const kind0 = await prepareKind0(signer, this.myProfile?.metadata || {});
+        if (kind0 instanceof Error) {
+            return kind0;
+        }
+        const res = await this.updateAccount({
+            npub: signer.publicKey.bech32(),
+            data: {
+                event: kind0,
+                isBusiness: true,
+            },
+        });
+        if (res instanceof Error) {
+            return res;
+        }
     };
 }
 

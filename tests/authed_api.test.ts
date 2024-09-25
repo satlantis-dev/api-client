@@ -350,7 +350,7 @@ Deno.test("calendar events", async () => {
     }
 });
 
-Deno.test("getUserProfile & updateUserProfile", async () => {
+Deno.test("getUserProfile & updateUserProfile", async (t) => {
     // setup
     const signer = InMemoryAccountContext.Generate();
 
@@ -389,9 +389,17 @@ Deno.test("getUserProfile & updateUserProfile", async () => {
 
         assertEquals(await p3.getNip05(), "");
         assertEquals(await p3.getIsBusiness(), false);
+        assertEquals(p3.isBusiness, false);
 
-        const p4 = await client.becomeBusinessAccount();
+        await t.step("become a business", async () => {
+            const err = await client.becomeBusinessAccount();
+            if (err instanceof Error) {
+                fail(err.message);
+            }
 
-        assertEquals(await p3.getIsBusiness(), true);
+            assertEquals(p3.isBusiness, false);
+            assertEquals(await p3.getIsBusiness(), true);
+            assertEquals(p3.isBusiness, true);
+        });
     }
 });
