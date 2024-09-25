@@ -22,7 +22,7 @@ const client = Client.New({
     relay_url,
 }) as Client;
 
-Deno.test("getNotesOf", async () => {
+Deno.test("notes without places", async () => {
     const contents = [];
     for (let i = 0; i < 3; i++) {
         const res = await client.postNote({
@@ -64,4 +64,34 @@ Deno.test("getNotesOf", async () => {
         assertEquals(data.length == 3, true);
         assertEquals(data.map((n) => n.content).reverse(), contents);
     }
+});
+
+Deno.test("notes in a place", async () => {
+    const contents = [];
+    const place = await client.getPlace({ osmRef: "R7426387" });
+    if (place instanceof Error) {
+        fail(place.message);
+    }
+
+    for (let i = 0; i < 1; i++) {
+        const res = await client.postNote({
+            content: "hello Satlantis",
+            image: new File(
+                ["test content"],
+                "test-upload-file.txt",
+            ),
+            placeID: place.id,
+        });
+        if (res instanceof Error) {
+            fail(res.message);
+        }
+        contents.push(res.event.content);
+    }
+
+    const notes = await client.getPlaceNoteFeed({ placeID: place.id });
+    if (notes instanceof Error) {
+        fail(notes.message);
+    }
+
+    assertEquals(notes.reverse().slice(0, 1).map((n) => n.note.event.content), contents);
 });

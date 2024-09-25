@@ -58,8 +58,6 @@ import { safeFetch } from "./helpers/safe-fetch.ts";
 import type { Kind0MetaData } from "./models/account.ts";
 import { UserResolver } from "./resolvers/user.ts";
 import type { Channel } from "jsr:@blowater/csp@1.0.0";
-import type { ProcessedTag } from "./api/share_types.ts";
-import type { PlaceEvent } from "./models/place.ts";
 
 export type func_GetNostrSigner = () => Promise<Signer & Encrypter | Error>;
 export type func_GetJwt = () => string;
@@ -634,23 +632,11 @@ export class Client {
     postNote = async (args: {
         content: string;
         image: File;
-        placeEvent?: PlaceEvent;
+        placeID?: number;
     }) => {
         const signer = await this.getNostrSigner();
         if (signer instanceof Error) {
             return signer;
-        }
-
-        const tags: Tag[] = [];
-
-        if (args.placeEvent) {
-            const placeDTag = args.placeEvent.tags.find((tag: ProcessedTag) => tag.type === "d") ?? null;
-            const nostrId = args.placeEvent.nostrId;
-            if (!placeDTag) {
-                return new Error(`placeDTag does not exist for place event ${args.placeEvent.id}`);
-            }
-            const aTag = `${args.placeEvent.kind}:${nostrId}:${placeDTag?.values[0]}`;
-            tags.push(["a", aTag]);
         }
 
         const uploadedImageUrl = await this.uploadFile({ file: args.image });
@@ -662,7 +648,6 @@ export class Client {
 
         const event = await prepareNostrEvent(signer, {
             kind: NostrKind.TEXT_NOTE,
-            tags,
             content: fullContent,
         });
         if (event instanceof Error) {
@@ -682,6 +667,7 @@ export class Client {
         const res = await this._postNote({
             event,
             noteType: NoteType.MEDIA,
+            placeId: args.placeID,
         });
         return res;
     };
