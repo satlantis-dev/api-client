@@ -45,7 +45,7 @@ export type Note = {
 	event: ReshapedNostrEvent;
 	kind: number;
 	nostrId: string;
-	pubKey: string;
+	pubkey: string;
 	sig: string;
 	tags: string;
 	type: NoteType;
