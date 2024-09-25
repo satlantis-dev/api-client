@@ -58,8 +58,6 @@ import { safeFetch } from "./helpers/safe-fetch.ts";
 import type { Kind0MetaData } from "./models/account.ts";
 import { UserResolver } from "./resolvers/user.ts";
 import type { Channel } from "jsr:@blowater/csp@1.0.0";
-import type { ProcessedTag } from "./api/share_types.ts";
-import type { PlaceEvent } from "./models/place.ts";
 
 export type func_GetNostrSigner = () => Promise<Signer & Encrypter | Error>;
 export type func_GetJwt = () => string;
@@ -591,7 +589,6 @@ export class Client {
             since?: Date;
             until?: Date;
             limit: number;
-            sort: "ASC" | "DESC";
         };
     }) => {
         const relay = SingleRelayConnection.New(this.relay_url);
@@ -629,27 +626,17 @@ export class Client {
 
     /**
      * @param args.placeEvent required if posting under a place/city
+     *
+     * @unstable
      */
     postNote = async (args: {
         content: string;
         image: File;
-        placeEvent?: PlaceEvent;
+        placeID?: number;
     }) => {
         const signer = await this.getNostrSigner();
         if (signer instanceof Error) {
-            return console.error(signer);
-        }
-
-        const tags: Tag[] = [];
-
-        if (args.placeEvent) {
-            const placeDTag = args.placeEvent.tags.find((tag: ProcessedTag) => tag.type === "d") ?? null;
-            const nostrId = args.placeEvent.nostrId;
-            if (!placeDTag) {
-                return new Error(`placeDTag does not exist for place event ${args.placeEvent.id}`);
-            }
-            const aTag = `${args.placeEvent.kind}:${nostrId}:${placeDTag?.values[0]}`;
-            tags.push(["a", aTag]);
+            return signer;
         }
 
         const uploadedImageUrl = await this.uploadFile({ file: args.image });
@@ -661,11 +648,10 @@ export class Client {
 
         const event = await prepareNostrEvent(signer, {
             kind: NostrKind.TEXT_NOTE,
-            tags,
             content: fullContent,
         });
         if (event instanceof Error) {
-            return console.error(event);
+            return event;
         }
 
         const relay = SingleRelayConnection.New(this.relay_url);
@@ -680,7 +666,8 @@ export class Client {
 
         const res = await this._postNote({
             event,
-            noteType: NoteType.BASIC,
+            noteType: NoteType.MEDIA,
+            placeId: args.placeID,
         });
         return res;
     };
