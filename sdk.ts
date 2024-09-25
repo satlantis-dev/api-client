@@ -5,6 +5,7 @@ import {
     prepareEncryptedNostrEvent,
     prepareNostrEvent,
     PublicKey,
+    type RelayResponse_REQ_Message,
     type Signer,
     SingleRelayConnection,
     type Tag,
@@ -56,6 +57,7 @@ import { getPubkeyByNip05 } from "./api/nip5.ts";
 import { safeFetch } from "./helpers/safe-fetch.ts";
 import type { Kind0MetaData } from "./models/account.ts";
 import { UserResolver } from "./resolvers/user.ts";
+import type { Channel } from "jsr:@blowater/csp@1.0.0";
 
 export type func_GetNostrSigner = () => Promise<Signer & Encrypter | Error>;
 export type func_GetJwt = () => string;
@@ -91,7 +93,7 @@ export class Client {
      */
     private updateAccount: ReturnType<typeof updateAccount>;
 
-    getNotes: ReturnType<typeof getNotes>;
+    private getNotes: ReturnType<typeof getNotes>;
     getNote: ReturnType<typeof getNote>;
     getIpInfo: ReturnType<typeof getIpInfo>;
     getLocationReviews: ReturnType<typeof getLocationReviews>;
@@ -565,6 +567,54 @@ export class Client {
             return res;
         }
     };
+
+    /**
+     * get notes that are created by this pubkey
+     *
+     * @param args.page.after
+     *      get notes after this time
+     *      or from the beginning
+     */
+    getNotesOf = async (args: {
+        pubkey: PublicKey,
+        page: {
+            since?: Date,
+            until?: Date,
+            limit: number,
+            sort: 'ASC' | 'DESC'
+        }
+    }) => {
+        const relay = SingleRelayConnection.New(this.relay_url)
+        if(relay instanceof Error) return relay
+
+        const until = Math.floor(Number(args.page.until || 0) || Date.now())
+        const since = Math.floor(Number(args.page.since || 0)) || undefined
+        const sub = await relay.newSub("getNotesOf", {
+            kinds: [NostrKind.TEXT_NOTE],
+            authors: [args.pubkey.hex],
+            limit: args.page.limit,
+            since,
+            until,
+        })
+        if(sub instanceof Error) {
+            await relay.close()
+            return sub;
+        }
+
+        async function* get(chan: Channel<RelayResponse_REQ_Message>, relay: SingleRelayConnection) {
+            for await (const msg of chan) {
+                if(msg.type == "EOSE") {
+                    await relay.close()
+                    return;
+                } else if(msg.type == "EVENT") {
+                    yield msg.event
+                } else {
+                    console.info(msg)
+                }
+            }
+        }
+        return get(sub.chan, relay)
+    }
 }
 
 // api
