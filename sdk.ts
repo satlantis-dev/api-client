@@ -1,6 +1,5 @@
 import {
     type Encrypter,
-    type NostrEvent,
     NostrKind,
     parseJSON,
     prepareEncryptedNostrEvent,
@@ -495,16 +494,7 @@ export class Client {
         return profile;
     };
 
-    updateMyProfile = async (args: {
-        about?: string;
-        banner?: string;
-        displayName?: string;
-        lud06?: string;
-        lud16?: string;
-        name?: string;
-        picture?: string;
-        website?: string;
-    }) => {
+    updateMyProfile = async (metaData: Kind0MetaData) => {
         const signer = await this.getNostrSigner();
         if (signer instanceof Error) {
             return signer;
@@ -523,21 +513,21 @@ export class Client {
             this.myProfile = currentProfile;
         }
 
-        this.myProfile = UserResolver.New(signer.publicKey, args, {
-            client: this,
-        });
-
-        const kind0 = await prepareKind0(signer, this.myProfile.metadata);
+        const kind0 = await prepareKind0(signer, metaData);
         if (kind0 instanceof Error) {
             await relay.close();
             return kind0;
         }
 
+        this.myProfile = UserResolver.New(signer.publicKey, metaData, {
+            client: this,
+        });
+
         {
             const res = await this.updateAccount({
                 npub: signer.publicKey.bech32(),
                 data: {
-                    ...args,
+                    ...metaData,
                     event: kind0,
                 },
             });
@@ -552,7 +542,28 @@ export class Client {
             return res;
         }
 
-        return convertKind0ToProfile(signer.publicKey, kind0);
+        return this.myProfile;
+    };
+
+    becomeBusinessAccount = async () => {
+        const signer = await this.getNostrSigner();
+        if (signer instanceof Error) {
+            return signer;
+        }
+        const kind0 = await prepareKind0(signer, this.myProfile?.metadata || {});
+        if (kind0 instanceof Error) {
+            return kind0;
+        }
+        const res = await this.updateAccount({
+            npub: signer.publicKey.bech32(),
+            data: {
+                event: kind0,
+                isBusiness: true,
+            },
+        });
+        if (res instanceof Error) {
+            return res;
+        }
     };
 }
 
@@ -590,17 +601,6 @@ export { followPubkeys, getContactList, isUserAFollowingUserB } from "./nostr-he
  */
 async function get_kind0_META_DATA(relay: SingleRelayConnection, pubkey: PublicKey) {
     return await relay.getReplaceableEvent(pubkey, NostrKind.META_DATA);
-}
-
-function convertKind0ToProfile(pubkey: PublicKey, event: NostrEvent<NostrKind.META_DATA>) {
-    const metadata = parseJSON<Kind0MetaData>(event.content);
-    if (metadata instanceof Error) {
-        return metadata;
-    }
-    return {
-        ...metadata,
-        pubkey,
-    };
 }
 
 const getUserProfile = async (
