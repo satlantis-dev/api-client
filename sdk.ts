@@ -30,7 +30,7 @@ import { loginNostr } from "./api/login.ts";
 import { getNote, getNotes, NoteType } from "./api/note.ts";
 import { getAccountPlaceRoles } from "./api/people.ts";
 import {
-    getPlace,
+    getPlaceByOsmRef,
     getPlaceCalendarEvents,
     getPlaceCategoryScores,
     getPlaceChats,
@@ -73,7 +73,7 @@ export class Client {
 
     // Place
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
-    private _getPlace: ReturnType<typeof getPlace>;
+    private _getPlaceByOsmRef: ReturnType<typeof getPlaceByOsmRef>;
     getPlaces: ReturnType<typeof getPlaces>;
     getPlaceEvent: ReturnType<typeof getPlaceEvent>;
     getPlaceNoteFeed: ReturnType<typeof getPlaceNoteFeed>;
@@ -149,7 +149,7 @@ export class Client {
         public readonly getJwt: func_GetJwt,
         public readonly getNostrSigner: func_GetNostrSigner,
     ) {
-        this._getPlace = getPlace(url);
+        this._getPlaceByOsmRef = getPlaceByOsmRef(url);
         this.getPlaces = getPlaces(url);
         this.getAccountPlaceRoles = getAccountPlaceRoles(url);
         this.getPlaceNoteFeed = getPlaceNoteFeed(url);
@@ -225,8 +225,8 @@ export class Client {
 
     // Place
     places = new Map<number, Place>();
-    getPlace = async (args: { osmRef: string | number }) => {
-        const place = await this._getPlace(args);
+    getPlaceByOsmRef = async (args: { osmRef: string | number }) => {
+        const place = await this._getPlaceByOsmRef(args);
         if (place instanceof Error) {
             return place;
         }
