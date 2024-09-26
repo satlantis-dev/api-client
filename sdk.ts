@@ -232,14 +232,6 @@ export class Client {
         this.places.set(place.id, place);
         return place;
     };
-    getPlaceByID = async (id: number) => {
-        const place = this.places.get(id);
-        if (place) {
-            return place;
-        } else {
-            throw "get place by id is not implemented by backend yet";
-        }
-    };
 
     // Location
     getLocation = async (id: number) => {
@@ -247,6 +239,7 @@ export class Client {
         if (data instanceof Error) {
             return data;
         }
+
         return new LocationResolver(this, data);
     };
 
