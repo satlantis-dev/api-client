@@ -600,6 +600,35 @@ export class Client {
         return this.myProfile;
     };
 
+    updateMyInterests = async (interests: string[]) => {
+        const signer = await this.getNostrSigner();
+        if (signer instanceof Error) {
+            return signer;
+        }
+
+        const event = await prepareNostrEvent(signer, {
+            kind: NostrKind.Interests,
+            tags: interests.map((i) => ["t", i]),
+            content: "",
+        });
+        if (event instanceof Error) {
+            return event;
+        }
+
+        const relay = SingleRelayConnection.New(this.relay_url);
+        if (relay instanceof Error) {
+            return relay;
+        }
+        const err = await relay.sendEvent(event);
+        await relay.close();
+        if (err instanceof Error) {
+            return err;
+        }
+        if (this.myProfile) {
+            this.myProfile.interests = interests;
+        }
+    };
+
     becomeBusinessAccount = async () => {
         const signer = await this.getNostrSigner();
         if (signer instanceof Error) {

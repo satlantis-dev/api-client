@@ -106,3 +106,21 @@ Deno.test("getLocation", async () => {
     assertEquals(result.placeID, 28564);
     assertEquals((await result.place()).osmId, 1);
 });
+
+Deno.test("a user's interests", async () => {
+    const user = await client.getMyProfile();
+    if (user instanceof Error) {
+        fail(user.message);
+    }
+
+    const interests = await user.getInterests();
+    if (interests instanceof Error) {
+        fail(interests.message);
+    }
+    assertEquals(interests, []);
+
+    const err = await client.updateMyInterests(["food"]);
+    if (err instanceof Error) fail(err.message);
+
+    assertEquals(user.interests, ["food"]);
+});
