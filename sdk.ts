@@ -242,6 +242,7 @@ export class Client {
         }
     };
 
+    // Location
     getLocation = async (id: number) => {
         const data = await this.getLocationByID({ id });
         if (data instanceof Error) {
@@ -254,6 +255,7 @@ export class Client {
         return getLocationTags(this.url)();
     };
 
+    // Calendar Event
     createCalendarEvent = async (args: {
         description: string;
         placeATag: string;
