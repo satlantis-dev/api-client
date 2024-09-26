@@ -1,5 +1,6 @@
 import {
     type Encrypter,
+    type NostrEvent,
     NostrKind,
     parseJSON,
     prepareEncryptedNostrEvent,
@@ -742,6 +743,51 @@ export class Client {
             placeId: args.placeID,
         });
         return res;
+    };
+
+    /**
+     * reply/comment to an event
+     *
+     * @unstable
+     */
+    replyTo = async (args: {
+        event: NostrEvent;
+        content: string;
+    }) => {
+        const signer = await this.getNostrSigner();
+        if (signer instanceof Error) {
+            return signer;
+        }
+
+        // https://github.com/nostr-protocol/nips/blob/master/10.md#marked-e-tags-preferred
+        const event = await prepareNostrEvent(signer, {
+            kind: NostrKind.TEXT_NOTE,
+            content: args.content,
+            tags: [
+                ["e", args.event.id, this.relay_url, "reply"],
+            ],
+        });
+        if (event instanceof Error) {
+            return event;
+        }
+
+        const relay = SingleRelayConnection.New(this.relay_url);
+        if (relay instanceof Error) {
+            return relay;
+        }
+        const err = await relay.sendEvent(event);
+        await relay.close();
+        if (err instanceof Error) {
+            return err;
+        }
+
+        const res = await this._postNote({
+            event,
+            noteType: NoteType.BASIC,
+        });
+        if (res instanceof Error) {
+            return res;
+        }
     };
 }
 
