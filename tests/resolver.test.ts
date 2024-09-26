@@ -1,6 +1,7 @@
 import { assertEquals, fail } from "@std/assert";
 import { Client } from "../sdk.ts";
 import { InMemoryAccountContext } from "@blowater/nostr-sdk";
+import type { UserResolver } from "../sdk.ts";
 
 const testURL = new URL("https://api-dev.satlantis.io");
 const relay_url = "wss://relay.satlantis.io";
@@ -38,29 +39,43 @@ Deno.test("notes without places", async () => {
         contents.push(res.event.content);
     }
 
-    const notes = await client.getNotes({
-        npub: signer.publicKey.bech32(),
-        limit: 10,
-        page: 1,
-    });
-    if (notes instanceof Error) {
-        fail(notes.message);
+    {
+        // @ts-ignore: test private
+        const notes = await client.getNotes({
+            npub: signer.publicKey.bech32(),
+            limit: 10,
+            page: 1,
+        });
+        if (notes instanceof Error) {
+            fail(notes.message);
+        }
+
+        assertEquals(notes.map((n) => n.content).reverse(), contents);
     }
 
-    assertEquals(notes.map((n) => n.content).reverse(), contents);
+    {
+        const result = await client.getNotesOf({
+            pubkey: signer.publicKey,
+            page: {
+                limit: 10,
+                offset: 0,
+            },
+        });
+        if (result instanceof Error) {
+            fail(result.message);
+        }
 
-    const result = await client.getNotesOf({
-        pubkey: signer.publicKey,
-        page: {
-            limit: 10,
-        },
-    });
-    if (result instanceof Error) {
-        console.log(result);
-        fail();
+        const data = await Array.fromAsync(result);
+        assertEquals(data.length == 3, true);
+        assertEquals(data.map((n) => n.content).reverse(), contents);
     }
     {
-        const data = await Array.fromAsync(result);
+        const user = await client.getUserProfile(signer.publicKey) as UserResolver;
+
+        const notes = await user.getNotes({ limit: 10 });
+        if (notes instanceof Error) fail(notes.message);
+
+        const data = await Array.fromAsync(notes);
         assertEquals(data.length == 3, true);
         assertEquals(data.map((n) => n.content).reverse(), contents);
     }

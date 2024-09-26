@@ -371,20 +371,20 @@ Deno.test("getUserProfile & updateUserProfile", async (t) => {
         const profile1 = await p1 as UserResolver;
         const profile2 = await p2 as UserResolver;
 
-        assertEquals(profile1.metadata, profile2.metadata);
-        assertEquals(profile1.metadata, UserResolver.New(signer.publicKey, {}, { client }).metadata);
+        assertEquals(profile1.metaData, profile2.metaData);
+        assertEquals(profile1.metaData, new UserResolver(client, signer.publicKey).metaData);
 
         await client.updateMyProfile({
             name: "this is a test",
         });
         const p3 = await client.getMyProfile() as UserResolver;
-        const expected = UserResolver.New(signer.publicKey, {
+        const expected = new UserResolver(client, signer.publicKey, {
             name: "this is a test",
-        }, { client });
+        });
 
         assertEquals(
-            p3.metadata,
-            expected.metadata,
+            p3.metaData,
+            expected.metaData,
         );
 
         assertEquals(await p3.getNip05(), "");
