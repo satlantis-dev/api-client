@@ -30,30 +30,18 @@ export enum NoteType {
 }
 
 export type Note = {
-    id: number;
-    accountId: number;
-    account: Account;
-    ancestorId: number;
-    calendarEventRsvps: CalendarEventRSVP[];
-    chatMemberships: ChatMembership[];
-    content: string;
-    createdAt: number;
-    depth: number;
-    descendantId: number;
-    descendants: Note[];
-    eventId: number;
-    event: ReshapedNostrEvent;
-    kind: number;
-    nostrId: string;
-    pubkey: string;
-    sig: string;
-    tags: string;
-    type: NoteType;
-    reactions: Reaction[];
-    repostedNoteId?: number;
-    reposts: unknown[];
-    zaps: unknown[];
-};
+    readonly id:                 number;
+    readonly accountId:          number;
+    readonly createdAt:          Date;
+    readonly content:            string;
+    readonly eventId:            number;
+    readonly kind:               number;
+    readonly nostrId:            string;
+    readonly pubkey:             string;
+    readonly sig:                string;
+    readonly tags:               string;
+    readonly type:               number;
+}
 
 export const getNotes = (urlArg: URL) => async (args: { npub: string; page: number; limit: number }) => {
     const url = copyURL(urlArg);
