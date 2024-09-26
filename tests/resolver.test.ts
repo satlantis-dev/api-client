@@ -47,7 +47,7 @@ Deno.test("notes without places", async () => {
         fail(notes.message);
     }
 
-    assertEquals(notes.map((n) => n.event.content).reverse(), contents);
+    assertEquals(notes.map((n) => n.content).reverse(), contents);
 
     const result = await client.getNotesOf({
         pubkey: signer.publicKey,
@@ -93,5 +93,5 @@ Deno.test("notes in a place", async () => {
         fail(notes.message);
     }
 
-    assertEquals(notes.reverse().slice(0, 1).map((n) => n.note.event.content), contents);
+    assertEquals(notes.slice(0, 1).map((n) => n.note.content), contents);
 });
