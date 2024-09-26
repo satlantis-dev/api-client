@@ -745,6 +745,11 @@ export class Client {
         return res;
     };
 
+    /**
+     * reply/comment to an event
+     *
+     * @unstable
+     */
     replyTo = async (args: {
         event: NostrEvent;
         content: string;
