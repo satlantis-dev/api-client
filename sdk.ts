@@ -62,6 +62,8 @@ import { getPubkeyByNip05 } from "./api/nip5.ts";
 import { safeFetch } from "./helpers/safe-fetch.ts";
 import type { Kind0MetaData } from "./models/account.ts";
 import { UserResolver } from "./resolvers/user.ts";
+import { LocationResolver } from "./resolvers/location.ts";
+import type { Place } from "./models/place.ts";
 
 export type func_GetNostrSigner = () => Promise<Signer & Encrypter | Error>;
 export type func_GetJwt = () => string;
@@ -107,7 +109,7 @@ export class Client {
     // Location
     getLocationsWithinBoundingBox: ReturnType<typeof getLocationsWithinBoundingBox>;
     getLocationReviews: ReturnType<typeof getLocationReviews>;
-    getLocation: ReturnType<typeof getLocation>;
+    private getLocationByID: ReturnType<typeof getLocation>;
 
     //
     addressLookup: ReturnType<typeof addressLookup>;
@@ -174,7 +176,7 @@ export class Client {
         // location
         this.getLocationsWithinBoundingBox = getLocationsWithinBoundingBox(url);
         this.getLocationReviews = getLocationReviews(url);
-        this.getLocation = getLocation(url);
+        this.getLocationByID = getLocation(url);
 
         //
         this.addressLookup = addressLookup(url);
@@ -220,6 +222,25 @@ export class Client {
         }
         return new Client(validURL, args.relay_url, args.getJwt, args.getNostrSigner);
     }
+
+    // Place
+    places = new Map<number, Place>();
+    getPlaceByID = async (id: number) => {
+        const place = this.places.get(id);
+        if (place) {
+            return place;
+        } else {
+            throw "get place by id is not implemented by backend yet";
+        }
+    };
+
+    getLocation = async (id: number) => {
+        const data = await this.getLocationByID({ id });
+        if (data instanceof Error) {
+            return data;
+        }
+        return new LocationResolver(data, this);
+    };
 
     getLocationTags = () => {
         return getLocationTags(this.url)();

@@ -177,13 +177,13 @@ Deno.test("getLocationTags", async () => {
 });
 
 Deno.test("getLocation", async () => {
-    const result = await client.getLocation({ id: 1889 });
+    const result = await client.getLocation(1889);
     if (result instanceof Error) {
         fail(result.message);
     }
     assertEquals(result.id, 1889);
     assertEquals(result.name, "Snack bar São João");
-    assertEquals(result.placeId, 28564);
+    assertEquals(result.placeID, 28564);
 });
 
 Deno.test("checkUsernameAvailability", async () => {
