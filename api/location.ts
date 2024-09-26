@@ -12,6 +12,26 @@ export const getLocationTags = (urlArg: URL) => async () => {
     return handleResponse<LocationTag[]>(response);
 };
 
+export const getLocation = (urlArg: URL) => async (args: { id: number }) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getLocation/${args.id}`;
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{
+        id: number;
+        bio: string | null;
+        image: string;
+        lat: number;
+        lng: number;
+        locationTags: LocationTag[] | null;
+        name: string;
+        placeId: number;
+        score: number;
+    }>(response);
+};
+
 /**
  * @unstable
  * @param tags currently tags are not used
