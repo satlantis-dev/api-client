@@ -92,4 +92,14 @@ export class UserResolver {
         }
         return account.accountPlaceRoles || [];
     };
+
+    interests: string[] = [];
+    getInterests = async () => {
+        const interests = await this.client.getInterestsOf(this.pubkey);
+        if (interests instanceof Error) {
+            return interests;
+        }
+        this.interests = interests.interests;
+        return this.interests;
+    };
 }
