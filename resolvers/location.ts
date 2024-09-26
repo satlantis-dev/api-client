@@ -10,6 +10,9 @@ export class LocationResolver {
     lat: number;
     lng: number;
 
+    /**
+     * @unstable
+     */
     constructor(private readonly client: Client, data: {
         id: number;
         bio: string | null;
