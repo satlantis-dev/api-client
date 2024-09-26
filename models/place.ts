@@ -22,7 +22,7 @@ export type Place = {
     osmId: number;
     osmRef: string;
     regionId: number;
-    region: Region;
+    region?: Region;
     slug: string;
     name: string;
     countryId: number;

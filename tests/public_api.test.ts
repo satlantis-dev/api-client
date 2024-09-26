@@ -27,7 +27,7 @@ if (client instanceof Error) {
 // we can run this test suit in github action
 // so that we always have up to date client SDK
 Deno.test("getPlace", async () => {
-    const result = await client.getPlace({
+    const result = await client.getPlaceByOsmRef({
         osmRef: "R8421413",
     });
     if (result instanceof Error) {
@@ -174,16 +174,6 @@ Deno.test("getLocationTags", async () => {
         fail(result.message);
     }
     assertEquals(result.length > 0, true);
-});
-
-Deno.test("getLocation", async () => {
-    const result = await client.getLocation({ id: 1889 });
-    if (result instanceof Error) {
-        fail(result.message);
-    }
-    assertEquals(result.id, 1889);
-    assertEquals(result.name, "Snack bar São João");
-    assertEquals(result.placeId, 28564);
 });
 
 Deno.test("checkUsernameAvailability", async () => {

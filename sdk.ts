@@ -30,7 +30,7 @@ import { loginNostr } from "./api/login.ts";
 import { getNote, getNotes, NoteType } from "./api/note.ts";
 import { getAccountPlaceRoles } from "./api/people.ts";
 import {
-    getPlace,
+    getPlaceByOsmRef,
     getPlaceCalendarEvents,
     getPlaceCategoryScores,
     getPlaceChats,
@@ -62,6 +62,8 @@ import { getPubkeyByNip05 } from "./api/nip5.ts";
 import { safeFetch } from "./helpers/safe-fetch.ts";
 import type { Kind0MetaData } from "./models/account.ts";
 import { UserResolver } from "./resolvers/user.ts";
+import { LocationResolver } from "./resolvers/location.ts";
+import type { Place } from "./models/place.ts";
 
 export type func_GetNostrSigner = () => Promise<Signer & Encrypter | Error>;
 export type func_GetJwt = () => string;
@@ -71,7 +73,7 @@ export class Client {
 
     // Place
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
-    getPlace: ReturnType<typeof getPlace>;
+    private _getPlaceByOsmRef: ReturnType<typeof getPlaceByOsmRef>;
     getPlaces: ReturnType<typeof getPlaces>;
     getPlaceEvent: ReturnType<typeof getPlaceEvent>;
     getPlaceNoteFeed: ReturnType<typeof getPlaceNoteFeed>;
@@ -107,7 +109,7 @@ export class Client {
     // Location
     getLocationsWithinBoundingBox: ReturnType<typeof getLocationsWithinBoundingBox>;
     getLocationReviews: ReturnType<typeof getLocationReviews>;
-    getLocation: ReturnType<typeof getLocation>;
+    private getLocationByID: ReturnType<typeof getLocation>;
 
     //
     addressLookup: ReturnType<typeof addressLookup>;
@@ -147,7 +149,7 @@ export class Client {
         public readonly getJwt: func_GetJwt,
         public readonly getNostrSigner: func_GetNostrSigner,
     ) {
-        this.getPlace = getPlace(url);
+        this._getPlaceByOsmRef = getPlaceByOsmRef(url);
         this.getPlaces = getPlaces(url);
         this.getAccountPlaceRoles = getAccountPlaceRoles(url);
         this.getPlaceNoteFeed = getPlaceNoteFeed(url);
@@ -174,7 +176,7 @@ export class Client {
         // location
         this.getLocationsWithinBoundingBox = getLocationsWithinBoundingBox(url);
         this.getLocationReviews = getLocationReviews(url);
-        this.getLocation = getLocation(url);
+        this.getLocationByID = getLocation(url);
 
         //
         this.addressLookup = addressLookup(url);
@@ -221,10 +223,39 @@ export class Client {
         return new Client(validURL, args.relay_url, args.getJwt, args.getNostrSigner);
     }
 
+    // Place
+    places = new Map<number, Place>();
+    getPlaceByOsmRef = async (args: { osmRef: string | number }) => {
+        const place = await this._getPlaceByOsmRef(args);
+        if (place instanceof Error) {
+            return place;
+        }
+        this.places.set(place.id, place);
+        return place;
+    };
+    getPlaceByID = async (id: number) => {
+        const place = this.places.get(id);
+        if (place) {
+            return place;
+        } else {
+            throw "get place by id is not implemented by backend yet";
+        }
+    };
+
+    // Location
+    getLocation = async (id: number) => {
+        const data = await this.getLocationByID({ id });
+        if (data instanceof Error) {
+            return data;
+        }
+        return new LocationResolver(this, data);
+    };
+
     getLocationTags = () => {
         return getLocationTags(this.url)();
     };
 
+    // Calendar Event
     createCalendarEvent = async (args: {
         description: string;
         placeATag: string;
@@ -710,6 +741,9 @@ export * from "./models/metric.ts";
 export * from "./models/place.ts";
 export * from "./models/region.ts";
 export * from "./models/interest.ts";
+// data resolvers
+export * from "./resolvers/location.ts";
+export * from "./resolvers/user.ts";
 // nostr helpers
 export * from "./event-handling/parser.ts";
 export { followPubkeys, getContactList, isUserAFollowingUserB } from "./nostr-helpers.ts";

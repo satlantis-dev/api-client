@@ -8,7 +8,7 @@ import { type PlaceNote } from "./note.ts";
 /**
  * get the place based on OSM ID or ID, only 1 is needed
  */
-export const getPlace = (urlArg: URL) => async (args: { osmRef: string | number }) => {
+export const getPlaceByOsmRef = (urlArg: URL) => async (args: { osmRef: string | number }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getPlace/${args.osmRef}`;
     const response = await safeFetch(url);
