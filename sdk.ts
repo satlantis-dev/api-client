@@ -247,7 +247,7 @@ export class Client {
         if (data instanceof Error) {
             return data;
         }
-        return new LocationResolver(data, this);
+        return new LocationResolver(this, data);
     };
 
     getLocationTags = () => {
