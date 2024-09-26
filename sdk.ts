@@ -99,10 +99,8 @@ export class Client {
      */
     private updateAccount: ReturnType<typeof updateAccount>;
 
-    /**
-     * @deprecated new application logic should use getNotesOf
-     */
-    getNotes: ReturnType<typeof getNotes>;
+    // note
+    private getNotes: ReturnType<typeof getNotes>;
     getNote: ReturnType<typeof getNote>;
     getIpInfo: ReturnType<typeof getIpInfo>;
 
@@ -574,10 +572,7 @@ export class Client {
             return kind0;
         }
 
-        this.myProfile = UserResolver.New(signer.publicKey, metaData, {
-            client: this,
-        });
-
+        this.myProfile = new UserResolver(this, signer.publicKey, metaData);
         {
             const res = await this.updateAccount({
                 npub: signer.publicKey.bech32(),
@@ -634,7 +629,7 @@ export class Client {
         if (signer instanceof Error) {
             return signer;
         }
-        const kind0 = await prepareKind0(signer, this.myProfile?.metadata || {});
+        const kind0 = await prepareKind0(signer, this.myProfile?.metaData || {});
         if (kind0 instanceof Error) {
             return kind0;
         }
@@ -664,6 +659,7 @@ export class Client {
         page: {
             since?: Date;
             until?: Date;
+            offset: number;
             limit: number;
         };
     }) => {
@@ -798,14 +794,14 @@ const getUserProfile = async (
         return kind0;
     }
     if (kind0 == undefined) {
-        return UserResolver.New(pubkey, {}, { client });
+        return new UserResolver(client, pubkey);
     }
 
     const metadata = parseJSON<Kind0MetaData>(kind0.content);
     if (metadata instanceof Error) {
         return metadata;
     }
-    const profile = UserResolver.New(pubkey, metadata, { client });
+    const profile = new UserResolver(client, pubkey, metadata);
     return profile;
 };
 

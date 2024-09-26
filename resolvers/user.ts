@@ -1,28 +1,23 @@
 import { PublicKey } from "@blowater/nostr-sdk";
 import type { Kind0MetaData } from "../models/account.ts";
 import { type Client } from "../sdk.ts";
+import type { LocationResolver } from "./location.ts";
 
 export class UserResolver {
-    metadata: Kind0MetaData = {};
-    nip5: string | undefined;
-    isBusiness: boolean | undefined;
-
-    private constructor(
-        public readonly pubkey: PublicKey,
-        private readonly client: Client,
-    ) {}
+    metaData: Kind0MetaData;
 
     /**
      * Should not be called by application code directly
      * @unstable
      */
-    static New(pubkey: PublicKey, metaData: Kind0MetaData, args: {
-        nip05?: string;
-        client: Client;
-    }) {
-        const resolver = new UserResolver(pubkey, args.client);
-        resolver.metadata = metaData;
-        return resolver;
+    constructor(
+        private readonly client: Client,
+        public readonly pubkey: PublicKey,
+        metaData?: Kind0MetaData,
+        public nip5?: string,
+        public isBusiness?: boolean,
+    ) {
+        this.metaData = metaData || {};
     }
 
     async getNip05() {
@@ -61,7 +56,7 @@ export class UserResolver {
             if (pub instanceof Error) {
                 throw pub; // impossible
             }
-            newList.push(UserResolver.New(pub, a, { client: this.client }));
+            newList.push(new UserResolver(this.client, pub, a));
         }
         this.following = newList;
         return newList;
@@ -79,7 +74,7 @@ export class UserResolver {
             if (pub instanceof Error) {
                 throw pub; // impossible
             }
-            newList.push(UserResolver.New(pub, a, { client: this.client }));
+            newList.push(new UserResolver(this.client, pub, a));
         }
         this.followedBy = newList;
         return this.followedBy;
@@ -101,5 +96,23 @@ export class UserResolver {
         }
         this.interests = interests.interests;
         return this.interests;
+    };
+
+    getNotes = async (args: { limit: number }) => {
+        return this.client.getNotesOf({
+            pubkey: this.pubkey,
+            page: {
+                limit: args.limit,
+                offset: 0,
+            },
+        });
+    };
+
+    /**
+     * @unstable
+     * @unfinished
+     */
+    getOwnedLocation = async () => {
+        return undefined;
     };
 }
