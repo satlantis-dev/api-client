@@ -6,7 +6,7 @@ export class LocationResolver {
     bio: string;
     image: string;
     name: string;
-    placeID: number;
+    placeOsmRef: string;
     lat: number;
     lng: number;
 
@@ -21,19 +21,19 @@ export class LocationResolver {
         lng: number;
         locationTags: LocationTag[] | null;
         name: string;
-        placeId: number;
+        osmRef: string;
         score: number;
     }) {
         this.id = data.id;
         this.image = data.image;
         this.name = data.name;
-        this.placeID = data.placeId;
+        this.placeOsmRef = data.osmRef;
         this.lat = data.lat;
         this.lng = data.lng;
         this.bio = data.bio || "";
     }
 
     place = async () => {
-        return this.client.getPlaceByID(this.placeID);
+        return this.client.getPlaceByOsmRef({ osmRef: this.placeOsmRef });
     };
 }
