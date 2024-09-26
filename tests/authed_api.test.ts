@@ -162,7 +162,7 @@ Deno.test("update place", async () => {
         relay_url,
     }) as Client;
     {
-        const originalPlace = await client.getPlace({ osmRef: "R296561" });
+        const originalPlace = await client._getPlace({ osmRef: "R296561" });
         if (originalPlace instanceof Error) {
             fail(originalPlace.message);
         }
@@ -175,7 +175,7 @@ Deno.test("update place", async () => {
             fail(result.message);
         }
 
-        let updatedPlace = await client.getPlace({ osmRef: originalPlace.osmRef });
+        let updatedPlace = await client._getPlace({ osmRef: originalPlace.osmRef });
         if (updatedPlace instanceof Error) {
             fail(updatedPlace.message);
         }
@@ -189,7 +189,7 @@ Deno.test("update place", async () => {
             fail(result.message);
         }
 
-        updatedPlace = await client.getPlace({ osmRef: originalPlace.osmRef });
+        updatedPlace = await client._getPlace({ osmRef: originalPlace.osmRef });
         if (updatedPlace instanceof Error) {
             fail(updatedPlace.message);
         }

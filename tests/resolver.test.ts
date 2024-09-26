@@ -68,7 +68,7 @@ Deno.test("notes without places", async () => {
 
 Deno.test("notes in a place", async () => {
     const contents = [];
-    const place = await client.getPlace({ osmRef: "R7426387" });
+    const place = await client._getPlace({ osmRef: "R7426387" });
     if (place instanceof Error) {
         fail(place.message);
     }

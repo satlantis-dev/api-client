@@ -73,7 +73,7 @@ export class Client {
 
     // Place
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
-    getPlace: ReturnType<typeof getPlace>;
+    private _getPlace: ReturnType<typeof getPlace>;
     getPlaces: ReturnType<typeof getPlaces>;
     getPlaceEvent: ReturnType<typeof getPlaceEvent>;
     getPlaceNoteFeed: ReturnType<typeof getPlaceNoteFeed>;
@@ -149,7 +149,7 @@ export class Client {
         public readonly getJwt: func_GetJwt,
         public readonly getNostrSigner: func_GetNostrSigner,
     ) {
-        this.getPlace = getPlace(url);
+        this._getPlace = getPlace(url);
         this.getPlaces = getPlaces(url);
         this.getAccountPlaceRoles = getAccountPlaceRoles(url);
         this.getPlaceNoteFeed = getPlaceNoteFeed(url);
@@ -225,6 +225,14 @@ export class Client {
 
     // Place
     places = new Map<number, Place>();
+    getPlace = async (args: { osmRef: string | number }) => {
+        const place = await this._getPlace(args);
+        if (place instanceof Error) {
+            return place;
+        }
+        this.places.set(place.id, place);
+        return place;
+    };
     getPlaceByID = async (id: number) => {
         const place = this.places.get(id);
         if (place) {
@@ -731,6 +739,9 @@ export * from "./models/metric.ts";
 export * from "./models/place.ts";
 export * from "./models/region.ts";
 export * from "./models/interest.ts";
+// data resolvers
+export * from "./resolvers/location.ts";
+export * from "./resolvers/user.ts";
 // nostr helpers
 export * from "./event-handling/parser.ts";
 export { followPubkeys, getContactList, isUserAFollowingUserB } from "./nostr-helpers.ts";
