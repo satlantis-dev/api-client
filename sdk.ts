@@ -20,7 +20,12 @@ import {
     verifyEmail,
 } from "./api/account.ts";
 import { getIpInfo } from "./api/ip.ts";
-import { getLocationReviews, getLocationsWithinBoundingBox, getLocationTags } from "./api/location.ts";
+import {
+    getLocation,
+    getLocationReviews,
+    getLocationsWithinBoundingBox,
+    getLocationTags,
+} from "./api/location.ts";
 import { loginNostr } from "./api/login.ts";
 import { getNote, getNotes, NoteType } from "./api/note.ts";
 import { getAccountPlaceRoles } from "./api/people.ts";
@@ -74,7 +79,7 @@ export class Client {
     getPlaceGallery: ReturnType<typeof getPlaceGallery>;
     getPlaceChats: ReturnType<typeof getPlaceChats>;
     getPlaceCategoryScores: ReturnType<typeof getPlaceCategoryScores>;
-    getLocationsWithinBoundingBox: ReturnType<typeof getLocationsWithinBoundingBox>;
+
     getRegion: ReturnType<typeof getRegion>;
 
     // Calendar Events
@@ -98,7 +103,13 @@ export class Client {
     getNotes: ReturnType<typeof getNotes>;
     getNote: ReturnType<typeof getNote>;
     getIpInfo: ReturnType<typeof getIpInfo>;
+
+    // Location
+    getLocationsWithinBoundingBox: ReturnType<typeof getLocationsWithinBoundingBox>;
     getLocationReviews: ReturnType<typeof getLocationReviews>;
+    getLocation: ReturnType<typeof getLocation>;
+
+    //
     addressLookup: ReturnType<typeof addressLookup>;
 
     // auth
@@ -145,7 +156,7 @@ export class Client {
         this.getPlaceChats = getPlaceChats(url);
         this.getPlaceCategoryScores = getPlaceCategoryScores(url);
         this.getPlaceEvent = getPlaceEvent(url);
-        this.getLocationsWithinBoundingBox = getLocationsWithinBoundingBox(url);
+
         this.getRegion = getRegion(url);
 
         // Calendar Events
@@ -159,7 +170,13 @@ export class Client {
         this.getNotes = getNotes(url);
         this.getNote = getNote(url);
         this.getIpInfo = getIpInfo(url);
+
+        // location
+        this.getLocationsWithinBoundingBox = getLocationsWithinBoundingBox(url);
         this.getLocationReviews = getLocationReviews(url);
+        this.getLocation = getLocation(url);
+
+        //
         this.addressLookup = addressLookup(url);
 
         // authed APIs
