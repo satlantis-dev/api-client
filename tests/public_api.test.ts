@@ -317,8 +317,8 @@ Deno.test("getNotes", async () => {
 
     // should be the same ntoe
     assertEquals(note.itself.id, result[0].id);
-    assertEquals(note.itself.event.content, result[0].event.content);
-    assertEquals(note.itself.event.sig, result[0].event.sig);
+    assertEquals(note.itself.content, result[0].content);
+    assertEquals(note.itself.sig, result[0].sig);
 });
 
 Deno.test("getIpInfo", async () => {
