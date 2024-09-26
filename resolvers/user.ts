@@ -1,7 +1,6 @@
 import { PublicKey } from "@blowater/nostr-sdk";
 import type { Kind0MetaData } from "../models/account.ts";
 import { type Client } from "../sdk.ts";
-import type { LocationResolver } from "./location.ts";
 
 export class UserResolver {
     metaData: Kind0MetaData;
