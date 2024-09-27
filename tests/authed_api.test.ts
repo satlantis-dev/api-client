@@ -1,6 +1,7 @@
 import {
     getTags,
     InMemoryAccountContext,
+    newURL,
     type NostrEvent,
     NostrKind,
     prepareNostrEvent,
@@ -16,6 +17,7 @@ import { randomString } from "./public_api.test.ts";
 import { CalendarEventType } from "../models/calendar.ts";
 import { UserResolver } from "../resolvers/user.ts";
 import type { ApiError } from "../helpers/_helper.ts";
+import { nip04Encrypt } from "../api/nostr_event.ts";
 
 const testURL = new URL("https://api-dev.satlantis.io");
 const relay_url = "wss://relay.satlantis.io";
@@ -295,6 +297,42 @@ Deno.test({
             },
         });
     },
+});
+
+Deno.test("nip04Encrypt", async () => {
+    const text = "This is a test";
+    const receiver = InMemoryAccountContext.Generate();
+    const password = randomString();
+    const username = randomString();
+    const result = await clientNoAuth.createAccount({
+        email: `${randomString()}@email.com`,
+        password,
+        username,
+    });
+    if (result instanceof Error) fail(result.message);
+
+    const login = await clientNoAuth.login({
+        password,
+        username,
+    });
+    if (login instanceof Error) fail(login.message);
+    if (login == undefined || login == "invalid password") fail("wrong");
+
+    const url = newURL(testURL);
+    if (url instanceof Error) {
+        fail(url.message);
+    }
+
+    const ret = await nip04Encrypt(url, () => login.token)({
+        pubKey: receiver.publicKey.hex,
+        plaintext: text,
+    });
+    if (ret instanceof Error) {
+        fail(ret.message);
+    }
+
+    const decryptText = await receiver.decrypt(login.account.pubKey, ret);
+    assertEquals(decryptText, text);
 });
 
 Deno.test("getInterests", async () => {

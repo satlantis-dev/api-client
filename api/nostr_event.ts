@@ -34,3 +34,28 @@ export const signEvent =
             data: res,
         };
     };
+
+export const nip04Encrypt =
+    (urlArg: URL, getJwt: func_GetJwt) => async (args: { pubKey: string; plaintext: string }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/nip04Encrypt`;
+        const response = await safeFetch(url, {
+            method: "POST",
+            body: JSON.stringify(args),
+            headers: new Headers({
+                "Authorization": `Bearer ${jwtToken}`,
+            }),
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        const res = await handleResponse<string>(response);
+        if (res instanceof Error) {
+            return res;
+        }
+        return res;
+    };
