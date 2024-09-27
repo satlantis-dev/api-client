@@ -111,7 +111,7 @@ export class Client {
     getLocationsWithinBoundingBox: ReturnType<typeof getLocationsWithinBoundingBox>;
     getLocationReviews: ReturnType<typeof getLocationReviews>;
     private getLocationByID: ReturnType<typeof getLocation>;
-    claimLocation: ReturnType<typeof claimLocation>;
+    private _claimLocation: ReturnType<typeof claimLocation>;
     proveLocationClaim: ReturnType<typeof proveLocationClaim>;
 
     //
@@ -180,7 +180,7 @@ export class Client {
         this.getLocationsWithinBoundingBox = getLocationsWithinBoundingBox(url);
         this.getLocationReviews = getLocationReviews(url);
         this.getLocationByID = getLocation(url);
-        this.claimLocation = claimLocation(url, getJwt);
+        this._claimLocation = claimLocation(url, getJwt);
         this.proveLocationClaim = proveLocationClaim(url, getJwt);
 
         //
@@ -624,7 +624,17 @@ export class Client {
         }
     };
 
-    becomeBusinessAccount = async () => {
+    claimLocation = async (args: {
+        locationId: number;
+    }) => {
+        const err = await this.becomeBusinessAccount();
+        if (err instanceof Error) {
+            return err;
+        }
+        return this._claimLocation(args);
+    };
+
+    private becomeBusinessAccount = async () => {
         const signer = await this.getNostrSigner();
         if (signer instanceof Error) {
             return signer;

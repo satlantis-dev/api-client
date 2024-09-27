@@ -442,6 +442,7 @@ Deno.test("getUserProfile & updateUserProfile", async (t) => {
         assertEquals(p3.isBusiness, false);
 
         await t.step("become a business", async () => {
+            // @ts-ignore: use private
             const err = await client.becomeBusinessAccount();
             if (err instanceof Error) {
                 fail(err.message);
@@ -455,9 +456,6 @@ Deno.test("getUserProfile & updateUserProfile", async (t) => {
 });
 
 Deno.test("claim location", async () => {
-    const err = await client.becomeBusinessAccount();
-    if (err instanceof Error) fail(err.message);
-
     // https://www.dev.satlantis.io/location/1655
     const res = await client.claimLocation({ locationId: 1655 });
     if (res instanceof Error) fail(res.message);
