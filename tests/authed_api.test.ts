@@ -25,6 +25,17 @@ const clientNoAuth = Client.New({
 if (clientNoAuth instanceof Error) {
     fail(clientNoAuth.message);
 }
+const signer = InMemoryAccountContext.Generate();
+const res = await clientNoAuth.loginNostr(signer);
+if (res instanceof Error) {
+    throw res;
+}
+const client = Client.New({
+    baseURL: testURL,
+    relay_url,
+    getJwt: () => res.token,
+    getNostrSigner: async () => signer,
+}) as Client;
 
 Deno.test("AccountRole", async () => {
     const signer = InMemoryAccountContext.Generate();
@@ -402,4 +413,17 @@ Deno.test("getUserProfile & updateUserProfile", async (t) => {
             assertEquals(p3.isBusiness, true);
         });
     }
+});
+
+Deno.test("claim location", async () => {
+    const err = await client.becomeBusinessAccount();
+    if (err instanceof Error) fail(err.message);
+
+    // https://www.dev.satlantis.io/location/1655
+    const res = await client.claimLocation({ locationId: 1655 });
+    if (res instanceof Error) fail(res.message);
+    // the lenght of the code might not be part of the API
+    // put it here just to be safe
+    // so that when it changes, we will know
+    assertEquals(res.code.length, "wA2tjNpcGvNED7YoSpbF".length);
 });

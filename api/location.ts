@@ -1,6 +1,7 @@
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { Location, LocationTag } from "../models/location.ts";
+import type { func_GetJwt } from "../sdk.ts";
 
 export const getLocationTags = (urlArg: URL) => async () => {
     const url = copyURL(urlArg);
@@ -101,4 +102,25 @@ async (args: {
         return response;
     }
     return handleResponse(response);
+};
+
+export const claimLocation = (urlArg: URL, getJwt: func_GetJwt) =>
+async (args: {
+    locationId: number;
+}) => {
+    const jwt = getJwt();
+    if (jwt == "") {
+        return new Error("jwt token is empty");
+    }
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwt}`);
+
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/claimLocation/${args.locationId}`;
+
+    const response = await safeFetch(url, { headers });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{ code: string }>(response);
 };
