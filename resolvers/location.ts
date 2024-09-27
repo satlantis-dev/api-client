@@ -21,13 +21,13 @@ export class LocationResolver {
         lng: number;
         locationTags: LocationTag[] | null;
         name: string;
-        osmRef: string;
+        placeOsmRef: string;
         score: number;
     }) {
         this.id = data.id;
         this.image = data.image;
         this.name = data.name;
-        this.placeOsmRef = data.osmRef;
+        this.placeOsmRef = data.placeOsmRef;
         this.lat = data.lat;
         this.lng = data.lng;
         this.bio = data.bio || "";

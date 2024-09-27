@@ -118,14 +118,14 @@ Deno.test("getLocation", async () => {
     }
     assertEquals(result.id, 1889);
     assertEquals(result.name, "Snack bar São João");
-    assertEquals(result.placeOsmRef, "W560533307");
+    assertEquals(result.placeOsmRef, "R8421413");
 
     const place = await result.place();
     if (place instanceof Error) {
         fail(place.message);
     }
 
-    assertEquals(place.name, "");
+    assertEquals(place.name, "Funchal");
 });
 
 Deno.test("a user's interests", async () => {

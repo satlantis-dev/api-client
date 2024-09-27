@@ -28,7 +28,7 @@ export const getLocation = (urlArg: URL) => async (args: { id: number }) => {
         lng: number;
         locationTags: LocationTag[] | null;
         name: string;
-        osmRef: string;
+        placeOsmRef: string;
         score: number;
     }>(response);
 };
