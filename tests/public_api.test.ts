@@ -199,8 +199,7 @@ Deno.test("getAccount", async () => {
         npub,
     });
     if (result instanceof Error) {
-        console.log(result);
-        fail();
+        fail(result.message);
     }
     assertEquals(result.npub, npub);
 });
