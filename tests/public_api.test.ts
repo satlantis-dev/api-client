@@ -195,6 +195,7 @@ Deno.test("checkUsernameAvailability", async () => {
 
 Deno.test("getAccount", async () => {
     const npub = "npub1le59glyc3r9zsddury0fu8wyqu69ckvj78fn4425m5xn9zd0zpdssjtd53";
+    // @ts-ignore: use private
     const result = await client.getAccount({
         npub,
     });

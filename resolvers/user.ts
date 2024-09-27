@@ -20,6 +20,7 @@ export class UserResolver {
     }
 
     async getNip05() {
+        // @ts-ignore: use private
         const account = await this.client.getAccount({ npub: this.pubkey.bech32() });
         if (account instanceof Error) {
             return account;
@@ -29,6 +30,7 @@ export class UserResolver {
     }
 
     async getIsBusiness() {
+        // @ts-ignore: use private
         const account = await this.client.getAccount({ npub: this.pubkey.bech32() });
         if (account instanceof Error) {
             return account;
@@ -45,6 +47,7 @@ export class UserResolver {
      * @unstable
      */
     async getFollowing() {
+        // @ts-ignore: use private
         const account = await this.client.getAccount({ npub: this.pubkey.bech32() });
         if (account instanceof Error) {
             return account;
@@ -63,6 +66,7 @@ export class UserResolver {
 
     followedBy: UserResolver[] = [];
     getFollowedBy = async () => {
+        // @ts-ignore: use private
         const account = await this.client.getAccount({ npub: this.pubkey.bech32() });
         if (account instanceof Error) {
             return account;
@@ -80,6 +84,7 @@ export class UserResolver {
     };
 
     getAccountPlaceRoles = async () => {
+        // @ts-ignore: use private
         const account = await this.client.getAccount({ npub: this.pubkey.bech32() });
         if (account instanceof Error) {
             return account;
