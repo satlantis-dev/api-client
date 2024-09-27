@@ -435,5 +435,5 @@ Deno.test("claim location", async () => {
         referredBy: "",
         url: "https://posts.gle/aaaa",
     }) as ApiError;
-    assertEquals(res2.message, "Can't define LudoCid from update URL")
+    assertEquals(res2.message, "Can't define LudoCid from update URL");
 });
