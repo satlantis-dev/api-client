@@ -22,6 +22,7 @@ import {
 } from "./api/account.ts";
 import { getIpInfo } from "./api/ip.ts";
 import {
+    claimLocation,
     getLocation,
     getLocationReviews,
     getLocationsWithinBoundingBox,
@@ -109,6 +110,7 @@ export class Client {
     getLocationsWithinBoundingBox: ReturnType<typeof getLocationsWithinBoundingBox>;
     getLocationReviews: ReturnType<typeof getLocationReviews>;
     private getLocationByID: ReturnType<typeof getLocation>;
+    claimLocation: ReturnType<typeof claimLocation>;
 
     //
     addressLookup: ReturnType<typeof addressLookup>;
@@ -176,6 +178,7 @@ export class Client {
         this.getLocationsWithinBoundingBox = getLocationsWithinBoundingBox(url);
         this.getLocationReviews = getLocationReviews(url);
         this.getLocationByID = getLocation(url);
+        this.claimLocation = claimLocation(url, getJwt);
 
         //
         this.addressLookup = addressLookup(url);
