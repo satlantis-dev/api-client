@@ -15,6 +15,7 @@ import { Client, loginNostr, NoteType } from "../sdk.ts";
 import { randomString } from "./public_api.test.ts";
 import { CalendarEventType } from "../models/calendar.ts";
 import { UserResolver } from "../resolvers/user.ts";
+import type { ApiError } from "../helpers/_helper.ts";
 
 const testURL = new URL("https://api-dev.satlantis.io");
 const relay_url = "wss://relay.satlantis.io";
@@ -426,4 +427,13 @@ Deno.test("claim location", async () => {
     // put it here just to be safe
     // so that when it changes, we will know
     assertEquals(res.code.length, "wA2tjNpcGvNED7YoSpbF".length);
+
+    // We can't get a valid google url in the test,
+    // so we only assert the failure case here
+    const res2 = await client.proveLocationClaim({
+        locationId: 1655,
+        referredBy: "",
+        url: "https://posts.gle/aaaa",
+    }) as ApiError;
+    assertEquals(res2.message, "Can't define LudoCid from update URL")
 });
