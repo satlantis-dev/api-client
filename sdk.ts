@@ -27,6 +27,7 @@ import {
     getLocationReviews,
     getLocationsWithinBoundingBox,
     getLocationTags,
+    proveLocationClaim,
 } from "./api/location.ts";
 import { loginNostr } from "./api/login.ts";
 import { getNote, getNotes, NoteType } from "./api/note.ts";
@@ -111,6 +112,7 @@ export class Client {
     getLocationReviews: ReturnType<typeof getLocationReviews>;
     private getLocationByID: ReturnType<typeof getLocation>;
     claimLocation: ReturnType<typeof claimLocation>;
+    proveLocationClaim: ReturnType<typeof proveLocationClaim>;
 
     //
     addressLookup: ReturnType<typeof addressLookup>;
@@ -179,6 +181,7 @@ export class Client {
         this.getLocationReviews = getLocationReviews(url);
         this.getLocationByID = getLocation(url);
         this.claimLocation = claimLocation(url, getJwt);
+        this.proveLocationClaim = proveLocationClaim(url, getJwt);
 
         //
         this.addressLookup = addressLookup(url);

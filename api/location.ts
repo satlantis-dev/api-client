@@ -124,3 +124,41 @@ async (args: {
     }
     return handleResponse<{ code: string }>(response);
 };
+
+/**
+type ProveLocationClaimRequest struct {
+	Url              string       `json:"url"`
+	ReferredBy       string       `json:"referredBy"`
+	LocationSetEvent *nostr.Event `json:"locationSetEvent"`
+	PlaceEvent       *nostr.Event `json:"placeEvent"`
+}
+ */
+export const proveLocationClaim = (urlArg: URL, getJwt: func_GetJwt) =>
+async (args: {
+    locationId: number;
+    url: string;
+    referredBy: string;
+}) => {
+    const jwt = getJwt();
+    if (jwt == "") {
+        return new Error("jwt token is empty");
+    }
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwt}`);
+
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/proveLocationClaim/${args.locationId}`;
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+            url: args.url,
+            referredBy: args.referredBy,
+        }),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse(response);
+};
