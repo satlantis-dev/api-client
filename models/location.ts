@@ -7,6 +7,7 @@ export type Location = {
     lat: number;
     lng: number;
     locationTags: LocationTag[];
+    image: string;
     osmRef: string;
     googleId: string;
     placeId: number;
