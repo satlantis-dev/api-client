@@ -6,8 +6,8 @@ import type { Place } from "./place.ts";
 export type Account = {
     id: number;
     about?: string;
-    following: Account[];
-    followedBy: Account[];
+    following: Account_Base[];
+    followedBy: Account_Base[];
     npub: string;
     pubKey: string;
     accountPlaceRoles?: AccountPlaceRole[];
@@ -33,6 +33,18 @@ export type Account = {
     phone?: string;
     placeRatings?: AccountPlaceRating[];
     website?: string;
+};
+
+type Account_Base = {
+    id: number;
+    about: string;
+    isAdmin: boolean;
+    isBusiness: boolean;
+    name: string;
+    nip05: string;
+    npub: string;
+    picture: string;
+    pubKey: string;
 };
 
 export type AccountPlaceRole = {
