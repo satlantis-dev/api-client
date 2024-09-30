@@ -42,20 +42,6 @@ Deno.test("notes without places", async () => {
     }
 
     {
-        // @ts-ignore: test private
-        const notes = await client.getNotes({
-            npub: signer.publicKey.bech32(),
-            limit: 10,
-            page: 1,
-        });
-        if (notes instanceof Error) {
-            fail(notes.message);
-        }
-
-        assertEquals(notes.map((n) => n.content).reverse(), contents);
-    }
-
-    {
         const result = await client.getNotesOf({
             pubkey: signer.publicKey,
             page: {

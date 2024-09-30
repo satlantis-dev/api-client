@@ -665,7 +665,7 @@ export class Client {
      *      get notes after this time
      *      or from the beginning
      *
-     * @unfinished
+     * @unstbale
      */
     getNotesOf = async (args: {
         pubkey: PublicKey;
