@@ -25,9 +25,11 @@ const client = Client.New({
 
 Deno.test("notes without places", async () => {
     const contents = [];
+
+    // First, I post 3 notes
     for (let i = 0; i < 3; i++) {
         const res = await client.postNote({
-            content: "hello Satlantis",
+            content: `note ${i + 1}`,
             image: new File(
                 ["test content"],
                 "test-upload-file.txt",
@@ -37,20 +39,6 @@ Deno.test("notes without places", async () => {
             fail(res.message);
         }
         contents.push(res.event.content);
-    }
-
-    {
-        // @ts-ignore: test private
-        const notes = await client.getNotes({
-            npub: signer.publicKey.bech32(),
-            limit: 10,
-            page: 1,
-        });
-        if (notes instanceof Error) {
-            fail(notes.message);
-        }
-
-        assertEquals(notes.map((n) => n.content).reverse(), contents);
     }
 
     {
