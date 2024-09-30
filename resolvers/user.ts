@@ -97,6 +97,9 @@ export class UserResolver {
         return this.interests;
     };
 
+    /**
+     * get notes that are created by this user
+     */
     getNotes = async (args: { limit: number }) => {
         return this.client.getNotesOf({
             pubkey: this.pubkey,
