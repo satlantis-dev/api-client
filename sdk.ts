@@ -245,7 +245,7 @@ export class Client {
         if (data instanceof Error) {
             return data;
         }
-
+        console.log(data);
         return new LocationResolver(this, data);
     };
 
