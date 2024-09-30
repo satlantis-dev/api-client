@@ -129,7 +129,10 @@ export class Client {
     // acount role
     removeAccountRole: ReturnType<typeof removeAccountRole>;
     addAccountRole: ReturnType<typeof addAccountRole>;
-    updateAccountFollowingList: ReturnType<typeof updateAccountFollowingList>;
+    /**
+     * @unstable
+     */
+    private updateAccountFollowingList: ReturnType<typeof updateAccountFollowingList>;
     getInterests: ReturnType<typeof getInterests>;
 
     // nostr note
