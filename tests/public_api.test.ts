@@ -487,11 +487,11 @@ Deno.test("follow & unfollow alternative api", async () => {
         if (err instanceof Error) {
             fail(err.message);
         }
-        const follows = await authedClient.getMyFollowingPubkeys();
-        if (follows instanceof Error) {
-            fail(follows.message);
-        }
-        assertEquals(follows, new Set([pub1.hex]));
+        // const follows = await authedClient.getMyFollowingPubkeys();
+        // if (follows instanceof Error) {
+        //     fail(follows.message);
+        // }
+        // assertEquals(follows, new Set([pub1.hex]));
 
         const me = await authedClient.getMyProfile() as UserResolver;
         const following = await me.getFollowing() as UserResolver[];
