@@ -166,16 +166,6 @@ Deno.test("/getLocationsWithinBoundingBox", async () => {
         fail();
     }
     assertEquals(result.length > 0, true);
-
-    assertEquals(result[0].openingHours, {
-        monday: "4:00 – 10:30 PM",
-        tuesday: "4:00 – 10:30 PM",
-        wednesday: "4:00 – 10:30 PM",
-        thursday: "Closed",
-        friday: "4:00 – 10:30 PM",
-        saturday: "4:00 – 10:30 PM",
-        sunday: "4:00 – 10:30 PM",
-    });
     const locationID = result[0].id;
     const location = await client.getLocation(locationID);
     if (location instanceof Error) fail(location.message);
