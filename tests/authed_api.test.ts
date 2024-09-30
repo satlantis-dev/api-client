@@ -84,6 +84,7 @@ Deno.test("AccountRole", async () => {
         content: "",
         tags: [["p", signer.publicKey.hex]],
     }) as NostrEvent<NostrKind.CONTACTS>;
+    // @ts-ignore: use private
     const res3 = await client.updateAccountFollowingList({ event });
     if (res3 instanceof Error) fail(res3.message);
     assertEquals(true, res3);

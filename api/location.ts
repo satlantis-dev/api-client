@@ -16,6 +16,7 @@ export const getLocationTags = (urlArg: URL) => async () => {
 export const getLocation = (urlArg: URL) => async (args: { id: number }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getLocation/${args.id}`;
+
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;

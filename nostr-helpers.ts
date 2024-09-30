@@ -79,6 +79,7 @@ export async function followPubkeys(
         return err;
     }
 
+    // @ts-ignore: use private
     const ok = await apiClient.updateAccountFollowingList({ event: new_event });
     if (ok instanceof Error) {
         return ok;

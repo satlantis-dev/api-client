@@ -8,7 +8,7 @@ import {
     PublicKey,
     SingleRelayConnection,
 } from "@blowater/nostr-sdk";
-import type { ApiError } from "../helpers/_helper.ts";
+import { ApiError } from "../helpers/_helper.ts";
 import type { UserResolver } from "../resolvers/user.ts";
 
 const url = new URL("https://api-dev.satlantis.io");
@@ -166,6 +166,13 @@ Deno.test("/getLocationsWithinBoundingBox", async () => {
         fail();
     }
     assertEquals(result.length > 0, true);
+    const locationID = result[0].id;
+    const location = await client.getLocation(locationID);
+    if (location instanceof Error) fail(location.message);
+
+    assertEquals(location.name, result[0].name);
+    // @ts-ignore: openingHours is missing
+    assertEquals(location.openingHours, result[0].openingHours);
 });
 
 Deno.test("getLocationTags", async () => {
@@ -446,7 +453,6 @@ Deno.test("follow & unfollow", async () => {
 
 Deno.test("follow & unfollow alternative api", async () => {
     const user1 = InMemoryAccountContext.Generate();
-    const pub1 = PrivateKey.Generate().toPublicKey();
     const res = await client.loginNostr(user1);
     if (res instanceof Error) {
         fail(res.message);
@@ -459,17 +465,28 @@ Deno.test("follow & unfollow alternative api", async () => {
         getNostrSigner: async () => user1,
     }) as Client;
 
-    const follows = await authedClient.getMyFollowingPubkeys();
-    if (follows instanceof Error) {
-        fail(follows.message);
-    }
-    assertEquals(follows, new Set());
-
-    const err = await authedClient.followPubkeys([pub1]);
-    if (err instanceof Error) {
-        fail(err.message);
-    }
     {
+        // at the beginning, I am not following any pubkeys
+        const follows = await authedClient.getMyFollowingPubkeys();
+        if (follows instanceof Error) {
+            fail(follows.message);
+        }
+        const me = await authedClient.getMyProfile() as UserResolver;
+        const followings = await me.getFollowing();
+        if (followings instanceof Error) {
+            fail(followings.message);
+        }
+        assertEquals(follows, new Set());
+        assertEquals(followings.map((f) => f.pubkey.hex), []);
+    }
+
+    const pub1 = PrivateKey.Generate().toPublicKey();
+    {
+        // then, I follow 1 pubkey
+        const err = await authedClient.followPubkeys([pub1]);
+        if (err instanceof Error) {
+            fail(err.message);
+        }
         const follows = await authedClient.getMyFollowingPubkeys();
         if (follows instanceof Error) {
             fail(follows.message);
