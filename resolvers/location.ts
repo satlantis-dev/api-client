@@ -9,7 +9,7 @@ export class LocationResolver implements LocationByID {
     placeOsmRef: string;
     lat: number;
     lng: number;
-    locationTags: LocationTag[] | null;
+    locationTags: LocationTag[];
     score: number;
     openingHours: {
         monday: string;
@@ -32,7 +32,7 @@ export class LocationResolver implements LocationByID {
         this.lat = data.lat;
         this.lng = data.lng;
         this.bio = data.bio || "";
-        this.locationTags = data.locationTags;
+        this.locationTags = data.locationTags || [];
         this.openingHours = data.openingHours;
         this.score = data.score;
     }
