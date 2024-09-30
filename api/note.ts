@@ -28,7 +28,7 @@ export enum NoteType {
 export type Note = {
     readonly id: number;
     readonly accountId: number;
-    readonly account: Account
+    readonly account: Account;
     readonly createdAt: Date;
     readonly content: string;
     readonly eventId: number;
@@ -38,6 +38,8 @@ export type Note = {
     readonly sig: string;
     readonly tags: string;
     readonly type: number;
+    readonly ancestorId: number;
+    readonly descendantId: number;
 };
 
 export const getNotes = (urlArg: URL) => async (args: { npub: string; page: number; limit: number }) => {
