@@ -1,6 +1,6 @@
 import { assertEquals, fail } from "@std/assert";
 
-import { Client, loginNostr, type Place } from "../sdk.ts";
+import { Client, LocationResolver, loginNostr, type Place } from "../sdk.ts";
 import {
     InMemoryAccountContext,
     type NostrEvent,
@@ -343,7 +343,12 @@ Deno.test("getLocationReviews", async () => {
         locationId: 2313,
     });
     if (result instanceof Error) fail(result.message);
-    console.log(result);
+
+    const location = await client.getLocation(2313) as LocationResolver;
+
+    const reviews = await location.getReviews({ page: 0, limit: 2 });
+    // todo: assert the data structure
+    assertEquals(reviews, result);
 });
 
 Deno.test("addressLookup", async () => {

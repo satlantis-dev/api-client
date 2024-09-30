@@ -40,4 +40,15 @@ export class LocationResolver implements LocationByID {
     place = async () => {
         return this.client.getPlaceByOsmRef({ osmRef: this.placeOsmRef });
     };
+
+    /**
+     * @unstable
+     */
+    getReviews = async (args: { limit: number; page: number }) => {
+        return this.client.getLocationReviews({
+            locationId: this.id,
+            limit: args.limit,
+            page: args.page,
+        });
+    };
 }
