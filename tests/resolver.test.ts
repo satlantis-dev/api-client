@@ -25,9 +25,11 @@ const client = Client.New({
 
 Deno.test("notes without places", async () => {
     const contents = [];
+
+    // First, I post 3 notes
     for (let i = 0; i < 3; i++) {
         const res = await client.postNote({
-            content: "hello Satlantis",
+            content: `note ${i + 1}`,
             image: new File(
                 ["test content"],
                 "test-upload-file.txt",

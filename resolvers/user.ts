@@ -28,6 +28,10 @@ export class UserResolver {
         return this.nip5;
     }
 
+    /**
+     * returns true if this user is a business account
+     * @unstable
+     */
     async getIsBusiness() {
         const account = await this.client.getAccount({ npub: this.pubkey.bech32() });
         if (account instanceof Error) {
@@ -111,6 +115,7 @@ export class UserResolver {
     };
 
     /**
+     * get locations owned by this user
      * @unstable
      * @unfinished
      */
