@@ -1,6 +1,6 @@
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
-import type { Location, LocationTag } from "../models/location.ts";
+import type { Location, LocationByID, LocationTag } from "../models/location.ts";
 import type { func_GetJwt } from "../sdk.ts";
 
 export const getLocationTags = (urlArg: URL) => async () => {
@@ -21,17 +21,7 @@ export const getLocation = (urlArg: URL) => async (args: { id: number }) => {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{
-        id: number;
-        bio: string | null;
-        image: string;
-        lat: number;
-        lng: number;
-        locationTags: LocationTag[] | null;
-        name: string;
-        placeOsmRef: string;
-        score: number;
-    }>(response);
+    return handleResponse<LocationByID>(response);
 };
 
 /**

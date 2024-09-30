@@ -1,6 +1,5 @@
 import {
     getTags,
-    type NostrEvent,
     NostrKind,
     prepareNostrEvent,
     PublicKey,
@@ -74,11 +73,6 @@ export async function followPubkeys(
         return new_event;
     }
 
-    const err = await publishEvent(satlantis_relay_url, new_event);
-    if (err instanceof Error) {
-        return err;
-    }
-
     // @ts-ignore: use private
     const ok = await apiClient.updateAccountFollowingList({ event: new_event });
     if (ok instanceof Error) {
@@ -86,18 +80,6 @@ export async function followPubkeys(
     }
 
     return ok;
-}
-
-async function publishEvent(satlantis_relay_url: string, event: NostrEvent) {
-    const relay = SingleRelayConnection.New(satlantis_relay_url, { log: false });
-    if (relay instanceof Error) {
-        return relay;
-    }
-    const ok = await relay.sendEvent(event);
-    if (ok instanceof Error) {
-        return ok;
-    }
-    await relay.close();
 }
 
 export async function isUserAFollowingUserB(satlantis_relay_url: string, a: string, b: string) {

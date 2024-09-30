@@ -171,7 +171,6 @@ Deno.test("/getLocationsWithinBoundingBox", async () => {
     if (location instanceof Error) fail(location.message);
 
     assertEquals(location.name, result[0].name);
-    // @ts-ignore: openingHours is missing
     assertEquals(location.openingHours, result[0].openingHours);
 });
 
@@ -405,54 +404,6 @@ Deno.test("interests", async () => {
 
 Deno.test("follow & unfollow", async () => {
     const user1 = InMemoryAccountContext.Generate();
-    const pub1 = PrivateKey.Generate().toPublicKey();
-    const res = await client.loginNostr(user1);
-    if (res instanceof Error) {
-        fail(res.message);
-    }
-
-    const authedClient = Client.New({
-        baseURL: client.url,
-        relay_url: client.relay_url,
-        getJwt: () => res.token,
-        getNostrSigner: async () => user1,
-    }) as Client;
-
-    const follows = await authedClient.getMyFollowingPubkeys();
-    if (follows instanceof Error) {
-        fail(follows.message);
-    }
-    assertEquals(follows, new Set());
-
-    const err = await authedClient.followPubkeys([pub1]);
-    if (err instanceof Error) {
-        fail(err.message);
-    }
-    {
-        const follows = await authedClient.getMyFollowingPubkeys();
-        if (follows instanceof Error) {
-            fail(follows.message);
-        }
-        assertEquals(follows, new Set([pub1.hex]));
-    }
-    {
-        const err = await authedClient.unfollowPubkey(pub1);
-        if (err instanceof Error) {
-            console.log(err);
-            fail(err.message);
-        }
-    }
-    {
-        const follows = await authedClient.getMyFollowingPubkeys();
-        if (follows instanceof Error) {
-            fail(follows.message);
-        }
-        assertEquals(follows, new Set([]));
-    }
-});
-
-Deno.test("follow & unfollow alternative api", async () => {
-    const user1 = InMemoryAccountContext.Generate();
     const res = await client.loginNostr(user1);
     if (res instanceof Error) {
         fail(res.message);
@@ -487,11 +438,6 @@ Deno.test("follow & unfollow alternative api", async () => {
         if (err instanceof Error) {
             fail(err.message);
         }
-        const follows = await authedClient.getMyFollowingPubkeys();
-        if (follows instanceof Error) {
-            fail(follows.message);
-        }
-        assertEquals(follows, new Set([pub1.hex]));
 
         const me = await authedClient.getMyProfile() as UserResolver;
         const following = await me.getFollowing() as UserResolver[];

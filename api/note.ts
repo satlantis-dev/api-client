@@ -1,5 +1,6 @@
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
+import type { Account } from "../models/account.ts";
 
 export interface PlaceNote {
     id: number;
@@ -27,6 +28,7 @@ export enum NoteType {
 export type Note = {
     readonly id: number;
     readonly accountId: number;
+    readonly account: Account;
     readonly createdAt: Date;
     readonly content: string;
     readonly eventId: number;
@@ -36,6 +38,8 @@ export type Note = {
     readonly sig: string;
     readonly tags: string;
     readonly type: number;
+    readonly ancestorId: number;
+    readonly descendantId: number;
 };
 
 export const getNotes = (urlArg: URL) => async (args: { npub: string; page: number; limit: number }) => {
