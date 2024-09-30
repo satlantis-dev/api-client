@@ -487,7 +487,7 @@ Deno.test("follow & unfollow alternative api", async () => {
         if (err instanceof Error) {
             fail(err.message);
         }
-        // const follows = await authedClient.getMyFollowingPubkeys();
+        const follows = await authedClient.getMyFollowingPubkeys();
         // if (follows instanceof Error) {
         //     fail(follows.message);
         // }

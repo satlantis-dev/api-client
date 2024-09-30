@@ -374,6 +374,7 @@ export class Client {
 
     /**
      * get following list of the current pubkey
+     * @unstable
      */
     getMyFollowingPubkeys = async () => {
         const signer = await this.getNostrSigner();
