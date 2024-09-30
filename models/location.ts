@@ -25,6 +25,27 @@ export type Location = {
     websiteUrl: string;
 };
 
+export type LocationByID = {
+    id: number;
+    bio: string | null;
+    image: string;
+    lat: number;
+    lng: number;
+    locationTags: LocationTag[] | null;
+    name: string;
+    placeOsmRef: string;
+    score: number;
+    openingHours: {
+        monday: string;
+        tuesday: string;
+        wednesday: string;
+        thursday: string;
+        friday: string;
+        saturday: string;
+        sunday: string;
+    };
+};
+
 export interface Address {
     streetNumber: string;
     route: string;

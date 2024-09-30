@@ -171,7 +171,6 @@ Deno.test("/getLocationsWithinBoundingBox", async () => {
     if (location instanceof Error) fail(location.message);
 
     assertEquals(location.name, result[0].name);
-    // @ts-ignore: openingHours is missing
     assertEquals(location.openingHours, result[0].openingHours);
 });
 
