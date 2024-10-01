@@ -219,7 +219,7 @@ Deno.test({
         const password = randomString();
         const username = randomString();
         const result = await clientNoAuth.createAccount({
-            email: `${randomString()}@email.com`,
+            email: `albert+${randomString()}@satlantis.io`,
             password,
             username,
         });
@@ -306,7 +306,7 @@ Deno.test("nip04Encrypt", async () => {
     const password = randomString();
     const username = randomString();
     const result = await clientNoAuth.createAccount({
-        email: `${randomString()}@email.com`,
+        email: `albert+${randomString()}@satlantis.io`,
         password,
         username,
     });

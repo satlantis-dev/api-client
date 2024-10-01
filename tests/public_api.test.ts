@@ -238,7 +238,7 @@ Deno.test({
         }
         {
             const result = await client.createAccount({
-                email: `${randomString()}@email.com`,
+                email: `albert+${randomString()}@satlantis.io`,
                 password: "simple",
                 username: randomString(),
             });
@@ -273,7 +273,7 @@ Deno.test("login", async () => {
         const password = "simple";
         // create account
         const ok = await client.createAccount({
-            email: `${randomString()}@email.com`,
+            email: `albert+${randomString()}@satlantis.io`,
             password,
             username,
         });
@@ -325,6 +325,9 @@ Deno.test("getNotes", async () => {
     assertEquals(note.itself.id, result[0].id);
     assertEquals(note.itself.content, result[0].content);
     assertEquals(note.itself.sig, result[0].sig);
+
+    // todo: they should pass
+    // assertEquals(note.itself, result[0])
 });
 
 Deno.test("getIpInfo", async () => {
