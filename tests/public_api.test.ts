@@ -62,7 +62,11 @@ Deno.test("/getPeopleOfPlace", async () => {
         console.log(result);
         fail();
     }
-    console.log(result);
+
+    assertEquals(result.length > 0, true);
+    for (const account of result) {
+        assertEquals(account.placeId, 23949);
+    }
 });
 
 Deno.test("/getPlaceNoteFeed", async () => {
