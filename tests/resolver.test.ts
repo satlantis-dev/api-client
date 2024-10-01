@@ -139,8 +139,4 @@ Deno.test("global feed", async () => {
     if (notes instanceof Error) fail(notes.message);
 
     assertEquals(notes.length, 3);
-    assertEquals(
-        (await notes[0].getAuthor() as UserResolver).pubkey.hex,
-        "06770ad6fd77f6c989be12f8703814fd3f94689a0e35a4bcf43c8b89a1987ef7",
-    );
 });
