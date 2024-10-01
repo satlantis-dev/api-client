@@ -3,7 +3,7 @@ import type { Client, Note } from "../sdk.ts";
 
 export class NoteResolver {
     content: string;
-    private note: {
+    private readonly source: {
         type: "nostr";
         data: NostrEvent;
     } | {
@@ -23,12 +23,12 @@ export class NoteResolver {
         },
     ) {
         this.client = client;
-        this.note = note;
+        this.source = note;
         this.content = note.data.content;
     }
 
     getAuthor = async () => {
-        const user = await this.client.resolver.getUser(this.note.data.pubkey);
+        const user = await this.client.resolver.getUser(this.source.data.pubkey);
         if (user instanceof Error) {
             return user;
         }

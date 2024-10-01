@@ -1,6 +1,7 @@
 import { PublicKey } from "@blowater/nostr-sdk";
 import type { Kind0MetaData } from "../models/account.ts";
 import { type Client } from "../sdk.ts";
+import { NoteResolver } from "./note.ts";
 
 export class UserResolver {
     metaData: Kind0MetaData;
@@ -104,14 +105,23 @@ export class UserResolver {
     /**
      * get notes that are created by this user
      */
-    getNotes = async (args: { limit: number }) => {
-        return this.client.getNotesOf({
+    getNotes = async (args: { limit: number; page?: number }) => {
+        const notes = await this.client.getNotesOf({
             pubkey: this.pubkey,
             page: {
                 limit: args.limit,
-                offset: 0,
+                offset: (args.page || 0) * args.limit,
             },
         });
+        if (notes instanceof Error) {
+            return notes;
+        }
+        const noteResolvers = [];
+        for await (const note of notes) {
+            const r = new NoteResolver(this.client, { type: "nostr", data: note });
+            noteResolvers.push(r);
+        }
+        return noteResolvers;
     };
 
     /**
