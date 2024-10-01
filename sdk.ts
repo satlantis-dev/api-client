@@ -2,6 +2,7 @@ import {
     type Encrypter,
     type NostrEvent,
     NostrKind,
+    NoteID,
     parseJSON,
     prepareEncryptedNostrEvent,
     prepareNostrEvent,
@@ -800,6 +801,43 @@ export class Client {
         if (res instanceof Error) {
             return res;
         }
+    };
+
+    /**
+     * https://github.com/nostr-protocol/nips/blob/master/25.md#reactions
+     *
+     * @unstable The return type might change
+     */
+    getLikesOfNote = async (args: { nostrID: string | NoteID }) => {
+        if (typeof args.nostrID == "string") {
+            args.nostrID = NoteID.FromString(args.nostrID);
+        }
+        const relay = SingleRelayConnection.New(this.relay_url);
+        if (relay instanceof Error) {
+            return relay;
+        }
+
+        const stream = await relay.newSub("getLikesOfNote", {
+            "#e": [args.nostrID.hex],
+            kinds: [NostrKind.REACTION],
+        });
+        if (stream instanceof Error) {
+            await relay.close();
+            return stream;
+        }
+        type x = typeof stream;
+        async function* data(s: x) {
+            for await (const msg of s.chan) {
+                if (msg.type == "EOSE") {
+                    return;
+                } else if (msg.type == "NOTICE") {
+                    console.debug(s.filters, msg.note);
+                    continue;
+                }
+                yield msg.event;
+            }
+        }
+        return data(stream);
     };
 }
 
