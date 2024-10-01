@@ -40,6 +40,14 @@ export type Note = {
     readonly type: number;
     readonly ancestorId: number;
     readonly descendantId: number;
+    /**
+     * @deprecated
+     */
+    readonly descendants: null | unknown[];
+    /**
+     * @deprecated
+     */
+    readonly reactions: unknown[];
 };
 
 export const getNotes = (urlArg: URL) => async (args: { npub: string; page: number; limit: number }) => {
