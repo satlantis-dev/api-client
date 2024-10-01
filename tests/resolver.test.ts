@@ -38,7 +38,7 @@ Deno.test("notes without places", async () => {
         if (res instanceof Error) {
             fail(res.message);
         }
-        contents.push(res.event.content);
+        contents.push(res.content);
     }
 
     {
@@ -88,7 +88,7 @@ Deno.test("notes in a place", async () => {
         if (res instanceof Error) {
             fail(res.message);
         }
-        contents.push(res.event.content);
+        contents.push(res.content);
     }
 
     const notes = await client.getPlaceNoteFeed({ placeID: place.id });

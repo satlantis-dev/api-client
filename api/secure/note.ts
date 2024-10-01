@@ -1,8 +1,9 @@
-import type { NostrEvent } from "@blowater/nostr-sdk";
+import type { NostrEvent, NostrKind } from "@blowater/nostr-sdk";
 
 import { copyURL, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
-import { type Note, NoteType } from "../note.ts";
+import { NoteType } from "../note.ts";
+import type { Account } from "../../models/account.ts";
 
 export type ReactionPost = {
     accountId: number;
@@ -27,20 +28,15 @@ export interface NotePost {
 export type PostNoteResult = {
     id: number;
     accountId: number;
-    ancestorId: number;
-    descendants: Note[];
+    account: Account;
+    createdAt: Date;
+    content: string;
     eventId: number;
-    event: {
-        id: number;
-        nostrId: string;
-        createdAt: number;
-        content: string;
-        kind: number;
-        pubkey: string;
-        sig: string;
-        tags: string[][];
-        reconciled: boolean;
-    };
+    kind: NostrKind;
+    nostrId: string;
+    pubkey: string;
+    sig: string;
+    tags: string;
     type: NoteType;
 };
 

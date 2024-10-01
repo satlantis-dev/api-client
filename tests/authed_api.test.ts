@@ -145,7 +145,7 @@ Deno.test("post notes", async () => {
             fail(rootNote.message);
         }
         console.log(rootNote);
-        assertEquals(rootNote.event.nostrId, root_event.id);
+        assertEquals(rootNote.nostrId, root_event.id);
 
         const reaction_event = await prepareNostrEvent(signer, {
             content: "test reaction",
