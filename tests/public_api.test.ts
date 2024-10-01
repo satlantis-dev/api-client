@@ -62,7 +62,11 @@ Deno.test("/getPeopleOfPlace", async () => {
         console.log(result);
         fail();
     }
-    console.log(result);
+
+    assertEquals(result.length > 0, true);
+    for (const account of result) {
+        assertEquals(account.placeId, 23949);
+    }
 });
 
 Deno.test("/getPlaceNoteFeed", async () => {
@@ -306,7 +310,7 @@ Deno.test("login", async () => {
 
 Deno.test("getNotes", async () => {
     // @ts-ignore: test private
-    const result = await client.getNotes({
+    const result = await client.getNotesOfPubkey({
         npub: "npub1le59glyc3r9zsddury0fu8wyqu69ckvj78fn4425m5xn9zd0zpdssjtd53",
         limit: 2,
         page: 0,

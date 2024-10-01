@@ -133,3 +133,10 @@ Deno.test("a user's interests", async () => {
 
     assertEquals(user.interests, ["food"]);
 });
+
+Deno.test("global feed", async () => {
+    const notes = await client.resolver.getGlobalFeed({ page: 1, limit: 3 });
+    if (notes instanceof Error) fail(notes.message);
+
+    assertEquals(notes.length, 3);
+});
