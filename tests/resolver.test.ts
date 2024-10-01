@@ -1,6 +1,6 @@
 import { assertEquals, fail } from "@std/assert";
 import { Client } from "../sdk.ts";
-import { InMemoryAccountContext, PublicKey } from "@blowater/nostr-sdk";
+import { InMemoryAccountContext } from "@blowater/nostr-sdk";
 import type { UserResolver } from "../sdk.ts";
 
 const testURL = new URL("https://api-dev.satlantis.io");
