@@ -50,9 +50,23 @@ export type Note = {
     readonly reactions: unknown[];
 };
 
-export const getNotes = (urlArg: URL) => async (args: { npub: string; page: number; limit: number }) => {
+export const getNotesOfPubkey =
+    (urlArg: URL) => async (args: { npub: string; page: number; limit: number }) => {
+        const url = copyURL(urlArg);
+        url.pathname = `/getNotes/${args.npub}`;
+        url.searchParams.set("page", String(args.page));
+        url.searchParams.set("limit", String(args.limit));
+
+        const response = await safeFetch(url);
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<Note[]>(response);
+    };
+
+export const getNotes = (urlArg: URL) => async (args: { page: number; limit: number }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getNotes/${args.npub}`;
+    url.pathname = `/getNotes`;
     url.searchParams.set("page", String(args.page));
     url.searchParams.set("limit", String(args.limit));
 

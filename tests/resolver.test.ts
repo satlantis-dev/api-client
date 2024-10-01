@@ -1,6 +1,6 @@
 import { assertEquals, fail } from "@std/assert";
 import { Client } from "../sdk.ts";
-import { InMemoryAccountContext } from "@blowater/nostr-sdk";
+import { InMemoryAccountContext, PublicKey } from "@blowater/nostr-sdk";
 import type { UserResolver } from "../sdk.ts";
 
 const testURL = new URL("https://api-dev.satlantis.io");
@@ -132,4 +132,15 @@ Deno.test("a user's interests", async () => {
     if (err instanceof Error) fail(err.message);
 
     assertEquals(user.interests, ["food"]);
+});
+
+Deno.test("global feed", async () => {
+    const notes = await client.resolver.getGlobalFeed({ page: 1, limit: 3 });
+    if (notes instanceof Error) fail(notes.message);
+
+    assertEquals(notes.length, 3);
+    assertEquals(
+        (await notes[0].getAuthor() as UserResolver).pubkey.hex,
+        "06770ad6fd77f6c989be12f8703814fd3f94689a0e35a4bcf43c8b89a1987ef7",
+    );
 });

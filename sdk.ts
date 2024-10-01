@@ -31,7 +31,7 @@ import {
     proveLocationClaim,
 } from "./api/location.ts";
 import { loginNostr } from "./api/login.ts";
-import { getNote, getNotes, NoteType } from "./api/note.ts";
+import { getNote, getNotes, getNotesOfPubkey, NoteType } from "./api/note.ts";
 import { getAccountPlaceRoles } from "./api/people.ts";
 import {
     getPlaceByOsmRef,
@@ -67,6 +67,7 @@ import { safeFetch } from "./helpers/safe-fetch.ts";
 import type { Kind0MetaData } from "./models/account.ts";
 import { UserResolver } from "./resolvers/user.ts";
 import { LocationResolver } from "./resolvers/location.ts";
+import { NoteResolver } from "./resolvers/note.ts";
 import type { Place } from "./models/place.ts";
 
 export type func_GetNostrSigner = () => Promise<Signer & Encrypter | Error>;
@@ -104,6 +105,7 @@ export class Client {
     private updateAccount: ReturnType<typeof updateAccount>;
 
     // note
+    private getNotesOfPubkey: ReturnType<typeof getNotesOfPubkey>;
     private getNotes: ReturnType<typeof getNotes>;
     getNote: ReturnType<typeof getNote>;
     getIpInfo: ReturnType<typeof getIpInfo>;
@@ -176,6 +178,7 @@ export class Client {
         this.createAccount = createAccount(url);
         this.updateAccount = updateAccount(url, getJwt);
 
+        this.getNotesOfPubkey = getNotesOfPubkey(url);
         this.getNotes = getNotes(url);
         this.getNote = getNote(url);
         this.getIpInfo = getIpInfo(url);
@@ -521,9 +524,11 @@ export class Client {
     /**
      * @param id
      *      PublicKey: get the user profile by Nostr Public Key
-     * @returns
+     *
+     * @deprecated prefer to .resolver.getUser
+     *  all resolver APIs will be moved to .resolve in the future
      */
-    getUserProfile = async (pubkey: PublicKey): Promise<UserResolver | Error> => {
+    getUserProfile = async (pubkey: PublicKey | string): Promise<UserResolver | Error> => {
         const relay = SingleRelayConnection.New(this.relay_url);
         if (relay instanceof Error) {
             return relay;
@@ -839,6 +844,39 @@ export class Client {
         }
         return data(stream);
     };
+
+    /**
+     * Resolver APIs that provides callers a cleaner relationships among all data types
+     * @unstable
+     */
+    resolver = {
+        getUser: this.getUserProfile,
+        /**
+         * @unstable
+         */
+        getGlobalFeed: async (args: { page: number; limit: number }) => {
+            const me = await this.getNostrSigner();
+            if (me instanceof Error) {
+                return me;
+            }
+            const notes = await this.getNotes({
+                page: args.page,
+                limit: args.limit,
+            });
+            if (notes instanceof Error) {
+                return notes;
+            }
+            const noteResolvers = [];
+            for (const note of notes) {
+                const r = new NoteResolver(this, {
+                    type: "backend",
+                    data: note,
+                });
+                noteResolvers.push(r);
+            }
+            return noteResolvers;
+        },
+    };
 }
 
 // api
@@ -881,10 +919,18 @@ async function get_kind0_META_DATA(relay: SingleRelayConnection, pubkey: PublicK
 }
 
 const getUserProfile = async (
-    pubkey: PublicKey,
+    pubkey: PublicKey | string,
     relay: SingleRelayConnection,
     client: Client,
 ): Promise<UserResolver | Error> => {
+    if (typeof pubkey == "string") {
+        const _pubkey = PublicKey.FromString(pubkey);
+        if (_pubkey instanceof Error) {
+            return _pubkey;
+        }
+        pubkey = _pubkey;
+    }
+
     const kind0 = await get_kind0_META_DATA(relay, pubkey);
     if (kind0 instanceof Error) {
         return kind0;
