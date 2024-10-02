@@ -74,7 +74,7 @@ export enum PriceLevel {
     PRICE_LEVEL_VERY_EXPENSIVE = "PRICE_LEVEL_VERY_EXPENSIVE",
 }
 
-export interface OpeningHours {
+export type OpeningHours = {
     monday: string;
     tuesday: string;
     wednesday: string;
@@ -82,7 +82,7 @@ export interface OpeningHours {
     friday: string;
     saturday: string;
     sunday: string;
-}
+};
 
 export type ProcessedTag = {
     readonly type: TagType;

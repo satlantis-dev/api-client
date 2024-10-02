@@ -100,11 +100,12 @@ Deno.test("notes in a place", async () => {
 });
 
 Deno.test("getLocation", async () => {
-    const result = await client.getLocation(1889);
+    const id = 1889;
+    const result = await client.resolver.getLocationByID(id);
     if (result instanceof Error) {
         fail(result.message);
     }
-    assertEquals(result.id, 1889);
+    assertEquals(result.id, id);
     assertEquals(result.name, "Snack bar São João");
     assertEquals(result.placeOsmRef, "R8421413");
 
@@ -114,6 +115,20 @@ Deno.test("getLocation", async () => {
     }
 
     assertEquals(place.name, "Funchal");
+
+    const locations = await client.resolver.getLocationsByPlaceID({ placeID: place.id });
+    if (locations instanceof Error) fail(locations.message);
+
+    const location = locations.find((l) => l.id == id);
+    if (location == undefined) {
+        fail("the same location is not returned from the getLocationsByPlaceID API");
+    }
+    assertEquals(location.id, result.id);
+    assertEquals(location.name, result.name);
+    assertEquals(location.openingHours, result.openingHours);
+    assertEquals(location.address, result.address);
+    assertEquals(location.score, result.score);
+    assertEquals(location.googleRating, result.googleRating);
 });
 
 Deno.test("a user's interests", async () => {
