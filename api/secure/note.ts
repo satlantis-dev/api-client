@@ -29,7 +29,7 @@ export type PostNoteResult = {
     id: number;
     accountId: number;
     account: Account;
-    createdAt: Date;
+    createdAt: string;
     content: string;
     eventId: number;
     kind: NostrKind;
