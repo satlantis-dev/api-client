@@ -26,6 +26,7 @@ import {
     claimLocation,
     getLocation,
     getLocationReviews,
+    getLocationsByPlaceID,
     getLocationsWithinBoundingBox,
     getLocationTags,
     proveLocationClaim,
@@ -114,6 +115,7 @@ export class Client {
     getLocationsWithinBoundingBox: ReturnType<typeof getLocationsWithinBoundingBox>;
     getLocationReviews: ReturnType<typeof getLocationReviews>;
     private getLocationByID: ReturnType<typeof getLocation>;
+    private getLocationsByPlaceID: ReturnType<typeof getLocationsByPlaceID>;
     private _claimLocation: ReturnType<typeof claimLocation>;
     proveLocationClaim: ReturnType<typeof proveLocationClaim>;
 
@@ -187,6 +189,7 @@ export class Client {
         this.getLocationsWithinBoundingBox = getLocationsWithinBoundingBox(url);
         this.getLocationReviews = getLocationReviews(url);
         this.getLocationByID = getLocation(url);
+        this.getLocationsByPlaceID = getLocationsByPlaceID(url);
         this._claimLocation = claimLocation(url, getJwt);
         this.proveLocationClaim = proveLocationClaim(url, getJwt);
 
@@ -247,12 +250,12 @@ export class Client {
     };
 
     // Location
+    /**
+     * @deprecated prefer to .resolver.getLocationByID
+     * remove after: 2024/10/10
+     */
     getLocation = async (id: number) => {
-        const data = await this.getLocationByID({ id });
-        if (data instanceof Error) {
-            return data;
-        }
-        return new LocationResolver(this, data);
+        return this.resolver.getLocationByID(id);
     };
 
     getLocationTags = () => {
@@ -527,15 +530,10 @@ export class Client {
      *
      * @deprecated prefer to .resolver.getUser
      *  all resolver APIs will be moved to .resolve in the future
+     * remove after: 2024/10/17
      */
     getUserProfile = async (pubkey: PublicKey | string): Promise<UserResolver | Error> => {
-        const relay = SingleRelayConnection.New(this.relay_url);
-        if (relay instanceof Error) {
-            return relay;
-        }
-        const profile = await getUserProfile(pubkey, relay, this);
-        await relay.close();
-        return profile;
+        return this.resolver.getUser(pubkey);
     };
 
     getMyProfile = async (): Promise<UserResolver | Error> => {
@@ -850,7 +848,15 @@ export class Client {
      * @unstable
      */
     resolver = {
-        getUser: this.getUserProfile,
+        getUser: async (pubkey: PublicKey | string): Promise<UserResolver | Error> => {
+            const relay = SingleRelayConnection.New(this.relay_url);
+            if (relay instanceof Error) {
+                return relay;
+            }
+            const profile = await getUserProfile(pubkey, relay, this);
+            await relay.close();
+            return profile;
+        },
         /**
          * @unstable
          */
@@ -875,6 +881,45 @@ export class Client {
                 noteResolvers.push(r);
             }
             return noteResolvers;
+        },
+        getLocationByID: async (id: number) => {
+            const data = await this.getLocationByID({ id });
+            if (data instanceof Error) {
+                return data;
+            }
+            console.log(data);
+            return new LocationResolver(this, data);
+        },
+        getLocationsByPlaceID: async (args: {
+            placeID: number;
+            search?: string;
+            google_rating?: number;
+        }) => {
+            const locations = await this.getLocationsByPlaceID({
+                placeID: args.placeID,
+                google_rating: args.google_rating || 0,
+                search: args.search,
+            });
+            if (locations instanceof Error) {
+                return locations;
+            }
+            // for(const location of locations) {}
+            return locations.map((l) =>
+                new LocationResolver(this, {
+                    address: l.address,
+                    bio: l.bio,
+                    id: l.id,
+                    image: l.image,
+                    lat: l.lat,
+                    lng: l.lng,
+                    locationTags: l.locationTags,
+                    name: l.name,
+                    openingHours: l.openingHours,
+                    // @ts-ignore: missing
+                    placeOsmRef: null, // todo: this is missing from backend
+                    score: l.score,
+                })
+            );
         },
     };
 }

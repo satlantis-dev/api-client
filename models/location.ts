@@ -35,24 +35,17 @@ export type LocationByID = {
     name: string;
     placeOsmRef: string;
     score: number;
-    openingHours: {
-        monday: string;
-        tuesday: string;
-        wednesday: string;
-        thursday: string;
-        friday: string;
-        saturday: string;
-        sunday: string;
-    };
+    openingHours: OpeningHours;
+    address: Address;
 };
 
-export interface Address {
-    streetNumber: string;
-    route: string;
-    locality: string;
-    postalCode: string;
-    country: string;
-}
+export type Address = {
+    readonly streetNumber: string;
+    readonly route: string;
+    readonly locality: string;
+    readonly postalCode: string;
+    readonly country: string;
+};
 
 export interface LocationNote {
     id: number;

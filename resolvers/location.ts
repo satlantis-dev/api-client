@@ -1,5 +1,5 @@
 import type { LocationByID, LocationTag } from "../models/location.ts";
-import type { Client } from "../sdk.ts";
+import type { Address, Client, OpeningHours } from "../sdk.ts";
 
 export class LocationResolver implements LocationByID {
     id: number;
@@ -11,15 +11,8 @@ export class LocationResolver implements LocationByID {
     lng: number;
     locationTags: LocationTag[];
     score: number;
-    openingHours: {
-        monday: string;
-        tuesday: string;
-        wednesday: string;
-        thursday: string;
-        friday: string;
-        saturday: string;
-        sunday: string;
-    };
+    openingHours: OpeningHours;
+    address: Address;
 
     /**
      * @unstable
@@ -35,6 +28,7 @@ export class LocationResolver implements LocationByID {
         this.locationTags = data.locationTags || [];
         this.openingHours = data.openingHours;
         this.score = data.score;
+        this.address = data.address;
     }
 
     place = async () => {

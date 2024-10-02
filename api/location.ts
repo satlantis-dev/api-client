@@ -1,7 +1,7 @@
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { Location, LocationByID, LocationTag } from "../models/location.ts";
-import type { func_GetJwt } from "../sdk.ts";
+import type { Address, func_GetJwt, OpeningHours } from "../sdk.ts";
 
 export const getLocationTags = (urlArg: URL) => async () => {
     const url = copyURL(urlArg);
@@ -22,6 +22,26 @@ export const getLocation = (urlArg: URL) => async (args: { id: number }) => {
         return response;
     }
     return handleResponse<LocationByID>(response);
+};
+
+export const getLocationsByPlaceID = (urlArg: URL) =>
+async (args: {
+    placeID: number;
+    search?: string;
+    // https://github.com/satlantis-dev/api/blob/2582005a5fe23c6d4d10c71c68cc72c4088f3ed1/database/location.go#L157
+    // sortDirection?: 'desc' | 'asc';
+    // todo: having this field mandatory is not a good design, should change the backend
+    google_rating: number;
+}) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getLocationsByPlaceID/${args.placeID}`;
+    url.searchParams.set("google_rating", String(args.google_rating));
+
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<LocationByPlace[]>(response);
 };
 
 /**
@@ -153,3 +173,37 @@ async (args: {
     }
     return handleResponse(response);
 };
+
+type LocationByPlace = {
+    readonly id: number;
+    readonly accounts: null;
+    readonly address: Address;
+    readonly bio: null;
+    readonly businessStatus: BusinessStatus;
+    readonly eventId: number;
+    readonly event: Event;
+    readonly googleId: string;
+    readonly googleMapsUrl: string;
+    readonly googleRating: number;
+    readonly googleUserRatingCount: number;
+    readonly image: string;
+    readonly isClaimed: boolean;
+    readonly lat: number;
+    readonly lng: number;
+    readonly locationTags: LocationTag[];
+    readonly placeId: number;
+    readonly name: string;
+    // todo: the frontend does not use this field, should remove in the backend API
+    // readonly notes:                 NoteElement[];
+    readonly openingHours: OpeningHours;
+    readonly osmRef: string;
+    readonly phone: string;
+    readonly priceLevel: PriceLevel;
+    readonly score: number;
+    readonly websiteUrl: string;
+    readonly email: string;
+};
+
+type BusinessStatus = "OPERATIONAL";
+
+type PriceLevel = "PRICE_LEVEL_MODERATE" | "PRICE_LEVEL_INEXPENSIVE" | "PRICE_LEVEL_UNSPECIFIED";
