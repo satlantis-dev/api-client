@@ -1,6 +1,6 @@
 import { PublicKey } from "@blowater/nostr-sdk";
 import type { Kind0MetaData } from "../models/account.ts";
-import { type Client } from "../sdk.ts";
+import { AccountPlaceRoleTypeEnum, type Client } from "../sdk.ts";
 import { NoteResolver } from "./note.ts";
 
 export class UserResolver {
@@ -131,5 +131,21 @@ export class UserResolver {
      */
     getOwnedLocation = async () => {
         return undefined;
+    };
+
+    isPlaceAdmin = async (placeId: number) => {
+        const account = await this.client.getAccount({ npub: this.pubkey.bech32() });
+        if (account instanceof Error) {
+            return account;
+        }
+
+        return (
+            account.accountPlaceRoles?.some((accountPlace) => {
+                return (
+                    accountPlace.placeId === placeId &&
+                    accountPlace.type === AccountPlaceRoleTypeEnum.AMBASSADOR
+                );
+            }) || false
+        );
     };
 }

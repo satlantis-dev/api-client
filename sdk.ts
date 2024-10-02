@@ -142,7 +142,8 @@ export class Client {
 
     // nostr note
     /**
-     * @deprecated
+     * @deprecated prefer to other .post methods
+     * remove after: 2024/11/01
      */
     _postNote: ReturnType<typeof postNote>;
     postReaction: ReturnType<typeof postReaction>;
@@ -804,6 +805,53 @@ export class Client {
         if (res instanceof Error) {
             return res;
         }
+    };
+
+    /**
+     * only business users/accounts can do it
+     *
+     * @unstable
+     */
+    postBusinessGalleryImage = async (args: {
+        image: File;
+    }) => {
+        const signer = await this.getNostrSigner();
+        if (signer instanceof Error) {
+            return signer;
+        }
+
+        const me = await this.getMyProfile();
+        if (me instanceof Error) {
+            return me;
+        }
+        const isBusiness = await me.getIsBusiness();
+        if (isBusiness instanceof Error) {
+            return isBusiness;
+        }
+        if (isBusiness != true) {
+            return new Error("you are not a business user");
+        }
+
+        const uploadedImageUrl = await this.uploadFile({ file: args.image });
+        if (uploadedImageUrl instanceof Error) {
+            return uploadedImageUrl;
+        }
+
+        const fullContent = `${uploadedImageUrl}`;
+
+        const event = await prepareNostrEvent(signer, {
+            kind: NostrKind.TEXT_NOTE,
+            content: fullContent,
+        });
+        if (event instanceof Error) {
+            return event;
+        }
+
+        const res = await this._postNote({
+            event,
+            noteType: NoteType.GALLERY,
+        });
+        return res;
     };
 
     /**
