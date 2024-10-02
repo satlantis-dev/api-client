@@ -29,7 +29,7 @@ export type Note = {
     readonly id: number;
     readonly accountId: number;
     readonly account: Account;
-    readonly createdAt: Date;
+    readonly createdAt: string;
     readonly content: string;
     readonly eventId: number;
     readonly kind: number;

@@ -10,6 +10,7 @@ import {
 } from "@blowater/nostr-sdk";
 import { ApiError } from "../helpers/_helper.ts";
 import type { UserResolver } from "../resolvers/user.ts";
+import { NoteResolver } from "../resolvers/note.ts";
 
 const url = new URL("https://api-dev.satlantis.io");
 const testSigner = InMemoryAccountContext.Generate();
@@ -329,6 +330,10 @@ Deno.test("getNotes", async () => {
     assertEquals(note.itself.id, result[0].id);
     assertEquals(note.itself.content, result[0].content);
     assertEquals(note.itself.sig, result[0].sig);
+    assertEquals(note.itself.createdAt, result[0].createdAt);
+
+    const resolver = new NoteResolver(client, { type: "backend", data: note.itself });
+    assertEquals(new Date(note.itself.createdAt), resolver.createdAt);
 
     // todo: they should pass
     // assertEquals(note.itself, result[0])
