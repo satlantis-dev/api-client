@@ -900,7 +900,23 @@ export class Client {
             if (locations instanceof Error) {
                 return locations;
             }
-            return locations; // todo: make resolvers
+            // for(const location of locations) {}
+            return locations.map((l) =>
+                new LocationResolver(this, {
+                    address: l.address,
+                    bio: l.bio,
+                    id: l.id,
+                    image: l.image,
+                    lat: l.lat,
+                    lng: l.lng,
+                    locationTags: l.locationTags,
+                    name: l.name,
+                    openingHours: l.openingHours,
+                    // @ts-ignore: missing
+                    placeOsmRef: null, // todo: this is missing from backend
+                    score: l.score,
+                })
+            );
         },
     };
 }
