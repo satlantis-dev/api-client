@@ -530,15 +530,10 @@ export class Client {
      *
      * @deprecated prefer to .resolver.getUser
      *  all resolver APIs will be moved to .resolve in the future
+     * remove after: 2024/10/17
      */
     getUserProfile = async (pubkey: PublicKey | string): Promise<UserResolver | Error> => {
-        const relay = SingleRelayConnection.New(this.relay_url);
-        if (relay instanceof Error) {
-            return relay;
-        }
-        const profile = await getUserProfile(pubkey, relay, this);
-        await relay.close();
-        return profile;
+        return this.resolver.getUser(pubkey);
     };
 
     getMyProfile = async (): Promise<UserResolver | Error> => {
@@ -853,7 +848,15 @@ export class Client {
      * @unstable
      */
     resolver = {
-        getUser: this.getUserProfile,
+        getUser: async (pubkey: PublicKey | string): Promise<UserResolver | Error> => {
+            const relay = SingleRelayConnection.New(this.relay_url);
+            if (relay instanceof Error) {
+                return relay;
+            }
+            const profile = await getUserProfile(pubkey, relay, this);
+            await relay.close();
+            return profile;
+        },
         /**
          * @unstable
          */
