@@ -1,4 +1,4 @@
-import { assertEquals, assertInstanceOf, fail } from "@std/assert";
+import { assertEquals, fail } from "@std/assert";
 
 import { Client, LocationResolver, loginNostr, NoteType, type Place } from "../sdk.ts";
 import {
