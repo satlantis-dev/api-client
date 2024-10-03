@@ -260,6 +260,10 @@ export class Client {
         return this.resolver.getLocationByID(id);
     };
 
+    /**
+     * @deprecated prefer to .getLocationCategories
+     * | remove after: 2024/10/10
+     */
     getLocationTags = () => {
         return getLocationTags(this.url)();
     };

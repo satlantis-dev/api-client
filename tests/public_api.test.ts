@@ -204,6 +204,7 @@ Deno.test("getLocationCategories", async () => {
     if (result instanceof Error) {
         fail(result.message);
     }
+
     assertEquals(result.length === 12, true);
     for (const category of result) {
         assertEquals(isLocationCategory(category.name), true);
