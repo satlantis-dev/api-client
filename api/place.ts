@@ -93,7 +93,7 @@ export const getPlaceCalendarEvents = (urlArg: URL) => async (args: { placeID: s
     if (response instanceof Error) {
         return response;
     }
-    console.log(url.toString());
+
     return handleResponse<{
         readonly id: number;
         readonly placeId: number;

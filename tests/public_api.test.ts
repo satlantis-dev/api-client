@@ -115,8 +115,7 @@ Deno.test("/getPlaceCalenderEvents", async () => {
         placeID: 23949,
     });
     if (result instanceof Error) {
-        console.log(result);
-        fail();
+        fail(result.message);
     }
     assertEquals(result.length > 0, true);
 });
