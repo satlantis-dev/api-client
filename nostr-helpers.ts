@@ -188,7 +188,7 @@ export async function preparePlaceEvent(signer: Signer, args: {
             '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"coordinates":[14.425692, 50.095986],"type":"Point"}}]}', // stringified JSON. Use https://geojson.io to easily create GeoJSON objects for testing.
         tags: [
             ["d", "zahradní-restaurace-letenský-zámeček-u2fkbr"], // unique identifier for replaceable event
-            // ["name", "Zahradní Restaurace Letenský Zámeček"], // name property
+            ["name", args.placeName], // name property
             // ["opening_hours", "Mo-Fr_6:00-20:00,Sa-Su_6:00-17:00"], // opening_hours property
             // ["logo_url", "https://nostr.build/logo.png"], // logo_url property
             // ["r", "R4469371", "osm_ref"], // osm_ref is a combination of the OSM type (the letter at the front of the string) and OSM ID (which is the numerical value following the letter

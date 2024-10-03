@@ -194,25 +194,26 @@ export const proveLocationClaim =
         return handleResponse(response);
     };
 
-export const updateLocation = (urlArg: URL) =>
-async (args: {
-    placeID: number;
-    search?: string;
-    // https://github.com/satlantis-dev/api/blob/2582005a5fe23c6d4d10c71c68cc72c4088f3ed1/database/location.go#L157
-    // sortDirection?: 'desc' | 'asc';
-    // todo: having this field mandatory is not a good design, should change the backend
-    google_rating: number;
-}) => {
-    const url = copyURL(urlArg);
-    url.pathname = `/getLocationsByPlaceID/${args.placeID}`;
-    url.searchParams.set("google_rating", String(args.google_rating));
+// todo: implement it
+// export const updateLocation = (urlArg: URL) =>
+// async (args: {
+//     placeID: number;
+//     search?: string;
+//     // https://github.com/satlantis-dev/api/blob/2582005a5fe23c6d4d10c71c68cc72c4088f3ed1/database/location.go#L157
+//     // sortDirection?: 'desc' | 'asc';
+//     // todo: having this field mandatory is not a good design, should change the backend
+//     google_rating: number;
+// }) => {
+//     const url = copyURL(urlArg);
+//     url.pathname = `/getLocationsByPlaceID/${args.placeID}`;
+//     url.searchParams.set("google_rating", String(args.google_rating));
 
-    const response = await safeFetch(url);
-    if (response instanceof Error) {
-        return response;
-    }
-    return handleResponse<LocationByPlace[]>(response);
-};
+//     const response = await safeFetch(url);
+//     if (response instanceof Error) {
+//         return response;
+//     }
+//     return handleResponse<LocationByPlace[]>(response);
+// };
 
 type LocationByPlace = {
     readonly id: number;
