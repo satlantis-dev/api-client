@@ -7,6 +7,7 @@ import {
     type LocationByID,
     type LocationTag,
 } from "../models/location.ts";
+import { prepareLocationSetEvent, preparePlaceEvent } from "../nostr-helpers.ts";
 import type { Address, func_GetJwt, func_GetNostrSigner, LocationCategory, OpeningHours } from "../sdk.ts";
 
 export const getLocationTags = (urlArg: URL) => async () => {
