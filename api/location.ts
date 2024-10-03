@@ -1,14 +1,8 @@
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
-import {
-    type ILocationCategory,
-    isLocationCategory,
-    type Location,
-    type LocationByID,
-    type LocationTag,
-} from "../models/location.ts";
+import { type Location, type LocationByID, type LocationTag } from "../models/location.ts";
 import { prepareLocationSetEvent, preparePlaceEvent } from "../nostr-helpers.ts";
-import type { Address, func_GetJwt, func_GetNostrSigner, LocationCategory, OpeningHours } from "../sdk.ts";
+import type { Address, func_GetJwt, func_GetNostrSigner, OpeningHours } from "../sdk.ts";
 
 export const getLocationTags = (urlArg: URL) => async () => {
     const url = copyURL(urlArg);
@@ -19,51 +13,6 @@ export const getLocationTags = (urlArg: URL) => async () => {
     }
     return handleResponse<LocationTag[]>(response);
 };
-
-export const getLocationCategories = (urlArg: URL) => async () => {
-    const url = copyURL(urlArg);
-    url.pathname = `/getLocationTags`;
-    const response = await safeFetch(url);
-    if (response instanceof Error) {
-        return response;
-    }
-    const tags = await handleResponse<LocationTag[]>(response);
-    if (tags instanceof Error) {
-        return tags;
-    }
-    const categories = convertToLocationCategories(tags);
-    return categories;
-};
-
-function convertToLocationCategories(locationTags: LocationTag[]): ILocationCategory[] {
-    const categoryMap = new Map<LocationCategory, Map<string, Set<string>>>();
-
-    locationTags.forEach((tag) => {
-        const category = tag.category as unknown as LocationCategory;
-        if (!categoryMap.has(category)) {
-            categoryMap.set(category, new Map<string, Set<string>>());
-        }
-
-        const subCategoryMap = categoryMap.get(category)!;
-        if (!subCategoryMap.has(tag.key)) {
-            subCategoryMap.set(tag.key, new Set<string>());
-        }
-
-        subCategoryMap.get(tag.key)!.add(tag.value);
-    });
-
-    const locationCategories: ILocationCategory[] = Array.from(categoryMap.entries()).map(
-        ([name, subCategoryMap]): ILocationCategory => ({
-            name,
-            subCategory: Array.from(subCategoryMap.entries()).map(([key, valueSet]) => ({
-                key,
-                value: Array.from(valueSet),
-            })),
-        }),
-    );
-
-    return locationCategories;
-}
 
 export const getLocation = (urlArg: URL) => async (args: { id: number }) => {
     const url = copyURL(urlArg);

@@ -63,7 +63,7 @@ export interface LocationTag {
     eligible: boolean;
 }
 
-export enum LocationCategory {
+export enum LocationCategoryName {
     Attractions = "Attractions",
     Coworking = "Coworking",
     Healthcare = "Healthcare",
@@ -78,18 +78,12 @@ export enum LocationCategory {
     Satlantis = "satlantis",
 }
 
-export interface ILocationCategory {
-    name: LocationCategory;
+export interface LocationCategory {
+    name: LocationCategoryName;
     subCategory: {
         key: string;
         value: string[];
     }[];
-}
-
-const categoryValues: readonly LocationCategory[] = Object.values(LocationCategory);
-
-export function isLocationCategory(value: string): value is LocationCategory {
-    return categoryValues.includes(value as LocationCategory);
 }
 
 export enum LocationAccountTypeEnum {

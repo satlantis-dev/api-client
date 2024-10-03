@@ -10,7 +10,7 @@ import {
 } from "@blowater/nostr-sdk";
 import { ApiError } from "../helpers/_helper.ts";
 import type { UserResolver } from "../resolvers/user.ts";
-import { isLocationCategory } from "../models/location.ts";
+import { LocationCategoryName } from "../models/location.ts";
 import { NoteResolver } from "../resolvers/note.ts";
 
 const url = new URL("https://api-dev.satlantis.io");
@@ -195,6 +195,11 @@ Deno.test("getLocationTags", async () => {
 });
 
 Deno.test("getLocationCategories", async () => {
+    function isLocationCategory(value: string): value is LocationCategoryName {
+        const categoryValues: readonly LocationCategoryName[] = Object.values(LocationCategoryName);
+        return categoryValues.includes(value as LocationCategoryName);
+    }
+
     const result = await client.getLocationCategories();
     if (result instanceof Error) {
         fail(result.message);
@@ -553,8 +558,4 @@ WhatsApp: who?
 
 export function randomString() {
     return String(Date.now());
-}
-
-function assertIsType(key: string, arg1: string) {
-    throw new Error("Function not implemented.");
 }

@@ -25,7 +25,6 @@ import { getIpInfo } from "./api/ip.ts";
 import {
     claimLocation,
     getLocation,
-    getLocationCategories,
     getLocationReviews,
     getLocationsByPlaceID,
     getLocationsWithinBoundingBox,
@@ -71,6 +70,7 @@ import { UserResolver } from "./resolvers/user.ts";
 import { LocationResolver } from "./resolvers/location.ts";
 import { NoteResolver } from "./resolvers/note.ts";
 import type { Place } from "./models/place.ts";
+import type { LocationCategory, LocationCategoryName, LocationTag } from "./models/location.ts";
 
 export type func_GetNostrSigner = () => Promise<Signer & Encrypter | Error>;
 export type func_GetJwt = () => string;
@@ -264,8 +264,13 @@ export class Client {
         return getLocationTags(this.url)();
     };
 
-    getLocationCategories = () => {
-        return getLocationCategories(this.url)();
+    getLocationCategories = async () => {
+        const tags = await this.getLocationTags();
+        if (tags instanceof Error) {
+            return tags;
+        }
+        const categories = convertToLocationCategories(tags);
+        return categories;
     };
 
     // Calendar Event
@@ -1049,4 +1054,34 @@ async function prepareKind0(signer: Signer, metadata: Kind0MetaData) {
         content: JSON.stringify(metadata),
         kind: NostrKind.META_DATA,
     });
+}
+
+function convertToLocationCategories(locationTags: LocationTag[]): LocationCategory[] {
+    const categoryMap = new Map<LocationCategoryName, Map<string, Set<string>>>();
+
+    locationTags.forEach((tag) => {
+        const category = tag.category as unknown as LocationCategoryName;
+        if (!categoryMap.has(category)) {
+            categoryMap.set(category, new Map<string, Set<string>>());
+        }
+
+        const subCategoryMap = categoryMap.get(category)!;
+        if (!subCategoryMap.has(tag.key)) {
+            subCategoryMap.set(tag.key, new Set<string>());
+        }
+
+        subCategoryMap.get(tag.key)!.add(tag.value);
+    });
+
+    const locationCategories: LocationCategory[] = Array.from(categoryMap.entries()).map(
+        ([name, subCategoryMap]): LocationCategory => ({
+            name,
+            subCategory: Array.from(subCategoryMap.entries()).map(([key, valueSet]) => ({
+                key,
+                value: Array.from(valueSet),
+            })),
+        }),
+    );
+
+    return locationCategories;
 }
