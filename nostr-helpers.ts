@@ -3,6 +3,7 @@ import {
     NostrKind,
     prepareNostrEvent,
     PublicKey,
+    type Signer,
     SingleRelayConnection,
     type Tag,
 } from "@blowater/nostr-sdk";
@@ -153,4 +154,58 @@ async function get_kind3_ContactList(relay: SingleRelayConnection, pubKey: strin
         pub = pubKey;
     }
     return await relay.getReplaceableEvent(pub, NostrKind.CONTACTS);
+}
+
+export async function prepareLocationSetEvent(signer: Signer) {
+    return prepareNostrEvent(signer, {
+        "content": "",
+        kind: 30515 as NostrKind,
+        tags: [
+            ["d", "jvdy9i4"],
+            ["name", "Business Locations"],
+            [
+                "a",
+                "37515:26dc95542e18b8b7aec2f14610f55c335abebec76f3db9e58c254661d0593a0c:95ODQzw3ajNoZ8SyMDOzQ",
+            ],
+            [
+                "a",
+                "37515:54af95542e18b8b7aec2f14610f55c335abebec76f3db9e58c254661d0593a0c:1-MYP8dAhramH9J5gJWKx",
+            ],
+            [
+                "a",
+                "37515:f8fe95542e18b8b7aec2f14610f55c335abebec76f3db9e58c254661d0593a0c:D2Tbd38bGrFvU0bIbvSMt",
+            ],
+        ],
+    });
+}
+
+export async function preparePlaceEvent(signer: Signer, args: {
+    placeName: string;
+}) {
+    return prepareNostrEvent(signer, {
+        kind: 37515 as NostrKind,
+        content:
+            '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"coordinates":[14.425692, 50.095986],"type":"Point"}}]}', // stringified JSON. Use https://geojson.io to easily create GeoJSON objects for testing.
+        tags: [
+            ["d", "zahradní-restaurace-letenský-zámeček-u2fkbr"], // unique identifier for replaceable event
+            ["name", args.placeName], // name property
+            // ["opening_hours", "Mo-Fr_6:00-20:00,Sa-Su_6:00-17:00"], // opening_hours property
+            // ["logo_url", "https://nostr.build/logo.png"], // logo_url property
+            // ["r", "R4469371", "osm_ref"], // osm_ref is a combination of the OSM type (the letter at the front of the string) and OSM ID (which is the numerical value following the letter
+            // ["amenity", "biergarten"], // OSM amenity tag
+            // ["country", "Czech"], // country property
+            // ["contributor", "5c83da77af1dec6d7289834998ad7aafbd9e2191396d75ec3cc27f5a77226f36"],
+            // ["contributor", "f7234bd4c1394dda46d09f35bd384dd30cc552ad5541990f98844fb06676e9ca"],
+            // ["g", "u2fkbr"], // geohash of place; should be as accurate as possible
+            // ["g", "u2fkb"], // all less-precise geohashes must be defined to allow for searching -- see https://github.com/nostr-protocol/nips/pull/136#issuecomment-1788549584
+            // ["g", "u2fk"],
+            // ["g", "u2f"],
+            // ["g", "u2"],
+            // ["g", "u"],
+            // [
+            //     "a",
+            //     "37515:26dc95542e18b8b7aec2f14610f55c335abebec76f3db9e58c254661d0593a0c:95ODQzw3ajNoZ8SyMDOzQ",
+            // ], // Reference to old Place Event which has been replaced by this event (so we can link old reviews)
+        ],
+    });
 }

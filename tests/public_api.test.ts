@@ -359,7 +359,6 @@ Deno.test("getLocationReviews", async () => {
     const location = await client.getLocation(2313) as LocationResolver;
 
     const reviews = await location.getReviews({ page: 0, limit: 2 });
-    // todo: assert the data structure
     assertEquals(reviews, result);
 });
 
