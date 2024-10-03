@@ -1,6 +1,6 @@
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
-import type { Location, LocationByID, LocationTag } from "../models/location.ts";
+import { type Location, type LocationByID, type LocationTag } from "../models/location.ts";
 import { prepareLocationSetEvent, preparePlaceEvent } from "../nostr-helpers.ts";
 import type { Address, func_GetJwt, func_GetNostrSigner, OpeningHours } from "../sdk.ts";
 

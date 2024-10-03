@@ -10,6 +10,7 @@ import {
 } from "@blowater/nostr-sdk";
 import { ApiError } from "../helpers/_helper.ts";
 import type { UserResolver } from "../resolvers/user.ts";
+import { LocationCategoryName } from "../models/location.ts";
 import { NoteResolver } from "../resolvers/note.ts";
 
 const url = new URL("https://api-dev.satlantis.io");
@@ -114,8 +115,7 @@ Deno.test("/getPlaceCalenderEvents", async () => {
         placeID: 23949,
     });
     if (result instanceof Error) {
-        console.log(result);
-        fail();
+        fail(result.message);
     }
     assertEquals(result.length > 0, true);
 });
@@ -191,6 +191,31 @@ Deno.test("getLocationTags", async () => {
         fail(result.message);
     }
     assertEquals(result.length > 0, true);
+});
+
+Deno.test("getLocationCategories", async () => {
+    function isLocationCategory(value: string): value is LocationCategoryName {
+        const categoryValues: readonly LocationCategoryName[] = Object.values(LocationCategoryName);
+        return categoryValues.includes(value as LocationCategoryName);
+    }
+
+    const result = await client.getLocationCategories();
+    if (result instanceof Error) {
+        fail(result.message);
+    }
+
+    assertEquals(result.length === 12, true);
+    for (const category of result) {
+        assertEquals(isLocationCategory(category.name), true);
+        assertEquals(Array.isArray(category.subCategory), true);
+        for (const subCategory of category.subCategory) {
+            assertEquals(typeof subCategory.key, "string");
+            assertEquals(Array.isArray(subCategory.value), true);
+            for (const value of subCategory.value) {
+                assertEquals(typeof value, "string");
+            }
+        }
+    }
 });
 
 Deno.test("checkUsernameAvailability", async () => {

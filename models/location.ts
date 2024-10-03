@@ -63,6 +63,29 @@ export interface LocationTag {
     eligible: boolean;
 }
 
+export enum LocationCategoryName {
+    Attractions = "Attractions",
+    Coworking = "Coworking",
+    Healthcare = "Healthcare",
+    RestaurantsCafes = "Restaurants & Cafes",
+    Extras = "extras",
+    Nightlife = "Nightlife",
+    Others = "Others",
+    Lodging = "Lodging",
+    WellnessFitness = "Wellness & Fitness",
+    GrocerySpecialtyFoods = "Grocery & Specialty Foods",
+    SouvenirsGifts = "Souvenirs & Gifts",
+    Satlantis = "satlantis",
+}
+
+export interface LocationCategory {
+    name: LocationCategoryName;
+    subCategory: {
+        key: string;
+        value: string[];
+    }[];
+}
+
 export enum LocationAccountTypeEnum {
     OWNER = "owner",
     MANAGER = "manager",
