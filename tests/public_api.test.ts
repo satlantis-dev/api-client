@@ -1,6 +1,6 @@
-import { assertEquals, fail } from "@std/assert";
+import { assertEquals, assertInstanceOf, fail } from "@std/assert";
 
-import { Client, LocationResolver, loginNostr, type Place } from "../sdk.ts";
+import { Client, LocationResolver, loginNostr, NoteType, type Place } from "../sdk.ts";
 import {
     InMemoryAccountContext,
     type NostrEvent,
@@ -83,13 +83,19 @@ Deno.test("/getPlaceNoteFeed", async () => {
 
 Deno.test("/getPlaceCalendarEvents", async () => {
     const result = await client.getPlaceCalendarEvents({
-        placeID: 23949,
+        placeID: 29883,
     });
     if (result instanceof Error) {
-        console.log(result);
-        fail();
+        fail(result.message);
     }
     assertEquals(result.length > 0, true);
+    for (const data of result) {
+        assertEquals(data.placeId, 29883);
+        assertEquals(data.type, NoteType.CALENDAR_EVENT);
+        if (JSON.parse(data.note.tags) instanceof Array == false) {
+            console.warn("tags is", data.note.tags);
+        }
+    }
 });
 
 Deno.test("/getPlaceMetrics", async () => {
