@@ -1,7 +1,8 @@
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { Location, LocationByID, LocationTag } from "../models/location.ts";
-import type { Address, func_GetJwt, OpeningHours } from "../sdk.ts";
+import { prepareLocationSetEvent, preparePlaceEvent } from "../nostr-helpers.ts";
+import type { Address, func_GetJwt, func_GetNostrSigner, OpeningHours } from "../sdk.ts";
 
 export const getLocationTags = (urlArg: URL) => async () => {
     const url = copyURL(urlArg);
@@ -144,34 +145,73 @@ type ProveLocationClaimRequest struct {
 	PlaceEvent       *nostr.Event `json:"placeEvent"`
 }
  */
-export const proveLocationClaim = (urlArg: URL, getJwt: func_GetJwt) =>
-async (args: {
-    locationId: number;
-    url: string;
-    referredBy: string;
-}) => {
-    const jwt = getJwt();
-    if (jwt == "") {
-        return new Error("jwt token is empty");
-    }
-    const headers = new Headers();
-    headers.set("Authorization", `Bearer ${jwt}`);
+export const proveLocationClaim =
+    (urlArg: URL, getJwt: func_GetJwt, getSigner: func_GetNostrSigner) =>
+    async (args: {
+        locationId: number;
+        url: string;
+        referredBy: string;
+    }) => {
+        const jwt = getJwt();
+        if (jwt == "") {
+            return new Error("jwt token is empty");
+        }
+        const signer = await getSigner();
+        if (signer instanceof Error) {
+            return signer;
+        }
 
-    const url = copyURL(urlArg);
-    url.pathname = `/secure/proveLocationClaim/${args.locationId}`;
+        const event = await prepareLocationSetEvent(signer);
+        if (event instanceof Error) {
+            return event;
+        }
 
-    const response = await safeFetch(url, {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
+        const event2 = await preparePlaceEvent(signer, { placeName: "" });
+        if (event instanceof Error) {
+            return event;
+        }
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwt}`);
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/proveLocationClaim/${args.locationId}`;
+
+        const body = JSON.stringify({
             url: args.url,
             referredBy: args.referredBy,
-        }),
-    });
+            locationSetEvent: event,
+            placeEvent: event2,
+        });
+        const response = await safeFetch(url, {
+            method: "POST",
+            headers,
+            body,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse(response);
+    };
+
+export const updateLocation = (urlArg: URL) =>
+async (args: {
+    placeID: number;
+    search?: string;
+    // https://github.com/satlantis-dev/api/blob/2582005a5fe23c6d4d10c71c68cc72c4088f3ed1/database/location.go#L157
+    // sortDirection?: 'desc' | 'asc';
+    // todo: having this field mandatory is not a good design, should change the backend
+    google_rating: number;
+}) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getLocationsByPlaceID/${args.placeID}`;
+    url.searchParams.set("google_rating", String(args.google_rating));
+
+    const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse(response);
+    return handleResponse<LocationByPlace[]>(response);
 };
 
 type LocationByPlace = {

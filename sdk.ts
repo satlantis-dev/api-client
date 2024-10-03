@@ -192,7 +192,7 @@ export class Client {
         this.getLocationByID = getLocation(url);
         this.getLocationsByPlaceID = getLocationsByPlaceID(url);
         this._claimLocation = claimLocation(url, getJwt);
-        this.proveLocationClaim = proveLocationClaim(url, getJwt);
+        this.proveLocationClaim = proveLocationClaim(url, getJwt, getNostrSigner);
 
         //
         this.addressLookup = addressLookup(url);
@@ -935,7 +935,6 @@ export class Client {
             if (data instanceof Error) {
                 return data;
             }
-            console.log(data);
             return new LocationResolver(this, data);
         },
         getLocationsByPlaceID: async (args: {
