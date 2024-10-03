@@ -61,7 +61,6 @@ export interface LocationTag {
     key: string;
     value: string;
     eligible: boolean;
-    locations: Location[] | null | undefined;
 }
 
 export enum LocationAccountTypeEnum {
