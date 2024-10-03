@@ -59,9 +59,8 @@ import { newURL } from "./helpers/_helper.ts";
 import { addressLookup } from "./api/address.ts";
 import { signEvent } from "./api/nostr_event.ts";
 import { getInterests } from "./api/secure/interests.ts";
-import { postCalendarEventRSVP } from "./api/secure/calendar.ts";
+import { postCalendarEventRSVP, postPlaceCalendarEvent } from "./api/secure/calendar.ts";
 import type { CalendarEventType } from "./models/calendar.ts";
-import { Hashtag } from "./api/calendar.ts";
 import { followPubkeys, getFollowingPubkeys, getInterestsOf } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
 import { safeFetch } from "./helpers/safe-fetch.ts";
@@ -72,7 +71,7 @@ import { NoteResolver } from "./resolvers/note.ts";
 import type { Place } from "./models/place.ts";
 import type { LocationCategory, LocationCategoryName, LocationTag } from "./models/location.ts";
 
-export type func_GetNostrSigner = () => Promise<Signer & Encrypter | Error>;
+export type func_GetNostrSigner = () => Promise<(Signer & Encrypter) | Error>;
 export type func_GetJwt = () => string;
 
 export class Client {
@@ -94,6 +93,7 @@ export class Client {
     // Calendar Events
     getPlaceCalendarEvents: ReturnType<typeof getPlaceCalendarEvents>;
     postCalendarEventRSVP: ReturnType<typeof postCalendarEventRSVP>;
+    postPlaceCalendarEvent: ReturnType<typeof postPlaceCalendarEvent>;
 
     // Account
     /**
@@ -176,6 +176,7 @@ export class Client {
 
         // Calendar Events
         this.getPlaceCalendarEvents = getPlaceCalendarEvents(url);
+        this.postPlaceCalendarEvent = postPlaceCalendarEvent(url, getJwt);
         this.postCalendarEventRSVP = postCalendarEventRSVP(url, getJwt, getNostrSigner);
 
         this.getAccount = getAccount(url);
@@ -291,7 +292,8 @@ export class Client {
         timezone: string;
         geoHash: string;
         location: string;
-        placeID?: number;
+        placeID: number;
+        summary: string;
     }) => {
         const jwtToken = this.getJwt();
         if (jwtToken == "") {
@@ -309,7 +311,7 @@ export class Client {
             tags: [
                 ["a", args.placeATag],
                 ["d", crypto.randomUUID()],
-                ["t", Hashtag(args.calendarEventType)],
+                ["t", args.calendarEventType],
                 ["r", args.url],
                 ["title", args.title],
                 ["image", args.imageURL],
@@ -318,16 +320,16 @@ export class Client {
                 ["start_tzid", args.timezone],
                 ["g", args.geoHash],
                 ["location", args.location],
+                ["summary", args.summary],
             ],
         });
         if (event instanceof Error) {
             return event;
         }
 
-        const res = await this._postNote({
+        const res = await this.postPlaceCalendarEvent({
             placeId: args.placeID,
             event,
-            noteType: NoteType.CALENDAR_EVENT,
         });
         if (res instanceof Error) {
             return res;
@@ -646,9 +648,7 @@ export class Client {
         }
     };
 
-    claimLocation = async (args: {
-        locationId: number;
-    }) => {
+    claimLocation = async (args: { locationId: number }) => {
         const err = await this.becomeBusinessAccount();
         if (err instanceof Error) {
             return err;
@@ -713,7 +713,10 @@ export class Client {
             return sub;
         }
 
-        async function* get(chan: AsyncIterable<RelayResponse_REQ_Message>, relay: SingleRelayConnection) {
+        async function* get(
+            chan: AsyncIterable<RelayResponse_REQ_Message>,
+            relay: SingleRelayConnection,
+        ) {
             for await (const msg of chan) {
                 if (msg.type == "EOSE") {
                     await relay.close();
@@ -733,11 +736,7 @@ export class Client {
      *
      * @unstable
      */
-    postNote = async (args: {
-        content: string;
-        image: File;
-        placeID?: number;
-    }) => {
+    postNote = async (args: { content: string; image: File; placeID?: number }) => {
         const signer = await this.getNostrSigner();
         if (signer instanceof Error) {
             return signer;
@@ -781,10 +780,7 @@ export class Client {
      *
      * @unstable
      */
-    replyTo = async (args: {
-        event: NostrEvent;
-        content: string;
-    }) => {
+    replyTo = async (args: { event: NostrEvent; content: string }) => {
         const signer = await this.getNostrSigner();
         if (signer instanceof Error) {
             return signer;
@@ -794,9 +790,7 @@ export class Client {
         const event = await prepareNostrEvent(signer, {
             kind: NostrKind.TEXT_NOTE,
             content: args.content,
-            tags: [
-                ["e", args.event.id, this.relay_url, "reply"],
-            ],
+            tags: [["e", args.event.id, this.relay_url, "reply"]],
         });
         if (event instanceof Error) {
             return event;
@@ -826,9 +820,7 @@ export class Client {
      *
      * @unstable
      */
-    postBusinessGalleryImage = async (args: {
-        image: File;
-    }) => {
+    postBusinessGalleryImage = async (args: { image: File }) => {
         const signer = await this.getNostrSigner();
         if (signer instanceof Error) {
             return signer;
@@ -965,21 +957,22 @@ export class Client {
                 return locations;
             }
             // for(const location of locations) {}
-            return locations.map((l) =>
-                new LocationResolver(this, {
-                    address: l.address,
-                    bio: l.bio,
-                    id: l.id,
-                    image: l.image,
-                    lat: l.lat,
-                    lng: l.lng,
-                    locationTags: l.locationTags,
-                    name: l.name,
-                    openingHours: l.openingHours,
-                    // @ts-ignore: missing
-                    placeOsmRef: null, // todo: this is missing from backend
-                    score: l.score,
-                })
+            return locations.map(
+                (l) =>
+                    new LocationResolver(this, {
+                        address: l.address,
+                        bio: l.bio,
+                        id: l.id,
+                        image: l.image,
+                        lat: l.lat,
+                        lng: l.lng,
+                        locationTags: l.locationTags,
+                        name: l.name,
+                        openingHours: l.openingHours,
+                        // @ts-ignore: missing
+                        placeOsmRef: null, // todo: this is missing from backend
+                        score: l.score,
+                    }),
             );
         },
     };

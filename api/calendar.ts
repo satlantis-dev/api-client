@@ -28,26 +28,3 @@ export const getEventTypeUsingName = (id: string): CalendarEventType => {
             return CalendarEventType.Other;
     }
 };
-
-export function Hashtag(c: CalendarEventType) {
-    const names = [
-        "#conference",
-        "#meetup",
-        "#hackathon",
-        "#concert",
-        "#workshop",
-        "#party",
-        "#play",
-        "#sports",
-        "#exhibition",
-        "#festival",
-        "#music",
-        "#other",
-    ];
-
-    if (c < CalendarEventType.Conference || c > CalendarEventType.Other) {
-        return "Unknown";
-    }
-
-    return names[c - 1];
-}

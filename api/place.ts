@@ -1,9 +1,10 @@
+import type { PlaceCalendarEvent } from "@satlantis/api-client";
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { Place, PlaceCategoryScore, PlaceEvent, PlaceMetric } from "../models/place.ts";
 import { type Region } from "../models/region.ts";
 
-import { type Note, type PlaceNote } from "./note.ts";
+import { type PlaceNote } from "./note.ts";
 
 /**
  * get the place based on OSM ID or ID, only 1 is needed
@@ -93,17 +94,7 @@ export const getPlaceCalendarEvents = (urlArg: URL) => async (args: { placeID: s
     if (response instanceof Error) {
         return response;
     }
-
-    return handleResponse<{
-        readonly id: number;
-        readonly placeId: number;
-        readonly noteId: number;
-        readonly note: Note;
-        readonly type: number;
-        readonly ancestorId: number;
-        readonly depth: number;
-        readonly descendantId: number;
-    }[]>(response);
+    return handleResponse<PlaceCalendarEvent[]>(response);
 };
 
 /**
