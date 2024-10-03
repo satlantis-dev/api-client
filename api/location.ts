@@ -38,7 +38,7 @@ export const getLocationCategories = (urlArg: URL) => async () => {
 function convertToLocationCategories(locationTags: LocationTag[]): ILocationCategory[] {
     const categoryMap = new Map<LocationCategory, Map<string, Set<string>>>();
 
-    locationTags.filter((tag) => isLocationCategory(tag.category)).forEach((tag) => {
+    locationTags.forEach((tag) => {
         const category = tag.category as unknown as LocationCategory;
         if (!categoryMap.has(category)) {
             categoryMap.set(category, new Map<string, Set<string>>());

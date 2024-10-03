@@ -10,6 +10,7 @@ import {
 } from "@blowater/nostr-sdk";
 import { ApiError } from "../helpers/_helper.ts";
 import type { UserResolver } from "../resolvers/user.ts";
+import { isLocationCategory } from "../models/location.ts";
 import { NoteResolver } from "../resolvers/note.ts";
 
 const url = new URL("https://api-dev.satlantis.io");
@@ -199,6 +200,17 @@ Deno.test("getLocationCategories", async () => {
         fail(result.message);
     }
     assertEquals(result.length === 12, true);
+    for (const category of result) {
+        assertEquals(isLocationCategory(category.name), true);
+        assertEquals(Array.isArray(category.subCategory), true);
+        for (const subCategory of category.subCategory) {
+            assertEquals(typeof subCategory.key, "string");
+            assertEquals(Array.isArray(subCategory.value), true);
+            for (const value of subCategory.value) {
+                assertEquals(typeof value, "string");
+            }
+        }
+    }
 });
 
 Deno.test("checkUsernameAvailability", async () => {
@@ -541,4 +553,8 @@ WhatsApp: who?
 
 export function randomString() {
     return String(Date.now());
+}
+
+function assertIsType(key: string, arg1: string) {
+    throw new Error("Function not implemented.");
 }
