@@ -63,6 +63,35 @@ export interface LocationTag {
     eligible: boolean;
 }
 
+export enum LocationCategory {
+    Attractions = "Attractions",
+    Coworking = "Coworking",
+    Healthcare = "Healthcare",
+    RestaurantsCafes = "Restaurants & Cafes",
+    Extras = "extras",
+    Nightlife = "Nightlife",
+    Others = "Others",
+    Lodging = "Lodging",
+    WellnessFitness = "Wellness & Fitness",
+    GrocerySpecialtyFoods = "Grocery & Specialty Foods",
+    SouvenirsGifts = "Souvenirs & Gifts",
+    Satlantis = "satlantis",
+}
+
+export interface ILocationCategory {
+    name: LocationCategory;
+    subCategory: {
+        key: string;
+        value: string[];
+    }[];
+}
+
+const categoryValues: readonly LocationCategory[] = Object.values(LocationCategory);
+
+export function isLocationCategory(value: string): value is LocationCategory {
+    return categoryValues.includes(value as LocationCategory);
+}
+
 export enum LocationAccountTypeEnum {
     OWNER = "owner",
     MANAGER = "manager",

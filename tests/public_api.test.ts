@@ -193,6 +193,14 @@ Deno.test("getLocationTags", async () => {
     assertEquals(result.length > 0, true);
 });
 
+Deno.test("getLocationCategories", async () => {
+    const result = await client.getLocationCategories();
+    if (result instanceof Error) {
+        fail(result.message);
+    }
+    assertEquals(result.length === 12, true);
+});
+
 Deno.test("checkUsernameAvailability", async () => {
     {
         const result = await client.checkUsernameAvailability(randomString());

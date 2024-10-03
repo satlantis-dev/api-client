@@ -25,6 +25,7 @@ import { getIpInfo } from "./api/ip.ts";
 import {
     claimLocation,
     getLocation,
+    getLocationCategories,
     getLocationReviews,
     getLocationsByPlaceID,
     getLocationsWithinBoundingBox,
@@ -261,6 +262,10 @@ export class Client {
 
     getLocationTags = () => {
         return getLocationTags(this.url)();
+    };
+
+    getLocationCategories = () => {
+        return getLocationCategories(this.url)();
     };
 
     // Calendar Event
