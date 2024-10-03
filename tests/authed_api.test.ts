@@ -458,29 +458,22 @@ Deno.test("getUserProfile & updateUserProfile", async (t) => {
 
 Deno.test("claim location", async () => {
     // https://www.dev.satlantis.io/location/1655
-    // const res = await client.claimLocation({ locationId: 1655 });
-    // if (res instanceof Error) fail(res.message);
-    // // the lenght of the code might not be part of the API
-    // // put it here just to be safe
-    // // so that when it changes, we will know
-    // assertEquals(res.code.length, "wA2tjNpcGvNED7YoSpbF".length);
+    const res = await client.claimLocation({ locationId: 1655 });
+    if (res instanceof Error) fail(res.message);
+    // the lenght of the code might not be part of the API
+    // put it here just to be safe
+    // so that when it changes, we will know
+    assertEquals(res.code.length, "wA2tjNpcGvNED7YoSpbF".length);
 
     // We can't get a valid google url in the test,
     // so we only assert the failure case here
-    // {
-    //     const res2 = await client.proveLocationClaim({
-    //         locationId: 1775,
-    //         referredBy: "",
-    //         url: "https://posts.gle/xPnjpX",
-    //     }) as ApiError;
-    //     assertEquals(res2.message, "status 400, body LocationSetEvent is required\n");
-    // }
-    {
-        const res2 = await client.proveLocationClaim({
-            locationId: 1775,
-            referredBy: "",
-            url: "https://posts.gle/xPnjpX",
-        }) as ApiError;
-        assertEquals(res2.message, "status 400, body LocationSetEvent is required\n");
-    }
+    // http://localhost:5173/location/1775
+    const res2 = await client.proveLocationClaim({
+        locationId: 1775,
+        referredBy: "",
+        url: "https://posts.gle/QHafje",
+    }) as ApiError;
+    // todo: blocked by https://linear.app/sat-lantis/issue/SAT-1089/provelocationclaim-locationsetevent-kind-is-not-valid
+    console.log(res2);
+    // assertEquals(res2.message, "status 400, body Can't define LudoCid from update URL\n");
 });

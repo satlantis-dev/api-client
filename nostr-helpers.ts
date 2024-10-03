@@ -159,7 +159,7 @@ async function get_kind3_ContactList(relay: SingleRelayConnection, pubKey: strin
 export async function prepareLocationSetEvent(signer: Signer) {
     return prepareNostrEvent(signer, {
         "content": "",
-        kind: 30515 as NostrKind,
+        kind: 37515 as NostrKind,
         tags: [
             ["d", "jvdy9i4"],
             ["name", "Business Locations"],
