@@ -369,7 +369,7 @@ Deno.test("calendar events", async () => {
 
     {
         const res = await client.createCalendarEvent({
-            placeId: 1775,
+            placeId: 23751,
             calendarEventType: CalendarEventType.Concert,
             description: "a concert",
             endDate: new Date(Date.now() + 1000 * 120),
