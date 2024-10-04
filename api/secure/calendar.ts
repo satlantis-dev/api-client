@@ -27,7 +27,6 @@ export const postPlaceCalendarEvent =
         headers.set("Authorization", `Bearer ${jwtToken}`);
 
         const body = JSON.stringify(args);
-
         const response = await safeFetch(url, {
             method: "POST",
             body,
