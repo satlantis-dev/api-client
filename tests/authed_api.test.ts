@@ -369,6 +369,7 @@ Deno.test("calendar events", async () => {
 
     {
         const res = await client.createCalendarEvent({
+            placeID: 1775,
             calendarEventType: CalendarEventType.Concert,
             description: "a concert",
             endDate: "end date",
@@ -380,6 +381,7 @@ Deno.test("calendar events", async () => {
             timezone: "",
             title: "song",
             url: "",
+            summary: "this is from integration tests of api-client",
         });
         if (res instanceof Error) {
             fail(res.message);
@@ -388,11 +390,12 @@ Deno.test("calendar events", async () => {
             response: "accepted",
             calendarEvent: {
                 accountId: account.id,
-                dTag: getTags(res.event).d as string,
-                note: {
-                    event: res.event,
-                },
-                noteId: res.postResult.id,
+                dtag: getTags(res.event).d as string,
+                // note: {
+                //     event: res.event,
+                // },
+                calendarEventId: res.postResult.calendarEventId,
+                pubkey: account.pubKey,
             },
         });
         if (res2 instanceof Error) {
