@@ -1,4 +1,4 @@
-import type { Note, ReshapedNostrEvent } from "../sdk.ts";
+import type { Note } from "../sdk.ts";
 
 import type { Account } from "./account.ts";
 
