@@ -131,7 +131,7 @@ Deno.test("getLocation", async () => {
 
     // todo: blocked by
     // https://linear.app/sat-lantis/issue/SAT-1080/getlocationsbyplaceid-and-getlocationid-have-inconsistent-api-shape
-    // assertEquals(location.googleRating, result.googleRating);
+    assertEquals(location.googleRating, result.googleRating);
     // assertEquals(location.placeOsmRef, result.placeOsmRef);
 });
 
