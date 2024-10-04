@@ -13,6 +13,7 @@ export class LocationResolver implements LocationByID {
     score: number;
     openingHours: OpeningHours;
     address: Address;
+    googleRating: number;
 
     /**
      * @unstable
@@ -29,6 +30,7 @@ export class LocationResolver implements LocationByID {
         this.openingHours = data.openingHours;
         this.score = data.score;
         this.address = data.address;
+        this.googleRating = data.googleRating;
     }
 
     place = async () => {

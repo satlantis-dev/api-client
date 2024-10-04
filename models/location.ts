@@ -37,6 +37,7 @@ export type LocationByID = {
     score: number;
     openingHours: OpeningHours;
     address: Address;
+    googleRating: number;
 };
 
 export type Address = {

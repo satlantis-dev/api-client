@@ -972,6 +972,7 @@ export class Client {
                         // @ts-ignore: missing
                         placeOsmRef: null, // todo: this is missing from backend
                         score: l.score,
+                        googleRating: l.googleRating,
                     }),
             );
         },
