@@ -48,7 +48,7 @@ export type CalendarEvent = {
     calendarEventRsvps: CalendarEventRSVP[];
     content: string;
     createdAt: string;
-    dtag: string;
+    dtag?: string;
     end?: Date;
     endTzId?: string;
     eventId: number;

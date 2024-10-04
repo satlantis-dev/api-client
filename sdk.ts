@@ -292,7 +292,7 @@ export class Client {
         timezone: string;
         geoHash: string;
         location: string;
-        placeID: number;
+        placeId: number;
         summary: string;
     }) => {
         const jwtToken = this.getJwt();
@@ -328,7 +328,7 @@ export class Client {
         }
 
         const res = await this.postPlaceCalendarEvent({
-            placeId: args.placeID,
+            placeId: args.placeId,
             event,
         });
         if (res instanceof Error) {

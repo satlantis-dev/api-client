@@ -79,11 +79,11 @@ Deno.test("AccountRole", async () => {
     console.log(res2);
 
     // update contact list
-    const event = await prepareNostrEvent(signer, {
+    const event = (await prepareNostrEvent(signer, {
         kind: NostrKind.CONTACTS,
         content: "",
         tags: [["p", signer.publicKey.hex]],
-    }) as NostrEvent<NostrKind.CONTACTS>;
+    })) as NostrEvent<NostrKind.CONTACTS>;
     // @ts-ignore: use private
     const res3 = await client.updateAccountFollowingList({ event });
     if (res3 instanceof Error) fail(res3.message);
@@ -103,10 +103,7 @@ Deno.test("upload file", async () => {
     }) as Client;
 
     const result = await client.uploadFile({
-        file: new File(
-            ["test content"],
-            "test-upload-file.txt",
-        ),
+        file: new File(["test content"], "test-upload-file.txt"),
     });
     if (result instanceof Error) {
         fail(result.message);
@@ -131,10 +128,10 @@ Deno.test("post notes", async () => {
         relay_url,
     }) as Client;
     {
-        const root_event = await prepareNostrEvent(signer, {
+        const root_event = (await prepareNostrEvent(signer, {
             content: "test reaction",
             kind: NostrKind.REACTION,
-        }) as NostrEvent;
+        })) as NostrEvent;
         const rootNote = await client._postNote({
             placeId: 23949,
             accountId: res.account.id,
@@ -147,10 +144,10 @@ Deno.test("post notes", async () => {
         console.log(rootNote);
         assertEquals(rootNote.nostrId, root_event.id);
 
-        const reaction_event = await prepareNostrEvent(signer, {
+        const reaction_event = (await prepareNostrEvent(signer, {
             content: "test reaction",
             kind: NostrKind.REACTION,
-        }) as NostrEvent;
+        })) as NostrEvent;
         const result = await client.postReaction({
             accountId: res.account.id,
             event: reaction_event,
@@ -324,7 +321,10 @@ Deno.test("nip04Encrypt", async () => {
         fail(url.message);
     }
 
-    const ret = await nip04Encrypt(url, () => login.token)({
+    const ret = await nip04Encrypt(
+        url,
+        () => login.token,
+    )({
         pubKey: receiver.publicKey.hex,
         plaintext: text,
     });
@@ -369,7 +369,7 @@ Deno.test("calendar events", async () => {
 
     {
         const res = await client.createCalendarEvent({
-            placeID: 1775,
+            placeId: 1775,
             calendarEventType: CalendarEventType.Concert,
             description: "a concert",
             endDate: new Date(Date.now() + 1000 * 120),
@@ -391,7 +391,7 @@ Deno.test("calendar events", async () => {
             calendarEvent: {
                 accountId: account.id,
                 dtag: getTags(res.event).d as string,
-                calendarEventId: res.postResult.calendarEventId,
+                calendarEventId: res.postResult.calendarEvent.id,
                 pubkey: account.pubKey,
             },
         });
@@ -419,8 +419,8 @@ Deno.test("getUserProfile & updateUserProfile", async (t) => {
     {
         const p1 = client.getUserProfile(signer.publicKey);
         const p2 = client.getMyProfile();
-        const profile1 = await p1 as UserResolver;
-        const profile2 = await p2 as UserResolver;
+        const profile1 = (await p1) as UserResolver;
+        const profile2 = (await p2) as UserResolver;
 
         assertEquals(profile1.metaData, profile2.metaData);
         assertEquals(profile1.metaData, new UserResolver(client, signer.publicKey).metaData);
@@ -428,15 +428,12 @@ Deno.test("getUserProfile & updateUserProfile", async (t) => {
         await client.updateMyProfile({
             name: "this is a test",
         });
-        const p3 = await client.getMyProfile() as UserResolver;
+        const p3 = (await client.getMyProfile()) as UserResolver;
         const expected = new UserResolver(client, signer.publicKey, {
             name: "this is a test",
         });
 
-        assertEquals(
-            p3.metaData,
-            expected.metaData,
-        );
+        assertEquals(p3.metaData, expected.metaData);
 
         assertEquals(await p3.getNip05(), "");
         assertEquals(await p3.getIsBusiness(), false);
@@ -476,11 +473,11 @@ Deno.test("claim location", async () => {
     //     assertEquals(res2.message, "status 400, body LocationSetEvent is required\n");
     // }
     {
-        const res2 = await client.proveLocationClaim({
+        const res2 = (await client.proveLocationClaim({
             locationId: 1775,
             referredBy: "",
             url: "https://posts.gle/xPnjpX",
-        }) as ApiError;
+        })) as ApiError;
         // todo: blocked
         console.log(res2);
         // assertEquals(res2.message, "status 400, body LocationSetEvent is required\n");
