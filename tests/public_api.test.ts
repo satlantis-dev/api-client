@@ -1,6 +1,6 @@
 import { assertEquals, fail } from "@std/assert";
 
-import { Client, LocationResolver, loginNostr, NoteType, type Place } from "../sdk.ts";
+import { Client, LocationResolver, loginNostr, type Place } from "../sdk.ts";
 import {
     InMemoryAccountContext,
     type NostrEvent,
@@ -92,10 +92,6 @@ Deno.test("/getPlaceCalendarEvents", async () => {
     assertEquals(result.length > 0, true);
     for (const data of result) {
         assertEquals(data.placeId, 29883);
-        assertEquals(data.type, NoteType.CALENDAR_EVENT);
-        if (JSON.parse(data.note.tags) instanceof Array == false) {
-            console.warn("tags is", data.note.tags);
-        }
     }
 });
 

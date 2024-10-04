@@ -287,12 +287,12 @@ export class Client {
         title: string;
         imageURL: string;
         // todo: use RFC3339 / ISO8601 format
-        startDate: string;
-        endDate: string;
+        startDate: Date;
+        endDate: Date;
         timezone: string;
         geoHash: string;
         location: string;
-        placeID: number;
+        placeId: number;
         summary: string;
     }) => {
         const jwtToken = this.getJwt();
@@ -315,8 +315,8 @@ export class Client {
                 ["r", args.url],
                 ["title", args.title],
                 ["image", args.imageURL],
-                ["start", Math.floor(new Date(args.startDate).getTime() / 1000).toString()],
-                ["end", Math.floor(new Date(args.endDate).getTime() / 1000).toString()],
+                ["start", Math.floor(args.startDate.getTime() / 1000).toString()],
+                ["end", Math.floor(args.endDate.getTime() / 1000).toString()],
                 ["start_tzid", args.timezone],
                 ["g", args.geoHash],
                 ["location", args.location],
@@ -328,7 +328,7 @@ export class Client {
         }
 
         const res = await this.postPlaceCalendarEvent({
-            placeId: args.placeID,
+            placeId: args.placeId,
             event,
         });
         if (res instanceof Error) {
