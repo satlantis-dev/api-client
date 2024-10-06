@@ -95,18 +95,18 @@ export type TagType = "g" | "d" | "name" | "r" | "t" | "a";
 // Get EventTypes as string
 export const EventTypesAsString = (): string[] => {
     const names = [
-        "Conference",
-        "Meetup",
-        "Hackathon",
-        "Concert",
-        "Workshop",
-        "Party",
-        "Play",
-        "Sports",
-        "Exhibition",
-        "Festival",
-        "Music",
-        "Other",
+        "conference",
+        "meetup",
+        "hackathon",
+        "concert",
+        "workshop",
+        "party",
+        "play",
+        "sports",
+        "exhibition",
+        "festival",
+        "music",
+        "other",
     ];
 
     return names;
