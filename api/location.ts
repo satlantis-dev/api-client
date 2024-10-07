@@ -58,7 +58,7 @@ async (args: {
     google_rating: number;
     search?: string;
     tag_category?: string;
-    tags?: LocationTag[];
+    tags?: { key: string; value: string }[];
 }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getLocationsWithinBoundingBox`;
