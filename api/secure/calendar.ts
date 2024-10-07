@@ -3,6 +3,7 @@ import { copyURL, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
 import {
     type Account,
+    type CalendarEventNote,
     type func_GetJwt,
     type func_GetNostrSigner,
     type PlaceCalendarEvent,
@@ -13,12 +14,17 @@ export interface PlaceCalendarEventPost {
     placeId: number;
 }
 
+export interface PlaceCalendarEventPut {
+    event: NostrEvent;
+    calendarEventId: number;
+}
+
 export interface PlaceCalendarEventDelete {
     event: NostrEvent;
     placeCalendarEventId: number;
 }
 
-export interface CalendarEventNote {
+export interface CalendarEventNotePost {
     event: NostrEvent;
     calendarEventId: number;
 }
@@ -49,8 +55,60 @@ export const postPlaceCalendarEvent =
         return handleResponse<PlaceCalendarEvent>(response);
     };
 
+export const putUpdateCalendarEvent =
+    (urlArg: URL, getJwt: () => string) => async (args: PlaceCalendarEventPut) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/updateCalendarEvent`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const body = JSON.stringify(args);
+
+        const response = await safeFetch(url, {
+            method: "PUT",
+            body,
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<PlaceCalendarEvent>(response);
+    };
+
+export const postCalendarEventAnnouncement =
+    (urlArg: URL, getJwt: () => string) => async (args: CalendarEventNotePost) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/createCalendarEventAnnouncement`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const body = JSON.stringify(args);
+
+        const response = await safeFetch(url, {
+            method: "POST",
+            body,
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<CalendarEventNote>(response);
+    };
+
 export const postCalendarEventNote =
-    (urlArg: URL, getJwt: () => string) => async (args: CalendarEventNote) => {
+    (urlArg: URL, getJwt: () => string) => async (args: CalendarEventNotePost) => {
         const jwtToken = getJwt();
         if (jwtToken == "") {
             return new Error("jwt token is empty");
@@ -72,7 +130,7 @@ export const postCalendarEventNote =
         if (response instanceof Error) {
             return response;
         }
-        return handleResponse<PlaceCalendarEvent>(response);
+        return handleResponse<CalendarEventNote>(response);
     };
 
 export const deletePlaceCalendarEvent =

@@ -1,4 +1,4 @@
-import type { ReshapedNostrEvent } from "../api/share_types.ts";
+import type { ReshapedNostrEvent } from "../api/share_types";
 
 export interface Reaction {
     id: number;

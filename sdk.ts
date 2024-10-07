@@ -61,9 +61,11 @@ import { signEvent } from "./api/nostr_event.ts";
 import { getInterests } from "./api/secure/interests.ts";
 import {
     deletePlaceCalendarEvent,
+    postCalendarEventAnnouncement,
     postCalendarEventNote,
     postCalendarEventRSVP,
     postPlaceCalendarEvent,
+    putUpdateCalendarEvent,
 } from "./api/secure/calendar.ts";
 import { followPubkeys, getFollowingPubkeys, getInterestsOf } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
@@ -99,7 +101,9 @@ export class Client {
     deletePlaceCalendarEvent: ReturnType<typeof deletePlaceCalendarEvent>;
     postCalendarEventRSVP: ReturnType<typeof postCalendarEventRSVP>;
     postPlaceCalendarEvent: ReturnType<typeof postPlaceCalendarEvent>;
+    postCalendarEventAnnouncement: ReturnType<typeof postCalendarEventAnnouncement>;
     postCalendarEventNote: ReturnType<typeof postCalendarEventNote>;
+    putUpdateCalendarEvent: ReturnType<typeof putUpdateCalendarEvent>;
 
     // Account
     /**
@@ -185,7 +189,9 @@ export class Client {
         this.deletePlaceCalendarEvent = deletePlaceCalendarEvent(url, getJwt);
         this.postPlaceCalendarEvent = postPlaceCalendarEvent(url, getJwt);
         this.postCalendarEventRSVP = postCalendarEventRSVP(url, getJwt, getNostrSigner);
+        this.postCalendarEventAnnouncement = postCalendarEventAnnouncement(url, getJwt);
         this.postCalendarEventNote = postCalendarEventNote(url, getJwt);
+        this.putUpdateCalendarEvent = putUpdateCalendarEvent(url, getJwt);
 
         this.getAccount = getAccount(url);
         this.createAccount = createAccount(url);
@@ -337,6 +343,100 @@ export class Client {
 
         const res = await this.postPlaceCalendarEvent({
             placeId: args.placeId,
+            event,
+        });
+        if (res instanceof Error) {
+            return res;
+        }
+        return { postResult: res, event };
+    };
+
+    updateCalendarEvent = async (args: {
+        calendarEventId: number;
+        description: string;
+        dTag: string;
+        placeATag: string;
+        calendarEventType: string;
+        url: string;
+        title: string;
+        imageURL: string;
+        // todo: use RFC3339 / ISO8601 format
+        startDate: Date;
+        endDate: Date;
+        timezone: string;
+        geoHash: string;
+        location: string;
+        placeId: number;
+        summary: string;
+    }) => {
+        const jwtToken = this.getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const signer = await this.getNostrSigner();
+        if (signer instanceof Error) {
+            return signer;
+        }
+
+        const event = await prepareNostrEvent(signer, {
+            kind: NostrKind.Calendar_Time,
+            content: args.description,
+            tags: [
+                ["a", args.placeATag],
+                ["d", args.dTag],
+                ["t", args.calendarEventType],
+                ["r", args.url],
+                ["title", args.title],
+                ["image", args.imageURL],
+                ["start", Math.floor(args.startDate.getTime() / 1000).toString()],
+                ["end", Math.floor(args.endDate.getTime() / 1000).toString()],
+                ["start_tzid", args.timezone],
+                ["g", args.geoHash],
+                ["location", args.location],
+                ["summary", args.summary],
+            ],
+        });
+        if (event instanceof Error) {
+            return event;
+        }
+
+        const res = await this.putUpdateCalendarEvent({
+            calendarEventId: args.calendarEventId,
+            event,
+        });
+        if (res instanceof Error) {
+            return res;
+        }
+        return { postResult: res, event };
+    };
+
+    createCalendarEventAnnouncement = async (args: {
+        calendarEventId: number;
+        calendarEventATag: string;
+        content: string;
+    }) => {
+        const jwtToken = this.getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const signer = await this.getNostrSigner();
+        if (signer instanceof Error) {
+            return signer;
+        }
+
+        const event = await prepareNostrEvent(signer, {
+            kind: NostrKind.TEXT_NOTE,
+            content: args.content,
+            tags: [["a", args.calendarEventATag]],
+        });
+        if (event instanceof Error) {
+            return event;
+        }
+
+        const res = await this.postCalendarEventAnnouncement({
+            calendarEventId: args.calendarEventId,
             event,
         });
         if (res instanceof Error) {
