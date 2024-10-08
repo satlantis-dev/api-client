@@ -1,4 +1,4 @@
-import { assertEquals, fail } from "@std/assert";
+import { assertEquals, assertInstanceOf, fail } from "@std/assert";
 
 import { Client, LocationResolver, loginNostr, type Place } from "../sdk.ts";
 import {
@@ -12,6 +12,7 @@ import { ApiError } from "../helpers/_helper.ts";
 import type { UserResolver } from "../resolvers/user.ts";
 import { LocationCategoryName } from "../models/location.ts";
 import { NoteResolver } from "../resolvers/note.ts";
+
 
 const url = new URL("https://api-dev.satlantis.io");
 const testSigner = InMemoryAccountContext.Generate();
@@ -92,6 +93,8 @@ Deno.test("/getPlaceCalendarEvents", async () => {
     assertEquals(result.length > 0, true);
     for (const data of result) {
         assertEquals(data.placeId, 29883);
+        const date = new Date(data.calendarEvent.start);
+        assertInstanceOf(date, Date);
     }
 });
 
