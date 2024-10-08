@@ -13,7 +13,6 @@ import type { UserResolver } from "../resolvers/user.ts";
 import { LocationCategoryName } from "../models/location.ts";
 import { NoteResolver } from "../resolvers/note.ts";
 
-
 const url = new URL("https://api-dev.satlantis.io");
 const testSigner = InMemoryAccountContext.Generate();
 const client = Client.New({
