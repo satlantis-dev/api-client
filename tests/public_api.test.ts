@@ -562,16 +562,6 @@ WhatsApp: who?
     });
 });
 
-Deno.test("xxx", async () => {
-    const jason = await client.getAccount({
-        npub: "npub1693220pmp0a4c04a0p7hkz874vsxkyfrvtk2yk4zjyj3e4c0ugjs3r4j0c",
-    });
-    if (jason instanceof Error) {
-        fail(jason.message);
-    }
-    console.log(jason.isBusiness);
-});
-
 export function randomString() {
     return String(Date.now());
 }
