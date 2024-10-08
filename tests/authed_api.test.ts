@@ -17,6 +17,7 @@ import { randomString } from "./public_api.test.ts";
 import { UserResolver } from "../resolvers/user.ts";
 import type { ApiError } from "../helpers/_helper.ts";
 import { nip04Encrypt } from "../api/nostr_event.ts";
+import { assertNotEquals } from "@std/assert/not-equals";
 
 const testURL = new URL("https://api-dev.satlantis.io");
 const relay_url = "wss://relay.satlantis.io";
@@ -385,6 +386,7 @@ Deno.test("calendar events", async () => {
         if (res instanceof Error) {
             fail(res.message);
         }
+        assertNotEquals(res.postResult.calendarEvent.id, 0);
         const res2 = await client.postCalendarEventRSVP({
             response: "accepted",
             calendarEvent: {
