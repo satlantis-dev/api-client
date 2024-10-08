@@ -243,13 +243,13 @@ Deno.test("getAccount", async () => {
     }
     assertEquals(result.npub, npub);
 
-    const roles = result.accountPlaceRoles
-    if(roles == undefined) {
-        fail("should have place roles")
+    const roles = result.accountPlaceRoles;
+    if (roles == undefined) {
+        fail("should have place roles");
     }
-    assertEquals(roles[0].accountId, result.id)
-    assertEquals(roles[0].type, AccountPlaceRoleTypeEnum.FOLLOWER)
-    assertNotEquals(roles[0].type, AccountPlaceRoleTypeEnum.AMBASSADOR)
+    assertEquals(roles[0].accountId, result.id);
+    assertEquals(roles[0].type, AccountPlaceRoleTypeEnum.FOLLOWER);
+    assertNotEquals(roles[0].type, AccountPlaceRoleTypeEnum.AMBASSADOR);
 });
 
 Deno.test({
