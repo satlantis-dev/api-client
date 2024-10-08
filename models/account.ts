@@ -50,6 +50,9 @@ type Account_Base = {
 export type AccountPlaceRole = {
     id: number;
     accountId: number;
+    /**
+     * @deprecated prefer to getting the user/account by calling APIs
+     */
     account: Account;
     placeId: number;
     active: boolean;

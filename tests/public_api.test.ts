@@ -1,6 +1,6 @@
-import { assertEquals, assertInstanceOf, fail } from "@std/assert";
+import { assertEquals, assertInstanceOf, assertNotEquals, fail } from "@std/assert";
 
-import { Client, LocationResolver, loginNostr, type Place } from "../sdk.ts";
+import { AccountPlaceRoleTypeEnum, Client, LocationResolver, loginNostr, type Place } from "../sdk.ts";
 import {
     InMemoryAccountContext,
     type NostrEvent,
@@ -242,6 +242,14 @@ Deno.test("getAccount", async () => {
         fail(result.message);
     }
     assertEquals(result.npub, npub);
+
+    const roles = result.accountPlaceRoles;
+    if (roles == undefined) {
+        fail("should have place roles");
+    }
+    assertEquals(roles[0].accountId, result.id);
+    assertEquals(roles[0].type, AccountPlaceRoleTypeEnum.FOLLOWER);
+    assertNotEquals(roles[0].type, AccountPlaceRoleTypeEnum.AMBASSADOR);
 });
 
 Deno.test({
