@@ -104,7 +104,6 @@ export class UserResolver {
 
     /**
      * get notes that are created by this user
-     * Ayns
      */
     getNotes = async (args: { limit: number; page?: number }) => {
         const notes = await this.client.getNotesOf({
