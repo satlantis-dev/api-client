@@ -52,7 +52,7 @@ export type CalendarEvent = {
     notes: CalendarEventNote[];
     pubkey: string;
     sig: string;
-    start: Date;
+    start: string;
     startTzId?: string;
     summary: string;
     tags: string;
