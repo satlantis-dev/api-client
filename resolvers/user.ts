@@ -58,7 +58,8 @@ export class UserResolver {
         for (const a of account.following) {
             const pub = PublicKey.FromHex(a.pubKey);
             if (pub instanceof Error) {
-                throw pub; // impossible
+                console.error(`account ${a.id} has invalid pubkey`, pub);
+                continue;
             }
             newList.push(new UserResolver(this.client, pub, a));
         }
@@ -76,7 +77,8 @@ export class UserResolver {
         for (const a of account.followedBy) {
             const pub = PublicKey.FromHex(a.pubKey);
             if (pub instanceof Error) {
-                throw pub; // impossible
+                console.error(`account ${a.id} has invalid pubkey`, pub);
+                continue;
             }
             newList.push(new UserResolver(this.client, pub, a));
         }
