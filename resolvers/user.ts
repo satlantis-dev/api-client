@@ -1,10 +1,11 @@
 import { PublicKey } from "@blowater/nostr-sdk";
-import type { Kind0MetaData } from "../models/account.ts";
+import type { Kind0MetaData, Account } from "../models/account.ts";
 import { AccountPlaceRoleTypeEnum, type Client } from "../sdk.ts";
 import { NoteResolver } from "./note.ts";
 
 export class UserResolver {
     metaData: Kind0MetaData;
+    account : Account | undefined
 
     /**
      * Should not be called by application code directly
@@ -14,10 +15,12 @@ export class UserResolver {
         private readonly client: Client,
         public readonly pubkey: PublicKey,
         metaData?: Kind0MetaData,
+        account? : Account,
         public nip5?: string,
         public isBusiness?: boolean,
     ) {
         this.metaData = metaData || {};
+        this.account = account
     }
 
     async getNip05() {

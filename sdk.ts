@@ -1214,7 +1214,13 @@ const getUserProfile = async (
     if (metadata instanceof Error) {
         return metadata;
     }
-    const profile = new UserResolver(client, pubkey, metadata);
+
+    const account = await client.getAccount({ npub: pubkey.bech32() });
+    if (account instanceof Error) {
+        return account;
+    }
+
+    const profile = new UserResolver(client, pubkey, metadata, account);
     return profile;
 };
 
