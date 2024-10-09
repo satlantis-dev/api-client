@@ -63,9 +63,14 @@ Deno.test("notes without places", async () => {
         const notes = await user.getNotes({ limit: 10 });
         if (notes instanceof Error) fail(notes.message);
 
-        const data = await Array.fromAsync(notes);
-        assertEquals(data.length == 3, true);
-        assertEquals(data.map((n) => n.content).reverse(), contents);
+        assertEquals(notes.length == 3, true);
+        assertEquals(notes.map((n) => n.content).reverse(), contents);
+
+        const notes2 = await user.getNotesFromRestAPI({ limit: 10 });
+        if (notes2 instanceof Error) fail(notes2.message);
+
+        assertEquals(notes2.length, notes.length);
+        assertEquals(notes2.map((n) => n.content).reverse(), contents);
     }
 });
 
