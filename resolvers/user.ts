@@ -105,7 +105,9 @@ export class UserResolver {
     };
 
     /**
-     * get notes that are created by this user
+     * get notes that are created by this user from Satlantis Relay
+     *
+     * @experimental @unstable use it with caution
      */
     getNotes = async (args: { limit: number; page?: number }) => {
         const notes = await this.client.getNotesOf({
@@ -121,6 +123,27 @@ export class UserResolver {
         const noteResolvers = [];
         for await (const note of notes) {
             const r = new NoteResolver(this.client, { type: "nostr", data: note });
+            noteResolvers.push(r);
+        }
+        return noteResolvers;
+    };
+
+    /**
+     * get notes that are created by this user from Backend REST API
+     */
+    getNotesFromRestAPI = async (args: { limit: number; page?: number }) => {
+        // @ts-ignore: use private
+        const notes = await this.client.getNotesOfPubkey({
+            npub: this.pubkey.bech32(),
+            page: args.page || 1,
+            limit: args.limit,
+        });
+        if (notes instanceof Error) {
+            return notes;
+        }
+        const noteResolvers = [];
+        for await (const note of notes) {
+            const r = new NoteResolver(this.client, { type: "backend", data: note });
             noteResolvers.push(r);
         }
         return noteResolvers;

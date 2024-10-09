@@ -4,7 +4,7 @@ import type { Client, Note } from "../sdk.ts";
 export class NoteResolver {
     content: string;
     createdAt: Date;
-    private readonly source: {
+    public readonly source: {
         type: "nostr";
         data: NostrEvent;
     } | {
@@ -15,7 +15,7 @@ export class NoteResolver {
 
     constructor(
         client: Client,
-        note: {
+        source: {
             type: "nostr";
             data: NostrEvent;
         } | {
@@ -24,12 +24,12 @@ export class NoteResolver {
         },
     ) {
         this.client = client;
-        this.source = note;
-        this.content = note.data.content;
-        if (note.type == "backend") {
-            this.createdAt = new Date(note.data.createdAt);
+        this.source = source;
+        this.content = source.data.content;
+        if (source.type == "backend") {
+            this.createdAt = new Date(source.data.createdAt);
         } else {
-            this.createdAt = new Date(note.data.created_at * 1000);
+            this.createdAt = new Date(source.data.created_at * 1000);
         }
     }
 

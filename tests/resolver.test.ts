@@ -2,6 +2,7 @@ import { assertEquals, fail } from "@std/assert";
 import { Client } from "../sdk.ts";
 import { InMemoryAccountContext } from "@blowater/nostr-sdk";
 import type { UserResolver } from "../sdk.ts";
+import { sleep } from "jsr:@blowater/csp@1.0.0";
 
 const testURL = new URL("https://api-dev.satlantis.io");
 const relay_url = "wss://relay.satlantis.io";
@@ -41,6 +42,9 @@ Deno.test("notes without places", async () => {
         contents.push(res.content);
     }
 
+    // wait for the backend to process all data because it's kinda slow
+    await sleep(1000);
+
     {
         const result = await client.getNotesOf({
             pubkey: signer.publicKey,
@@ -63,9 +67,14 @@ Deno.test("notes without places", async () => {
         const notes = await user.getNotes({ limit: 10 });
         if (notes instanceof Error) fail(notes.message);
 
-        const data = await Array.fromAsync(notes);
-        assertEquals(data.length == 3, true);
-        assertEquals(data.map((n) => n.content).reverse(), contents);
+        assertEquals(notes.length == 3, true);
+        assertEquals(notes.map((n) => n.content).reverse(), contents);
+
+        const notes2 = await user.getNotesFromRestAPI({ limit: 10 });
+        if (notes2 instanceof Error) fail(notes2.message);
+
+        assertEquals(notes2.length, notes.length);
+        assertEquals(notes2.map((n) => n.content).reverse(), contents);
     }
 });
 
