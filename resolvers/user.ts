@@ -29,6 +29,10 @@ export class UserResolver {
         return this.nip5;
     }
 
+    async getAccount() {
+        return await this.client.getAccount({ npub: this.pubkey.bech32() });
+    }
+
     /**
      * returns true if this user is a business account
      * @unstable
