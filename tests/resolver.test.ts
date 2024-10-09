@@ -2,6 +2,7 @@ import { assertEquals, fail } from "@std/assert";
 import { Client } from "../sdk.ts";
 import { InMemoryAccountContext } from "@blowater/nostr-sdk";
 import type { UserResolver } from "../sdk.ts";
+import { sleep } from "jsr:@blowater/csp@1.0.0";
 
 const testURL = new URL("https://api-dev.satlantis.io");
 const relay_url = "wss://relay.satlantis.io";
@@ -40,6 +41,9 @@ Deno.test("notes without places", async () => {
         }
         contents.push(res.content);
     }
+
+    // wait for the backend to process all data because it's kinda slow
+    await sleep(1000);
 
     {
         const result = await client.getNotesOf({
