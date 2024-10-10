@@ -3,12 +3,12 @@ import { Client } from "../sdk.ts";
 import { InMemoryAccountContext } from "@blowater/nostr-sdk";
 import type { UserResolver } from "../sdk.ts";
 import { sleep } from "jsr:@blowater/csp@1.0.0";
+import { aws_cdn_url, relay_url, rest_url } from "./urls.ts";
 
-const testURL = new URL("https://api-dev.satlantis.io");
-const relay_url = "wss://relay.satlantis.io";
 const clientNoAuth = Client.New({
-    baseURL: testURL,
+    baseURL: rest_url,
     relay_url,
+    aws_cdn_url,
 });
 if (clientNoAuth instanceof Error) {
     fail(clientNoAuth.message);
@@ -18,10 +18,11 @@ const res = await clientNoAuth.loginNostr(signer);
 if (res instanceof Error) fail(res.message);
 
 const client = Client.New({
-    baseURL: "https://api-dev.satlantis.io",
+    baseURL: rest_url,
     getJwt: () => res.token,
     getNostrSigner: async () => signer,
     relay_url,
+    aws_cdn_url,
 }) as Client;
 
 Deno.test("notes without places", async () => {

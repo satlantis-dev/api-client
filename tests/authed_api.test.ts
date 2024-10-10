@@ -18,12 +18,10 @@ import { UserResolver } from "../resolvers/user.ts";
 import type { ApiError } from "../helpers/_helper.ts";
 import { nip04Encrypt } from "../api/nostr_event.ts";
 import { assertNotEquals } from "@std/assert/not-equals";
+import { aws_cdn_url, relay_url, rest_url } from "./urls.ts";
 
-const testURL = new URL("https://api-dev.satlantis.io");
-const relay_url = "wss://relay.satlantis.io";
-const aws_cdn_url = "https://cdn-dev.satlantis.io";
 const clientNoAuth = Client.New({
-    baseURL: testURL,
+    baseURL: rest_url,
     relay_url,
     aws_cdn_url,
 });
@@ -36,7 +34,7 @@ if (res instanceof Error) {
     throw res;
 }
 const client = Client.New({
-    baseURL: testURL,
+    baseURL: rest_url,
     relay_url,
     getJwt: () => res.token,
     getNostrSigner: async () => signer,
@@ -100,7 +98,7 @@ Deno.test("upload file", async () => {
     if (res instanceof Error) fail(res.message);
 
     const client = Client.New({
-        baseURL: testURL,
+        baseURL: rest_url,
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
         relay_url,
@@ -237,7 +235,7 @@ Deno.test({
         if (login == undefined || login == "invalid password") fail("wrong");
 
         const client = Client.New({
-            baseURL: testURL,
+            baseURL: rest_url,
             getJwt: () => login.token,
             relay_url,
             aws_cdn_url,
@@ -279,11 +277,11 @@ Deno.test({
             ignore: true,
             fn: async () => {
                 const signer = InMemoryAccountContext.Generate();
-                const res = await loginNostr(testURL)(signer);
+                const res = await loginNostr(rest_url)(signer);
                 if (res instanceof Error) fail(res.message);
 
                 const client = Client.New({
-                    baseURL: testURL,
+                    baseURL: rest_url,
                     getJwt: () => res.token,
                     getNostrSigner: async () => signer,
                     relay_url,
@@ -325,7 +323,7 @@ Deno.test("nip04Encrypt", async () => {
     if (login instanceof Error) fail(login.message);
     if (login == undefined || login == "invalid password") fail("wrong");
 
-    const url = newURL(testURL);
+    const url = newURL(rest_url);
     if (url instanceof Error) {
         fail(url.message);
     }

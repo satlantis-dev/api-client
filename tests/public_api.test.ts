@@ -12,13 +12,12 @@ import { ApiError } from "../helpers/_helper.ts";
 import type { UserResolver } from "../resolvers/user.ts";
 import { LocationCategoryName } from "../models/location.ts";
 import { NoteResolver } from "../resolvers/note.ts";
+import { aws_cdn_url, relay_url, rest_url } from "./urls.ts";
 
-const url = new URL("https://api-dev.satlantis.io");
 const testSigner = InMemoryAccountContext.Generate();
-const aws_cdn_url = "https://cdn-dev.satlantis.io";
 const client = Client.New({
-    baseURL: url,
-    relay_url: "wss://relay.satlantis.io",
+    baseURL: rest_url,
+    relay_url,
     getNostrSigner: async () => {
         return testSigner;
     },
@@ -297,7 +296,7 @@ Deno.test({
 
 Deno.test("loginNostr", async () => {
     const signer = InMemoryAccountContext.Generate();
-    const res = await loginNostr(url)(signer);
+    const res = await loginNostr(rest_url)(signer);
     if (res instanceof Error) fail(res.message);
 });
 
