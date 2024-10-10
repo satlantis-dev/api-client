@@ -21,7 +21,7 @@ jobs:
             - name: setup deno
               uses: denoland/setup-deno@v1
               with:
-                  deno-version: 1.46.3
+                  deno-version: 2.0.0
 
             - name: check
               run: make check
