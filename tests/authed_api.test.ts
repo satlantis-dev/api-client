@@ -459,13 +459,12 @@ Deno.test("getUserProfile & updateUserProfile", async (t) => {
 
     // test
     {
-        const p1 = client.getUserProfile(signer.publicKey);
+        const p1 = client.resolver.getUser(signer.publicKey);
         const p2 = client.getMyProfile();
         const profile1 = (await p1) as UserResolver;
         const profile2 = (await p2) as UserResolver;
 
         assertEquals(profile1.metaData, profile2.metaData);
-        assertEquals(profile1.metaData, new UserResolver(client, signer.publicKey).metaData);
 
         await client.updateMyProfile({
             name: "this is a test",
@@ -473,6 +472,15 @@ Deno.test("getUserProfile & updateUserProfile", async (t) => {
         const p3 = (await client.getMyProfile()) as UserResolver;
         const expected = new UserResolver(client, signer.publicKey, {
             name: "this is a test",
+            about: "",
+            banner: "",
+            displayName: "",
+            email: "",
+            lud06: "",
+            lud16: "",
+            phone: undefined,
+            picture: "",
+            website: "",
         });
 
         assertEquals(p3.metaData, expected.metaData);
