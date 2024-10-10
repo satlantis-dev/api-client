@@ -21,9 +21,11 @@ import { assertNotEquals } from "@std/assert/not-equals";
 
 const testURL = new URL("https://api-dev.satlantis.io");
 const relay_url = "wss://relay.satlantis.io";
+const aws_cdn_url = "https://cdn-dev.satlantis.io"
 const clientNoAuth = Client.New({
     baseURL: testURL,
     relay_url,
+    aws_cdn_url
 });
 if (clientNoAuth instanceof Error) {
     fail(clientNoAuth.message);
@@ -38,6 +40,7 @@ const client = Client.New({
     relay_url,
     getJwt: () => res.token,
     getNostrSigner: async () => signer,
+    aws_cdn_url: ""
 }) as Client;
 
 Deno.test("AccountRole", async () => {
@@ -61,6 +64,7 @@ Deno.test("AccountRole", async () => {
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
         relay_url,
+        aws_cdn_url
     }) as Client;
 
     // join the place as a follower
@@ -100,6 +104,7 @@ Deno.test("upload file", async () => {
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
         relay_url,
+        aws_cdn_url
     }) as Client;
 
     const result = await client.uploadFile({
@@ -126,6 +131,7 @@ Deno.test("post notes", async () => {
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
         relay_url,
+        aws_cdn_url
     }) as Client;
     {
         const root_event = (await prepareNostrEvent(signer, {
@@ -172,6 +178,7 @@ Deno.test("update place", async () => {
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
         relay_url,
+        aws_cdn_url
     }) as Client;
     {
         const originalPlace = await client.getPlaceByOsmRef({ osmRef: "R296561" });
@@ -233,6 +240,7 @@ Deno.test({
             baseURL: testURL,
             getJwt: () => login.token,
             relay_url,
+            aws_cdn_url
         }) as Client;
 
         await t.step("sign the event with a wrong pubkey", async () => {
@@ -279,6 +287,7 @@ Deno.test({
                     getJwt: () => res.token,
                     getNostrSigner: async () => signer,
                     relay_url,
+                    aws_cdn_url
                 }) as Client;
 
                 const signed = await client.signEvent({
@@ -346,6 +355,7 @@ Deno.test("getInterests", async () => {
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
         relay_url,
+        aws_cdn_url
     }) as Client;
 
     const interests = await client.getInterests();
@@ -365,6 +375,7 @@ Deno.test("calendar events", async () => {
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
         relay_url,
+        aws_cdn_url
     }) as Client;
 
     {
@@ -414,6 +425,7 @@ Deno.test("getUserProfile & updateUserProfile", async (t) => {
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
         relay_url,
+        aws_cdn_url
     }) as Client;
 
     // test

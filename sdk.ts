@@ -167,78 +167,80 @@ export class Client {
     updatePlace: ReturnType<typeof updatePlace>;
 
     private constructor(
-        public readonly url: URL,
+        public readonly rest_api_url: URL,
         public readonly relay_url: string,
+        public readonly aws_cdn_url: URL,
         public readonly getJwt: func_GetJwt,
         public readonly getNostrSigner: func_GetNostrSigner,
     ) {
-        this._getPlaceByOsmRef = getPlaceByOsmRef(url);
-        this.getPlaces = getPlaces(url);
-        this.getAccountPlaceRoles = getAccountPlaceRoles(url);
-        this.getPlaceNoteFeed = getPlaceNoteFeed(url);
-        this.getPlaceMetrics = getPlaceMetrics(url);
-        this.getPlaceGallery = getPlaceGallery(url);
-        this.getPlaceChats = getPlaceChats(url);
-        this.getPlaceCategoryScores = getPlaceCategoryScores(url);
-        this.getPlaceEvent = getPlaceEvent(url);
+        this._getPlaceByOsmRef = getPlaceByOsmRef(rest_api_url);
+        this.getPlaces = getPlaces(rest_api_url);
+        this.getAccountPlaceRoles = getAccountPlaceRoles(rest_api_url);
+        this.getPlaceNoteFeed = getPlaceNoteFeed(rest_api_url);
+        this.getPlaceMetrics = getPlaceMetrics(rest_api_url);
+        this.getPlaceGallery = getPlaceGallery(rest_api_url);
+        this.getPlaceChats = getPlaceChats(rest_api_url);
+        this.getPlaceCategoryScores = getPlaceCategoryScores(rest_api_url);
+        this.getPlaceEvent = getPlaceEvent(rest_api_url);
 
-        this.getRegion = getRegion(url);
+        this.getRegion = getRegion(rest_api_url);
 
         // Calendar Events
-        this.getPlaceCalendarEvents = getPlaceCalendarEvents(url);
-        this.deletePlaceCalendarEvent = deletePlaceCalendarEvent(url, getJwt);
-        this.postPlaceCalendarEvent = postPlaceCalendarEvent(url, getJwt);
-        this.postCalendarEventRSVP = postCalendarEventRSVP(url, getJwt, getNostrSigner);
-        this.postCalendarEventAnnouncement = postCalendarEventAnnouncement(url, getJwt);
-        this.postCalendarEventNote = postCalendarEventNote(url, getJwt);
-        this.putUpdateCalendarEvent = putUpdateCalendarEvent(url, getJwt);
+        this.getPlaceCalendarEvents = getPlaceCalendarEvents(rest_api_url);
+        this.deletePlaceCalendarEvent = deletePlaceCalendarEvent(rest_api_url, getJwt);
+        this.postPlaceCalendarEvent = postPlaceCalendarEvent(rest_api_url, getJwt);
+        this.postCalendarEventRSVP = postCalendarEventRSVP(rest_api_url, getJwt, getNostrSigner);
+        this.postCalendarEventAnnouncement = postCalendarEventAnnouncement(rest_api_url, getJwt);
+        this.postCalendarEventNote = postCalendarEventNote(rest_api_url, getJwt);
+        this.putUpdateCalendarEvent = putUpdateCalendarEvent(rest_api_url, getJwt);
 
-        this.getAccount = getAccount(url);
-        this.createAccount = createAccount(url);
-        this.updateAccount = updateAccount(url, getJwt);
+        this.getAccount = getAccount(rest_api_url);
+        this.createAccount = createAccount(rest_api_url);
+        this.updateAccount = updateAccount(rest_api_url, getJwt);
 
-        this.getNotesOfPubkey = getNotesOfPubkey(url);
-        this.getNotes = getNotes(url);
-        this.getNote = getNote(url);
-        this.getIpInfo = getIpInfo(url);
+        this.getNotesOfPubkey = getNotesOfPubkey(rest_api_url);
+        this.getNotes = getNotes(rest_api_url);
+        this.getNote = getNote(rest_api_url);
+        this.getIpInfo = getIpInfo(rest_api_url);
 
         // location
-        this.getLocationsWithinBoundingBox = getLocationsWithinBoundingBox(url);
-        this.getLocationReviews = getLocationReviews(url);
-        this.getLocationByID = getLocation(url);
-        this.getLocationsByPlaceID = getLocationsByPlaceID(url);
-        this._claimLocation = claimLocation(url, getJwt);
-        this.proveLocationClaim = proveLocationClaim(url, getJwt, getNostrSigner);
+        this.getLocationsWithinBoundingBox = getLocationsWithinBoundingBox(rest_api_url);
+        this.getLocationReviews = getLocationReviews(rest_api_url);
+        this.getLocationByID = getLocation(rest_api_url);
+        this.getLocationsByPlaceID = getLocationsByPlaceID(rest_api_url);
+        this._claimLocation = claimLocation(rest_api_url, getJwt);
+        this.proveLocationClaim = proveLocationClaim(rest_api_url, getJwt, getNostrSigner);
 
         //
-        this.addressLookup = addressLookup(url);
+        this.addressLookup = addressLookup(rest_api_url);
 
         // authed APIs
-        this.removeAccountRole = removeAccountRole(url, this.getJwt, this.getNostrSigner);
-        this.addAccountRole = addAccountRole(url, this.getJwt, this.getNostrSigner);
+        this.removeAccountRole = removeAccountRole(rest_api_url, this.getJwt, this.getNostrSigner);
+        this.addAccountRole = addAccountRole(rest_api_url, this.getJwt, this.getNostrSigner);
         this.updateAccountFollowingList = updateAccountFollowingList(
-            url,
+            rest_api_url,
             this.getJwt,
             this.getNostrSigner,
         );
-        this.presign = presign(url, getJwt, getNostrSigner);
-        this.postReaction = postReaction(url, this.getJwt);
-        this._postNote = postNote(url, this.getJwt);
-        this.signEvent = signEvent(url, getJwt);
-        this.updatePlace = updatePlace(url, this.getJwt);
+        this.presign = presign(rest_api_url, getJwt, getNostrSigner);
+        this.postReaction = postReaction(rest_api_url, this.getJwt);
+        this._postNote = postNote(rest_api_url, this.getJwt);
+        this.signEvent = signEvent(rest_api_url, getJwt);
+        this.updatePlace = updatePlace(rest_api_url, this.getJwt);
 
         // sign-in / sign-up
-        this.login = login(url);
-        this.loginNostr = loginNostr(url);
-        this.initiatePasswordReset = initiatePasswordReset(this.url);
-        this.resetPassword = resetPassword(this.url);
-        this.verifyEmail = verifyEmail(this.url);
-        this.getInterests = getInterests(this.url);
+        this.login = login(rest_api_url);
+        this.loginNostr = loginNostr(rest_api_url);
+        this.initiatePasswordReset = initiatePasswordReset(this.rest_api_url);
+        this.resetPassword = resetPassword(this.rest_api_url);
+        this.verifyEmail = verifyEmail(this.rest_api_url);
+        this.getInterests = getInterests(this.rest_api_url);
     }
 
     static New(args: {
         baseURL: string | URL;
         relay_url: string;
+        aws_cdn_url: string | URL;
         getJwt?: () => string;
         getNostrSigner?: func_GetNostrSigner;
     }) {
@@ -246,13 +248,17 @@ export class Client {
         if (validURL instanceof Error) {
             return validURL;
         }
+        const aws_url = newURL(args.aws_cdn_url);
+        if (aws_url instanceof Error) {
+            return aws_url;
+        }
         if (args.getJwt == undefined) {
             args.getJwt = () => "";
         }
         if (args.getNostrSigner == undefined) {
             args.getNostrSigner = async () => new Error("nostr signer is not provided");
         }
-        return new Client(validURL, args.relay_url, args.getJwt, args.getNostrSigner);
+        return new Client(validURL, args.relay_url, aws_url, args.getJwt, args.getNostrSigner);
     }
 
     // Place
@@ -280,7 +286,7 @@ export class Client {
      * | remove after: 2024/10/10
      */
     getLocationTags = () => {
-        return getLocationTags(this.url)();
+        return getLocationTags(this.rest_api_url)();
     };
 
     getLocationCategories = async () => {
@@ -553,7 +559,7 @@ export class Client {
      */
     checkUsernameAvailability = async (userName: string) => {
         let domain;
-        if (this.url.host == "api-dev.satlantis.io") {
+        if (this.rest_api_url.host == "api-dev.satlantis.io") {
             domain = "https://dev.satlantis.io";
         } else {
             domain = "https://www.satlantis.io";
@@ -709,8 +715,7 @@ export class Client {
         if (url instanceof Error) {
             return url;
         }
-        url.search = "";
-        return url;
+        return new URL(url.pathname, this.aws_cdn_url)
     };
 
     /**
