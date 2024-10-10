@@ -15,14 +15,14 @@ import { NoteResolver } from "../resolvers/note.ts";
 
 const url = new URL("https://api-dev.satlantis.io");
 const testSigner = InMemoryAccountContext.Generate();
-const aws_cdn_url =  "https://cdn-dev.satlantis.io"
+const aws_cdn_url = "https://cdn-dev.satlantis.io";
 const client = Client.New({
     baseURL: url,
     relay_url: "wss://relay.satlantis.io",
     getNostrSigner: async () => {
         return testSigner;
     },
-    aws_cdn_url
+    aws_cdn_url,
 });
 if (client instanceof Error) {
     fail(client.message);
@@ -469,7 +469,7 @@ Deno.test("follow & unfollow", async () => {
         relay_url: client.relay_url,
         getJwt: () => res.token,
         getNostrSigner: async () => user1,
-        aws_cdn_url
+        aws_cdn_url,
     }) as Client;
 
     {

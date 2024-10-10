@@ -715,7 +715,7 @@ export class Client {
         if (url instanceof Error) {
             return url;
         }
-        return new URL(url.pathname, this.aws_cdn_url)
+        return new URL(url.pathname, this.aws_cdn_url);
     };
 
     /**
