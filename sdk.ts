@@ -43,7 +43,7 @@ import {
     getPlaceEvent,
     getPlaceGallery,
     getPlaceMetrics,
-    getPlaceNoteFeed,
+    getPlaceNotes,
     getPlaces,
     getRegion,
 } from "./api/place.ts";
@@ -89,7 +89,7 @@ export class Client {
     private _getPlaceByOsmRef: ReturnType<typeof getPlaceByOsmRef>;
     getPlaces: ReturnType<typeof getPlaces>;
     getPlaceEvent: ReturnType<typeof getPlaceEvent>;
-    getPlaceNoteFeed: ReturnType<typeof getPlaceNoteFeed>;
+    getPlaceNotes: ReturnType<typeof getPlaceNotes>;
     getPlaceMetrics: ReturnType<typeof getPlaceMetrics>;
     getPlaceGallery: ReturnType<typeof getPlaceGallery>;
     getPlaceChats: ReturnType<typeof getPlaceChats>;
@@ -178,7 +178,7 @@ export class Client {
         this._getPlaceByOsmRef = getPlaceByOsmRef(rest_api_url);
         this.getPlaces = getPlaces(rest_api_url);
         this.getAccountPlaceRoles = getAccountPlaceRoles(rest_api_url);
-        this.getPlaceNoteFeed = getPlaceNoteFeed(rest_api_url);
+        this.getPlaceNotes = getPlaceNotes(rest_api_url);
         this.getPlaceMetrics = getPlaceMetrics(rest_api_url);
         this.getPlaceGallery = getPlaceGallery(rest_api_url);
         this.getPlaceChats = getPlaceChats(rest_api_url);

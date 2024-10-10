@@ -72,9 +72,11 @@ Deno.test("/getPeopleOfPlace", async () => {
     }
 });
 
-Deno.test("/getPlaceNoteFeed", async () => {
-    const result = await client.getPlaceNoteFeed({
+Deno.test("/getPlaceNotes", async () => {
+    const result = await client.getPlaceNotes({
         placeID: 23949,
+        limit: 2,
+        page: 0,
     });
     if (result instanceof Error) {
         console.log(result);
@@ -394,7 +396,7 @@ Deno.test("getLocationReviews", async () => {
     });
     if (result instanceof Error) fail(result.message);
 
-    const location = await client.getLocation(2313) as LocationResolver;
+    const location = (await client.getLocation(2313)) as LocationResolver;
 
     const reviews = await location.getReviews({ page: 0, limit: 2 });
     assertEquals(reviews, result);
@@ -477,13 +479,16 @@ Deno.test("follow & unfollow", async () => {
         if (follows instanceof Error) {
             fail(follows.message);
         }
-        const me = await authedClient.getMyProfile() as UserResolver;
+        const me = (await authedClient.getMyProfile()) as UserResolver;
         const followings = await me.getFollowing();
         if (followings instanceof Error) {
             fail(followings.message);
         }
         assertEquals(follows, new Set());
-        assertEquals(followings.map((f) => f.pubkey.hex), []);
+        assertEquals(
+            followings.map((f) => f.pubkey.hex),
+            [],
+        );
     }
 
     const pub1 = PrivateKey.Generate().toPublicKey();
@@ -494,30 +499,33 @@ Deno.test("follow & unfollow", async () => {
             fail(err.message);
         }
 
-        const me = await authedClient.getMyProfile() as UserResolver;
-        const following = await me.getFollowing() as UserResolver[];
-        assertEquals(following.map((u) => u.pubkey.hex), [pub1.hex]);
+        const me = (await authedClient.getMyProfile()) as UserResolver;
+        const following = (await me.getFollowing()) as UserResolver[];
+        assertEquals(
+            following.map((u) => u.pubkey.hex),
+            [pub1.hex],
+        );
     }
 });
 
 Deno.test("submitAmbassadorApplication", async (t) => {
     const receiver = InMemoryAccountContext.Generate();
     await t.step("missing contact methods", async () => {
-        const event_sent = await client.submitAmbassadorApplication({
+        const event_sent = (await client.submitAmbassadorApplication({
             place: "New York",
             comment: "I am a pro New Yorker",
             satlantis_pubkey: receiver.publicKey,
             nostr_only: false,
-        }) as Error;
+        })) as Error;
         assertEquals(event_sent.message, "need at least 1 contact method");
     });
     await t.step("nostr only", async () => {
-        const event_sent = await client.submitAmbassadorApplication({
+        const event_sent = (await client.submitAmbassadorApplication({
             place: "New York",
             comment: "I am a pro New Yorker",
             satlantis_pubkey: receiver.publicKey,
             nostr_only: true,
-        }) as NostrEvent;
+        })) as NostrEvent;
         const text = await receiver.decrypt(event_sent.pubkey, event_sent.content);
         assertEquals(
             text,
@@ -544,7 +552,7 @@ Contact: Nostr Only
             fail(event_sent.message);
         }
         const relay = SingleRelayConnection.New(client.relay_url) as SingleRelayConnection;
-        const event_received = await relay.getEvent(event_sent.id) as NostrEvent;
+        const event_received = (await relay.getEvent(event_sent.id)) as NostrEvent;
         await relay.close();
         assertEquals(event_received, event_sent);
 

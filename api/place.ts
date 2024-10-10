@@ -45,17 +45,21 @@ async (args: {
 };
 
 /**
- * GET getPlaceNoteFeed/{placeID}
+ * GET getPlaceNotes/{placeID}
  */
-export const getPlaceNoteFeed = (urlArg: URL) => async (args: { placeID: string | number }) => {
-    const url = copyURL(urlArg);
-    url.pathname = `/getPlaceNoteFeed/${args.placeID}`;
-    const response = await safeFetch(url);
-    if (response instanceof Error) {
-        return response;
-    }
-    return handleResponse<PlaceNote[]>(response);
-};
+export const getPlaceNotes =
+    (urlArg: URL) => async (args: { placeID: string | number; page: number; limit: number }) => {
+        const url = copyURL(urlArg);
+        url.pathname = `/getPlaceNotes/${args.placeID}`;
+        url.searchParams.set("page", String(args.page));
+        url.searchParams.set("limit", String(args.limit));
+
+        const response = await safeFetch(url);
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<PlaceNote[]>(response);
+    };
 
 /**
  * GET /getPlaceMetrics/{placeID}

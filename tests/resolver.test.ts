@@ -35,10 +35,7 @@ Deno.test("notes without places", async () => {
     for (let i = 0; i < 3; i++) {
         const res = await client.postNote({
             content: `note ${i + 1}`,
-            image: new File(
-                ["test content"],
-                "test-upload-file.txt",
-            ),
+            image: new File(["test content"], "test-upload-file.txt"),
         });
         if (res instanceof Error) {
             fail(res.message);
@@ -66,7 +63,7 @@ Deno.test("notes without places", async () => {
         assertEquals(data.map((n) => n.content).reverse(), contents);
     }
     {
-        const user = await client.resolver.getUser(signer.publicKey) as UserResolver;
+        const user = (await client.resolver.getUser(signer.publicKey)) as UserResolver;
 
         const notes = await user.getNotes({ limit: 10 });
         if (notes instanceof Error) fail(notes.message);
@@ -80,10 +77,7 @@ Deno.test("notes without places", async () => {
         assertEquals(notes2.length, notes.length);
 
         // the note returned by backends are not sorted in created time order
-        assertEquals(
-            new Set(notes2.map((n) => n.content).reverse()),
-            new Set(contents),
-        );
+        assertEquals(new Set(notes2.map((n) => n.content).reverse()), new Set(contents));
     }
 });
 
@@ -97,10 +91,7 @@ Deno.test("notes in a place", async () => {
     for (let i = 0; i < 1; i++) {
         const res = await client.postNote({
             content: "hello Satlantis",
-            image: new File(
-                ["test content"],
-                "test-upload-file.txt",
-            ),
+            image: new File(["test content"], "test-upload-file.txt"),
             placeID: place.id,
         });
         if (res instanceof Error) {
@@ -109,12 +100,15 @@ Deno.test("notes in a place", async () => {
         contents.push(res.content);
     }
 
-    const notes = await client.getPlaceNoteFeed({ placeID: place.id });
+    const notes = await client.getPlaceNotes({ placeID: place.id, page: 1, limit: 10 });
     if (notes instanceof Error) {
         fail(notes.message);
     }
 
-    assertEquals(notes.slice(0, 1).map((n) => n.note.content), contents);
+    assertEquals(
+        notes.slice(0, 1).map((n) => n.note.content),
+        contents,
+    );
 });
 
 Deno.test("getLocation", async () => {
