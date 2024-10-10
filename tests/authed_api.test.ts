@@ -452,14 +452,6 @@ Deno.test("getUserProfile & updateUserProfile", async (t) => {
     const res = await clientNoAuth.loginNostr(signer);
     if (res instanceof Error) fail(res.message);
 
-    const client = Client.New({
-        baseURL: "https://api-dev.satlantis.io",
-        getJwt: () => res.token,
-        getNostrSigner: async () => signer,
-        relay_url,
-        aws_cdn_url,
-    }) as Client;
-
     // test
     {
         const p1 = client.resolver.getUser(signer.publicKey);
