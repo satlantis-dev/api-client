@@ -82,7 +82,7 @@ export type func_GetNostrSigner = () => Promise<(Signer & Encrypter) | Error>;
 export type func_GetJwt = () => string;
 
 export class Client {
-    private myProfile: UserResolver | undefined = undefined;
+    private me: UserResolver | undefined = undefined;
 
     // Place
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
@@ -738,17 +738,29 @@ export class Client {
         if (signer instanceof Error) {
             return signer;
         }
-        const relay = SingleRelayConnection.New(this.relay_url);
-        if (relay instanceof Error) {
-            return relay;
+
+        const account = await this.getAccount({
+            npub: signer.publicKey.bech32(),
+        });
+        if (account instanceof Error) {
+            return account;
         }
-        const profile = await getUserProfile(signer.publicKey, relay, this);
-        await relay.close();
-        if (profile instanceof Error) {
-            return profile;
-        }
-        this.myProfile = profile;
-        return profile;
+
+        const me = new UserResolver(this, signer.publicKey, {
+            about: account.about,
+            banner: account.banner,
+            displayName: account.displayName,
+            email: account.email,
+            lud06: account.lud06,
+            lud16: account.lud16,
+            name: account.name,
+            phone: account.phone,
+            picture: account.picture,
+            website: account.website,
+        });
+
+        this.me = me;
+        return me;
     };
 
     updateMyProfile = async (metaData: Kind0MetaData) => {
@@ -761,13 +773,13 @@ export class Client {
             return relay;
         }
 
-        if (this.myProfile == undefined) {
-            const currentProfile = await getUserProfile(signer.publicKey, relay, this);
+        if (this.me == undefined) {
+            const currentProfile = await getUserProfileFromRelay(signer.publicKey, relay, this);
             if (currentProfile instanceof Error) {
                 await relay.close();
                 return currentProfile;
             }
-            this.myProfile = currentProfile;
+            this.me = currentProfile;
         }
 
         const kind0 = await prepareKind0(signer, metaData);
@@ -776,7 +788,7 @@ export class Client {
             return kind0;
         }
 
-        this.myProfile = new UserResolver(this, signer.publicKey, metaData);
+        this.me = new UserResolver(this, signer.publicKey, metaData);
         {
             const res = await this.updateAccount({
                 npub: signer.publicKey.bech32(),
@@ -796,7 +808,7 @@ export class Client {
             return res;
         }
 
-        return this.myProfile;
+        return this.me;
     };
 
     updateMyInterests = async (interests: string[]) => {
@@ -823,8 +835,8 @@ export class Client {
         if (err instanceof Error) {
             return err;
         }
-        if (this.myProfile) {
-            this.myProfile.interests = interests;
+        if (this.me) {
+            this.me.interests = interests;
         }
     };
 
@@ -841,7 +853,7 @@ export class Client {
         if (signer instanceof Error) {
             return signer;
         }
-        const kind0 = await prepareKind0(signer, this.myProfile?.metaData || {});
+        const kind0 = await prepareKind0(signer, this.me?.metaData || {});
         if (kind0 instanceof Error) {
             return kind0;
         }
@@ -1083,14 +1095,35 @@ export class Client {
      */
     resolver = {
         getUser: async (pubkey: PublicKey | string): Promise<UserResolver | Error> => {
-            const relay = SingleRelayConnection.New(this.relay_url);
-            if (relay instanceof Error) {
-                return relay;
+            if (typeof pubkey == "string") {
+                const _pubkey = PublicKey.FromString(pubkey);
+                if (_pubkey instanceof Error) {
+                    return _pubkey;
+                }
+                pubkey = _pubkey;
             }
-            const profile = await getUserProfile(pubkey, relay, this);
-            await relay.close();
-            return profile;
+
+            const account = await this.getAccount({
+                npub: pubkey.bech32(),
+            });
+            if (account instanceof Error) {
+                return account;
+            }
+
+            return new UserResolver(this, pubkey, {
+                about: account.about,
+                banner: account.banner,
+                displayName: account.displayName,
+                email: account.email,
+                lud06: account.lud06,
+                lud16: account.lud16,
+                name: account.name,
+                phone: account.phone,
+                picture: account.picture,
+                website: account.website,
+            });
         },
+
         /**
          * @unstable
          */
@@ -1197,7 +1230,7 @@ async function get_kind0_META_DATA(relay: SingleRelayConnection, pubkey: PublicK
     return await relay.getReplaceableEvent(pubkey, NostrKind.META_DATA);
 }
 
-const getUserProfile = async (
+const getUserProfileFromRelay = async (
     pubkey: PublicKey | string,
     relay: SingleRelayConnection,
     client: Client,

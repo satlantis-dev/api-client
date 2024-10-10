@@ -63,7 +63,7 @@ Deno.test("notes without places", async () => {
         assertEquals(data.map((n) => n.content).reverse(), contents);
     }
     {
-        const user = await client.getUserProfile(signer.publicKey) as UserResolver;
+        const user = await client.resolver.getUser(signer.publicKey) as UserResolver;
 
         const notes = await user.getNotes({ limit: 10 });
         if (notes instanceof Error) fail(notes.message);
