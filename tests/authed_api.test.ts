@@ -15,7 +15,7 @@ import { AccountPlaceRoleTypeEnum } from "../models/account.ts";
 import { Client, loginNostr, NoteType } from "../sdk.ts";
 import { randomString } from "./public_api.test.ts";
 import { UserResolver } from "../resolvers/user.ts";
-import type { ApiError } from "../helpers/_helper.ts";
+
 import { nip04Encrypt } from "../api/nostr_event.ts";
 import { assertNotEquals } from "@std/assert/not-equals";
 import { aws_cdn_url, relay_url, rest_url } from "./urls.ts";
@@ -38,8 +38,11 @@ const client = Client.New({
     relay_url,
     getJwt: () => res.token,
     getNostrSigner: async () => signer,
-    aws_cdn_url: "",
-}) as Client;
+    aws_cdn_url,
+});
+if (client instanceof Error) {
+    fail(client.message);
+}
 
 Deno.test("AccountRole", async () => {
     const signer = InMemoryAccountContext.Generate();
@@ -449,14 +452,6 @@ Deno.test("getUserProfile & updateUserProfile", async (t) => {
     const res = await clientNoAuth.loginNostr(signer);
     if (res instanceof Error) fail(res.message);
 
-    const client = Client.New({
-        baseURL: "https://api-dev.satlantis.io",
-        getJwt: () => res.token,
-        getNostrSigner: async () => signer,
-        relay_url,
-        aws_cdn_url,
-    }) as Client;
-
     // test
     {
         const p1 = client.resolver.getUser(signer.publicKey);
@@ -503,33 +498,22 @@ Deno.test("getUserProfile & updateUserProfile", async (t) => {
     }
 });
 
-Deno.test("claim location", async () => {
+Deno.test("claim location", async (t) => {
     // https://www.dev.satlantis.io/location/1655
-    // const res = await client.claimLocation({ locationId: 1655 });
-    // if (res instanceof Error) fail(res.message);
+    const res = await client.claimLocation({ locationId: 1775 });
+    if (res instanceof Error) fail(res.message);
     // // the lenght of the code might not be part of the API
     // // put it here just to be safe
     // // so that when it changes, we will know
-    // assertEquals(res.code.length, "wA2tjNpcGvNED7YoSpbF".length);
+    assertEquals(res.code.length, "wA2tjNpcGvNED7YoSpbF".length);
 
-    // We can't get a valid google url in the test,
-    // so we only assert the failure case here
-    // {
-    //     const res2 = await client.proveLocationClaim({
-    //         locationId: 1775,
-    //         referredBy: "",
-    //         url: "https://posts.gle/xPnjpX",
-    //     }) as ApiError;
-    //     assertEquals(res2.message, "status 400, body LocationSetEvent is required\n");
-    // }
-    {
-        const res2 = (await client.proveLocationClaim({
+    await t.step("should be successful", async () => {
+        const res2 = await client.proveLocationClaim({
             locationId: 1775,
             referredBy: "",
             url: "https://posts.gle/xPnjpX",
-        })) as ApiError;
+        });
         // todo: blocked
         console.log(res2);
-        // assertEquals(res2.message, "status 400, body LocationSetEvent is required\n");
-    }
+    });
 });

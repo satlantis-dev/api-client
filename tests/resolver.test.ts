@@ -23,7 +23,10 @@ const client = Client.New({
     getNostrSigner: async () => signer,
     relay_url,
     aws_cdn_url,
-}) as Client;
+});
+if (client instanceof Error) {
+    fail(client.message);
+}
 
 Deno.test("notes without places", async () => {
     const contents = [];
@@ -75,7 +78,12 @@ Deno.test("notes without places", async () => {
         if (notes2 instanceof Error) fail(notes2.message);
 
         assertEquals(notes2.length, notes.length);
-        assertEquals(notes2.map((n) => n.content).reverse(), contents);
+
+        // the note returned by backends are not sorted in created time order
+        assertEquals(
+            new Set(notes2.map((n) => n.content).reverse()),
+            new Set(contents),
+        );
     }
 });
 

@@ -183,6 +183,7 @@ export const proveLocationClaim =
             locationSetEvent: event,
             placeEvent: event2,
         });
+        console.log(body);
         const response = await safeFetch(url, {
             method: "POST",
             headers,
