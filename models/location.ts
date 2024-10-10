@@ -25,6 +25,14 @@ export type Location = {
     websiteUrl: string;
 };
 
+export type LocationInfo = {
+    bio: string
+    websiteUrl: string
+    openingHours: OpeningHours;
+    phone: string;
+    email: string
+}
+
 export type LocationByID = {
     id: number;
     bio: string | null;
