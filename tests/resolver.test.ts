@@ -23,9 +23,9 @@ const client = Client.New({
     getNostrSigner: async () => signer,
     relay_url,
     aws_cdn_url,
-})
-if(client instanceof Error) {
-    fail(client.message)
+});
+if (client instanceof Error) {
+    fail(client.message);
 }
 
 Deno.test("notes without places", async () => {
