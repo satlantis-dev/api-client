@@ -44,7 +44,7 @@ Deno.test("notes without places", async () => {
     }
 
     // wait for the backend to process all data because it's kinda slow
-    await sleep(1000);
+    await sleep(3000);
 
     {
         const result = await client.getNotesOf({
