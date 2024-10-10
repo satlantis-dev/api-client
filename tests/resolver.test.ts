@@ -80,7 +80,12 @@ Deno.test("notes without places", async () => {
         assertEquals(notes2.length, notes.length);
         console.log(contents);
         console.log(notes2.map((n) => n.content).reverse());
-        assertEquals(notes2.map((n) => n.content).reverse(), contents);
+
+        // the note returned by backends are not sorted in created time order
+        assertEquals(
+            new Set(notes2.map((n) => n.content).reverse()),
+            new Set(contents),
+        );
     }
 });
 
