@@ -18,12 +18,12 @@ import { UserResolver } from "../resolvers/user.ts";
 import type { ApiError } from "../helpers/_helper.ts";
 import { nip04Encrypt } from "../api/nostr_event.ts";
 import { assertNotEquals } from "@std/assert/not-equals";
+import { aws_cdn_url, relay_url, rest_url } from "./urls.ts";
 
-const testURL = new URL("https://api-dev.satlantis.io");
-const relay_url = "wss://relay.satlantis.io";
 const clientNoAuth = Client.New({
-    baseURL: testURL,
+    baseURL: rest_url,
     relay_url,
+    aws_cdn_url,
 });
 if (clientNoAuth instanceof Error) {
     fail(clientNoAuth.message);
@@ -34,10 +34,11 @@ if (res instanceof Error) {
     throw res;
 }
 const client = Client.New({
-    baseURL: testURL,
+    baseURL: rest_url,
     relay_url,
     getJwt: () => res.token,
     getNostrSigner: async () => signer,
+    aws_cdn_url: "",
 }) as Client;
 
 Deno.test("AccountRole", async () => {
@@ -61,6 +62,7 @@ Deno.test("AccountRole", async () => {
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
         relay_url,
+        aws_cdn_url,
     }) as Client;
 
     // join the place as a follower
@@ -96,10 +98,11 @@ Deno.test("upload file", async () => {
     if (res instanceof Error) fail(res.message);
 
     const client = Client.New({
-        baseURL: testURL,
+        baseURL: rest_url,
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
         relay_url,
+        aws_cdn_url,
     }) as Client;
 
     const result = await client.uploadFile({
@@ -126,6 +129,7 @@ Deno.test("post notes", async () => {
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
         relay_url,
+        aws_cdn_url,
     }) as Client;
     {
         const root_event = (await prepareNostrEvent(signer, {
@@ -172,6 +176,7 @@ Deno.test("update place", async () => {
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
         relay_url,
+        aws_cdn_url,
     }) as Client;
     {
         const originalPlace = await client.getPlaceByOsmRef({ osmRef: "R296561" });
@@ -230,9 +235,10 @@ Deno.test({
         if (login == undefined || login == "invalid password") fail("wrong");
 
         const client = Client.New({
-            baseURL: testURL,
+            baseURL: rest_url,
             getJwt: () => login.token,
             relay_url,
+            aws_cdn_url,
         }) as Client;
 
         await t.step("sign the event with a wrong pubkey", async () => {
@@ -271,14 +277,15 @@ Deno.test({
             ignore: true,
             fn: async () => {
                 const signer = InMemoryAccountContext.Generate();
-                const res = await loginNostr(testURL)(signer);
+                const res = await loginNostr(rest_url)(signer);
                 if (res instanceof Error) fail(res.message);
 
                 const client = Client.New({
-                    baseURL: testURL,
+                    baseURL: rest_url,
                     getJwt: () => res.token,
                     getNostrSigner: async () => signer,
                     relay_url,
+                    aws_cdn_url,
                 }) as Client;
 
                 const signed = await client.signEvent({
@@ -316,7 +323,7 @@ Deno.test("nip04Encrypt", async () => {
     if (login instanceof Error) fail(login.message);
     if (login == undefined || login == "invalid password") fail("wrong");
 
-    const url = newURL(testURL);
+    const url = newURL(rest_url);
     if (url instanceof Error) {
         fail(url.message);
     }
@@ -346,6 +353,7 @@ Deno.test("getInterests", async () => {
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
         relay_url,
+        aws_cdn_url,
     }) as Client;
 
     const interests = await client.getInterests();
@@ -365,6 +373,7 @@ Deno.test("calendar events", async () => {
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
         relay_url,
+        aws_cdn_url,
     }) as Client;
 
     {
@@ -414,6 +423,7 @@ Deno.test("getUserProfile & updateUserProfile", async (t) => {
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
         relay_url,
+        aws_cdn_url,
     }) as Client;
 
     // test
