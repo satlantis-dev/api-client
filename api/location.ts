@@ -2,7 +2,7 @@ import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import { type Location, type LocationByID, type LocationTag } from "../models/location.ts";
 import { prepareLocationSetEvent, preparePlaceEvent } from "../nostr-helpers.ts";
-import type { Address, func_GetJwt, func_GetNostrSigner, OpeningHours } from "../sdk.ts";
+import type { Address, func_GetJwt, func_GetNostrSigner, LocationInfo, OpeningHours } from "../sdk.ts";
 
 export const getLocationTags = (urlArg: URL) => async () => {
     const url = copyURL(urlArg);
@@ -194,26 +194,34 @@ export const proveLocationClaim =
         return handleResponse(response);
     };
 
-// todo: implement it
-// export const updateLocation = (urlArg: URL) =>
-// async (args: {
-//     placeID: number;
-//     search?: string;
-//     // https://github.com/satlantis-dev/api/blob/2582005a5fe23c6d4d10c71c68cc72c4088f3ed1/database/location.go#L157
-//     // sortDirection?: 'desc' | 'asc';
-//     // todo: having this field mandatory is not a good design, should change the backend
-//     google_rating: number;
-// }) => {
-//     const url = copyURL(urlArg);
-//     url.pathname = `/getLocationsByPlaceID/${args.placeID}`;
-//     url.searchParams.set("google_rating", String(args.google_rating));
+// https://github.com/satlantis-dev/api/blob/46ec43557c194691fe62c5693ae4a9facd878702/rest/location.go#L1144
+export const updateLocation = (urlArg: URL, getJwt: func_GetJwt) =>
+async (args: {
+    locationId: number;
+    location: LocationInfo;
+}) => {
+    const jwt = getJwt();
+    if (jwt == "") {
+        return new Error("jwt token is empty");
+    }
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwt}`);
 
-//     const response = await safeFetch(url);
-//     if (response instanceof Error) {
-//         return response;
-//     }
-//     return handleResponse<LocationByPlace[]>(response);
-// };
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/updateLocation/${args.locationId}`;
+
+    const body = JSON.stringify(location);
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+        body,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse(response);
+};
 
 type LocationByPlace = {
     readonly id: number;
