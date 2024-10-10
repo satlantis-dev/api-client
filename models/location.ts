@@ -26,12 +26,12 @@ export type Location = {
 };
 
 export type LocationInfo = {
-    bio: string
-    websiteUrl: string
+    bio: string;
+    websiteUrl: string;
     openingHours: OpeningHours;
     phone: string;
-    email: string
-}
+    email: string;
+};
 
 export type LocationByID = {
     id: number;

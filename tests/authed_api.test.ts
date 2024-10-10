@@ -368,12 +368,13 @@ Deno.test("update location", async () => {
     if (res instanceof Error) fail(res.message);
 
     // https://www.dev.satlantis.io/location/2249
-    const locationId = 2249
+    const locationId = 2249;
 
     const res2 = await client.updateLocation({
-        locationId, location: {
-            bio: 'test',
-            websiteUrl: 'https://test.com',
+        locationId,
+        location: {
+            bio: "test",
+            websiteUrl: "https://test.com",
             openingHours: {
                 monday: "string",
                 tuesday: "string",
@@ -381,13 +382,13 @@ Deno.test("update location", async () => {
                 thursday: "string",
                 friday: "string",
                 saturday: "string",
-                sunday: "string"
+                sunday: "string",
             },
             phone: "+1 (708)11110349",
-            email: "test@test.com"
-        }
-    })
-    console.log(res2)
+            email: "test@test.com",
+        },
+    });
+    console.log(res2);
     // if (res2 instanceof Error) fail(res2.message);
 });
 

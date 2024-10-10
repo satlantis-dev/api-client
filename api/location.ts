@@ -196,31 +196,31 @@ export const proveLocationClaim =
 
 // https://github.com/satlantis-dev/api/blob/46ec43557c194691fe62c5693ae4a9facd878702/rest/location.go#L1144
 export const updateLocation = (urlArg: URL, getJwt: func_GetJwt) =>
-    async (args: {
-        locationId: number;
-        location: LocationInfo
-    }) => {
-        const jwt = getJwt();
-        if (jwt == "") {
-            return new Error("jwt token is empty");
-        }
-        const headers = new Headers();
-        headers.set("Authorization", `Bearer ${jwt}`);
+async (args: {
+    locationId: number;
+    location: LocationInfo;
+}) => {
+    const jwt = getJwt();
+    if (jwt == "") {
+        return new Error("jwt token is empty");
+    }
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwt}`);
 
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/updateLocation/${args.locationId}`;
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/updateLocation/${args.locationId}`;
 
-        const body = JSON.stringify(location)
+    const body = JSON.stringify(location);
 
-        const response = await safeFetch(url, {
-            method: "PUT",
-            headers,
-            body
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse(response);
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+        body,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse(response);
 };
 
 type LocationByPlace = {
