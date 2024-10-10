@@ -75,6 +75,8 @@ Deno.test("notes without places", async () => {
         if (notes2 instanceof Error) fail(notes2.message);
 
         assertEquals(notes2.length, notes.length);
+        console.log(contents);
+        console.log(notes2.map((n) => n.content).reverse());
         assertEquals(notes2.map((n) => n.content).reverse(), contents);
     }
 });
