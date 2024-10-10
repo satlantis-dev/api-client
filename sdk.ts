@@ -54,7 +54,7 @@ import {
     updateAccountFollowingList,
 } from "./api/secure/account.ts";
 import { updatePlace } from "./api/secure/place.ts";
-import { postNote, postReaction } from "./api/secure/note.ts";
+import { deleteNote, postNote, postReaction } from "./api/secure/note.ts";
 import { presign } from "./api/secure/presign.ts";
 import { newURL } from "./helpers/_helper.ts";
 import { addressLookup } from "./api/address.ts";
@@ -159,6 +159,7 @@ export class Client {
      * remove after: 2024/11/01
      */
     _postNote: ReturnType<typeof postNote>;
+    deleteNote: ReturnType<typeof deleteNote>;
     postReaction: ReturnType<typeof postReaction>;
     signEvent: ReturnType<typeof signEvent>;
 
@@ -228,6 +229,7 @@ export class Client {
         this.presign = presign(rest_api_url, getJwt, getNostrSigner);
         this.postReaction = postReaction(rest_api_url, this.getJwt);
         this._postNote = postNote(rest_api_url, this.getJwt);
+        this.deleteNote = deleteNote(rest_api_url, this.getJwt);
         this.signEvent = signEvent(rest_api_url, getJwt);
         this.updatePlace = updatePlace(rest_api_url, this.getJwt);
 

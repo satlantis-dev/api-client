@@ -40,6 +40,31 @@ export type PostNoteResult = {
     type: NoteType;
 };
 
+export const deleteNote = (urlArg: URL, getJwt: () => string) => async (args: NotePost) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/deleteNote`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const body = JSON.stringify(args);
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        body,
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<PostNoteResult>(response);
+};
+
 export const postNote = (urlArg: URL, getJwt: () => string) => async (args: NotePost) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
