@@ -97,6 +97,4 @@ export type Kind0MetaData = {
     lud16?: string;
     picture?: string;
     website?: string;
-    phone?: string;
-    email?: string;
 };
