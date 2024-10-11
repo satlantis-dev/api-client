@@ -1,5 +1,6 @@
 import type { LocationByID, LocationTag } from "../models/location.ts";
 import type { Address, Client, OpeningHours } from "../sdk.ts";
+import type { UserResolver } from "./user.ts";
 
 export class LocationResolver implements LocationByID {
     id: number;
@@ -48,5 +49,12 @@ export class LocationResolver implements LocationByID {
             limit: args.limit,
             page: args.page,
         });
+    };
+
+    /**
+     * @experimental
+     */
+    getOwner = async (): Promise<UserResolver | undefined | Error> => {
+        return undefined;
     };
 }
