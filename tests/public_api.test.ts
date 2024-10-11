@@ -236,23 +236,33 @@ Deno.test("checkUsernameAvailability", async () => {
     }
 });
 
-Deno.test("getAccount", async () => {
-    const npub = "npub1le59glyc3r9zsddury0fu8wyqu69ckvj78fn4425m5xn9zd0zpdssjtd53";
-    const result = await client.getAccount({
-        npub,
-    });
-    if (result instanceof Error) {
-        fail(result.message);
-    }
-    assertEquals(result.npub, npub);
+Deno.test("getAccount", async (t) => {
+    await t.step("1", async () => {
+        const npub = "npub1le59glyc3r9zsddury0fu8wyqu69ckvj78fn4425m5xn9zd0zpdssjtd53";
+        const result = await client.getAccount({
+            npub,
+        });
+        if (result instanceof Error) {
+            fail(result.message);
+        }
+        assertEquals(result.npub, npub);
 
-    const roles = result.accountPlaceRoles;
-    if (roles == undefined) {
-        fail("should have place roles");
-    }
-    assertEquals(roles[0].accountId, result.id);
-    assertEquals(roles[0].type, AccountPlaceRoleTypeEnum.FOLLOWER);
-    assertNotEquals(roles[0].type, AccountPlaceRoleTypeEnum.AMBASSADOR);
+        const roles = result.accountPlaceRoles;
+        if (roles == undefined) {
+            fail("should have place roles");
+        }
+        assertEquals(roles[0].accountId, result.id);
+        assertEquals(roles[0].type, AccountPlaceRoleTypeEnum.FOLLOWER);
+        assertNotEquals(roles[0].type, AccountPlaceRoleTypeEnum.AMBASSADOR);
+    });
+
+    await t.step("2", async () => {
+        // blocked by https://linear.app/sat-lantis/issue/SAT-1141/the-shape-of-locations-in-getaccount-is-not-friendly-for-client-and
+        const a = await client.getAccount({
+            npub: "npub1k07dmj2h95c7kd69gzwcg4rswwx4096ka8v0mltymewdzp3lck8q44tz6s",
+        });
+        console.log(a);
+    });
 });
 
 Deno.test({
