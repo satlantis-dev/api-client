@@ -96,4 +96,12 @@ export type Kind0MetaData = {
     lud16?: string;
     picture?: string;
     website?: string;
+    /**
+     * @deprecated remove after Oct 25
+     */
+    phone?: string;
+    /**
+     * @deprecated remove after Oct 25
+     */
+    email?: string;
 };
