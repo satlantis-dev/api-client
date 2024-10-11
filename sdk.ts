@@ -752,11 +752,9 @@ export class Client {
             about: account.about,
             banner: account.banner,
             displayName: account.displayName,
-            email: account.email,
             lud06: account.lud06,
             lud16: account.lud16,
             name: account.name,
-            phone: account.phone,
             picture: account.picture,
             website: account.website,
         });
@@ -1116,11 +1114,9 @@ export class Client {
                 about: account.about,
                 banner: account.banner,
                 displayName: account.displayName,
-                email: account.email,
                 lud06: account.lud06,
                 lud16: account.lud16,
                 name: account.name,
-                phone: account.phone,
                 picture: account.picture,
                 website: account.website,
             });

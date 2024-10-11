@@ -470,10 +470,8 @@ Deno.test("getUserProfile & updateUserProfile", async (t) => {
             about: "",
             banner: "",
             displayName: "",
-            email: "",
             lud06: "",
             lud16: "",
-            phone: undefined,
             picture: "",
             website: "",
         });

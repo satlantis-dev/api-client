@@ -87,7 +87,6 @@ type Currency = {
     symbol: string;
 };
 
-// https://www.figma.com/design/LlT3G00nTiN02jexQo6rt2/Satlantis-%3A%3A-UI-UX?node-id=420-12198&node-type=frame&t=LHwJbZk3Tm0FWi4i-0
 export type Kind0MetaData = {
     about?: string;
     banner?: string;
@@ -97,6 +96,12 @@ export type Kind0MetaData = {
     lud16?: string;
     picture?: string;
     website?: string;
+    /**
+     * @deprecated remove after Oct 25
+     */
     phone?: string;
+    /**
+     * @deprecated remove after Oct 25
+     */
     email?: string;
 };
