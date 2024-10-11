@@ -465,7 +465,7 @@ Deno.test("getUserProfile & updateUserProfile", async (t) => {
             name: "this is a test",
         });
         const p3 = (await client.getMyProfile()) as UserResolver;
-        const expected = new UserResolver(client, signer.publicKey, {
+        const expected = new UserResolver(client, signer.publicKey, false, {
             name: "this is a test",
             about: "",
             banner: "",

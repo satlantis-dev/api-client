@@ -3,7 +3,6 @@ import {
     type NostrEvent,
     NostrKind,
     NoteID,
-    parseJSON,
     prepareEncryptedNostrEvent,
     prepareNostrEvent,
     PublicKey,
@@ -748,7 +747,7 @@ export class Client {
             return account;
         }
 
-        const me = new UserResolver(this, signer.publicKey, {
+        const me = new UserResolver(this, signer.publicKey, account.isAdmin || false, {
             about: account.about,
             banner: account.banner,
             displayName: account.displayName,
@@ -768,15 +767,10 @@ export class Client {
         if (signer instanceof Error) {
             return signer;
         }
-        const relay = SingleRelayConnection.New(this.relay_url);
-        if (relay instanceof Error) {
-            return relay;
-        }
 
         if (this.me == undefined) {
-            const currentProfile = await getUserProfileFromRelay(signer.publicKey, relay, this);
+            const currentProfile = await this.resolver.getUser(signer.publicKey);
             if (currentProfile instanceof Error) {
-                await relay.close();
                 return currentProfile;
             }
             this.me = currentProfile;
@@ -784,11 +778,10 @@ export class Client {
 
         const kind0 = await prepareKind0(signer, metaData);
         if (kind0 instanceof Error) {
-            await relay.close();
             return kind0;
         }
 
-        this.me = new UserResolver(this, signer.publicKey, metaData);
+        this.me.metaData = metaData;
         {
             const res = await this.updateAccount({
                 npub: signer.publicKey.bech32(),
@@ -800,12 +793,6 @@ export class Client {
             if (res instanceof Error) {
                 return res;
             }
-        }
-
-        const res = await relay.sendEvent(kind0);
-        await relay.close();
-        if (res instanceof Error) {
-            return res;
         }
 
         return this.me;
@@ -1110,7 +1097,7 @@ export class Client {
                 return account;
             }
 
-            return new UserResolver(this, pubkey, {
+            return new UserResolver(this, pubkey, account.isAdmin || false, {
                 about: account.about,
                 banner: account.banner,
                 displayName: account.displayName,
@@ -1220,43 +1207,6 @@ export { followPubkeys, getContactList, isUserAFollowingUserB } from "./nostr-he
 ////////////////////////////////
 // Private/Unexported Helpers //
 ////////////////////////////////
-
-/**
- * also known as a nostr pubkey profile
- */
-async function get_kind0_META_DATA(relay: SingleRelayConnection, pubkey: PublicKey) {
-    return await relay.getReplaceableEvent(pubkey, NostrKind.META_DATA);
-}
-
-const getUserProfileFromRelay = async (
-    pubkey: PublicKey | string,
-    relay: SingleRelayConnection,
-    client: Client,
-): Promise<UserResolver | Error> => {
-    if (typeof pubkey == "string") {
-        const _pubkey = PublicKey.FromString(pubkey);
-        if (_pubkey instanceof Error) {
-            return _pubkey;
-        }
-        pubkey = _pubkey;
-    }
-
-    const kind0 = await get_kind0_META_DATA(relay, pubkey);
-    if (kind0 instanceof Error) {
-        return kind0;
-    }
-    if (kind0 == undefined) {
-        return new UserResolver(client, pubkey);
-    }
-
-    const metadata = parseJSON<Kind0MetaData>(kind0.content);
-    if (metadata instanceof Error) {
-        return metadata;
-    }
-    const profile = new UserResolver(client, pubkey, metadata);
-    return profile;
-};
-
 async function prepareKind0(signer: Signer, metadata: Kind0MetaData) {
     return await prepareNostrEvent(signer, {
         content: JSON.stringify(metadata),

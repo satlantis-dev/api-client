@@ -8,11 +8,12 @@ export class UserResolver {
 
     /**
      * Should not be called by application code directly
-     * @unstable
+     * @experimental
      */
     constructor(
         private readonly client: Client,
         public readonly pubkey: PublicKey,
+        public isAdmin: boolean,
         metaData?: Kind0MetaData,
         public nip5?: string,
         public isBusiness?: boolean,
@@ -65,7 +66,7 @@ export class UserResolver {
                 console.error(`account ${a.id} has invalid pubkey`, pub);
                 continue;
             }
-            newList.push(new UserResolver(this.client, pub, a));
+            newList.push(new UserResolver(this.client, pub, a.isAdmin, a));
         }
         this.following = newList;
         return newList;
@@ -84,7 +85,7 @@ export class UserResolver {
                 console.error(`account ${a.id} has invalid pubkey`, pub);
                 continue;
             }
-            newList.push(new UserResolver(this.client, pub, a));
+            newList.push(new UserResolver(this.client, pub, a.isAdmin, a));
         }
         this.followedBy = newList;
         return this.followedBy;
