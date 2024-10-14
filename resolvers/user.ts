@@ -167,6 +167,7 @@ export class UserResolver {
 
         return account.locations?.filter((AccountLoaction) => AccountLoaction.type === "owner").map(
             (AccountLoaction) => {
+                // @ts-ignore: missing placeOsmRef from the beckend
                 return new LocationResolver(this.client, AccountLoaction.location);
             },
         );
