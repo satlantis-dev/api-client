@@ -157,3 +157,24 @@ async (args: {
     }
     return handleResponse<Account>(response);
 };
+
+export const getAccountsBySearch =
+    (urlArg: URL, getJwt: func_GetJwt) => async (args: { username: string }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/getAccountsBySearch/`;
+        url.searchParams.set("username", args.username);
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const response = await safeFetch(url, { headers });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<Account[]>(response);
+    };
