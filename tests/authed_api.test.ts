@@ -6,6 +6,7 @@ import {
     NostrKind,
     prepareNostrEvent,
     PrivateKey,
+    SingleRelayConnection,
     verifyEvent,
 } from "@blowater/nostr-sdk";
 import { assertEquals } from "jsr:@std/assert@0.226.0/assert-equals";
@@ -513,5 +514,81 @@ Deno.test("claim location", async (t) => {
         });
         // todo: blocked
         console.log(res2);
+    });
+});
+
+Deno.test("submitAmbassadorApplication", async (t) => {
+    const receiver = InMemoryAccountContext.Generate();
+
+    const place = await client.getPlaceByOsmRef({
+        osmRef: "R8421413",
+    });
+    if (place instanceof Error) fail(place.message);
+
+    await t.step("missing contact methods", async () => {
+        const event_sent = (await client.submitAmbassadorApplication({
+            place: place.name,
+            comment: "I am a pro New Yorker",
+            satlantis_pubkey: receiver.publicKey,
+            nostr_only: false,
+            countryCode: place.country.code,
+        })) as Error;
+        assertEquals(event_sent.message, "need at least 1 contact method");
+    });
+    await t.step("nostr only", async () => {
+        const event_sent = await client.submitAmbassadorApplication({
+            place: place.name,
+            comment: "I am a pro New Yorker",
+            satlantis_pubkey: receiver.publicKey,
+            nostr_only: true,
+            countryCode: place.country.code,
+        });
+        if (event_sent instanceof Error) {
+            fail(event_sent.message);
+        }
+        const text = await receiver.decrypt(event_sent.pubkey, event_sent.content);
+        assertEquals(
+            text,
+            `#Ambassador Application
+Place: Funchal
+
+I am a pro New Yorker
+
+Contact: Nostr Only
+`,
+        );
+    });
+    await t.step("success", async () => {
+        const event_sent = await client.submitAmbassadorApplication({
+            place: place.name,
+            comment: "I am a pro New Yorker",
+            email: "test@whatever.io",
+            telegram: "whoever",
+            whatsapp: "who?",
+            satlantis_pubkey: receiver.publicKey,
+            nostr_only: false,
+            countryCode: place.country.code,
+        });
+        if (event_sent instanceof Error) {
+            fail(event_sent.message);
+        }
+        const relay = SingleRelayConnection.New(client.relay_url) as SingleRelayConnection;
+        const event_received = (await relay.getEvent(event_sent.id)) as NostrEvent;
+        await relay.close();
+        assertEquals(event_received, event_sent);
+
+        const text = await receiver.decrypt(event_received.pubkey, event_received.content);
+        assertEquals(
+            text,
+            `#Ambassador Application
+Place: Funchal
+
+I am a pro New Yorker
+
+Email: test@whatever.io
+Telegram: whoever
+WhatsApp: who?
+`,
+        );
     });
 });
