@@ -164,7 +164,7 @@ export class UserResolver {
             return account;
         }
 
-        return account.locations
+        return account.locations;
     };
 
     isPlaceAdmin = async (placeId: number) => {

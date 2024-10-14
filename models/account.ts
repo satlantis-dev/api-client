@@ -34,7 +34,7 @@ export type Account = {
     phone?: string;
     placeRatings?: AccountPlaceRating[];
     website?: string;
-    locations?: OwnerLocation[]
+    locations?: OwnerLocation[];
 };
 
 type Account_Base = {

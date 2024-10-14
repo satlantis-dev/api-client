@@ -111,11 +111,11 @@ export interface LocationAccount {
 
 // used by /getAccount locations
 export interface OwnerLocation {
-    id: number,
-    accountId: number,
-    claimCode: string,
-    location: Location,
-    locationId: number,
-    referredBy: string,
-    type: "owner"
+    id: number;
+    accountId: number;
+    claimCode: string;
+    location: Location;
+    locationId: number;
+    referredBy: string;
+    type: "owner";
 }
