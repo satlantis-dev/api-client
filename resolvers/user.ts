@@ -157,10 +157,14 @@ export class UserResolver {
     /**
      * get locations owned by this user
      * @unstable
-     * @unfinished
      */
     getOwnedLocation = async () => {
-        return undefined;
+        const account = await this.client.getAccount({ npub: this.pubkey.bech32() });
+        if (account instanceof Error) {
+            return account;
+        }
+
+        return account.locations
     };
 
     isPlaceAdmin = async (placeId: number) => {

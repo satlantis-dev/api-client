@@ -1,6 +1,7 @@
 import type { AuthDetail } from "../sdk.ts";
 
 import type { ChatMembership } from "./chat.ts";
+import type { OwnerLocation } from "./location.ts";
 import type { Place } from "./place.ts";
 
 export type Account = {
@@ -33,6 +34,7 @@ export type Account = {
     phone?: string;
     placeRatings?: AccountPlaceRating[];
     website?: string;
+    locations?: OwnerLocation[]
 };
 
 type Account_Base = {

@@ -108,3 +108,14 @@ export interface LocationAccount {
     accountId: number;
     type: LocationAccountTypeEnum;
 }
+
+// used by /getAccount locations
+export interface OwnerLocation {
+    id: number,
+    accountId: number,
+    claimCode: string,
+    location: Location,
+    locationId: number,
+    referredBy: string,
+    type: "owner"
+}
