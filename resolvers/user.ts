@@ -2,6 +2,7 @@ import { PublicKey } from "@blowater/nostr-sdk";
 import type { Kind0MetaData } from "../models/account.ts";
 import { AccountPlaceRoleTypeEnum, type Client } from "../sdk.ts";
 import { NoteResolver } from "./note.ts";
+import { LocationResolver } from "./location.ts";
 
 export class UserResolver {
     metaData: Kind0MetaData;
@@ -157,10 +158,19 @@ export class UserResolver {
     /**
      * get locations owned by this user
      * @unstable
-     * @unfinished
      */
     getOwnedLocation = async () => {
-        return undefined;
+        const account = await this.client.getAccount({ npub: this.pubkey.bech32() });
+        if (account instanceof Error) {
+            return account;
+        }
+
+        return account.locations?.filter((AccountLoaction) => AccountLoaction.type === "owner").map(
+            (AccountLoaction) => {
+                // @ts-ignore: missing placeOsmRef from the beckend
+                return new LocationResolver(this.client, AccountLoaction.location);
+            },
+        );
     };
 
     isPlaceAdmin = async (placeId: number) => {

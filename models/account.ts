@@ -33,6 +33,15 @@ export type Account = {
     phone?: string;
     placeRatings?: AccountPlaceRating[];
     website?: string;
+    locations?: {
+        id: number;
+        accountId: number;
+        claimCode: string;
+        location: Location;
+        locationId: number;
+        referredBy: string;
+        type: "owner";
+    }[];
 };
 
 type Account_Base = {
