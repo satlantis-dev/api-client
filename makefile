@@ -8,8 +8,11 @@ publish:
 fmt:
 	deno fmt
 
-test: fmt
+test:
 	deno test --allow-net
+
+lint:
+	deno lint
 
 check:
 	deno fmt --check
