@@ -23,6 +23,7 @@ export type Location = {
     googleRating: number;
     googleUserRatingCount: number;
     websiteUrl: string;
+    bio: string;
 };
 
 export type LocationInfo = {

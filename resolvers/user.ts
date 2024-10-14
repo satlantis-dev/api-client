@@ -2,7 +2,7 @@ import { PublicKey } from "@blowater/nostr-sdk";
 import type { Kind0MetaData } from "../models/account.ts";
 import { AccountPlaceRoleTypeEnum, type Client } from "../sdk.ts";
 import { NoteResolver } from "./note.ts";
-import { OwnerLocationResolver } from "./location.ts";
+import { LocationResolver } from "./location.ts";
 
 export class UserResolver {
     metaData: Kind0MetaData;
@@ -165,9 +165,11 @@ export class UserResolver {
             return account;
         }
 
-        return account.locations?.filter((location) => location.type === "owner").map((location) => {
-            return new OwnerLocationResolver(this.client, location);
-        });
+        return account.locations?.filter((AccountLoaction) => AccountLoaction.type === "owner").map(
+            (AccountLoaction) => {
+                return new LocationResolver(this.client, AccountLoaction.location);
+            },
+        );
     };
 
     isPlaceAdmin = async (placeId: number) => {
