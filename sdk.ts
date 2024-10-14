@@ -15,7 +15,6 @@ import {
 import {
     createAccount,
     getAccount,
-    getAccountsBySearch,
     initiatePasswordReset,
     login,
     resetPassword,
@@ -49,6 +48,7 @@ import {
 } from "./api/place.ts";
 import {
     addAccountRole,
+    getAccountsBySearch,
     removeAccountRole,
     updateAccount,
     updateAccountFollowingList,
@@ -112,7 +112,7 @@ export class Client {
      * @unstable
      */
     getAccount: ReturnType<typeof getAccount>;
-    getAccountsBySearch: ReturnType<typeof getAccountsBySearch>
+    getAccountsBySearch: ReturnType<typeof getAccountsBySearch>;
     createAccount: ReturnType<typeof createAccount>;
     /**
      * @unstable
@@ -204,7 +204,7 @@ export class Client {
 
         // account
         this.getAccount = getAccount(rest_api_url);
-        this.getAccountsBySearch = getAccountsBySearch(rest_api_url)
+        this.getAccountsBySearch = getAccountsBySearch(rest_api_url, getJwt);
         this.createAccount = createAccount(rest_api_url);
         this.updateAccount = updateAccount(rest_api_url, getJwt);
 
