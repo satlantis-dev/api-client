@@ -12,6 +12,17 @@ export const getAccount = (urlArg: URL) => async (args: { npub: string }) => {
     return handleResponse<Account>(response);
 };
 
+export const getAccountsBySearch = (urlArg: URL) => async (args: { username: string }) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getAccountsBySearch/`;
+    url.searchParams.set("username", args.username)
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<Account[]>(response);
+};
+
 export const login = (urlArg: URL) => async (args: { username: string; password: string }) => {
     const url = copyURL(urlArg);
     url.pathname = `/login`;

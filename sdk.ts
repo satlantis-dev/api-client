@@ -15,6 +15,7 @@ import {
 import {
     createAccount,
     getAccount,
+    getAccountsBySearch,
     initiatePasswordReset,
     login,
     resetPassword,
@@ -111,6 +112,7 @@ export class Client {
      * @unstable
      */
     getAccount: ReturnType<typeof getAccount>;
+    getAccountsBySearch: ReturnType<typeof getAccountsBySearch>
     createAccount: ReturnType<typeof createAccount>;
     /**
      * @unstable
@@ -200,7 +202,9 @@ export class Client {
         this.postCalendarEventNote = postCalendarEventNote(rest_api_url, getJwt);
         this.putUpdateCalendarEvent = putUpdateCalendarEvent(rest_api_url, getJwt);
 
+        // account
         this.getAccount = getAccount(rest_api_url);
+        this.getAccountsBySearch = getAccountsBySearch(rest_api_url)
         this.createAccount = createAccount(rest_api_url);
         this.updateAccount = updateAccount(rest_api_url, getJwt);
 
