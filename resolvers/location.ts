@@ -1,4 +1,4 @@
-import type { LocationByID, LocationTag, Location } from "../models/location.ts";
+import type { Location, LocationByID, LocationTag } from "../models/location.ts";
 import type { Address, Client, OpeningHours, OwnerLocation } from "../sdk.ts";
 import type { UserResolver } from "./user.ts";
 
@@ -59,7 +59,6 @@ export class LocationResolver implements LocationByID {
     };
 }
 
-
 export class OwnerLocationResolver implements OwnerLocation {
     id: number;
     accountId: number;
@@ -79,6 +78,6 @@ export class OwnerLocationResolver implements OwnerLocation {
         this.location = data.location;
         this.locationId = data.locationId;
         this.referredBy = data.referredBy;
-        this.type = data.type
+        this.type = data.type;
     }
 }

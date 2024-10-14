@@ -165,9 +165,9 @@ export class UserResolver {
             return account;
         }
 
-        return account.locations?.filter((location) => location.type === 'owner').map((location) => {
-            return new OwnerLocationResolver(this.client, location)
-        })
+        return account.locations?.filter((location) => location.type === "owner").map((location) => {
+            return new OwnerLocationResolver(this.client, location);
+        });
     };
 
     isPlaceAdmin = async (placeId: number) => {
