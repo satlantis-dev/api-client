@@ -76,6 +76,7 @@ import { LocationResolver } from "./resolvers/location.ts";
 import { NoteResolver } from "./resolvers/note.ts";
 import type { Place } from "./models/place.ts";
 import type { LocationCategory, LocationCategoryName, LocationTag } from "./models/location.ts";
+import { postAmbassadorInquiry } from "./api/secure/ambassador.ts";
 
 export type func_GetNostrSigner = () => Promise<(Signer & Encrypter) | Error>;
 export type func_GetJwt = () => string;
@@ -168,6 +169,9 @@ export class Client {
     // place
     updatePlace: ReturnType<typeof updatePlace>;
 
+    // Ambassador
+    postAmbassadorInquiry: ReturnType<typeof postAmbassadorInquiry>;
+
     private constructor(
         public readonly rest_api_url: URL,
         public readonly relay_url: string,
@@ -239,6 +243,9 @@ export class Client {
         this.resetPassword = resetPassword(this.rest_api_url);
         this.verifyEmail = verifyEmail(this.rest_api_url);
         this.getInterests = getInterests(this.rest_api_url);
+
+        //
+        this.postAmbassadorInquiry = postAmbassadorInquiry(rest_api_url, getJwt, getNostrSigner);
     }
 
     static New(args: {
@@ -649,6 +656,7 @@ export class Client {
         telegram?: string;
         nostr_only: boolean;
         satlantis_pubkey: PublicKey;
+        countryCode: string;
     }) => {
         const signer = await this.getNostrSigner();
         if (signer instanceof Error) {
@@ -681,6 +689,15 @@ export class Client {
         });
         if (signedEvent instanceof Error) {
             return signedEvent;
+        }
+
+        const err2 = await this.postAmbassadorInquiry({
+            countryCode: args.countryCode,
+            kind4: signedEvent,
+            placeName: args.place,
+        });
+        if (err2 instanceof Error) {
+            return err2;
         }
 
         const relay = SingleRelayConnection.New(this.relay_url);
