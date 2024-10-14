@@ -1,5 +1,5 @@
-import type { LocationByID, LocationTag } from "../models/location.ts";
-import type { Address, Client, OpeningHours } from "../sdk.ts";
+import type { LocationByID, LocationTag, Location } from "../models/location.ts";
+import type { Address, Client, OpeningHours, OwnerLocation } from "../sdk.ts";
 import type { UserResolver } from "./user.ts";
 
 export class LocationResolver implements LocationByID {
@@ -57,4 +57,28 @@ export class LocationResolver implements LocationByID {
     getOwner = async (): Promise<UserResolver | undefined | Error> => {
         return undefined;
     };
+}
+
+
+export class OwnerLocationResolver implements OwnerLocation {
+    id: number;
+    accountId: number;
+    claimCode: string;
+    location: Location;
+    locationId: number;
+    referredBy: string;
+    type: "owner";
+
+    /**
+     * @unstable
+     */
+    constructor(private readonly client: Client, data: OwnerLocation) {
+        this.id = data.id;
+        this.accountId = data.accountId;
+        this.claimCode = data.claimCode;
+        this.location = data.location;
+        this.locationId = data.locationId;
+        this.referredBy = data.referredBy;
+        this.type = data.type
+    }
 }
