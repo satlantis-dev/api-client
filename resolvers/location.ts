@@ -33,6 +33,7 @@ export class LocationResolver implements LocationByID {
         this.score = data.score;
         this.address = data.address;
         this.googleRating = data.googleRating;
+        this.googleRating = data.googleUserRatingCount;
         this.email = data.email || "";
     }
 
