@@ -157,15 +157,18 @@ export class UserResolver {
 
     /**
      * get locations owned by this user
-     * @unstable
+     * @experimental
      */
     getOwnedLocation = async () => {
         const account = await this.client.getAccount({ npub: this.pubkey.bech32() });
         if (account instanceof Error) {
             return account;
         }
+        if (!account.locations) {
+            return [];
+        }
 
-        return account.locations?.filter((AccountLoaction) => AccountLoaction.type === "owner").map(
+        return account.locations.filter((AccountLoaction) => AccountLoaction.type === "owner").map(
             (AccountLoaction) => {
                 // @ts-ignore: missing placeOsmRef from the beckend
                 return new LocationResolver(this.client, AccountLoaction.location);
