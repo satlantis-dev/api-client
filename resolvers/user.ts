@@ -22,6 +22,9 @@ export class UserResolver {
         this.metaData = metaData || {};
     }
 
+    /**
+     * @deprecated nip05 is not changeable. No need to fetch the "latest" value
+     */
     async getNip05() {
         const account = await this.client.getAccount({ npub: this.pubkey.bech32() });
         if (account instanceof Error) {
