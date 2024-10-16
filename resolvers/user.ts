@@ -14,10 +14,10 @@ export class UserResolver {
     constructor(
         private readonly client: Client,
         public readonly pubkey: PublicKey,
-        public isAdmin: boolean,
-        metaData?: Kind0MetaData,
-        public nip5?: string,
-        public isBusiness?: boolean,
+        public readonly isAdmin: boolean,
+        public isBusiness: boolean,
+        public nip5: string | undefined,
+        metaData: Kind0MetaData,
     ) {
         this.metaData = metaData || {};
     }
@@ -67,7 +67,8 @@ export class UserResolver {
                 console.error(`account ${a.id} has invalid pubkey`, pub);
                 continue;
             }
-            newList.push(new UserResolver(this.client, pub, a.isAdmin, a));
+            const u = new UserResolver(this.client, pub, a.isAdmin, a.isBusiness, a.nip05, a);
+            newList.push(u);
         }
         this.following = newList;
         return newList;
@@ -86,7 +87,7 @@ export class UserResolver {
                 console.error(`account ${a.id} has invalid pubkey`, pub);
                 continue;
             }
-            newList.push(new UserResolver(this.client, pub, a.isAdmin, a));
+            newList.push(new UserResolver(this.client, pub, a.isAdmin, a.isBusiness, a.nip05, a));
         }
         this.followedBy = newList;
         return this.followedBy;

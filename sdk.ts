@@ -768,16 +768,23 @@ export class Client {
             return account;
         }
 
-        const me = new UserResolver(this, signer.publicKey, account.isAdmin || false, {
-            about: account.about,
-            banner: account.banner,
-            displayName: account.displayName,
-            lud06: account.lud06,
-            lud16: account.lud16,
-            name: account.name,
-            picture: account.picture,
-            website: account.website,
-        });
+        const me = new UserResolver(
+            this,
+            signer.publicKey,
+            account.isAdmin || false,
+            account.isBusiness,
+            account.nip05,
+            {
+                about: account.about,
+                banner: account.banner,
+                displayName: account.displayName,
+                lud06: account.lud06,
+                lud16: account.lud16,
+                name: account.name,
+                picture: account.picture,
+                website: account.website,
+            },
+        );
 
         this.me = me;
         return me;
@@ -1118,16 +1125,23 @@ export class Client {
                 return account;
             }
 
-            return new UserResolver(this, pubkey, account.isAdmin || false, {
-                about: account.about,
-                banner: account.banner,
-                displayName: account.displayName,
-                lud06: account.lud06,
-                lud16: account.lud16,
-                name: account.name,
-                picture: account.picture,
-                website: account.website,
-            });
+            return new UserResolver(
+                this,
+                pubkey,
+                account.isAdmin || false,
+                account.isBusiness,
+                account.nip05,
+                {
+                    about: account.about,
+                    banner: account.banner,
+                    displayName: account.displayName,
+                    lud06: account.lud06,
+                    lud16: account.lud16,
+                    name: account.name,
+                    picture: account.picture,
+                    website: account.website,
+                },
+            );
         },
 
         /**
