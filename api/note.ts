@@ -46,7 +46,7 @@ export type Note = {
      */
     readonly descendants: null | unknown[];
     /**
-     * @deprecated
+     * @deprecated only the length is valid
      */
     readonly reactions: Reaction[];
 };
