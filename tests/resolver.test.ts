@@ -168,3 +168,21 @@ Deno.test("global feed", async () => {
 
     assertEquals(notes.length, 3);
 });
+
+Deno.test("getMyProfile useCache", async () => {
+    const u1 = await client.getMyProfile();
+    const u2 = await client.getMyProfile({ useCache: false });
+    assertEquals(u1 != u2, true); // not the same reference
+    const u3 = await client.getMyProfile({ useCache: true });
+    assertEquals(u2, u3); // same reference
+});
+
+Deno.test("getUser useCache", async () => {
+    const u1 = await client.resolver.getUser(signer.publicKey);
+    const u2 = await client.resolver.getUser(signer.publicKey);
+    assertEquals(u1 != u2, true); // not the same reference
+    const u3 = await client.resolver.getUser(signer.publicKey, { useCache: true });
+    assertEquals(u2, u3); // same reference
+    const u4 = await client.resolver.getUser(signer.publicKey, { useCache: false });
+    assertEquals(u3 != u4, true); // same reference
+});

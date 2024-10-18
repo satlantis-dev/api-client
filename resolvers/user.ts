@@ -40,7 +40,7 @@ export class UserResolver {
 
     /**
      * returns true if this user is a business account
-     * @unstable
+     * @deprecated isBusiness is now available during resolver construction
      */
     async getIsBusiness() {
         const account = await this.client.getAccount({ npub: this.pubkey.bech32() });
@@ -58,8 +58,8 @@ export class UserResolver {
     /**
      * @unstable
      */
-    async getFollowing() {
-        const account = await this.client.getAccount({ npub: this.pubkey.bech32() });
+    async getFollowing(options?: { useCache: boolean }) {
+        const account = await this.client.getAccount({ npub: this.pubkey.bech32() }, options);
         if (account instanceof Error) {
             return account;
         }
@@ -78,8 +78,8 @@ export class UserResolver {
     }
 
     followedBy: UserResolver[] = [];
-    getFollowedBy = async () => {
-        const account = await this.client.getAccount({ npub: this.pubkey.bech32() });
+    getFollowedBy = async (options?: { useCache: boolean }) => {
+        const account = await this.client.getAccount({ npub: this.pubkey.bech32() }, options);
         if (account instanceof Error) {
             return account;
         }
@@ -96,8 +96,8 @@ export class UserResolver {
         return this.followedBy;
     };
 
-    getAccountPlaceRoles = async () => {
-        const account = await this.client.getAccount({ npub: this.pubkey.bech32() });
+    getAccountPlaceRoles = async (options?: { useCache: boolean }) => {
+        const account = await this.client.getAccount({ npub: this.pubkey.bech32() }, options);
         if (account instanceof Error) {
             return account;
         }
@@ -163,8 +163,8 @@ export class UserResolver {
      * get locations owned by this user
      * @experimental
      */
-    getOwnedLocation = async () => {
-        const account = await this.client.getAccount({ npub: this.pubkey.bech32() });
+    getOwnedLocation = async (options?: { useCache: boolean }) => {
+        const account = await this.client.getAccount({ npub: this.pubkey.bech32() }, options);
         if (account instanceof Error) {
             return account;
         }
@@ -180,8 +180,8 @@ export class UserResolver {
         );
     };
 
-    isPlaceAdmin = async (placeId: number) => {
-        const account = await this.client.getAccount({ npub: this.pubkey.bech32() });
+    isPlaceAdmin = async (placeId: number, options?: { useCache: boolean }) => {
+        const account = await this.client.getAccount({ npub: this.pubkey.bech32() }, options);
         if (account instanceof Error) {
             return account;
         }

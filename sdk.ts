@@ -71,7 +71,7 @@ import {
 import { followPubkeys, getFollowingPubkeys, getInterestsOf } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
 import { safeFetch } from "./helpers/safe-fetch.ts";
-import type { Kind0MetaData } from "./models/account.ts";
+import type { Account, Kind0MetaData } from "./models/account.ts";
 import { UserResolver } from "./resolvers/user.ts";
 import { LocationResolver } from "./resolvers/location.ts";
 import { NoteResolver } from "./resolvers/note.ts";
@@ -83,7 +83,10 @@ export type func_GetNostrSigner = () => Promise<(Signer & Encrypter) | Error>;
 export type func_GetJwt = () => string;
 
 export class Client {
+    // Caches
     private me: UserResolver | undefined = undefined;
+    private users = new Map<string, UserResolver>();
+    private accounts = new Map<string, Account>();
 
     // Place
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
@@ -111,7 +114,7 @@ export class Client {
     /**
      * @unstable
      */
-    getAccount: ReturnType<typeof getAccount>;
+    private _getAccount: ReturnType<typeof getAccount>;
     getAccountsBySearch: ReturnType<typeof getAccountsBySearch>;
     createAccount: ReturnType<typeof createAccount>;
     /**
@@ -203,7 +206,7 @@ export class Client {
         this.putUpdateCalendarEvent = putUpdateCalendarEvent(rest_api_url, getJwt);
 
         // account
-        this.getAccount = getAccount(rest_api_url);
+        this._getAccount = getAccount(rest_api_url);
         this.getAccountsBySearch = getAccountsBySearch(rest_api_url, getJwt);
         this.createAccount = createAccount(rest_api_url);
         this.updateAccount = updateAccount(rest_api_url, getJwt);
@@ -755,36 +758,21 @@ export class Client {
         return this.resolver.getUser(pubkey);
     };
 
-    getMyProfile = async (): Promise<UserResolver | Error> => {
+    getMyProfile = async (options?: {
+        useCache: boolean;
+    }): Promise<UserResolver | Error> => {
+        if (options?.useCache && this.me) {
+            return this.me;
+        }
         const signer = await this.getNostrSigner();
         if (signer instanceof Error) {
             return signer;
         }
 
-        const account = await this.getAccount({
-            npub: signer.publicKey.bech32(),
-        });
-        if (account instanceof Error) {
-            return account;
+        const me = await this.resolver.getUser(signer.publicKey, options);
+        if (me instanceof Error) {
+            return me;
         }
-
-        const me = new UserResolver(
-            this,
-            signer.publicKey,
-            account.isAdmin || false,
-            account.isBusiness,
-            account.nip05,
-            {
-                about: account.about,
-                banner: account.banner,
-                displayName: account.displayName,
-                lud06: account.lud06,
-                lud16: account.lud16,
-                name: account.name,
-                picture: account.picture,
-                website: account.website,
-            },
-        );
 
         this.me = me;
         return me;
@@ -1104,12 +1092,29 @@ export class Client {
         return data(stream);
     };
 
+    getAccount = async (args: { npub: string }, options?: { useCache: boolean }) => {
+        if (options?.useCache) {
+            const account = this.accounts.get(args.npub);
+            if (account) {
+                return account;
+            }
+        }
+        const account = await this._getAccount(args);
+        if (account instanceof Error) {
+            return account;
+        }
+        this.accounts.set(args.npub, account);
+        return account;
+    };
+
     /**
      * Resolver APIs that provides callers a cleaner relationships among all data types
      * @unstable
      */
     resolver = {
-        getUser: async (pubkey: PublicKey | string): Promise<UserResolver | Error> => {
+        getUser: async (pubkey: PublicKey | string, options?: {
+            useCache: boolean;
+        }): Promise<UserResolver | Error> => {
             if (typeof pubkey == "string") {
                 const _pubkey = PublicKey.FromString(pubkey);
                 if (_pubkey instanceof Error) {
@@ -1118,14 +1123,21 @@ export class Client {
                 pubkey = _pubkey;
             }
 
+            if (options?.useCache) {
+                const user = this.users.get(pubkey.hex);
+                if (user) {
+                    return user;
+                }
+            }
+
             const account = await this.getAccount({
                 npub: pubkey.bech32(),
-            });
+            }, options);
             if (account instanceof Error) {
                 return account;
             }
 
-            return new UserResolver(
+            const user = new UserResolver(
                 this,
                 pubkey,
                 account.isAdmin || false,
@@ -1142,6 +1154,8 @@ export class Client {
                     website: account.website,
                 },
             );
+            this.users.set(user.pubkey.hex, user);
+            return user;
         },
 
         /**
