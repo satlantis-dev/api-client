@@ -769,31 +769,6 @@ export class Client {
             return signer;
         }
 
-        // const account = await this.getAccount({
-        //     npub: signer.publicKey.bech32(),
-        // });
-        // if (account instanceof Error) {
-        //     return account;
-        // }
-
-        // const me = new UserResolver(
-        //     this,
-        //     signer.publicKey,
-        //     account.isAdmin || false,
-        //     account.isBusiness,
-        //     account.nip05,
-        //     {
-        //         about: account.about,
-        //         banner: account.banner,
-        //         displayName: account.displayName,
-        //         lud06: account.lud06,
-        //         lud16: account.lud16,
-        //         name: account.name,
-        //         picture: account.picture,
-        //         website: account.website,
-        //     },
-        // );
-
         const me = await this.resolver.getUser(signer.publicKey, options);
         if (me instanceof Error) {
             return me;
@@ -1157,7 +1132,7 @@ export class Client {
 
             const account = await this.getAccount({
                 npub: pubkey.bech32(),
-            });
+            }, options);
             if (account instanceof Error) {
                 return account;
             }
