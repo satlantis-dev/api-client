@@ -1,10 +1,3 @@
-export interface Reaction {
-    id: number;
-    accountId: number;
-    eventId: number;
-    event: ReshapedNostrEvent;
-}
-
 export type Weather = {
     id: number;
     placeId: number;
