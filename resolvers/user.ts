@@ -58,8 +58,8 @@ export class UserResolver {
     /**
      * @unstable
      */
-    async getFollowing() {
-        const account = await this.client.getAccount({ npub: this.pubkey.bech32() });
+    async getFollowing(options?: { useCache: boolean }) {
+        const account = await this.client.getAccount({ npub: this.pubkey.bech32() }, options);
         if (account instanceof Error) {
             return account;
         }
@@ -78,8 +78,8 @@ export class UserResolver {
     }
 
     followedBy: UserResolver[] = [];
-    getFollowedBy = async () => {
-        const account = await this.client.getAccount({ npub: this.pubkey.bech32() });
+    getFollowedBy = async (options?: { useCache: boolean }) => {
+        const account = await this.client.getAccount({ npub: this.pubkey.bech32() }, options);
         if (account instanceof Error) {
             return account;
         }

@@ -71,7 +71,7 @@ import {
 import { followPubkeys, getFollowingPubkeys, getInterestsOf } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
 import { safeFetch } from "./helpers/safe-fetch.ts";
-import type { Kind0MetaData } from "./models/account.ts";
+import type { Account, Kind0MetaData } from "./models/account.ts";
 import { UserResolver } from "./resolvers/user.ts";
 import { LocationResolver } from "./resolvers/location.ts";
 import { NoteResolver } from "./resolvers/note.ts";
@@ -86,6 +86,7 @@ export class Client {
     // Caches
     private me: UserResolver | undefined = undefined;
     private users = new Map<string, UserResolver>();
+    private accounts = new Map<string, Account>();
 
     // Place
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
@@ -113,7 +114,7 @@ export class Client {
     /**
      * @unstable
      */
-    getAccount: ReturnType<typeof getAccount>;
+    private _getAccount: ReturnType<typeof getAccount>;
     getAccountsBySearch: ReturnType<typeof getAccountsBySearch>;
     createAccount: ReturnType<typeof createAccount>;
     /**
@@ -205,7 +206,7 @@ export class Client {
         this.putUpdateCalendarEvent = putUpdateCalendarEvent(rest_api_url, getJwt);
 
         // account
-        this.getAccount = getAccount(rest_api_url);
+        this._getAccount = getAccount(rest_api_url);
         this.getAccountsBySearch = getAccountsBySearch(rest_api_url, getJwt);
         this.createAccount = createAccount(rest_api_url);
         this.updateAccount = updateAccount(rest_api_url, getJwt);
@@ -1114,6 +1115,21 @@ export class Client {
             }
         }
         return data(stream);
+    };
+
+    getAccount = async (args: { npub: string }, options?: { useCache: boolean }) => {
+        if (options?.useCache) {
+            const account = this.accounts.get(args.npub);
+            if (account) {
+                return account;
+            }
+        }
+        const account = await this._getAccount(args);
+        if (account instanceof Error) {
+            return account;
+        }
+        this.accounts.set(args.npub, account);
+        return account;
     };
 
     /**
