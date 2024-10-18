@@ -1232,6 +1232,7 @@ export * from "./models/metric.ts";
 export * from "./models/place.ts";
 export * from "./models/region.ts";
 export * from "./models/interest.ts";
+export * from "./models/reaction.ts";
 // data resolvers
 export * from "./resolvers/location.ts";
 export * from "./resolvers/user.ts";
