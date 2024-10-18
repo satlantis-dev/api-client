@@ -353,6 +353,16 @@ Deno.test("login", async () => {
     }
 });
 
+// https://laiertwolabs.slack.com/archives/C07BQ02QKH6/p1729247936404739
+Deno.test("getNote", async () => {
+    // this note has 99+ replies
+    const note = await client.getNote({ noteID: 531394 });
+    if (note instanceof Error) {
+        fail(note.message);
+    }
+    assertEquals(note?.descendants[0].content, "We are known for our boomer sized emojis, yes :gma:");
+});
+
 Deno.test("getNotes", async () => {
     // @ts-ignore: test private
     const result = await client.getNotesOfPubkey({
