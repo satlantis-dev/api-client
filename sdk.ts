@@ -83,7 +83,9 @@ export type func_GetNostrSigner = () => Promise<(Signer & Encrypter) | Error>;
 export type func_GetJwt = () => string;
 
 export class Client {
+    // Caches
     private me: UserResolver | undefined = undefined;
+    private users = new Map<string, UserResolver>();
 
     // Place
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
@@ -755,36 +757,46 @@ export class Client {
         return this.resolver.getUser(pubkey);
     };
 
-    getMyProfile = async (): Promise<UserResolver | Error> => {
+    getMyProfile = async (options?: {
+        useCache: boolean;
+    }): Promise<UserResolver | Error> => {
+        if (options?.useCache && this.me) {
+            return this.me;
+        }
         const signer = await this.getNostrSigner();
         if (signer instanceof Error) {
             return signer;
         }
 
-        const account = await this.getAccount({
-            npub: signer.publicKey.bech32(),
-        });
-        if (account instanceof Error) {
-            return account;
-        }
+        // const account = await this.getAccount({
+        //     npub: signer.publicKey.bech32(),
+        // });
+        // if (account instanceof Error) {
+        //     return account;
+        // }
 
-        const me = new UserResolver(
-            this,
-            signer.publicKey,
-            account.isAdmin || false,
-            account.isBusiness,
-            account.nip05,
-            {
-                about: account.about,
-                banner: account.banner,
-                displayName: account.displayName,
-                lud06: account.lud06,
-                lud16: account.lud16,
-                name: account.name,
-                picture: account.picture,
-                website: account.website,
-            },
-        );
+        // const me = new UserResolver(
+        //     this,
+        //     signer.publicKey,
+        //     account.isAdmin || false,
+        //     account.isBusiness,
+        //     account.nip05,
+        //     {
+        //         about: account.about,
+        //         banner: account.banner,
+        //         displayName: account.displayName,
+        //         lud06: account.lud06,
+        //         lud16: account.lud16,
+        //         name: account.name,
+        //         picture: account.picture,
+        //         website: account.website,
+        //     },
+        // );
+
+        const me = await this.resolver.getUser(signer.publicKey, options);
+        if (me instanceof Error) {
+            return me;
+        }
 
         this.me = me;
         return me;
@@ -1109,13 +1121,22 @@ export class Client {
      * @unstable
      */
     resolver = {
-        getUser: async (pubkey: PublicKey | string): Promise<UserResolver | Error> => {
+        getUser: async (pubkey: PublicKey | string, options?: {
+            useCache: boolean;
+        }): Promise<UserResolver | Error> => {
             if (typeof pubkey == "string") {
                 const _pubkey = PublicKey.FromString(pubkey);
                 if (_pubkey instanceof Error) {
                     return _pubkey;
                 }
                 pubkey = _pubkey;
+            }
+
+            if (options?.useCache) {
+                const user = this.users.get(pubkey.hex);
+                if (user) {
+                    return user;
+                }
             }
 
             const account = await this.getAccount({
@@ -1125,7 +1146,7 @@ export class Client {
                 return account;
             }
 
-            return new UserResolver(
+            const user = new UserResolver(
                 this,
                 pubkey,
                 account.isAdmin || false,
@@ -1142,6 +1163,8 @@ export class Client {
                     website: account.website,
                 },
             );
+            this.users.set(user.pubkey.hex, user);
+            return user;
         },
 
         /**
