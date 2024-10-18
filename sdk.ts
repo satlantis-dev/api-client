@@ -942,7 +942,7 @@ export class Client {
             return uploadedImageUrl;
         }
 
-        const fullContent = `${uploadedImageUrl} ${args.content}`;
+        const fullContent = `${args.content}\n${uploadedImageUrl}`;
 
         const event = await prepareNostrEvent(signer, {
             kind: NostrKind.TEXT_NOTE,
