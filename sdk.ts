@@ -48,6 +48,7 @@ import {
 } from "./api/place.ts";
 import {
     addAccountRole,
+    deleteAccount,
     getAccountsBySearch,
     removeAccountRole,
     updateAccount,
@@ -121,6 +122,7 @@ export class Client {
      * @unstable
      */
     private updateAccount: ReturnType<typeof updateAccount>;
+    deleteAccount: ReturnType<typeof deleteAccount>;
 
     // note
     private getNotesOfPubkey: ReturnType<typeof getNotesOfPubkey>;
@@ -210,6 +212,7 @@ export class Client {
         this.getAccountsBySearch = getAccountsBySearch(rest_api_url, getJwt);
         this.createAccount = createAccount(rest_api_url);
         this.updateAccount = updateAccount(rest_api_url, getJwt);
+        this.deleteAccount = deleteAccount(rest_api_url, getJwt, getNostrSigner);
 
         this.getNotesOfPubkey = getNotesOfPubkey(rest_api_url);
         this.getNotes = getNotes(rest_api_url);

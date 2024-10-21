@@ -1,0 +1,23 @@
+name: On Repository Dispatch
+
+on:
+    repository_dispatch:
+        types: [custom-event]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: setup repo
+              uses: actions/checkout@v3
+
+            - name: setup deno
+              uses: denoland/setup-deno@v1
+              with:
+                  deno-version: 2.0.0
+
+            - name: check
+              run: make check
+
+            - name: run tests
+              run: make test
