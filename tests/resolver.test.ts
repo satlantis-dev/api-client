@@ -186,3 +186,49 @@ Deno.test("getUser useCache", async () => {
     const u4 = await client.resolver.getUser(signer.publicKey, { useCache: false });
     assertEquals(u3 != u4, true); // same reference
 });
+
+Deno.test("getOwnerForLocation", async () => {
+    // https://api-dev.satlantis.io/getAccountsForLocation/1281
+    const locationId = 1281;
+    const account = await client.resolver.getOwnerForLocation({
+        locationId,
+    });
+    if (account instanceof Error) {
+        fail(account.message);
+    }
+    const npub = account?.pubkey.bech32();
+    if (!npub) {
+        fail("npub is undefined");
+    }
+    const _account = await client.getAccount({
+        npub,
+    });
+    if (_account instanceof Error) {
+        fail(_account.message);
+    }
+    if (!_account.locations) {
+        fail("The account's owned locations are null.");
+    }
+    assertEquals(_account.locations.some((location) => location.locationId === locationId), true);
+});
+
+Deno.test("getOwnedLocationsForAccount", async () => {
+    // https://api-dev.satlantis.io/getAccount/npub1k07dmj2h95c7kd69gzwcg4rswwx4096ka8v0mltymewdzp3lck8q44tz6s
+    const npub = "npub1k07dmj2h95c7kd69gzwcg4rswwx4096ka8v0mltymewdzp3lck8q44tz6s";
+    const account = await client.getAccount({ npub });
+    if (account instanceof Error) {
+        fail(account.message);
+    }
+    if (!account.locations) {
+        fail("The account's owned locations are null.");
+    }
+    for (const location of account.locations) {
+        const owner = await client.resolver.getOwnerForLocation({
+            locationId: location.locationId,
+        });
+        if (owner instanceof Error) {
+            fail(owner.message);
+        }
+        assertEquals(owner?.pubkey.bech32() === npub, true);
+    }
+});

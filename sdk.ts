@@ -23,6 +23,7 @@ import {
 import { getIpInfo } from "./api/ip.ts";
 import {
     claimLocation,
+    getAccountsForLocation,
     getLocation,
     getLocationReviews,
     getLocationsByPlaceID,
@@ -138,6 +139,7 @@ export class Client {
     private _claimLocation: ReturnType<typeof claimLocation>;
     proveLocationClaim: ReturnType<typeof proveLocationClaim>;
     updateLocation: ReturnType<typeof updateLocation>;
+    private getAccountsForLocation: ReturnType<typeof getAccountsForLocation>;
 
     //
     addressLookup: ReturnType<typeof addressLookup>;
@@ -227,6 +229,7 @@ export class Client {
         this._claimLocation = claimLocation(rest_api_url, getJwt);
         this.proveLocationClaim = proveLocationClaim(rest_api_url, getJwt, getNostrSigner);
         this.updateLocation = updateLocation(rest_api_url, getJwt);
+        this.getAccountsForLocation = getAccountsForLocation(rest_api_url);
 
         //
         this.addressLookup = addressLookup(rest_api_url);
@@ -1225,6 +1228,35 @@ export class Client {
                         googleRating: l.googleRating,
                     }),
             );
+        },
+        /**
+         * @unstable
+         */
+        getOwnerForLocation: async (args: {
+            locationId: number;
+        }) => {
+            const accounts = await this.getAccountsForLocation({ locationId: args.locationId });
+            if (accounts instanceof Error) {
+                return accounts;
+            }
+            if (accounts.length > 1) {
+                return new Error(`more than one owner for the location, locationId: ${args.locationId}`);
+            }
+            for (const account of accounts) {
+                const pubkey = PublicKey.FromHex(account.pubKey);
+                if (pubkey instanceof Error) {
+                    console.error(`account ${account.id} has invalid pubkey`, pubkey);
+                    continue;
+                }
+                return new UserResolver(
+                    this,
+                    pubkey,
+                    account.isAdmin,
+                    account.isBusiness,
+                    account.nip05,
+                    account,
+                );
+            }
         },
     };
 }

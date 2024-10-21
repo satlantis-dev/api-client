@@ -224,6 +224,30 @@ async (args: {
     return handleResponse(response);
 };
 
+export const getAccountsForLocation = (urlArg: URL) =>
+async (args: {
+    locationId: number;
+}) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getAccountsForLocation/${args.locationId}`;
+
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{
+        readonly id: number;
+        readonly about: string;
+        readonly isAdmin: boolean;
+        readonly isBusiness: boolean;
+        readonly name: string;
+        readonly nip05: string;
+        readonly npub: string;
+        readonly picture: string;
+        readonly pubKey: string;
+    }[]>(response);
+};
+
 type LocationByPlace = {
     readonly id: number;
     readonly accounts: null;
