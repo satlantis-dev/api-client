@@ -178,3 +178,41 @@ export const getAccountsBySearch =
         }
         return handleResponse<Account[]>(response);
     };
+
+export const deleteAccount =
+    (urlArg: URL, getJwt: func_GetJwt, getSigner: func_GetNostrSigner) => async () => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const signer = await getSigner();
+        if (signer instanceof Error) {
+            return signer;
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/deleteAccount`;
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const kind0 = await prepareNostrEvent(signer, {
+            kind: NostrKind.META_DATA,
+            content: "{}",
+        });
+        if (kind0 instanceof Error) {
+            return kind0;
+        }
+
+        const response = await safeFetch(url, {
+            method: "DELETE",
+            body: JSON.stringify({
+                event: kind0,
+            }),
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<Account>(response);
+    };
