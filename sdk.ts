@@ -1240,7 +1240,7 @@ export class Client {
                 return accounts;
             }
             if (accounts.length > 1) {
-                return new Error(`more than one owner for the location, locationId: ${args.locationId}`);
+                console.error(`more than one owner for the location, locationId: ${args.locationId}`);
             }
             for (const account of accounts) {
                 const pubkey = PublicKey.FromHex(account.pubKey);
