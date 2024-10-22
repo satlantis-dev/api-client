@@ -1239,14 +1239,14 @@ export class Client {
             if (accounts instanceof Error) {
                 return accounts;
             }
+            // https://linear.app/sat-lantis/issue/SAT-1161/endpoint-getaccountsforlocationlocationid#comment-18c9a50c
             if (accounts.length > 1) {
-                console.error(`more than one owner for the location, locationId: ${args.locationId}`);
+                console.warn(`more than one owner for the location, locationId: ${args.locationId}`);
             }
             for (const account of accounts) {
                 const pubkey = PublicKey.FromHex(account.pubKey);
                 if (pubkey instanceof Error) {
-                    console.error(`account ${account.id} has invalid pubkey`, pubkey);
-                    continue;
+                    return pubkey;
                 }
                 return new UserResolver(
                     this,
