@@ -204,15 +204,24 @@ export const deleteAccount =
             return kind0;
         }
 
+        const body = JSON.stringify({
+            event: kind0,
+        });
+
         const response = await safeFetch(url, {
             method: "DELETE",
-            body: JSON.stringify({
-                event: kind0,
-            }),
+            body,
             headers,
         });
         if (response instanceof Error) {
             return response;
         }
-        return handleResponse<Account>(response);
+        const responseBody = await response.text();
+        if (responseBody instanceof Error) {
+            return responseBody;
+        }
+        if (responseBody == "Account deleted") {
+            return true;
+        }
+        return false;
     };

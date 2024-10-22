@@ -186,3 +186,9 @@ Deno.test("getUser useCache", async () => {
     const u4 = await client.resolver.getUser(signer.publicKey, { useCache: false });
     assertEquals(u3 != u4, true); // same reference
 });
+
+Deno.test("xxx", async () => {
+    const err = await client.deleteAccount();
+    console.log(signer.publicKey.bech32());
+    console.log(err);
+});
