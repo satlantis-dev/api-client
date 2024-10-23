@@ -12,5 +12,9 @@ export const getInterests = (urlArg: URL) => async () => {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<Interest[]>(response);
+    const results = await handleResponse<Interest[]>(response);
+    if(results instanceof Error) {
+        return results
+    }
+    return results.filter(i => i.name != "Default")
 };

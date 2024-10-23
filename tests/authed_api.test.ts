@@ -363,6 +363,8 @@ Deno.test("getInterests", async () => {
     const interests = await client.getInterests();
     if (interests instanceof Error) fail(interests.message);
     assertEquals(interests.length > 0, true);
+    // https://linear.app/sat-lantis/issue/SAT-1115/remove-default-from-interests-list
+    assertEquals(interests.find(i=>i.name == "Default"), undefined)
 });
 
 //Todo: unfinished
