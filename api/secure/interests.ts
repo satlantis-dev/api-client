@@ -13,8 +13,8 @@ export const getInterests = (urlArg: URL) => async () => {
         return response;
     }
     const results = await handleResponse<Interest[]>(response);
-    if(results instanceof Error) {
-        return results
+    if (results instanceof Error) {
+        return results;
     }
-    return results.filter(i => i.name != "Default")
+    return results.filter((i) => i.name != "Default");
 };
