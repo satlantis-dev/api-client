@@ -160,6 +160,9 @@ export class Client {
      * @unstable
      */
     private updateAccountFollowingList: ReturnType<typeof updateAccountFollowingList>;
+    /**
+     * get a list of interests acknowledged by the backend
+     */
     getInterests: ReturnType<typeof getInterests>;
 
     // nostr note
