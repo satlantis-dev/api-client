@@ -368,6 +368,7 @@ export class Client {
                 ["g", args.geoHash],
                 ["location", args.location],
                 ["summary", args.summary],
+                ["url", args.url],
             ],
         });
         if (event instanceof Error) {
@@ -428,6 +429,7 @@ export class Client {
                 ["g", args.geoHash],
                 ["location", args.location],
                 ["summary", args.summary],
+                ["url", args.url],
             ],
         });
         if (event instanceof Error) {
@@ -767,9 +769,7 @@ export class Client {
         return this.resolver.getUser(pubkey);
     };
 
-    getMyProfile = async (options?: {
-        useCache: boolean;
-    }): Promise<UserResolver | Error> => {
+    getMyProfile = async (options?: { useCache: boolean }): Promise<UserResolver | Error> => {
         if (options?.useCache && this.me) {
             return this.me;
         }
@@ -1121,9 +1121,12 @@ export class Client {
      * @unstable
      */
     resolver = {
-        getUser: async (pubkey: PublicKey | string, options?: {
-            useCache: boolean;
-        }): Promise<UserResolver | Error> => {
+        getUser: async (
+            pubkey: PublicKey | string,
+            options?: {
+                useCache: boolean;
+            },
+        ): Promise<UserResolver | Error> => {
             if (typeof pubkey == "string") {
                 const _pubkey = PublicKey.FromString(pubkey);
                 if (_pubkey instanceof Error) {
@@ -1139,9 +1142,12 @@ export class Client {
                 }
             }
 
-            const account = await this.getAccount({
-                npub: pubkey.bech32(),
-            }, options);
+            const account = await this.getAccount(
+                {
+                    npub: pubkey.bech32(),
+                },
+                options,
+            );
             if (account instanceof Error) {
                 return account;
             }
@@ -1235,9 +1241,7 @@ export class Client {
         /**
          * @unstable
          */
-        getOwnerForLocation: async (args: {
-            locationId: number;
-        }) => {
+        getOwnerForLocation: async (args: { locationId: number }) => {
             const accounts = await this.getAccountsForLocation({ locationId: args.locationId });
             if (accounts instanceof Error) {
                 return accounts;
