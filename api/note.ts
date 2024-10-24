@@ -25,6 +25,10 @@ export enum NoteType {
     REPLY_NOTE,
     MEDIA,
 }
+export enum NoteSortByEnum {
+    RECENT = "recent",
+    TRENDING = "trending",
+}
 
 export type Note = {
     readonly id: number;
@@ -65,11 +69,23 @@ export const getNotesOfPubkey =
         return handleResponse<Note[]>(response);
     };
 
-export const getNotes = (urlArg: URL) => async (args: { page: number; limit: number }) => {
+export const getNotes = (urlArg: URL) =>
+async (args: {
+    page: number;
+    limit: number;
+    placeId?: string;
+    sort?: NoteSortByEnum;
+}) => {
     const url = copyURL(urlArg);
     url.pathname = `/getNotes`;
     url.searchParams.set("page", String(args.page));
     url.searchParams.set("limit", String(args.limit));
+    if (args.placeId) {
+        url.searchParams.set("placeId", String(args.placeId));
+    }
+    if (args.sort) {
+        url.searchParams.set("sort", String(args.sort));
+    }
 
     const response = await safeFetch(url);
     if (response instanceof Error) {
