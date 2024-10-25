@@ -187,8 +187,7 @@ Deno.test("getUser useCache", async () => {
     assertEquals(u3 != u4, true); // same reference
 });
 
-Deno.test("xxx", async () => {
-    const err = await client.deleteAccount();
-    console.log(signer.publicKey.bech32());
-    console.log(err);
+Deno.test("deleteAccount", async () => {
+    const ok = await client.deleteAccount();
+    assertEquals(ok, true)
 });

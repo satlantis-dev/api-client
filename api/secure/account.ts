@@ -220,7 +220,7 @@ export const deleteAccount =
         if (responseBody instanceof Error) {
             return responseBody;
         }
-        if (responseBody == "Account deleted") {
+        if (response.status == 200) {
             return true;
         }
         return false;
