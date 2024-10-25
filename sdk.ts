@@ -298,26 +298,26 @@ export class Client {
         page: number;
         sortColumn: "score" | "id" | "price";
         sortDirection: "desc" | "asc";
-    }, options?: {useCache: boolean}) => {
-        if(options?.useCache) {
-            const results = []
-            for(const place of this.places.values()) {
-                if(place.name.includes(args.filters.name)) {
-                    results.push(place)
+    }, options?: { useCache: boolean }) => {
+        if (options?.useCache) {
+            const results = [];
+            for (const place of this.places.values()) {
+                if (place.name.includes(args.filters.name)) {
+                    results.push(place);
                 }
             }
-            return results
+            return results;
         }
-        const places = await this._getPlaces(args)
-        if(places instanceof Error) {
-            return places
+        const places = await this._getPlaces(args);
+        if (places instanceof Error) {
+            return places;
         }
         // set cache
-        for(const place of places) {
-            this.places.set(place.id, place)
+        for (const place of places) {
+            this.places.set(place.id, place);
         }
         return places;
-    }
+    };
 
     getPlaceByOsmRef = async (args: { osmRef: string | number }) => {
         const place = await this._getPlaceByOsmRef(args);
