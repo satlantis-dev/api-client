@@ -128,7 +128,7 @@ Deno.test("getLocation", async () => {
 
     assertEquals(place.name, "Funchal");
 
-    const locations = await client.resolver.getLocationsByPlaceID({ placeID: place.id });
+    const locations = await client.resolver.getLocationsByPlaceID({ placeID: place.id, search: result.name });
     if (locations instanceof Error) fail(locations.message);
 
     const location = locations.find((l) => l.id == id);
@@ -189,5 +189,5 @@ Deno.test("getUser useCache", async () => {
 
 Deno.test("deleteAccount", async () => {
     const ok = await client.deleteAccount();
-    assertEquals(ok, true)
+    assertEquals(ok, true);
 });

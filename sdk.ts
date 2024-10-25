@@ -89,11 +89,12 @@ export class Client {
     private me: UserResolver | undefined = undefined;
     private users = new Map<string, UserResolver>();
     private accounts = new Map<string, Account>();
+    private places = new Map<number, Place>();
 
     // Place
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
     private _getPlaceByOsmRef: ReturnType<typeof getPlaceByOsmRef>;
-    getPlaces: ReturnType<typeof getPlaces>;
+    private _getPlaces: ReturnType<typeof getPlaces>;
     getPlaceEvent: ReturnType<typeof getPlaceEvent>;
     getPlaceNotes: ReturnType<typeof getPlaceNotes>;
     getPlaceMetrics: ReturnType<typeof getPlaceMetrics>;
@@ -192,7 +193,7 @@ export class Client {
         public readonly getNostrSigner: func_GetNostrSigner,
     ) {
         this._getPlaceByOsmRef = getPlaceByOsmRef(rest_api_url);
-        this.getPlaces = getPlaces(rest_api_url);
+        this._getPlaces = getPlaces(rest_api_url);
         this.getAccountPlaceRoles = getAccountPlaceRoles(rest_api_url);
         this.getPlaceNotes = getPlaceNotes(rest_api_url);
         this.getPlaceMetrics = getPlaceMetrics(rest_api_url);
@@ -289,7 +290,35 @@ export class Client {
     }
 
     // Place
-    places = new Map<number, Place>();
+    getPlaces = async (args: {
+        filters: {
+            name: string;
+        };
+        limit: number;
+        page: number;
+        sortColumn: "score" | "id" | "price";
+        sortDirection: "desc" | "asc";
+    }, options?: { useCache: boolean }) => {
+        if (options?.useCache) {
+            const results = [];
+            for (const place of this.places.values()) {
+                if (place.name.includes(args.filters.name)) {
+                    results.push(place);
+                }
+            }
+            return results;
+        }
+        const places = await this._getPlaces(args);
+        if (places instanceof Error) {
+            return places;
+        }
+        // set cache
+        for (const place of places) {
+            this.places.set(place.id, place);
+        }
+        return places;
+    };
+
     getPlaceByOsmRef = async (args: { osmRef: string | number }) => {
         const place = await this._getPlaceByOsmRef(args);
         if (place instanceof Error) {
