@@ -37,6 +37,9 @@ async (args: {
     const url = copyURL(urlArg);
     url.pathname = `/getLocationsByPlaceID/${args.placeID}`;
     url.searchParams.set("google_rating", String(args.google_rating));
+    if (args.search) {
+        url.searchParams.set("search", String(args.search));
+    }
 
     const response = await safeFetch(url);
     if (response instanceof Error) {
