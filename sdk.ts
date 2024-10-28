@@ -90,7 +90,7 @@ export class Client {
     private me: UserResolver | undefined = undefined;
     private users = new Map<string, UserResolver>();
     private accounts = new Map<string, Account>();
-    private places = new Map<number, Place>();
+    private places = new Map<number | string, Place>();
 
     // Place
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
@@ -327,7 +327,13 @@ export class Client {
         return places;
     };
 
-    getPlaceByOsmRef = async (args: { osmRef: string | number }) => {
+    getPlaceByOsmRef = async (args: { osmRef: string | number }, options?: { useCache: boolean }) => {
+        if (options?.useCache) {
+            const place = this.places.get(args.osmRef);
+            if (place) {
+                return place;
+            }
+        }
         const place = await this._getPlaceByOsmRef(args);
         if (place instanceof Error) {
             return place;
