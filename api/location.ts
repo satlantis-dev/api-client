@@ -214,7 +214,7 @@ async (args: {
     const url = copyURL(urlArg);
     url.pathname = `/secure/updateLocation/${args.locationId}`;
 
-    const body = JSON.stringify(location);
+    const body = JSON.stringify(args.location);
 
     const response = await safeFetch(url, {
         method: "PUT",
