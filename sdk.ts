@@ -338,24 +338,10 @@ export class Client {
             sortColumn: "score" | "id" | "price";
             sortDirection: "desc" | "asc";
         },
-        options?: { useCache: boolean },
     ) => {
-        if (options?.useCache) {
-            const results = [];
-            for (const place of this.places.values()) {
-                if (place.name.includes(args.filters.name)) {
-                    results.push(place);
-                }
-            }
-            return results;
-        }
         const places = await getPlacesMinimal(this.rest_api_url)(args);
         if (places instanceof Error) {
             return places;
-        }
-        // set cache
-        for (const place of places) {
-            this.places.set(place.id, place);
         }
         return places;
     };

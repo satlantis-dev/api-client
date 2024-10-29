@@ -66,7 +66,7 @@ async (args: {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<Place[]>(response);
+    return handleResponse<{ id: number; name: string; country_name: string }[]>(response);
 };
 
 /**
