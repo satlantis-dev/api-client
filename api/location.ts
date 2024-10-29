@@ -233,7 +233,7 @@ async (args: {
     if (response.status != 200) {
         return new ApiError(response.status, res_text);
     }
-    return res_text
+    return res_text;
 };
 
 export const getAccountsForLocation = (urlArg: URL) =>
