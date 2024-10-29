@@ -44,6 +44,31 @@ async (args: {
     return handleResponse<Place[]>(response);
 };
 
+export const getPlacesMinimal = (urlArg: URL) =>
+async (args: {
+    filters: {
+        name: string;
+    };
+    limit: number;
+    page: number;
+    sortColumn: "score" | "id" | "price";
+    sortDirection: "desc" | "asc";
+}) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getPlacesMinimal`;
+    url.searchParams.append("filters", JSON.stringify(args.filters));
+    url.searchParams.append("limit", JSON.stringify(args.limit));
+    url.searchParams.append("page", JSON.stringify(args.page));
+    url.searchParams.append("sortColumn", args.sortColumn);
+    url.searchParams.append("sortDirection", args.sortDirection);
+
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<Place[]>(response);
+};
+
 /**
  * GET getPlaceNotes/{placeID}
  */
