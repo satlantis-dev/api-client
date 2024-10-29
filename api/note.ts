@@ -33,6 +33,10 @@ export enum NoteSortByEnum {
 export type Note = {
     readonly id: number;
     readonly accountId: number;
+    /**
+     * @deprecated sometimems this field is empty, the backend is not always returning account data in all APIs
+     * prefer to calling apiClient.resolver.getUser(pubkey) or apiClient.getAccount(accountId)
+     */
     readonly account: Account;
     readonly createdAt: string;
     readonly content: string;

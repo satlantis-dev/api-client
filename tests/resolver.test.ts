@@ -191,3 +191,20 @@ Deno.test("deleteAccount", async () => {
     const ok = await client.deleteAccount();
     assertEquals(ok, true);
 });
+
+Deno.test("getPlacesMinimal", async () => {
+    const places = await client.getPlacesMinimal({
+        filters: { name: "" },
+        limit: 100,
+        page: 1,
+        sortColumn: "id",
+        sortDirection: "asc",
+    });
+    if (places instanceof Error) {
+        fail(places.message);
+    }
+    // currently we have 86 cities
+    // once the data team adds more cities, this test will fail
+    // and we should update the number here
+    assertEquals(places.length, 86);
+});
