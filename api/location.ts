@@ -1,5 +1,5 @@
-import { copyURL, handleResponse } from "../helpers/_helper.ts";
-import { safeFetch } from "../helpers/safe-fetch.ts";
+import { ApiError, copyURL, handleResponse } from "../helpers/_helper.ts";
+import { Aborted, safeFetch } from "../helpers/safe-fetch.ts";
 import { type Location, type LocationByID, type LocationTag } from "../models/location.ts";
 import { prepareLocationSetEvent, preparePlaceEvent } from "../nostr-helpers.ts";
 import type { Address, func_GetJwt, func_GetNostrSigner, LocationInfo, OpeningHours } from "../sdk.ts";
@@ -224,7 +224,14 @@ async (args: {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse(response);
+    const res_text = await response.text();
+    if (res_text instanceof Aborted) {
+        return body;
+    }
+    if (response.status != 200) {
+        return new ApiError(response.status, res_text);
+    }
+    return res_text
 };
 
 export const getAccountsForLocation = (urlArg: URL) =>

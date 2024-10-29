@@ -48,7 +48,9 @@ export type LocationByID = {
     address: Address;
     googleRating: number;
     googleUserRatingCount: number;
-    email?: string;
+    email: string;
+    phone?: string;
+    websiteUrl?: string;
 };
 
 export type Address = {
