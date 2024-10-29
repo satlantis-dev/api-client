@@ -17,6 +17,8 @@ export class LocationResolver implements LocationByID {
     googleRating: number;
     googleUserRatingCount: number;
     email: string;
+    phone: string;
+    websiteUrl: string;
 
     /**
      * @unstable
@@ -36,6 +38,8 @@ export class LocationResolver implements LocationByID {
         this.googleRating = data.googleRating;
         this.googleUserRatingCount = data.googleUserRatingCount;
         this.email = data.email || "";
+        this.phone = data.phone || "";
+        this.websiteUrl = data.websiteUrl || "";
     }
 
     place = async () => {
