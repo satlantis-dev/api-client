@@ -224,6 +224,8 @@ async (args: {
     if (response instanceof Error) {
         return response;
     }
+    // The response is not in JSON format.
+    // https://linear.app/sat-lantis/issue/SAT-950/be-edit-location#comment-824937ba
     const res_text = await response.text();
     if (res_text instanceof Aborted) {
         return body;
