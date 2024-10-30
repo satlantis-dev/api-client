@@ -1164,7 +1164,7 @@ export class Client {
         /**
          * @unstable
          */
-        getGlobalFeed: async (args: { page: number; limit: number }) => {
+        getGlobalFeed: async (args: { page: number; limit: number; placeId?: string }) => {
             const me = await this.getNostrSigner();
             if (me instanceof Error) {
                 return me;
@@ -1172,6 +1172,7 @@ export class Client {
             const notes = await this.getNotes({
                 page: args.page,
                 limit: args.limit,
+                placeId: args.placeId,
             });
             if (notes instanceof Error) {
                 return notes;
