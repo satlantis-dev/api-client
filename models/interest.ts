@@ -4,7 +4,7 @@ export type Interest = {
     readonly description: string;
     readonly recommendationsByNpub: string[] | null | undefined;
     readonly recommendationsById: null | undefined;
-    readonly autofollowsByNpub: null | undefined;
+    readonly autofollowsByNpub: string[] | null | undefined;
     readonly autofollowsById: null | undefined;
     readonly hashtags: string[] | null | undefined;
 };
