@@ -36,6 +36,7 @@ import { loginNostr } from "./api/login.ts";
 import { getNote, getNotes, getNotesOfPubkey, NoteType } from "./api/note.ts";
 import { getAccountPlaceRoles } from "./api/people.ts";
 import {
+    getAllPlaceRegionCountryNames,
     getPlaceByOsmRef,
     getPlaceCalendarEvents,
     getPlaceCategoryScores,
@@ -94,6 +95,7 @@ export class Client {
     private places = new Map<number | string, Place>();
 
     // Place
+    private _getAllPlaceRegionCountryNames: ReturnType<typeof getAllPlaceRegionCountryNames>;
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
     private _getPlaceByOsmRef: ReturnType<typeof getPlaceByOsmRef>;
     private _getPlaces: ReturnType<typeof getPlaces>;
@@ -196,6 +198,7 @@ export class Client {
         public readonly getJwt: func_GetJwt,
         public readonly getNostrSigner: func_GetNostrSigner,
     ) {
+        this._getAllPlaceRegionCountryNames = getAllPlaceRegionCountryNames(rest_api_url);
         this._getPlaceByOsmRef = getPlaceByOsmRef(rest_api_url);
         this._getPlaces = getPlaces(rest_api_url);
         this.getAccountPlaceRoles = getAccountPlaceRoles(rest_api_url);
@@ -296,6 +299,10 @@ export class Client {
     }
 
     // Place
+    getAllPlaceRegionCountryNames = async () => {
+        return await this._getAllPlaceRegionCountryNames();
+    };
+
     getPlaces = async (
         args: {
             filters: {
@@ -328,17 +335,15 @@ export class Client {
         return places;
     };
 
-    getPlacesMinimal = async (
-        args: {
-            filters: {
-                name: string;
-            };
-            limit: number;
-            page: number;
-            sortColumn: "score" | "id" | "price";
-            sortDirection: "desc" | "asc";
-        },
-    ) => {
+    getPlacesMinimal = async (args: {
+        filters: {
+            name: string;
+        };
+        limit: number;
+        page: number;
+        sortColumn: "score" | "id" | "price";
+        sortDirection: "desc" | "asc";
+    }) => {
         const places = await getPlacesMinimal(this.rest_api_url)(args);
         if (places instanceof Error) {
             return places;

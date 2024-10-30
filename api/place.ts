@@ -6,6 +6,16 @@ import { type Region } from "../models/region.ts";
 
 import { type PlaceNote } from "./note.ts";
 
+export const getAllPlaceRegionCountryNames = (urlArg: URL) => async () => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getAllPlaceRegionCountryNames`;
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<string[]>(response);
+};
+
 /**
  * get the place based on OSM ID or ID, only 1 is needed
  */
