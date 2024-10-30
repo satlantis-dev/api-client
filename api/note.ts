@@ -25,10 +25,6 @@ export enum NoteType {
     REPLY_NOTE,
     MEDIA,
 }
-export enum NoteSortByEnum {
-    RECENT = "recent",
-    TRENDING = "trending",
-}
 
 export type Note = {
     readonly id: number;
@@ -78,7 +74,7 @@ async (args: {
     page: number;
     limit: number;
     placeId?: string;
-    sort?: NoteSortByEnum;
+    sort?: "recent" | "trending";
 }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getNotes`;
