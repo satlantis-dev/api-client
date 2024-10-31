@@ -1051,16 +1051,6 @@ export class Client {
             return event;
         }
 
-        const relay = SingleRelayConnection.New(this.relay_url);
-        if (relay instanceof Error) {
-            return relay;
-        }
-        const err = await relay.sendEvent(event);
-        await relay.close();
-        if (err instanceof Error) {
-            return err;
-        }
-
         const res = await this._postNote({
             event,
             noteType: NoteType.MEDIA,
