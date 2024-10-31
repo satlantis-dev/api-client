@@ -716,10 +716,6 @@ export class Client {
     };
 
     unfollowPubkey = async (pubkeyToUnfollow: PublicKey) => {
-        const relay = SingleRelayConnection.New(this.relay_url);
-        if (relay instanceof Error) {
-            return relay;
-        }
         const signer = await this.getNostrSigner();
         if (signer instanceof Error) {
             return signer;
@@ -742,16 +738,10 @@ export class Client {
                 return new_event;
             }
 
-            const err = await relay.sendEvent(new_event);
-            if (err instanceof Error) {
-                return err;
-            }
-
             const ok = await this.updateAccountFollowingList({ event: new_event });
             if (ok instanceof Error) {
                 return ok;
             }
-            await relay.close();
             return ok;
         }
     };
