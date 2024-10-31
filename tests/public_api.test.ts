@@ -249,14 +249,6 @@ Deno.test("getAccount", async (t) => {
         assertEquals(roles[0].type, AccountPlaceRoleTypeEnum.FOLLOWER);
         assertNotEquals(roles[0].type, AccountPlaceRoleTypeEnum.AMBASSADOR);
     });
-
-    await t.step("2", async () => {
-        // blocked by https://linear.app/sat-lantis/issue/SAT-1141/the-shape-of-locations-in-getaccount-is-not-friendly-for-client-and
-        const a = await client.getAccount({
-            npub: "npub1k07dmj2h95c7kd69gzwcg4rswwx4096ka8v0mltymewdzp3lck8q44tz6s",
-        });
-        console.log(a);
-    });
 });
 
 Deno.test({
