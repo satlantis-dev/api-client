@@ -310,7 +310,7 @@ export class Client {
             };
             limit: number;
             page: number;
-            sortColumn: "score" | "id" | "price";
+            sortColumn: "score" | "id" | "price" | "trending" | "topPicks";
             sortDirection: "desc" | "asc";
         },
         options?: { useCache: boolean },
