@@ -36,7 +36,7 @@ async (args: {
     };
     limit: number;
     page: number;
-    sortColumn: "score" | "id" | "price";
+    sortColumn: "score" | "id" | "price" | "trending" | 'topPicks';
     sortDirection: "desc" | "asc";
 }) => {
     const url = copyURL(urlArg);
