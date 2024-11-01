@@ -81,7 +81,7 @@ async (args: {
     url.searchParams.set("page", String(args.page));
     url.searchParams.set("limit", String(args.limit));
     if (args.placeId) {
-        url.searchParams.set("placeId", String(args.placeId));
+        url.searchParams.set("place_id", String(args.placeId));
     }
     if (args.sort) {
         url.searchParams.set("sort", String(args.sort));
