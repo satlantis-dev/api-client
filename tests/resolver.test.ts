@@ -1,4 +1,4 @@
-import { assertEquals, fail } from "@std/assert";
+import { assertEquals, assertExists, fail } from "@std/assert";
 import { Client } from "../sdk.ts";
 import { InMemoryAccountContext } from "@blowater/nostr-sdk";
 import type { UserResolver } from "../sdk.ts";
@@ -117,6 +117,7 @@ Deno.test("getLocation", async () => {
     if (result instanceof Error) {
         fail(result.message);
     }
+    assertExists(result.isClaimed);
     assertEquals(result.id, id);
     assertEquals(result.name, "Snack bar São João");
     assertEquals(result.placeOsmRef, "R8421413");
@@ -163,7 +164,7 @@ Deno.test("a user's interests", async () => {
 });
 
 Deno.test("global feed", async () => {
-    const notes = await client.resolver.getGlobalFeed({ page: 1, limit: 3 });
+    const notes = await client.resolver.getGlobalFeed({ page: 1, limit: 3, placeId: "23949" });
     if (notes instanceof Error) fail(notes.message);
 
     assertEquals(notes.length, 3);

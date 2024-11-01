@@ -51,6 +51,7 @@ export type LocationByID = {
     email: string;
     phone?: string;
     websiteUrl?: string;
+    isClaimed?: boolean;
 };
 
 export type Address = {
