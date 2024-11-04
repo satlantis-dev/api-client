@@ -114,3 +114,20 @@ export const getNote = (urlArg: URL) => async (args: { noteID: number }) => {
         descendants: notes.slice(1),
     };
 };
+
+export const getNoteReactionsById = (urlArg: URL) =>
+async (args: {
+    noteID: number;
+    page: number;
+    limit: number;
+}) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getNoteReactions/${args.noteID}`;
+    url.searchParams.set("page", String(args.page));
+    url.searchParams.set("limit", String(args.limit));
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<Reaction[]>(response);
+};
