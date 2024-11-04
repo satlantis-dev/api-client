@@ -1,4 +1,4 @@
-import { assertEquals, assertInstanceOf, assertNotEquals, fail } from "@std/assert";
+import { assertEquals, assertExists, assertInstanceOf, assertNotEquals, fail } from "@std/assert";
 
 import { AccountPlaceRoleTypeEnum, Client, LocationResolver, loginNostr, type Place } from "../sdk.ts";
 import { InMemoryAccountContext, PrivateKey, PublicKey } from "@blowater/nostr-sdk";
@@ -383,6 +383,20 @@ Deno.test("getNotes", async () => {
 
     // todo: they should pass
     // assertEquals(note.itself, result[0])
+});
+Deno.test("getNoteReactionsById", async () => {
+    const result = await client.getNoteReactionsById({
+        noteID: 3463936,
+        limit: 3,
+        page: 0,
+    });
+    console.log(result);
+    if (result instanceof Error) {
+        console.log(result);
+        fail();
+    }
+    assertEquals(result.length == 3, true);
+    assertExists(result[0].account?.name);
 });
 
 Deno.test("getIpInfo", async () => {

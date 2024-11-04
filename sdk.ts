@@ -33,7 +33,7 @@ import {
     updateLocation,
 } from "./api/location.ts";
 import { loginNostr } from "./api/login.ts";
-import { getNote, getNotes, getNotesOfPubkey, NoteType } from "./api/note.ts";
+import { getNote, getNoteReactionsById, getNotes, getNotesOfPubkey, NoteType } from "./api/note.ts";
 import { getAccountPlaceRoles } from "./api/people.ts";
 import {
     getAllPlaceRegionCountryNames,
@@ -135,6 +135,7 @@ export class Client {
     private getNotes: ReturnType<typeof getNotes>;
     getNote: ReturnType<typeof getNote>;
     getIpInfo: ReturnType<typeof getIpInfo>;
+    getNoteReactionsById: ReturnType<typeof getNoteReactionsById>;
 
     // Location
     getLocationsWithinBoundingBox: ReturnType<typeof getLocationsWithinBoundingBox>;
@@ -228,6 +229,7 @@ export class Client {
         this.deleteAccount = deleteAccount(rest_api_url, getJwt, getNostrSigner);
 
         this.getNotesOfPubkey = getNotesOfPubkey(rest_api_url);
+        this.getNoteReactionsById = getNoteReactionsById(rest_api_url);
         this.getNotes = getNotes(rest_api_url);
         this.getNote = getNote(rest_api_url);
         this.getIpInfo = getIpInfo(rest_api_url);
