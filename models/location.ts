@@ -60,6 +60,7 @@ export type Address = {
     readonly locality: string;
     readonly postalCode: string;
     readonly country: string;
+    readonly formatted: string;
 };
 
 export interface LocationNote {
