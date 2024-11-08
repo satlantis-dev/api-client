@@ -26,7 +26,9 @@ export class UserResolver {
      * @deprecated nip05 is not changeable. No need to fetch the "latest" value
      */
     async getNip05() {
-        const account = await this.client.getAccount({ npub: this.pubkey.bech32() });
+        const account = await this.client.getAccount({
+            npub: this.pubkey.bech32(),
+        });
         if (account instanceof Error) {
             return account;
         }
@@ -43,7 +45,9 @@ export class UserResolver {
      * @deprecated isBusiness is now available during resolver construction
      */
     async getIsBusiness() {
-        const account = await this.client.getAccount({ npub: this.pubkey.bech32() });
+        const account = await this.client.getAccount({
+            npub: this.pubkey.bech32(),
+        });
         if (account instanceof Error) {
             return account;
         }
@@ -59,7 +63,10 @@ export class UserResolver {
      * @unstable
      */
     async getFollowing(options?: { useCache: boolean }) {
-        const account = await this.client.getAccount({ npub: this.pubkey.bech32() }, options);
+        const account = await this.client.getAccount(
+            { npub: this.pubkey.bech32() },
+            options,
+        );
         if (account instanceof Error) {
             return account;
         }
@@ -70,7 +77,14 @@ export class UserResolver {
                 console.error(`account ${a.id} has invalid pubkey`, pub);
                 continue;
             }
-            const u = new UserResolver(this.client, pub, a.isAdmin, a.isBusiness, a.nip05, a);
+            const u = new UserResolver(
+                this.client,
+                pub,
+                a.isAdmin,
+                a.isBusiness,
+                a.nip05,
+                a,
+            );
             newList.push(u);
         }
         this.following = newList;
@@ -79,7 +93,10 @@ export class UserResolver {
 
     followedBy: UserResolver[] = [];
     getFollowedBy = async (options?: { useCache: boolean }) => {
-        const account = await this.client.getAccount({ npub: this.pubkey.bech32() }, options);
+        const account = await this.client.getAccount(
+            { npub: this.pubkey.bech32() },
+            options,
+        );
         if (account instanceof Error) {
             return account;
         }
@@ -90,14 +107,19 @@ export class UserResolver {
                 console.error(`account ${a.id} has invalid pubkey`, pub);
                 continue;
             }
-            newList.push(new UserResolver(this.client, pub, a.isAdmin, a.isBusiness, a.nip05, a));
+            newList.push(
+                new UserResolver(this.client, pub, a.isAdmin, a.isBusiness, a.nip05, a),
+            );
         }
         this.followedBy = newList;
         return this.followedBy;
     };
 
     getAccountPlaceRoles = async (options?: { useCache: boolean }) => {
-        const account = await this.client.getAccount({ npub: this.pubkey.bech32() }, options);
+        const account = await this.client.getAccount(
+            { npub: this.pubkey.bech32() },
+            options,
+        );
         if (account instanceof Error) {
             return account;
         }
@@ -164,7 +186,10 @@ export class UserResolver {
      * @experimental
      */
     getOwnedLocation = async (options?: { useCache: boolean }) => {
-        const account = await this.client.getAccount({ npub: this.pubkey.bech32() }, options);
+        const account = await this.client.getAccount(
+            { npub: this.pubkey.bech32() },
+            options,
+        );
         if (account instanceof Error) {
             return account;
         }
@@ -172,16 +197,19 @@ export class UserResolver {
             return [];
         }
 
-        return account.locations.filter((AccountLoaction) => AccountLoaction.type === "owner").map(
-            (AccountLoaction) => {
+        return account.locations
+            .filter((AccountLoaction) => AccountLoaction.type === "owner")
+            .map((AccountLoaction) => {
                 // @ts-ignore: missing placeOsmRef from the beckend
                 return new LocationResolver(this.client, AccountLoaction.location);
-            },
-        );
+            });
     };
 
     isPlaceAdmin = async (placeId: number, options?: { useCache: boolean }) => {
-        const account = await this.client.getAccount({ npub: this.pubkey.bech32() }, options);
+        const account = await this.client.getAccount(
+            { npub: this.pubkey.bech32() },
+            options,
+        );
         if (account instanceof Error) {
             return account;
         }

@@ -76,6 +76,7 @@ import { followPubkeys, getFollowingPubkeys, getInterestsOf } from "./nostr-help
 import { getPubkeyByNip05 } from "./api/nip5.ts";
 import { safeFetch } from "./helpers/safe-fetch.ts";
 import type { Account, Kind0MetaData } from "./models/account.ts";
+import { AccountResolver } from "./resolvers/account.ts";
 import { UserResolver } from "./resolvers/user.ts";
 import { LocationResolver } from "./resolvers/location.ts";
 import { NoteResolver } from "./resolvers/note.ts";
@@ -90,12 +91,15 @@ export type func_GetJwt = () => string;
 export class Client {
     // Caches
     private me: UserResolver | undefined = undefined;
+    private account: AccountResolver | undefined = undefined;
     private users = new Map<string, UserResolver>();
     private accounts = new Map<string, Account>();
     private places = new Map<number | string, Place>();
 
     // Place
-    private _getAllPlaceRegionCountryNames: ReturnType<typeof getAllPlaceRegionCountryNames>;
+    private _getAllPlaceRegionCountryNames: ReturnType<
+        typeof getAllPlaceRegionCountryNames
+    >;
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
     private _getPlaceByOsmRef: ReturnType<typeof getPlaceByOsmRef>;
     private _getPlaces: ReturnType<typeof getPlaces>;
@@ -113,7 +117,9 @@ export class Client {
     deletePlaceCalendarEvent: ReturnType<typeof deletePlaceCalendarEvent>;
     postCalendarEventRSVP: ReturnType<typeof postCalendarEventRSVP>;
     postPlaceCalendarEvent: ReturnType<typeof postPlaceCalendarEvent>;
-    postCalendarEventAnnouncement: ReturnType<typeof postCalendarEventAnnouncement>;
+    postCalendarEventAnnouncement: ReturnType<
+        typeof postCalendarEventAnnouncement
+    >;
     postCalendarEventNote: ReturnType<typeof postCalendarEventNote>;
     putUpdateCalendarEvent: ReturnType<typeof putUpdateCalendarEvent>;
 
@@ -138,7 +144,9 @@ export class Client {
     getNoteReactionsById: ReturnType<typeof getNoteReactionsById>;
 
     // Location
-    getLocationsWithinBoundingBox: ReturnType<typeof getLocationsWithinBoundingBox>;
+    getLocationsWithinBoundingBox: ReturnType<
+        typeof getLocationsWithinBoundingBox
+    >;
     getLocationReviews: ReturnType<typeof getLocationReviews>;
     private getLocationByID: ReturnType<typeof getLocation>;
     private getLocationsByPlaceID: ReturnType<typeof getLocationsByPlaceID>;
@@ -165,7 +173,9 @@ export class Client {
     /**
      * @unstable
      */
-    private updateAccountFollowingList: ReturnType<typeof updateAccountFollowingList>;
+    private updateAccountFollowingList: ReturnType<
+        typeof updateAccountFollowingList
+    >;
     /**
      * get a list of interests acknowledged by the backend
      */
@@ -214,10 +224,20 @@ export class Client {
 
         // Calendar Events
         this.getPlaceCalendarEvents = getPlaceCalendarEvents(rest_api_url);
-        this.deletePlaceCalendarEvent = deletePlaceCalendarEvent(rest_api_url, getJwt);
+        this.deletePlaceCalendarEvent = deletePlaceCalendarEvent(
+            rest_api_url,
+            getJwt,
+        );
         this.postPlaceCalendarEvent = postPlaceCalendarEvent(rest_api_url, getJwt);
-        this.postCalendarEventRSVP = postCalendarEventRSVP(rest_api_url, getJwt, getNostrSigner);
-        this.postCalendarEventAnnouncement = postCalendarEventAnnouncement(rest_api_url, getJwt);
+        this.postCalendarEventRSVP = postCalendarEventRSVP(
+            rest_api_url,
+            getJwt,
+            getNostrSigner,
+        );
+        this.postCalendarEventAnnouncement = postCalendarEventAnnouncement(
+            rest_api_url,
+            getJwt,
+        );
         this.postCalendarEventNote = postCalendarEventNote(rest_api_url, getJwt);
         this.putUpdateCalendarEvent = putUpdateCalendarEvent(rest_api_url, getJwt);
 
@@ -240,7 +260,11 @@ export class Client {
         this.getLocationByID = getLocation(rest_api_url);
         this.getLocationsByPlaceID = getLocationsByPlaceID(rest_api_url);
         this._claimLocation = claimLocation(rest_api_url, getJwt);
-        this.proveLocationClaim = proveLocationClaim(rest_api_url, getJwt, getNostrSigner);
+        this.proveLocationClaim = proveLocationClaim(
+            rest_api_url,
+            getJwt,
+            getNostrSigner,
+        );
         this.updateLocation = updateLocation(rest_api_url, getJwt);
         this.getAccountsForLocation = getAccountsForLocation(rest_api_url);
 
@@ -248,8 +272,16 @@ export class Client {
         this.addressLookup = addressLookup(rest_api_url);
 
         // authed APIs
-        this.removeAccountRole = removeAccountRole(rest_api_url, this.getJwt, this.getNostrSigner);
-        this.addAccountRole = addAccountRole(rest_api_url, this.getJwt, this.getNostrSigner);
+        this.removeAccountRole = removeAccountRole(
+            rest_api_url,
+            this.getJwt,
+            this.getNostrSigner,
+        );
+        this.addAccountRole = addAccountRole(
+            rest_api_url,
+            this.getJwt,
+            this.getNostrSigner,
+        );
         this.updateAccountFollowingList = updateAccountFollowingList(
             rest_api_url,
             this.getJwt,
@@ -273,7 +305,11 @@ export class Client {
         this.getInterests = getInterests(this.rest_api_url);
 
         //
-        this.postAmbassadorInquiry = postAmbassadorInquiry(rest_api_url, getJwt, getNostrSigner);
+        this.postAmbassadorInquiry = postAmbassadorInquiry(
+            rest_api_url,
+            getJwt,
+            getNostrSigner,
+        );
     }
 
     static New(args: {
@@ -297,7 +333,13 @@ export class Client {
         if (args.getNostrSigner == undefined) {
             args.getNostrSigner = async () => new Error("nostr signer is not provided");
         }
-        return new Client(validURL, args.relay_url, aws_url, args.getJwt, args.getNostrSigner);
+        return new Client(
+            validURL,
+            args.relay_url,
+            aws_url,
+            args.getJwt,
+            args.getNostrSigner,
+        );
     }
 
     // Place
@@ -353,7 +395,10 @@ export class Client {
         return places;
     };
 
-    getPlaceByOsmRef = async (args: { osmRef: string | number }, options?: { useCache: boolean }) => {
+    getPlaceByOsmRef = async (
+        args: { osmRef: string | number },
+        options?: { useCache: boolean },
+    ) => {
         if (options?.useCache) {
             const place = this.places.get(args.osmRef);
             if (place) {
@@ -583,7 +628,10 @@ export class Client {
         return { postResult: res, event };
     };
 
-    deleteCalendarEvent = async (args: { eventId: string; placeCalendarEventId: number }) => {
+    deleteCalendarEvent = async (args: {
+        eventId: string;
+        placeCalendarEventId: number;
+    }) => {
         const jwtToken = this.getJwt();
         if (jwtToken == "") {
             return new Error("jwt token is empty");
@@ -763,7 +811,10 @@ export class Client {
             return signer;
         }
 
-        let content = "#Ambassador Application\n" + `Place: ${args.place}\n\n` + args.comment + "\n\n";
+        let content = "#Ambassador Application\n" +
+            `Place: ${args.place}\n\n` +
+            args.comment +
+            "\n\n";
         if (args.nostr_only) {
             content += "Contact: Nostr Only\n";
         } else if (!args.email && !args.telegram && !args.whatsapp) {
@@ -847,11 +898,15 @@ export class Client {
      *  all resolver APIs will be moved to .resolve in the future
      * remove after: 2024/10/17
      */
-    getUserProfile = async (pubkey: PublicKey | string): Promise<UserResolver | Error> => {
+    getUserProfile = async (
+        pubkey: PublicKey | string,
+    ): Promise<UserResolver | Error> => {
         return this.resolver.getUser(pubkey);
     };
 
-    getMyProfile = async (options?: { useCache: boolean }): Promise<UserResolver | Error> => {
+    getMyProfile = async (options?: {
+        useCache: boolean;
+    }): Promise<UserResolver | Error> => {
         if (options?.useCache && this.me) {
             return this.me;
         }
@@ -984,7 +1039,9 @@ export class Client {
         const relay = SingleRelayConnection.New(this.relay_url);
         if (relay instanceof Error) return relay;
 
-        const until = Math.floor((Number(args.page.until || 0) || Date.now()) / 1000);
+        const until = Math.floor(
+            (Number(args.page.until || 0) || Date.now()) / 1000,
+        );
         const since = Math.floor(Number(args.page.since || 0) / 1000) || undefined;
 
         const sub = await relay.newSub("getNotesOf", {
@@ -1022,7 +1079,11 @@ export class Client {
      *
      * @unstable
      */
-    postNote = async (args: { content: string; image: File; placeID?: number }) => {
+    postNote = async (args: {
+        content: string;
+        image: File;
+        placeID?: number;
+    }) => {
         const signer = await this.getNostrSigner();
         if (signer instanceof Error) {
             return signer;
@@ -1163,7 +1224,10 @@ export class Client {
         return data(stream);
     };
 
-    getAccount = async (args: { npub: string }, options?: { useCache: boolean }) => {
+    getAccount = async (
+        args: { npub: string },
+        options?: { useCache: boolean },
+    ) => {
         if (options?.useCache) {
             const account = this.accounts.get(args.npub);
             if (account) {
@@ -1235,11 +1299,45 @@ export class Client {
             return user;
         },
 
+        getMetadataList: async (args: {
+            limit: number;
+            pubkey: PublicKey | string;
+            since: Date;
+        }) => {
+            const limit = args.limit;
+            let pubkey = args.pubkey;
+            const since = args.since;
+            if (typeof pubkey == "string") {
+                const _pubkey = PublicKey.FromString(pubkey);
+                if (_pubkey instanceof Error) {
+                    return _pubkey;
+                }
+                pubkey = _pubkey;
+            }
+            const metadata = await this.account?.getMetadata({
+                since,
+                limit,
+                pubkey,
+            });
+            if (metadata instanceof Error) {
+                return metadata;
+            }
+            if (metadata == undefined) {
+                return [];
+            }
+
+            return metadata;
+        },
+
         /**
          * @unstable
          */
 
-        getGlobalFeed: async (args: { page: number; limit: number; placeId?: string }) => {
+        getGlobalFeed: async (args: {
+            page: number;
+            limit: number;
+            placeId?: string;
+        }) => {
             const me = await this.getNostrSigner();
             if (me instanceof Error) {
                 return me;
@@ -1306,13 +1404,17 @@ export class Client {
          * @unstable
          */
         getOwnerForLocation: async (args: { locationId: number }) => {
-            const accounts = await this.getAccountsForLocation({ locationId: args.locationId });
+            const accounts = await this.getAccountsForLocation({
+                locationId: args.locationId,
+            });
             if (accounts instanceof Error) {
                 return accounts;
             }
             // https://linear.app/sat-lantis/issue/SAT-1161/endpoint-getaccountsforlocationlocationid#comment-18c9a50c
             if (accounts.length > 1) {
-                console.warn(`more than one owner for the location, locationId: ${args.locationId}`);
+                console.warn(
+                    `more than one owner for the location, locationId: ${args.locationId}`,
+                );
             }
             for (const account of accounts) {
                 const pubkey = PublicKey.FromHex(account.pubKey);
@@ -1370,7 +1472,9 @@ async function prepareKind0(signer: Signer, metadata: Kind0MetaData) {
     });
 }
 
-function convertToLocationCategories(locationTags: LocationTag[]): LocationCategory[] {
+function convertToLocationCategories(
+    locationTags: LocationTag[],
+): LocationCategory[] {
     const categoryMap = new Map<LocationCategoryName, Map<string, Set<string>>>();
 
     locationTags.forEach((tag) => {
@@ -1387,13 +1491,17 @@ function convertToLocationCategories(locationTags: LocationTag[]): LocationCateg
         subCategoryMap.get(tag.key)!.add(tag.value);
     });
 
-    const locationCategories: LocationCategory[] = Array.from(categoryMap.entries()).map(
+    const locationCategories: LocationCategory[] = Array.from(
+        categoryMap.entries(),
+    ).map(
         ([name, subCategoryMap]): LocationCategory => ({
             name,
-            subCategory: Array.from(subCategoryMap.entries()).map(([key, valueSet]) => ({
-                key,
-                value: Array.from(valueSet),
-            })),
+            subCategory: Array.from(subCategoryMap.entries()).map(
+                ([key, valueSet]) => ({
+                    key,
+                    value: Array.from(valueSet),
+                }),
+            ),
         }),
     );
 

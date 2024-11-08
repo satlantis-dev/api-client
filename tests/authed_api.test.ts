@@ -30,7 +30,7 @@ if (clientNoAuth instanceof Error) {
     fail(clientNoAuth.message);
 }
 const signer = InMemoryAccountContext.Generate();
-const res = await clientNoAuth.loginNostr(signer);
+const res = await clientNoAuth.loginNostr(signer, { name: "test" });
 if (res instanceof Error) {
     throw res;
 }
@@ -57,7 +57,7 @@ Deno.test("AccountRole", async () => {
     }
 
     // login with a new nostr key
-    const res = await clientNoAuth.loginNostr(signer);
+    const res = await clientNoAuth.loginNostr(signer, { name: "test" });
     if (res instanceof Error) fail(res.message);
     assertEquals(res.account.npub, signer.publicKey.bech32());
 
@@ -98,7 +98,7 @@ Deno.test("AccountRole", async () => {
 
 Deno.test("upload file", async () => {
     const signer = InMemoryAccountContext.Generate();
-    const res = await clientNoAuth.loginNostr(signer);
+    const res = await clientNoAuth.loginNostr(signer, { name: "test" });
     if (res instanceof Error) fail(res.message);
 
     const client = Client.New({
@@ -126,7 +126,7 @@ Deno.test("upload file", async () => {
 
 Deno.test("post notes", async () => {
     const signer = InMemoryAccountContext.Generate();
-    const res = await clientNoAuth.loginNostr(signer);
+    const res = await clientNoAuth.loginNostr(signer, { name: "test" });
     if (res instanceof Error) fail(res.message);
     const client = Client.New({
         baseURL: "https://api-dev.satlantis.io",
@@ -173,7 +173,7 @@ Deno.test("post notes", async () => {
 
 Deno.test("update place", async () => {
     const signer = InMemoryAccountContext.Generate();
-    const res = await clientNoAuth.loginNostr(signer);
+    const res = await clientNoAuth.loginNostr(signer, { name: "test" });
     if (res instanceof Error) fail(res.message);
     const client = Client.New({
         baseURL: "https://api-dev.satlantis.io",
@@ -196,7 +196,9 @@ Deno.test("update place", async () => {
             fail(result.message);
         }
 
-        let updatedPlace = await client.getPlaceByOsmRef({ osmRef: originalPlace.osmRef });
+        let updatedPlace = await client.getPlaceByOsmRef({
+            osmRef: originalPlace.osmRef,
+        });
         if (updatedPlace instanceof Error) {
             fail(updatedPlace.message);
         }
@@ -210,7 +212,9 @@ Deno.test("update place", async () => {
             fail(result.message);
         }
 
-        updatedPlace = await client.getPlaceByOsmRef({ osmRef: originalPlace.osmRef });
+        updatedPlace = await client.getPlaceByOsmRef({
+            osmRef: originalPlace.osmRef,
+        });
         if (updatedPlace instanceof Error) {
             fail(updatedPlace.message);
         }
@@ -281,7 +285,7 @@ Deno.test({
             ignore: true,
             fn: async () => {
                 const signer = InMemoryAccountContext.Generate();
-                const res = await loginNostr(rest_url)(signer);
+                const res = await loginNostr(rest_url)(signer, { name: "test" });
                 if (res instanceof Error) fail(res.message);
 
                 const client = Client.New({
@@ -349,7 +353,7 @@ Deno.test("nip04Encrypt", async () => {
 
 Deno.test("getInterests", async () => {
     const signer = InMemoryAccountContext.Generate();
-    const res = await clientNoAuth.loginNostr(signer);
+    const res = await clientNoAuth.loginNostr(signer, { name: "test" });
     if (res instanceof Error) fail(res.message);
 
     const client = Client.New({
@@ -364,13 +368,16 @@ Deno.test("getInterests", async () => {
     if (interests instanceof Error) fail(interests.message);
     assertEquals(interests.length > 0, true);
     // https://linear.app/sat-lantis/issue/SAT-1115/remove-default-from-interests-list
-    assertEquals(interests.find((i) => i.name == "Default"), undefined);
+    assertEquals(
+        interests.find((i) => i.name == "Default"),
+        undefined,
+    );
 });
 
 //Todo: unfinished
 Deno.test("update location", async () => {
     const signer = InMemoryAccountContext.Generate();
-    const res = await clientNoAuth.loginNostr(signer);
+    const res = await clientNoAuth.loginNostr(signer, { name: "test" });
     if (res instanceof Error) fail(res.message);
 
     // https://www.dev.satlantis.io/location/2249
@@ -401,7 +408,7 @@ Deno.test("update location", async () => {
 Deno.test("calendar events", async () => {
     const signer = InMemoryAccountContext.Generate();
 
-    const res = await clientNoAuth.loginNostr(signer);
+    const res = await clientNoAuth.loginNostr(signer, { name: "test" });
     if (res instanceof Error) fail(res.message);
 
     const account = res.account;
@@ -452,7 +459,7 @@ Deno.test("getUserProfile & updateUserProfile", async (t) => {
     // setup
     const signer = InMemoryAccountContext.Generate();
 
-    const res = await clientNoAuth.loginNostr(signer);
+    const res = await clientNoAuth.loginNostr(signer, { name: "test" });
     if (res instanceof Error) fail(res.message);
 
     // test
@@ -468,16 +475,23 @@ Deno.test("getUserProfile & updateUserProfile", async (t) => {
             name: "this is a test",
         });
         const p3 = (await client.getMyProfile()) as UserResolver;
-        const expected = new UserResolver(client, signer.publicKey, false, false, "", {
-            name: "this is a test",
-            about: "",
-            banner: "",
-            displayName: "",
-            lud06: "",
-            lud16: "",
-            picture: "",
-            website: "",
-        });
+        const expected = new UserResolver(
+            client,
+            signer.publicKey,
+            false,
+            false,
+            "",
+            {
+                name: "this is a test",
+                about: "",
+                banner: "",
+                displayName: "test",
+                lud06: "",
+                lud16: "",
+                picture: "",
+                website: "",
+            },
+        );
 
         assertEquals(p3.metaData, expected.metaData);
 
@@ -574,12 +588,17 @@ Contact: Nostr Only
         if (event_sent instanceof Error) {
             fail(event_sent.message);
         }
-        const relay = SingleRelayConnection.New(client.relay_url) as SingleRelayConnection;
+        const relay = SingleRelayConnection.New(
+            client.relay_url,
+        ) as SingleRelayConnection;
         const event_received = (await relay.getEvent(event_sent.id)) as NostrEvent;
         await relay.close();
         assertEquals(event_received, event_sent);
 
-        const text = await receiver.decrypt(event_received.pubkey, event_received.content);
+        const text = await receiver.decrypt(
+            event_received.pubkey,
+            event_received.content,
+        );
         assertEquals(
             text,
             `#Ambassador Application

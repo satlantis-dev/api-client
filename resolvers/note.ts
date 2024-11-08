@@ -4,24 +4,28 @@ import type { Client, Note } from "../sdk.ts";
 export class NoteResolver {
     content: string;
     createdAt: Date;
-    public readonly source: {
-        type: "nostr";
-        data: NostrEvent;
-    } | {
-        type: "backend";
-        data: Note;
-    };
+    public readonly source:
+        | {
+            type: "nostr";
+            data: NostrEvent;
+        }
+        | {
+            type: "backend";
+            data: Note;
+        };
     private client: Client;
 
     constructor(
         client: Client,
-        source: {
-            type: "nostr";
-            data: NostrEvent;
-        } | {
-            type: "backend";
-            data: Note;
-        },
+        source:
+            | {
+                type: "nostr";
+                data: NostrEvent;
+            }
+            | {
+                type: "backend";
+                data: Note;
+            },
     ) {
         this.client = client;
         this.source = source;
@@ -47,18 +51,19 @@ export class NoteResolver {
      * @unstable parameters are subjects to changes.
      *  implementations might change
      */
-    getReactions = async (args: {
-        limit: number;
-        since: Date;
-    }) => {
+    getReactions = async (args: { limit: number; since: Date }) => {
         const reactions = [];
         {
-            const relay = SingleRelayConnection.New(this.client.relay_url, { log: false });
+            const relay = SingleRelayConnection.New(this.client.relay_url, {
+                log: false,
+            });
             if (relay instanceof Error) {
                 return relay;
             }
             const stream = await relay.newSub("getReactions", {
-                "#e": [this.source.type == "nostr" ? this.source.data.id : this.source.data.nostrId],
+                "#e": [
+                    this.source.type == "nostr" ? this.source.data.id : this.source.data.nostrId,
+                ],
                 kinds: [NostrKind.REACTION],
                 limit: args.limit,
                 since: Math.floor(args.since.valueOf() / 1000),

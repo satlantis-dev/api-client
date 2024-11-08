@@ -14,7 +14,7 @@ if (clientNoAuth instanceof Error) {
     fail(clientNoAuth.message);
 }
 const signer = InMemoryAccountContext.Generate();
-const res = await clientNoAuth.loginNostr(signer);
+const res = await clientNoAuth.loginNostr(signer, { name: "test" });
 if (res instanceof Error) fail(res.message);
 
 const client = Client.New({
@@ -63,7 +63,9 @@ Deno.test("notes without places", async () => {
         assertEquals(data.map((n) => n.content).reverse(), contents);
     }
     {
-        const user = (await client.resolver.getUser(signer.publicKey)) as UserResolver;
+        const user = (await client.resolver.getUser(
+            signer.publicKey,
+        )) as UserResolver;
 
         const notes = await user.getNotes({ limit: 10 });
         if (notes instanceof Error) fail(notes.message);
@@ -77,7 +79,10 @@ Deno.test("notes without places", async () => {
         assertEquals(notes2.length, notes.length);
 
         // the note returned by backends are not sorted in created time order
-        assertEquals(new Set(notes2.map((n) => n.content).reverse()), new Set(contents));
+        assertEquals(
+            new Set(notes2.map((n) => n.content).reverse()),
+            new Set(contents),
+        );
     }
 });
 
@@ -100,7 +105,11 @@ Deno.test("notes in a place", async () => {
         contents.push(res.content);
     }
 
-    const notes = await client.getPlaceNotes({ placeID: place.id, page: 1, limit: 10 });
+    const notes = await client.getPlaceNotes({
+        placeID: place.id,
+        page: 1,
+        limit: 10,
+    });
     if (notes instanceof Error) {
         fail(notes.message);
     }
@@ -129,12 +138,17 @@ Deno.test("getLocation", async () => {
 
     assertEquals(place.name, "Funchal");
 
-    const locations = await client.resolver.getLocationsByPlaceID({ placeID: place.id, search: result.name });
+    const locations = await client.resolver.getLocationsByPlaceID({
+        placeID: place.id,
+        search: result.name,
+    });
     if (locations instanceof Error) fail(locations.message);
 
     const location = locations.find((l) => l.id == id);
     if (location == undefined) {
-        fail("the same location is not returned from the getLocationsByPlaceID API");
+        fail(
+            "the same location is not returned from the getLocationsByPlaceID API",
+        );
     }
     assertEquals(location.id, result.id);
     assertEquals(location.name, result.name);
@@ -164,7 +178,11 @@ Deno.test("a user's interests", async () => {
 });
 
 Deno.test("global feed", async () => {
-    const notes = await client.resolver.getGlobalFeed({ page: 1, limit: 3, placeId: "23949" });
+    const notes = await client.resolver.getGlobalFeed({
+        page: 1,
+        limit: 3,
+        placeId: "23949",
+    });
     if (notes instanceof Error) fail(notes.message);
 
     assertEquals(notes.length, 3);
@@ -182,9 +200,13 @@ Deno.test("getUser useCache", async () => {
     const u1 = await client.resolver.getUser(signer.publicKey);
     const u2 = await client.resolver.getUser(signer.publicKey);
     assertEquals(u1 != u2, true); // not the same reference
-    const u3 = await client.resolver.getUser(signer.publicKey, { useCache: true });
+    const u3 = await client.resolver.getUser(signer.publicKey, {
+        useCache: true,
+    });
     assertEquals(u2, u3); // same reference
-    const u4 = await client.resolver.getUser(signer.publicKey, { useCache: false });
+    const u4 = await client.resolver.getUser(signer.publicKey, {
+        useCache: false,
+    });
     assertEquals(u3 != u4, true); // same reference
 });
 
