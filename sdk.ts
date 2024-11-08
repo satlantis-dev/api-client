@@ -76,7 +76,6 @@ import { followPubkeys, getFollowingPubkeys, getInterestsOf } from "./nostr-help
 import { getPubkeyByNip05 } from "./api/nip5.ts";
 import { safeFetch } from "./helpers/safe-fetch.ts";
 import type { Account, Kind0MetaData } from "./models/account.ts";
-import { AccountResolver } from "./resolvers/account.ts";
 import { UserResolver } from "./resolvers/user.ts";
 import { LocationResolver } from "./resolvers/location.ts";
 import { NoteResolver } from "./resolvers/note.ts";
@@ -91,7 +90,6 @@ export type func_GetJwt = () => string;
 export class Client {
     // Caches
     private me: UserResolver | undefined = undefined;
-    private account: AccountResolver | undefined = undefined;
     private users = new Map<string, UserResolver>();
     private accounts = new Map<string, Account>();
     private places = new Map<number | string, Place>();
@@ -1242,6 +1240,51 @@ export class Client {
         return account;
     };
 
+    fetchMetadataFromRelay = async (args: {
+        relayUrl: string;
+        limit: number;
+        since: Date;
+        pubkey: PublicKey;
+    }): Promise<Kind0MetaData[] | Error> => {
+        let metadataList: Kind0MetaData[] = [];
+
+        // Establish a connection to the relay
+        const relay = SingleRelayConnection.New(args.relayUrl, { log: true });
+        if (relay instanceof Error) {
+            return relay;
+        }
+
+        // Open a subscription stream on the relay
+        const stream = await relay.newSub("fetchMetadata", {
+            authors: [args.pubkey.hex],
+            kinds: [0],
+            limit: args.limit,
+            since: Math.floor(args.since.valueOf() / 1000),
+        });
+
+        if (stream instanceof Error) {
+            await relay.close();
+            return stream;
+        }
+
+        // Process each message in the stream
+        for await (const msg of stream.chan) {
+            if (msg.type === "EOSE") {
+                break;
+            } else if (msg.type === "EVENT") {
+                const metadata = JSON.parse(msg.event.content) as Kind0MetaData;
+                metadataList.push(metadata);
+            } else if (msg.type === "NOTICE") {
+                console.warn(msg.note);
+            }
+        }
+
+        // Close the relay connection
+        await relay.close();
+
+        return metadataList;
+    };
+
     /**
      * Resolver APIs that provides callers a cleaner relationships among all data types
      * @unstable
@@ -1297,36 +1340,6 @@ export class Client {
             );
             this.users.set(user.pubkey.hex, user);
             return user;
-        },
-
-        getMetadataList: async (args: {
-            limit: number;
-            pubkey: PublicKey | string;
-            since: Date;
-        }) => {
-            const limit = args.limit;
-            let pubkey = args.pubkey;
-            const since = args.since;
-            if (typeof pubkey == "string") {
-                const _pubkey = PublicKey.FromString(pubkey);
-                if (_pubkey instanceof Error) {
-                    return _pubkey;
-                }
-                pubkey = _pubkey;
-            }
-            const metadata = await this.account?.getMetadata({
-                since,
-                limit,
-                pubkey,
-            });
-            if (metadata instanceof Error) {
-                return metadata;
-            }
-            if (metadata == undefined) {
-                return [];
-            }
-
-            return metadata;
         },
 
         /**
