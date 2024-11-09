@@ -51,6 +51,7 @@ import {
 } from "./api/place.ts";
 import {
     addAccountRole,
+    blacklistAccount,
     deleteAccount,
     getAccountsBySearch,
     removeAccountRole,
@@ -133,6 +134,7 @@ export class Client {
      */
     private updateAccount: ReturnType<typeof updateAccount>;
     deleteAccount: ReturnType<typeof deleteAccount>;
+    _blackListAccount: ReturnType<typeof blacklistAccount>;
 
     // note
     private getNotesOfPubkey: ReturnType<typeof getNotesOfPubkey>;
@@ -245,6 +247,7 @@ export class Client {
         this.createAccount = createAccount(rest_api_url);
         this.updateAccount = updateAccount(rest_api_url, getJwt);
         this.deleteAccount = deleteAccount(rest_api_url, getJwt, getNostrSigner);
+        this._blackListAccount = blacklistAccount(rest_api_url, getJwt);
 
         this.getNotesOfPubkey = getNotesOfPubkey(rest_api_url);
         this.getNoteReactionsById = getNoteReactionsById(rest_api_url);
@@ -887,6 +890,15 @@ export class Client {
         }
         return new URL(url.pathname, this.aws_cdn_url);
     };
+
+    blacklistAccount = async (args: { pubkey: PublicKey }) => {
+        const response = await this._blackListAccount({ npub: args.pubkey.bech32() });
+        if (response instanceof Error) {
+            return response;
+        }
+
+        return response;
+    }
 
     /**
      * @param id
