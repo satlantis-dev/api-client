@@ -25,6 +25,9 @@ export const loginNostr = (urlArg: URL) => async (signer: Signer, metadata?: Kin
     if (response instanceof Error) {
         return response;
     }
+    if (response.status === 401) {
+        return new Error("blacklisted");
+    }
     return handleResponse<{
         token: string;
         account: Account;

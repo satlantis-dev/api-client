@@ -26,6 +26,8 @@ export const login = (urlArg: URL) => async (args: { username: string; password:
     if (result instanceof ApiError) {
         if (result.status == 404) {
             return undefined;
+        } else if (result.status == 401 && result.message == "Account is blacklisted") {
+            return new Error("blacklisted");
         } else if (result.status == 401) {
             return "invalid password";
         }
