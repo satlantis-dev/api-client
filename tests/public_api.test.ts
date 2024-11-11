@@ -1,6 +1,5 @@
-import { assertEquals, assertExists, assertInstanceOf, assertNotEquals, fail } from "@std/assert";
-
-import { AccountPlaceRoleTypeEnum, Client, LocationResolver, loginNostr, type Place } from "../sdk.ts";
+import { assertEquals, assertExists, assertInstanceOf, fail } from "@std/assert";
+import { Client, LocationResolver, loginNostr, type Place } from "../sdk.ts";
 import { InMemoryAccountContext, PrivateKey, PublicKey } from "@blowater/nostr-sdk";
 import { ApiError } from "../helpers/_helper.ts";
 import type { UserResolver } from "../resolvers/user.ts";
