@@ -898,7 +898,7 @@ export class Client {
         }
 
         return response;
-    }
+    };
 
     /**
      * @param id
@@ -1258,7 +1258,7 @@ export class Client {
         since: Date;
         pubkey: PublicKey;
     }): Promise<Kind0MetaData[] | Error> => {
-        let metadataList: Kind0MetaData[] = [];
+        const metadataList: Kind0MetaData[] = [];
 
         // Establish a connection to the relay
         const relay = SingleRelayConnection.New(args.relayUrl, { log: true });

@@ -49,33 +49,32 @@ export const addAccountRole =
         return handleResponse<AccountPlaceRole>(response);
     };
 
-export const blacklistAccount =
-    (urlArg: URL, getJwt: () => string) => async (args: { npub: string }) => {
-         const jwtToken = getJwt();
-        if (jwtToken == "") {
-            return new Error("jwt token is empty");
-        }
+export const blacklistAccount = (urlArg: URL, getJwt: () => string) => async (args: { npub: string }) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
 
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/blacklistAccount/${args.npub}`;
-        const headers = new Headers();
-        headers.set("Authorization", `Bearer ${jwtToken}`);
-        const response = await safeFetch(url, {
-            method: "PUT",
-            headers,
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        const res = await handleResponse<{ status: "success" }>(response);
-        if (res instanceof Error) {
-            return res;
-        }
-        if (res.status == "success") {
-            return true;
-        }
-        return new Error("unexpected result", { cause: res });
-    };
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/blacklistAccount/${args.npub}`;
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    const res = await handleResponse<{ status: "success" }>(response);
+    if (res instanceof Error) {
+        return res;
+    }
+    if (res.status == "success") {
+        return true;
+    }
+    return new Error("unexpected result", { cause: res });
+};
 
 export const removeAccountRole =
     (urlArg: URL, getJwt: () => string, getSigner: func_GetNostrSigner) =>
