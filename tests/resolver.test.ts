@@ -177,7 +177,7 @@ Deno.test("a user's interests", async () => {
     assertEquals(user.interests, ["food"]);
 });
 
-Deno.test("global feed", async () => {
+Deno.test("global feed without login", async () => {
     const notes = await client.resolver.getGlobalFeed({
         page: 1,
         limit: 3,
@@ -186,6 +186,17 @@ Deno.test("global feed", async () => {
     if (notes instanceof Error) fail(notes.message);
 
     assertEquals(notes.length, 3);
+});
+
+Deno.test("global feed with login", async () => {
+    const notes = await client.resolver.getGlobalFeedsOfLoginUser({
+        page: 1,
+        limit: 3,
+        secure: true,
+    });
+    if (notes instanceof Error) fail(notes.message);
+    console.warn("TODO: need to implement the test");
+    // assertEquals(notes.length, 3);
 });
 
 Deno.test("getMyProfile useCache", async () => {
