@@ -6,7 +6,6 @@ import { type Region } from "../models/region.ts";
 
 import { type PlaceNote } from "./note.ts";
 
-
 export const getPlaceNames = (urlArg: URL) => async () => {
     const url = copyURL(urlArg);
     url.pathname = `/getPlaceNames`;

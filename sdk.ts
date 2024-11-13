@@ -36,7 +36,6 @@ import { loginNostr } from "./api/login.ts";
 import { getNote, getNoteReactionsById, getNotes, getNotesOfPubkey, NoteType } from "./api/note.ts";
 import { getAccountPlaceRoles } from "./api/people.ts";
 import {
-    getPlaceNames,
     getAllPlaceRegionCountryNames,
     getPlaceByOsmRef,
     getPlaceCalendarEvents,
@@ -45,6 +44,7 @@ import {
     getPlaceEvent,
     getPlaceGallery,
     getPlaceMetrics,
+    getPlaceNames,
     getPlaceNotes,
     getPlaces,
     getPlacesMinimal,
@@ -349,8 +349,8 @@ export class Client {
     // Place
     getPlaceNames = async () => {
         return await this._getPlaceNames();
-    }
-    
+    };
+
     getAllPlaceRegionCountryNames = async () => {
         return await this._getAllPlaceRegionCountryNames();
     };
