@@ -36,6 +36,7 @@ import { loginNostr } from "./api/login.ts";
 import { getNote, getNoteReactionsById, getNotes, getNotesOfPubkey, NoteType } from "./api/note.ts";
 import { getAccountPlaceRoles } from "./api/people.ts";
 import {
+    getPlaceNames,
     getAllPlaceRegionCountryNames,
     getPlaceByOsmRef,
     getPlaceCalendarEvents,
@@ -96,6 +97,7 @@ export class Client {
     private places = new Map<number | string, Place>();
 
     // Place
+    private _getPlaceNames: ReturnType<typeof getPlaceNames>;
     private _getAllPlaceRegionCountryNames: ReturnType<
         typeof getAllPlaceRegionCountryNames
     >;
@@ -209,6 +211,7 @@ export class Client {
         public readonly getJwt: func_GetJwt,
         public readonly getNostrSigner: func_GetNostrSigner,
     ) {
+        this._getPlaceNames = getPlaceNames(rest_api_url);
         this._getAllPlaceRegionCountryNames = getAllPlaceRegionCountryNames(rest_api_url);
         this._getPlaceByOsmRef = getPlaceByOsmRef(rest_api_url);
         this._getPlaces = getPlaces(rest_api_url);
@@ -344,6 +347,10 @@ export class Client {
     }
 
     // Place
+    getPlaceNames = async () => {
+        return await this._getPlaceNames();
+    }
+    
     getAllPlaceRegionCountryNames = async () => {
         return await this._getAllPlaceRegionCountryNames();
     };
