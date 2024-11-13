@@ -251,7 +251,7 @@ export class Client {
 
         this.getNotesOfPubkey = getNotesOfPubkey(rest_api_url);
         this.getNoteReactionsById = getNoteReactionsById(rest_api_url);
-        this.getNotes = getNotes(rest_api_url);
+        this.getNotes = getNotes(rest_api_url, getJwt);
         this.getNote = getNote(rest_api_url);
         this.getIpInfo = getIpInfo(rest_api_url);
 
@@ -1362,6 +1362,7 @@ export class Client {
             page: number;
             limit: number;
             placeId?: string;
+            secure?: boolean;
         }) => {
             const me = await this.getNostrSigner();
             if (me instanceof Error) {
@@ -1371,6 +1372,7 @@ export class Client {
                 page: args.page,
                 limit: args.limit,
                 placeId: args.placeId,
+                secure: args.secure,
             });
             if (notes instanceof Error) {
                 return notes;
@@ -1384,6 +1386,25 @@ export class Client {
                 noteResolvers.push(r);
             }
             return noteResolvers;
+        },
+        getGlobalFeedsOfLoginUser: async (args: {
+            page: number;
+            limit: number;
+            secure?: boolean;
+        }) => {
+            const me = await this.getNostrSigner();
+            if (me instanceof Error) {
+                return me;
+            }
+            const notes = await this.getNotes({
+                page: args.page,
+                limit: args.limit,
+                secure: args.secure,
+            });
+            if (notes instanceof Error) {
+                return notes;
+            }
+            return notes;
         },
         getLocationByID: async (id: number) => {
             const data = await this.getLocationByID({ id });

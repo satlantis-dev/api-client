@@ -2,6 +2,7 @@ import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { Account } from "../models/account.ts";
 import type { Reaction } from "../models/reaction.ts";
+import type { func_GetJwt } from "../sdk.ts";
 
 export interface PlaceNote {
     id: number;
@@ -69,15 +70,17 @@ export const getNotesOfPubkey =
         return handleResponse<Note[]>(response);
     };
 
-export const getNotes = (urlArg: URL) =>
+export const getNotes = (urlArg: URL, getJwt: func_GetJwt) =>
 async (args: {
     page: number;
     limit: number;
     placeId?: string;
     sort?: "recent" | "trending";
+    secure?: boolean;
 }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getNotes`;
+    const headers = new Headers();
+    url.pathname = args.secure ? `/secure/getNotes` : `/getNotes`;
     url.searchParams.set("page", String(args.page));
     url.searchParams.set("limit", String(args.limit));
     if (args.placeId) {
@@ -87,7 +90,15 @@ async (args: {
         url.searchParams.set("sort", String(args.sort));
     }
 
-    const response = await safeFetch(url);
+    if (args.secure) {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, { headers });
     if (response instanceof Error) {
         return response;
     }
