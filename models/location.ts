@@ -24,6 +24,7 @@ export type Location = {
     googleUserRatingCount: number;
     websiteUrl: string;
     bio: string;
+    googleMapsUrl: string;
 };
 
 export type LocationInfo = {
@@ -51,7 +52,8 @@ export type LocationByID = {
     email: string;
     phone?: string;
     websiteUrl?: string;
-    isClaimed?: boolean;
+    isClaimed: boolean;
+    googleMapsUrl: string;
 };
 
 export type Address = {
