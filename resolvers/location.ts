@@ -19,7 +19,8 @@ export class LocationResolver implements LocationByID {
     email: string;
     phone: string;
     websiteUrl: string;
-    isClaimed?: boolean;
+    googleMapsUrl: string;
+    isClaimed: boolean;
 
     /**
      * @unstable
@@ -41,6 +42,7 @@ export class LocationResolver implements LocationByID {
         this.email = data.email || "";
         this.phone = data.phone || "";
         this.websiteUrl = data.websiteUrl || "";
+        this.googleMapsUrl = data.googleMapsUrl;
         this.isClaimed = data.isClaimed;
     }
 

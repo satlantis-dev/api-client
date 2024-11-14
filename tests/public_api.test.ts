@@ -397,7 +397,7 @@ Deno.test("getNotes", async () => {
 });
 Deno.test("getNoteReactionsById", async () => {
     const result = await client.getNoteReactionsById({
-        noteID: 3463936,
+        noteID: 3463760,
         limit: 3,
         page: 0,
     });
