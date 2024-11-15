@@ -80,7 +80,7 @@ async (args: {
 }) => {
     const url = copyURL(urlArg);
     const headers = new Headers();
-    url.pathname = args.secure ? `/secure/getNotes` : `/getNotes`;
+    url.pathname = args.secure ? `/getFeedNotes` : `/getNotes`;
     url.searchParams.set("page", String(args.page));
     url.searchParams.set("limit", String(args.limit));
     if (args.placeId) {
