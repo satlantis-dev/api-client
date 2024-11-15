@@ -6,8 +6,8 @@ import type { Place } from "./place.ts";
 export type Account = {
     id: number;
     about?: string;
-    following: Account_Base[];
-    followedBy: Account_Base[];
+    following: AccountDTO[];
+    followedBy: AccountDTO[];
     npub: string;
     pubKey: string;
     accountPlaceRoles?: AccountPlaceRole[];
@@ -44,7 +44,7 @@ export type Account = {
     }[];
 };
 
-type Account_Base = {
+export type AccountDTO = {
     id: number;
     about: string;
     isAdmin: boolean;
@@ -59,10 +59,7 @@ type Account_Base = {
 export type AccountPlaceRole = {
     id: number;
     accountId: number;
-    /**
-     * @deprecated prefer to getting the user/account by calling APIs
-     */
-    account: Account;
+    account: AccountDTO;
     placeId: number;
     active: boolean;
     type: AccountPlaceRoleTypeEnum;

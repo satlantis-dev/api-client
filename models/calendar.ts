@@ -1,11 +1,11 @@
 import type { Note } from "../sdk.ts";
 
-import type { Account } from "./account.ts";
+import type { AccountDTO } from "./account.ts";
 
 export interface CalendarEventRSVP {
     id: number;
     accountId: number;
-    account: Account;
+    account: AccountDTO;
     createdAt: string;
     content: string;
     eventId: number;
@@ -35,7 +35,7 @@ export type CalendarEvent = {
     id: number;
     atag: string;
     accountId: number;
-    account: Account;
+    account: AccountDTO;
     announcements: CalendarEventAnnouncement[];
     calendarEventRsvps: CalendarEventRSVP[];
     content: string;

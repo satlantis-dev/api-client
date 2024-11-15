@@ -1,8 +1,8 @@
-import type { Account } from "./account.ts";
+import type { AccountDTO } from "./account.ts";
 
 export interface Reaction {
     id: number;
     accountId: number;
     eventId: number;
-    account?: Account;
+    account?: AccountDTO;
 }

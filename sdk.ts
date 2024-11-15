@@ -33,7 +33,7 @@ import {
     updateLocation,
 } from "./api/location.ts";
 import { loginNostr } from "./api/login.ts";
-import { getNote, getNoteReactionsById, getNotes, getNotesOfPubkey, NoteType } from "./api/note.ts";
+import { getNote, getNoteCommentsById, getNoteReactionsById, getNotes, getNotesOfPubkey, NoteType } from "./api/note.ts";
 import { getAccountPlaceRoles } from "./api/people.ts";
 import {
     getAllPlaceRegionCountryNames,
@@ -144,6 +144,7 @@ export class Client {
     getNote: ReturnType<typeof getNote>;
     getIpInfo: ReturnType<typeof getIpInfo>;
     getNoteReactionsById: ReturnType<typeof getNoteReactionsById>;
+    getNoteCommentsById: ReturnType<typeof getNoteCommentsById>;
 
     // Location
     getLocationsWithinBoundingBox: ReturnType<
@@ -254,6 +255,7 @@ export class Client {
 
         this.getNotesOfPubkey = getNotesOfPubkey(rest_api_url);
         this.getNoteReactionsById = getNoteReactionsById(rest_api_url);
+        this.getNoteCommentsById = getNoteCommentsById(rest_api_url);
         this.getNotes = getNotes(rest_api_url, getJwt);
         this.getNote = getNote(rest_api_url);
         this.getIpInfo = getIpInfo(rest_api_url);

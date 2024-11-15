@@ -1,6 +1,6 @@
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
-import type { Account } from "../models/account.ts";
+import type { AccountDTO } from "../models/account.ts";
 import type { Reaction } from "../models/reaction.ts";
 import type { func_GetJwt } from "../sdk.ts";
 
@@ -30,30 +30,22 @@ export enum NoteType {
 export type Note = {
     readonly id: number;
     readonly accountId: number;
-    /**
-     * @deprecated sometimems this field is empty, the backend is not always returning account data in all APIs
-     * prefer to calling apiClient.resolver.getUser(pubkey) or apiClient.getAccount(accountId)
-     */
-    readonly account: Account;
+    readonly account: AccountDTO;
     readonly createdAt: string;
+    readonly commentCount: number;
+    readonly commentedByUser: boolean;
     readonly content: string;
     readonly eventId: number;
     readonly kind: number;
     readonly nostrId: string;
     readonly pubkey: string;
+    readonly reactionCount: number;
+    readonly reactedByUser: boolean;
     readonly sig: string;
+    readonly source: string;
+    readonly score: number;
     readonly tags: string;
     readonly type: number;
-    readonly ancestorId: number;
-    readonly descendantId: number;
-    /**
-     * @deprecated
-     */
-    readonly descendants: null | unknown[];
-    /**
-     * @deprecated only the length is valid
-     */
-    readonly reactions: Reaction[];
 };
 
 export const getNotesOfPubkey =
@@ -142,3 +134,21 @@ async (args: {
     }
     return handleResponse<Reaction[]>(response);
 };
+
+export const getNoteCommentsById = (urlArg: URL) =>
+async (args: {
+    noteID: number;
+    page: number;
+    limit: number;
+}) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getNoteComments/${args.noteID}`;
+    url.searchParams.set("page", String(args.page));
+    url.searchParams.set("limit", String(args.limit));
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<Note[]>(response);
+};
+
