@@ -67,6 +67,7 @@ Deno.test("/getPeopleOfPlace", async () => {
 
 Deno.test("/getPlaceNotes", async () => {
     const result = await client.getPlaceNotes({
+        accountID: 0,
         placeID: 23949,
         limit: 2,
         page: 0,
@@ -381,20 +382,18 @@ Deno.test("getNotes", async () => {
     if (note == undefined) fail(`${result[0].id} should be present`);
 
     // should be the same ntoe
-    assertEquals(note.itself.id, result[0].id);
-    assertEquals(note.itself.content, result[0].content);
-    assertEquals(note.itself.sig, result[0].sig);
-    assertEquals(note.itself.createdAt, result[0].createdAt);
+    assertEquals(note.id, result[0].id);
+    assertEquals(note.content, result[0].content);
+    assertEquals(note.sig, result[0].sig);
+    assertEquals(note.createdAt, result[0].createdAt);
 
     const resolver = new NoteResolver(client, {
         type: "backend",
-        data: note.itself,
+        data: note,
     });
-    assertEquals(new Date(note.itself.createdAt), resolver.createdAt);
-
-    // todo: they should pass
-    // assertEquals(note.itself, result[0])
+    assertEquals(new Date(note.createdAt), resolver.createdAt);
 });
+
 Deno.test("getNoteReactionsById", async () => {
     const result = await client.getNoteReactionsById({
         noteID: 3463760,

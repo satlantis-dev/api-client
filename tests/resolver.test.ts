@@ -106,6 +106,7 @@ Deno.test("notes in a place", async () => {
     }
 
     const notes = await client.getPlaceNotes({
+        accountID: 0,
         placeID: place.id,
         page: 1,
         limit: 10,

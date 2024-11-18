@@ -93,11 +93,15 @@ async (args: {
  * GET getPlaceNotes/{placeID}
  */
 export const getPlaceNotes =
-    (urlArg: URL) => async (args: { placeID: string | number; page: number; limit: number }) => {
+    (urlArg: URL) => async (args: { accountID?: number; placeID: string | number; page: number; limit: number }) => {
         const url = copyURL(urlArg);
         url.pathname = `/getPlaceNotes/${args.placeID}`;
         url.searchParams.set("page", String(args.page));
         url.searchParams.set("limit", String(args.limit));
+
+        if (args.accountID) {
+            url.searchParams.set("accountId", String(args.accountID));
+        }
 
         const response = await safeFetch(url);
         if (response instanceof Error) {

@@ -97,29 +97,28 @@ async (args: {
     return handleResponse<Note[]>(response);
 };
 
-export const getNote = (urlArg: URL) => async (args: { noteID: number }) => {
+export const getNote = (urlArg: URL) => async (args: { accountID?: number; noteID: number }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getNote/${args.noteID}`;
+
+    if (args.accountID) {
+        url.searchParams.set("accountId", String(args.accountID));
+    }
 
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;
     }
-    const notes = await handleResponse<Note[]>(response);
-    if (notes instanceof Error) {
-        return notes;
+    const note = await handleResponse<Note>(response);
+    if (note instanceof Error) {
+        return note;
     }
-    if (notes.length == 0) {
-        return undefined;
-    }
-    return {
-        itself: notes[0],
-        descendants: notes.slice(1),
-    };
+    return note;
 };
 
 export const getNoteReactionsById = (urlArg: URL) =>
 async (args: {
+    accountID?: number;
     noteID: number;
     page: number;
     limit: number;
@@ -128,6 +127,9 @@ async (args: {
     url.pathname = `/getNoteReactions/${args.noteID}`;
     url.searchParams.set("page", String(args.page));
     url.searchParams.set("limit", String(args.limit));
+    if (args.accountID) {
+        url.searchParams.set("accountId", String(args.accountID));
+    }
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;
@@ -137,6 +139,7 @@ async (args: {
 
 export const getNoteCommentsById = (urlArg: URL) =>
 async (args: {
+    accountID?: number;
     noteID: number;
     page: number;
     limit: number;
@@ -145,6 +148,9 @@ async (args: {
     url.pathname = `/getNoteComments/${args.noteID}`;
     url.searchParams.set("page", String(args.page));
     url.searchParams.set("limit", String(args.limit));
+    if (args.accountID) {
+        url.searchParams.set("accountId", String(args.accountID));
+    }
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;
