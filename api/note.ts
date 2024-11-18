@@ -151,4 +151,3 @@ async (args: {
     }
     return handleResponse<Note[]>(response);
 };
-

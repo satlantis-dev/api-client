@@ -33,7 +33,14 @@ import {
     updateLocation,
 } from "./api/location.ts";
 import { loginNostr } from "./api/login.ts";
-import { getNote, getNoteCommentsById, getNoteReactionsById, getNotes, getNotesOfPubkey, NoteType } from "./api/note.ts";
+import {
+    getNote,
+    getNoteCommentsById,
+    getNoteReactionsById,
+    getNotes,
+    getNotesOfPubkey,
+    NoteType,
+} from "./api/note.ts";
 import { getAccountPlaceRoles } from "./api/people.ts";
 import {
     getAllPlaceRegionCountryNames,
