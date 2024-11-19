@@ -93,7 +93,8 @@ async (args: {
  * GET getPlaceNotes/{placeID}
  */
 export const getPlaceNotes =
-    (urlArg: URL) => async (args: { accountID?: number; placeID: string | number; page: number; limit: number }) => {
+    (urlArg: URL) =>
+    async (args: { accountID?: number; placeID: string | number; page: number; limit: number }) => {
         const url = copyURL(urlArg);
         url.pathname = `/getPlaceNotes/${args.placeID}`;
         url.searchParams.set("page", String(args.page));

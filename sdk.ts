@@ -1373,7 +1373,6 @@ export class Client {
         /**
          * @unstable
          */
-
         getGlobalFeed: async (args: {
             page: number;
             limit: number;
