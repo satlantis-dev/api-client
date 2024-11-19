@@ -47,6 +47,7 @@ export type Account = {
 export type AccountDTO = {
     id: number;
     about: string;
+    displayName: string;
     isAdmin: boolean;
     isBusiness: boolean;
     name: string;
@@ -54,6 +55,7 @@ export type AccountDTO = {
     npub: string;
     picture: string;
     pubKey: string;
+    username: string;
 };
 
 export type AccountPlaceRole = {
