@@ -69,6 +69,7 @@ async (args: {
     placeId?: string;
     sort?: "recent" | "trending";
     secure?: boolean;
+    accountId?:number
 }) => {
     const url = copyURL(urlArg);
     const headers = new Headers();
@@ -80,6 +81,9 @@ async (args: {
     }
     if (args.sort) {
         url.searchParams.set("sort", String(args.sort));
+    }
+    if (args.accountId) {
+        url.searchParams.set("accountId", String(args.accountId));
     }
 
     if (args.secure) {

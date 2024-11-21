@@ -1405,7 +1405,7 @@ export class Client {
         getGlobalFeedsOfLoginUser: async (args: {
             page: number;
             limit: number;
-            secure?: boolean;
+            accountId?: number
         }) => {
             const me = await this.getNostrSigner();
             if (me instanceof Error) {
@@ -1414,7 +1414,9 @@ export class Client {
             const notes = await this.getNotes({
                 page: args.page,
                 limit: args.limit,
-                secure: args.secure,
+                accountId: args.accountId,
+                secure: true,
+
             });
             if (notes instanceof Error) {
                 return notes;
