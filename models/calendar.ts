@@ -41,7 +41,7 @@ export type CalendarEvent = {
     content: string;
     createdAt: string;
     dtag: string;
-    end?: Date;
+    end: string;
     endTzId?: string;
     eventId: number;
     geohash?: string;
