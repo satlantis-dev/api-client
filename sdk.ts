@@ -1518,6 +1518,7 @@ export class Client {
             page: number;
             limit: number;
             placeID: string;
+            accountID?: number;
         }) => {
             const notes = await this.getPlaceNotes(args);
             if (notes instanceof Error) {
