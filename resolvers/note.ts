@@ -152,8 +152,8 @@ export class NoteResolver {
     };
 
     getPlace = async () => {
-        if (this.spaceId) {
-            const place = await this.client.getPlaceById({ id: this.spaceId }, { useCache: true });
+        if (this.beMeta?.placeId) {
+            const place = await this.client.getPlaceById({ id: this.beMeta.placeId }, { useCache: true });
             if (place instanceof Error) {
                 return place;
             }
