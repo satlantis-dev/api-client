@@ -105,8 +105,8 @@ export class NoteResolver {
         }
     }
 
-    getAuthor = async () => {
-        const user = await this.client.resolver.getUser(this.pubkey);
+    getAuthor = async (options: { useCache: boolean }) => {
+        const user = await this.client.resolver.getUser(this.pubkey, options);
         if (user instanceof Error) {
             return user;
         }
