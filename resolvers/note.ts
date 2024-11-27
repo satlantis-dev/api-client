@@ -35,6 +35,7 @@ export class NoteResolver {
             data: PlaceNote;
         };
     private client: Client;
+    // All additional information obtained from BE.
     beMeta?: BEMeta;
 
     constructor(
