@@ -1517,6 +1517,9 @@ export class Client {
                 );
             }
         },
+        /**
+         * @unstable
+         */
         getPlaceNotes: async (args: {
             page: number;
             limit: number;
@@ -1537,6 +1540,9 @@ export class Client {
             }
             return noteResolvers;
         },
+        /**
+         * @unstable
+         */
         getNotesOfPubkey: async (args: {
             page: number;
             limit: number;
@@ -1556,6 +1562,9 @@ export class Client {
             }
             return noteResolvers;
         },
+        /**
+         * @unstable
+         */
         getNote: async (args: {
             noteID: number;
             accountID?: number;

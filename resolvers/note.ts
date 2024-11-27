@@ -35,7 +35,11 @@ export class NoteResolver {
             data: PlaceNote;
         };
     private client: Client;
-    // All additional information obtained from BE.
+    /**
+     * All additional information obtained from BE.
+     * @experimental
+     * @unstable
+     */
     beMeta?: BEMeta;
 
     constructor(
@@ -152,6 +156,11 @@ export class NoteResolver {
         return reactions;
     };
 
+    /**
+     * Get place object of this note
+     * @experimental
+     * @unstable
+     */
     getPlace = async () => {
         if (this.beMeta?.placeId) {
             const place = await this.client.getPlaceById({ id: this.beMeta.placeId }, { useCache: true });
