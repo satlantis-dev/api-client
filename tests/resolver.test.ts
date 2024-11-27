@@ -193,7 +193,6 @@ Deno.test("global feed with login", async () => {
     const notes = await client.resolver.getGlobalFeedsOfLoginUser({
         page: 1,
         limit: 3,
-        secure: true,
     });
     if (notes instanceof Error) fail(notes.message);
     console.warn("TODO: need to implement the test");
