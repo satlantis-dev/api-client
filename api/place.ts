@@ -39,6 +39,16 @@ export const getPlaceByOsmRef = (urlArg: URL) => async (args: { osmRef: string |
     return handleResponse<Place>(response);
 };
 
+export const getPlaceById = (urlArg: URL) => async (args: { id: number }) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getPlaceByID/${args.id}`;
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<Place>(response);
+};
+
 export const getPlaces = (urlArg: URL) =>
 async (args: {
     filters: {

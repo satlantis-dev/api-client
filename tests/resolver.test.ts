@@ -193,7 +193,6 @@ Deno.test("global feed with login", async () => {
     const notes = await client.resolver.getGlobalFeedsOfLoginUser({
         page: 1,
         limit: 3,
-        secure: true,
     });
     if (notes instanceof Error) fail(notes.message);
     console.warn("TODO: need to implement the test");
@@ -241,5 +240,5 @@ Deno.test("getPlacesMinimal", async () => {
     // currently we have 86 cities
     // once the data team adds more cities, this test will fail
     // and we should update the number here
-    assertEquals(places.length, 87);
+    assertEquals(places.length, 88);
 });
