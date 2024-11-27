@@ -1514,16 +1514,12 @@ export class Client {
                 );
             }
         },
-        getPlaceNote: async (args: {
+        getPlaceNotes: async (args: {
             page: number;
             limit: number;
-            placeId: string;
+            placeID: string;
         }) => {
-            const notes = await this.getPlaceNotes({
-                page: args.page,
-                limit: args.limit,
-                placeID: args.placeId,
-            });
+            const notes = await this.getPlaceNotes(args);
             if (notes instanceof Error) {
                 return notes;
             }
