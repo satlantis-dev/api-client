@@ -1556,6 +1556,19 @@ export class Client {
             }
             return noteResolvers;
         },
+        getNote: async (args: {
+            noteID: number;
+            accountID?: number;
+        }) => {
+            const note = await this.getNote(args);
+            if (note instanceof Error) {
+                return note;
+            }
+            return new NoteResolver(this, {
+                type: "backend",
+                data: note,
+            });
+        },
     };
 }
 
