@@ -1543,10 +1543,10 @@ export class Client {
             npub: string;
         }) => {
             const notes = await this.getNotesOfPubkey(args);
-            if ( notes instanceof Error) {
-                return notes
+            if (notes instanceof Error) {
+                return notes;
             }
-            const noteResolvers = []
+            const noteResolvers = [];
             for (const note of notes) {
                 const r = new NoteResolver(this, {
                     type: "backend",
@@ -1554,8 +1554,8 @@ export class Client {
                 });
                 noteResolvers.push(r);
             }
-            return noteResolvers
-        }
+            return noteResolvers;
+        },
     };
 }
 
