@@ -1517,7 +1517,7 @@ export class Client {
         getPlaceNotes: async (args: {
             page: number;
             limit: number;
-            placeID: string;
+            placeID: string | number;
             accountID?: number;
         }) => {
             const notes = await this.getPlaceNotes(args);
