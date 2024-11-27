@@ -1605,9 +1605,9 @@ export class Client {
          * @unstable
          */
         getPlaceGallery: async (args: {
-            placeID: string | number
+            placeID: string | number;
         }) => {
-            const notes = await this.getPlaceGallery(args)
+            const notes = await this.getPlaceGallery(args);
             if (notes instanceof Error) {
                 return notes;
             }
@@ -1620,7 +1620,7 @@ export class Client {
                 noteResolvers.push(r);
             }
             return noteResolvers;
-        }
+        },
     };
 }
 

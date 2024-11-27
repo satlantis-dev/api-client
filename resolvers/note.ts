@@ -1,4 +1,4 @@
-import { type NostrEvent, NostrKind, SingleRelayConnection, type Tag, type Tags } from "@blowater/nostr-sdk";
+import { type NostrEvent, NostrKind, SingleRelayConnection } from "@blowater/nostr-sdk";
 import type { AccountDTO, Client, Note, NoteType, PlaceNote } from "../sdk.ts";
 import { getRawNostrEventFromNote } from "../helpers/_helper.ts";
 
