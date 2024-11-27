@@ -1,5 +1,5 @@
 import { type NostrEvent, NostrKind, SingleRelayConnection } from "@blowater/nostr-sdk";
-import type { Client, Note, PlaceNote } from "../sdk.ts";
+import type { AccountDTO, Client, Note, NoteType, PlaceNote } from "../sdk.ts";
 import { getRawNostrEventFromNote } from "../helpers/_helper.ts";
 
 export class NoteResolver {
@@ -22,7 +22,10 @@ export class NoteResolver {
             data: PlaceNote;
         };
     private client: Client;
+    noteId?: number;
     spaceId?: number;
+    noteType?: NoteType;
+    account?: AccountDTO;
 
     constructor(
         client: Client,
@@ -43,11 +46,14 @@ export class NoteResolver {
         this.client = client;
         this.source = source;
         if (source.type == "backend") {
+            this.noteId = source.data.id;
             this.nostrId = source.data.nostrId;
             this.pubkey = source.data.pubkey;
             this.content = source.data.content;
             this.createdAt = new Date(source.data.createdAt);
             this.nostrEvent = getRawNostrEventFromNote(source.data);
+            this.noteType = source.data.type;
+            this.account = source.data.account;
         } else if (source.type == "nostr") {
             this.nostrId = source.data.id;
             this.pubkey = source.data.pubkey;
@@ -55,11 +61,14 @@ export class NoteResolver {
             this.createdAt = new Date(source.data.created_at * 1000);
             this.nostrEvent = source.data;
         } else {
+            this.noteId = source.data.note.id;
             this.nostrId = source.data.note.nostrId;
             this.pubkey = source.data.note.pubkey;
             this.content = source.data.note.content;
             this.createdAt = new Date(source.data.note.createdAt);
             this.nostrEvent = getRawNostrEventFromNote(source.data.note);
+            this.noteType = source.data.type;
+            this.account = source.data.note.account;
         }
     }
 
