@@ -2,6 +2,19 @@ import { type NostrEvent, NostrKind, SingleRelayConnection } from "@blowater/nos
 import type { AccountDTO, Client, Note, NoteType, PlaceNote } from "../sdk.ts";
 import { getRawNostrEventFromNote } from "../helpers/_helper.ts";
 
+type BEMeta = {
+    noteId: number;
+    noteType: NoteType;
+    account: AccountDTO;
+    placeId?: number;
+    commentCount?: number;
+    commentedByUser?: boolean;
+    reactionCount?: number;
+    reactedByUser?: boolean;
+    source?: string;
+    score?: number;
+};
+
 export class NoteResolver {
     nostrId: string;
     pubkey: string;
@@ -22,10 +35,7 @@ export class NoteResolver {
             data: PlaceNote;
         };
     private client: Client;
-    noteId?: number;
-    spaceId?: number;
-    noteType?: NoteType;
-    account?: AccountDTO;
+    beMeta?: BEMeta;
 
     constructor(
         client: Client,
@@ -45,30 +55,48 @@ export class NoteResolver {
     ) {
         this.client = client;
         this.source = source;
-        if (source.type == "backend") {
-            this.noteId = source.data.id;
-            this.nostrId = source.data.nostrId;
-            this.pubkey = source.data.pubkey;
-            this.content = source.data.content;
-            this.createdAt = new Date(source.data.createdAt);
-            this.nostrEvent = getRawNostrEventFromNote(source.data);
-            this.noteType = source.data.type;
-            this.account = source.data.account;
-        } else if (source.type == "nostr") {
+        if (source.type == "nostr") {
             this.nostrId = source.data.id;
             this.pubkey = source.data.pubkey;
             this.content = source.data.content;
             this.createdAt = new Date(source.data.created_at * 1000);
             this.nostrEvent = source.data;
+        } else if (source.type == "backend") {
+            this.nostrId = source.data.nostrId;
+            this.pubkey = source.data.pubkey;
+            this.content = source.data.content;
+            this.createdAt = new Date(source.data.createdAt);
+            this.nostrEvent = getRawNostrEventFromNote(source.data);
+            this.beMeta = {
+                noteId: source.data.id,
+                noteType: source.data.type,
+                account: source.data.account,
+                commentCount: source.data.commentCount,
+                commentedByUser: source.data.commentedByUser,
+                reactionCount: source.data.reactionCount,
+                reactedByUser: source.data.reactedByUser,
+                source: source.data.source,
+                score: source.data.score,
+            };
         } else {
-            this.noteId = source.data.note.id;
             this.nostrId = source.data.note.nostrId;
             this.pubkey = source.data.note.pubkey;
             this.content = source.data.note.content;
             this.createdAt = new Date(source.data.note.createdAt);
             this.nostrEvent = getRawNostrEventFromNote(source.data.note);
-            this.noteType = source.data.type;
-            this.account = source.data.note.account;
+            this.beMeta = {
+                placeId: source.data.placeId,
+
+                noteId: source.data.note.id,
+                noteType: source.data.type,
+                account: source.data.note.account,
+                commentCount: source.data.note.commentCount,
+                commentedByUser: source.data.note.commentedByUser,
+                reactionCount: source.data.note.reactionCount,
+                reactedByUser: source.data.note.reactedByUser,
+                source: source.data.note.source,
+                score: source.data.note.score,
+            };
         }
     }
 
