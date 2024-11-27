@@ -1,4 +1,4 @@
-import { type NostrEvent, NostrKind, SingleRelayConnection } from "@blowater/nostr-sdk";
+import { type NostrEvent, NostrKind, SingleRelayConnection, type Tag, type Tags } from "@blowater/nostr-sdk";
 import type { AccountDTO, Client, Note, NoteType, PlaceNote } from "../sdk.ts";
 import { getRawNostrEventFromNote } from "../helpers/_helper.ts";
 
@@ -105,7 +105,7 @@ export class NoteResolver {
         }
     }
 
-    getAuthor = async (options: { useCache: boolean }) => {
+    getAuthor = async (options?: { useCache: boolean }) => {
         const user = await this.client.resolver.getUser(this.pubkey, options);
         if (user instanceof Error) {
             return user;
