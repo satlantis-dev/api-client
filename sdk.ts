@@ -1601,6 +1601,26 @@ export class Client {
             }
             return noteResolvers;
         },
+        /**
+         * @unstable
+         */
+        getPlaceGallery: async (args: {
+            placeID: string | number;
+        }) => {
+            const notes = await this.getPlaceGallery(args);
+            if (notes instanceof Error) {
+                return notes;
+            }
+            const noteResolvers = [];
+            for (const note of notes) {
+                const r = new NoteResolver(this, {
+                    type: "backend-place",
+                    data: note,
+                });
+                noteResolvers.push(r);
+            }
+            return noteResolvers;
+        },
     };
 }
 
