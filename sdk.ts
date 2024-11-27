@@ -1578,6 +1578,29 @@ export class Client {
                 data: note,
             });
         },
+        /**
+         * @unstable
+         */
+        getNoteCommentsById: async (args: {
+            accountID?: number | undefined;
+            noteID: number;
+            page: number;
+            limit: number;
+        }) => {
+            const notes = await this.getNoteCommentsById(args);
+            if (notes instanceof Error) {
+                return notes;
+            }
+            const noteResolvers = [];
+            for (const note of notes) {
+                const r = new NoteResolver(this, {
+                    type: "backend",
+                    data: note,
+                });
+                noteResolvers.push(r);
+            }
+            return noteResolvers;
+        },
     };
 }
 
