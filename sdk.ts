@@ -1423,6 +1423,9 @@ export class Client {
             }
             return noteResolvers;
         },
+        /**
+         * NOTE: This return result is not a NoteResolver, so it should not be written here.
+         */
         getGlobalFeedsOfLoginUser: async (args: {
             page: number;
             limit: number;
@@ -1534,6 +1537,25 @@ export class Client {
             }
             return noteResolvers;
         },
+        getNotesOfPubkey: async (args: {
+            page: number;
+            limit: number;
+            npub: string;
+        }) => {
+            const notes = await this.getNotesOfPubkey(args);
+            if ( notes instanceof Error) {
+                return notes
+            }
+            const noteResolvers = []
+            for (const note of notes) {
+                const r = new NoteResolver(this, {
+                    type: "backend",
+                    data: note,
+                });
+                noteResolvers.push(r);
+            }
+            return noteResolvers
+        }
     };
 }
 
