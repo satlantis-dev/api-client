@@ -1519,10 +1519,6 @@ export class Client {
             limit: number;
             placeId: string;
         }) => {
-            const me = await this.getNostrSigner();
-            if (me instanceof Error) {
-                return me;
-            }
             const notes = await this.getPlaceNotes({
                 page: args.page,
                 limit: args.limit,
