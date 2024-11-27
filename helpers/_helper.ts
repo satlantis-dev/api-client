@@ -1,4 +1,6 @@
+import type { NostrEvent, Tag } from "@blowater/nostr-sdk";
 import { Aborted, type FetchResult } from "../helpers/safe-fetch.ts";
+import type { Note } from "../api/note.ts";
 
 export class ApiError extends Error {
     constructor(public readonly status: number, public readonly text: string) {
@@ -50,3 +52,20 @@ function parseJSON<T extends {}>(text: string) {
         return new InvalidJSON(e as SyntaxError);
     }
 }
+
+export const getRawNostrEventFromNote = (note: Note) => {
+    // Parse note.tags (string) to NostrTools Tag[]
+    const tags = note.tags ? JSON.parse(note.tags) : [];
+    // Get timestamp from Date
+    const createdAt = new Date(note.createdAt).getTime() / 1000;
+    const nostrEvent: NostrEvent = {
+        content: note.content,
+        created_at: createdAt,
+        id: note.nostrId,
+        kind: note.kind,
+        pubkey: note.pubkey,
+        sig: note.sig,
+        tags: tags as Tag[],
+    };
+    return nostrEvent;
+};
