@@ -44,6 +44,7 @@ import {
 import { getAccountPlaceRoles } from "./api/people.ts";
 import {
     getAllPlaceRegionCountryNames,
+    getPlaceById,
     getPlaceByOsmRef,
     getPlaceCalendarEvents,
     getPlaceCategoryScores,
@@ -110,6 +111,7 @@ export class Client {
     >;
     getAccountPlaceRoles: ReturnType<typeof getAccountPlaceRoles>;
     private _getPlaceByOsmRef: ReturnType<typeof getPlaceByOsmRef>;
+    private _getPlaceById: ReturnType<typeof getPlaceById>;
     private _getPlaces: ReturnType<typeof getPlaces>;
     getPlaceEvent: ReturnType<typeof getPlaceEvent>;
     getPlaceNotes: ReturnType<typeof getPlaceNotes>;
@@ -222,6 +224,7 @@ export class Client {
         this._getPlaceNames = getPlaceNames(rest_api_url);
         this._getAllPlaceRegionCountryNames = getAllPlaceRegionCountryNames(rest_api_url);
         this._getPlaceByOsmRef = getPlaceByOsmRef(rest_api_url);
+        this._getPlaceById = getPlaceById(rest_api_url);
         this._getPlaces = getPlaces(rest_api_url);
         this.getAccountPlaceRoles = getAccountPlaceRoles(rest_api_url);
         this.getPlaceNotes = getPlaceNotes(rest_api_url);
@@ -423,6 +426,24 @@ export class Client {
             }
         }
         const place = await this._getPlaceByOsmRef(args);
+        if (place instanceof Error) {
+            return place;
+        }
+        this.places.set(place.id, place);
+        return place;
+    };
+
+    getPlaceById = async (
+        args: { id: number },
+        options?: { useCache: boolean },
+    ) => {
+        if (options?.useCache) {
+            const place = this.places.get(args.id);
+            if (place) {
+                return place;
+            }
+        }
+        const place = await this._getPlaceById(args);
         if (place instanceof Error) {
             return place;
         }
@@ -1405,7 +1426,7 @@ export class Client {
         getGlobalFeedsOfLoginUser: async (args: {
             page: number;
             limit: number;
-            accountId?: number
+            accountId?: number;
         }) => {
             const me = await this.getNostrSigner();
             if (me instanceof Error) {
@@ -1416,7 +1437,6 @@ export class Client {
                 limit: args.limit,
                 accountId: args.accountId,
                 secure: true,
-
             });
             if (notes instanceof Error) {
                 return notes;
@@ -1493,6 +1513,33 @@ export class Client {
                     account,
                 );
             }
+        },
+        getPlaceNote: async (args: {
+            page: number;
+            limit: number;
+            placeId: string;
+        }) => {
+            const me = await this.getNostrSigner();
+            if (me instanceof Error) {
+                return me;
+            }
+            const notes = await this.getPlaceNotes({
+                page: args.page,
+                limit: args.limit,
+                placeID: args.placeId,
+            });
+            if (notes instanceof Error) {
+                return notes;
+            }
+            const noteResolvers = [];
+            for (const note of notes) {
+                const r = new NoteResolver(this, {
+                    type: "backend-place",
+                    data: note,
+                });
+                noteResolvers.push(r);
+            }
+            return noteResolvers;
         },
     };
 }

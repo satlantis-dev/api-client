@@ -69,7 +69,7 @@ async (args: {
     placeId?: string;
     sort?: "recent" | "trending";
     secure?: boolean;
-    accountId?:number
+    accountId?: number;
 }) => {
     const url = copyURL(urlArg);
     const headers = new Headers();

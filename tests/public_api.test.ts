@@ -33,6 +33,17 @@ Deno.test("getPlace", async () => {
     console.log(result.regionId);
 });
 
+Deno.test("getPlaceById", async () => {
+    const result = await client.getPlaceById({
+        id: 39645,
+    });
+    if (result instanceof Error) {
+        console.log(result);
+        fail();
+    }
+    assertEquals(result.regionId, 1606);
+});
+
 Deno.test("getPlaces", async () => {
     const result = await client.getPlaces({
         filters: { name: "london" },

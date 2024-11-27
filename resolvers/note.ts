@@ -1,7 +1,9 @@
 import { type NostrEvent, NostrKind, SingleRelayConnection } from "@blowater/nostr-sdk";
-import type { Client, Note } from "../sdk.ts";
+import type { Client, Note, PlaceNote } from "../sdk.ts";
 
 export class NoteResolver {
+    nostrId: string;
+    pubkey: string;
     content: string;
     createdAt: Date;
     public readonly source:
@@ -12,8 +14,13 @@ export class NoteResolver {
         | {
             type: "backend";
             data: Note;
+        }
+        | {
+            type: "backend-place";
+            data: PlaceNote;
         };
     private client: Client;
+    spaceId?: number;
 
     constructor(
         client: Client,
@@ -25,20 +32,34 @@ export class NoteResolver {
             | {
                 type: "backend";
                 data: Note;
+            }
+            | {
+                type: "backend-place";
+                data: PlaceNote;
             },
     ) {
         this.client = client;
         this.source = source;
-        this.content = source.data.content;
         if (source.type == "backend") {
+            this.nostrId = source.data.nostrId;
+            this.pubkey = source.data.pubkey;
+            this.content = source.data.content;
             this.createdAt = new Date(source.data.createdAt);
-        } else {
+        } else if (source.type == "nostr") {
+            this.nostrId = source.data.id;
+            this.pubkey = source.data.pubkey;
+            this.content = source.data.content;
             this.createdAt = new Date(source.data.created_at * 1000);
+        } else {
+            this.nostrId = source.data.note.nostrId;
+            this.pubkey = source.data.note.pubkey;
+            this.content = source.data.note.content;
+            this.createdAt = new Date(source.data.note.createdAt);
         }
     }
 
     getAuthor = async () => {
-        const user = await this.client.resolver.getUser(this.source.data.pubkey);
+        const user = await this.client.resolver.getUser(this.pubkey);
         if (user instanceof Error) {
             return user;
         }
@@ -61,9 +82,7 @@ export class NoteResolver {
                 return relay;
             }
             const stream = await relay.newSub("getReactions", {
-                "#e": [
-                    this.source.type == "nostr" ? this.source.data.id : this.source.data.nostrId,
-                ],
+                "#e": [this.nostrId],
                 kinds: [NostrKind.REACTION],
                 limit: args.limit,
                 since: Math.floor(args.since.valueOf() / 1000),
@@ -88,5 +107,15 @@ export class NoteResolver {
             await relay.close();
         }
         return reactions;
+    };
+
+    getPlace = async () => {
+        if (this.spaceId) {
+            const place = await this.client.getPlaceById({ id: this.spaceId }, { useCache: true });
+            if (place instanceof Error) {
+                return place;
+            }
+            return place;
+        }
     };
 }
