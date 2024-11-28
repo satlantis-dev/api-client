@@ -95,7 +95,6 @@ async (args: {
     }
 
     const response = await safeFetch(url, { headers });
-    console.log("response", response);
     if (response instanceof Error) {
         return response;
     }
