@@ -83,7 +83,7 @@ async (args: {
         url.searchParams.set("sort", String(args.sort));
     }
     if (args.accountId) {
-        url.searchParams.set("accountId", String(args.accountId));
+        url.searchParams.set("account_id", String(args.accountId));
     }
 
     if (args.secure) {
@@ -95,6 +95,7 @@ async (args: {
     }
 
     const response = await safeFetch(url, { headers });
+    console.log("response", response);
     if (response instanceof Error) {
         return response;
     }
