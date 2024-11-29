@@ -1654,6 +1654,7 @@ export * from "./models/calendar.ts";
 export * from "./models/chat.ts";
 export * from "./models/location.ts";
 export * from "./models/metric.ts";
+export * from "./models/notification.ts";
 export * from "./models/place.ts";
 export * from "./models/region.ts";
 export * from "./models/interest.ts";
