@@ -1128,7 +1128,7 @@ export class Client {
      */
     postNote = async (args: {
         content: string;
-        image: File;
+        image: File | File[];
         placeID?: number;
     }) => {
         const signer = await this.getNostrSigner();
@@ -1136,12 +1136,25 @@ export class Client {
             return signer;
         }
 
-        const uploadedImageUrl = await this.uploadFile({ file: args.image });
-        if (uploadedImageUrl instanceof Error) {
-            return uploadedImageUrl;
+        const uploadedImageUrls: string[] = [];
+        if (Array.isArray(args.image)) {
+            for (const file of args.image) {
+                const uploadedImageUrl = await this.uploadFile({ file });
+                if (uploadedImageUrl instanceof Error) {
+                    return uploadedImageUrl;
+                }
+                uploadedImageUrls.push(uploadedImageUrl.toString());
+            }
+        } else {
+            const uploadedImageUrl = await this.uploadFile({ file: args.image });
+            if (uploadedImageUrl instanceof Error) {
+                return uploadedImageUrl;
+            }
+            uploadedImageUrls.push(uploadedImageUrl.toString());
         }
 
-        const fullContent = `${args.content}\n${uploadedImageUrl}`;
+        const imageUrlsString = uploadedImageUrls.join("\n");
+        const fullContent = `${args.content}\n${imageUrlsString}`;
 
         const event = await prepareNostrEvent(signer, {
             kind: NostrKind.TEXT_NOTE,
