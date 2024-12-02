@@ -64,6 +64,7 @@ import {
     deleteAccount,
     getAccountsBySearch,
     removeAccountRole,
+    resendEmailVerification,
     updateAccount,
     updateAccountFollowingList,
 } from "./api/secure/account.ts";
@@ -175,6 +176,7 @@ export class Client {
     login: ReturnType<typeof login>;
     initiatePasswordReset: ReturnType<typeof initiatePasswordReset>;
     resetPassword: ReturnType<typeof resetPassword>;
+    resendEmailVerification: ReturnType<typeof resendEmailVerification>;
     verifyEmail: ReturnType<typeof verifyEmail>;
     /////////////////
     // authed APIs //
@@ -315,6 +317,7 @@ export class Client {
         this.loginNostr = loginNostr(rest_api_url);
         this.initiatePasswordReset = initiatePasswordReset(this.rest_api_url);
         this.resetPassword = resetPassword(this.rest_api_url);
+        this.resendEmailVerification = resendEmailVerification(this.rest_api_url, getJwt);
         this.verifyEmail = verifyEmail(this.rest_api_url);
         this.createInterests = createInterests(this.rest_api_url, this.getJwt);
         this.getAccountInterests = getAccountInterests(this.rest_api_url);

@@ -114,6 +114,22 @@ export const removeAccountRole =
         return handleResponse<AccountPlaceRole>(response);
     };
 
+export const resendEmailVerification = (urlArg: URL, getJwt: () => string) => async () => {
+            const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/resendEmailVerification`;
+            const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    const response = await safeFetch(url, { headers });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{ success: boolean }>(response);
+}
+
 export const updateAccountFollowingList =
     (urlArg: URL, getJwt: () => string, getSigner: func_GetNostrSigner) =>
     async (args: {
