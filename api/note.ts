@@ -83,7 +83,7 @@ async (args: {
         url.searchParams.set("sort", String(args.sort));
     }
     if (args.accountId) {
-        url.searchParams.set("account_id", String(args.accountId));
+        url.searchParams.set("accountId", String(args.accountId));
     }
 
     if (args.secure) {
