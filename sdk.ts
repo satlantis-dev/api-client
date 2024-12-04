@@ -1125,6 +1125,38 @@ export class Client {
     };
 
     /**
+     * For note that contain multiple images, the image upload process can be completed in advance
+     * @param args.content example: `${text}\n${imageUrl1}\n${imageUrl2}`
+     *
+     * @unstable
+     */
+    postPlaceMediaNote = async (args: {
+        content: string;
+        placeID: number;
+    }) => {
+        const { content, placeID: placeId } = args;
+        const signer = await this.getNostrSigner();
+        if (signer instanceof Error) {
+            return signer;
+        }
+
+        const event = await prepareNostrEvent(signer, {
+            kind: NostrKind.TEXT_NOTE,
+            content,
+        });
+        if (event instanceof Error) {
+            return event;
+        }
+
+        const res = await this._postNote({
+            event,
+            noteType: NoteType.MEDIA,
+            placeId,
+        });
+        return res;
+    };
+
+    /**
      * @param args.placeEvent required if posting under a place/city
      *
      * @unstable
