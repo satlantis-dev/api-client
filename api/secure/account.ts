@@ -3,7 +3,7 @@ import { type NostrEvent, NostrKind, prepareNostrEvent } from "@blowater/nostr-s
 import { copyURL, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
 import type { AccountPlaceRole, AccountPlaceRoleTypeEnum } from "../../models/account.ts";
-import type { Account, func_GetJwt, func_GetNostrSigner } from "../../sdk.ts";
+import type { Account, AccountSearchDTO, func_GetJwt, func_GetNostrSigner } from "../../sdk.ts";
 
 export const addAccountRole =
     (urlArg: URL, getJwt: func_GetJwt, getSigner: func_GetNostrSigner) =>
@@ -219,7 +219,7 @@ export const getAccountsBySearch =
         if (response instanceof Error) {
             return response;
         }
-        return handleResponse<Account[]>(response);
+        return handleResponse<AccountSearchDTO[]>(response);
     };
 
 export const deleteAccount =
