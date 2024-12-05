@@ -209,7 +209,7 @@ export const getAccountsBySearch =
         }
 
         const url = copyURL(urlArg);
-        url.pathname = `/getAccountsBySearch/`;
+        url.pathname = `/secure/getAccountsBySearch`;
         url.searchParams.set("username", args.username);
 
         const headers = new Headers();
