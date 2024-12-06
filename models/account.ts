@@ -58,6 +58,16 @@ export type AccountDTO = {
     username: string;
 };
 
+export type AccountSearchDTO = {
+    about: string;
+    display_name: string;
+    followers_count: number;
+    id: number;
+    npub: string;
+    picture: string;
+    username: string;
+};
+
 export type AccountPlaceRole = {
     id: number;
     accountId: number;
