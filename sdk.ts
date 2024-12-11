@@ -149,8 +149,8 @@ export class Client {
     _blackListAccount: ReturnType<typeof blacklistAccount>;
 
     // note
-    private getNotesOfPubkey: ReturnType<typeof getNotesOfPubkey>;
     private getNotes: ReturnType<typeof getNotes>;
+    getNotesOfPubkey: ReturnType<typeof getNotesOfPubkey>;
     getNote: ReturnType<typeof getNote>;
     getIpInfo: ReturnType<typeof getIpInfo>;
     getNoteReactionsById: ReturnType<typeof getNoteReactionsById>;
