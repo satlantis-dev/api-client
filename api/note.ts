@@ -48,19 +48,28 @@ export type Note = {
     readonly type: number;
 };
 
-export const getNotesOfPubkey =
-    (urlArg: URL) => async (args: { npub: string; page: number; limit: number }) => {
-        const url = copyURL(urlArg);
-        url.pathname = `/getNotes/${args.npub}`;
-        url.searchParams.set("page", String(args.page));
-        url.searchParams.set("limit", String(args.limit));
+export const getNotesOfPubkey = (urlArg: URL) =>
+async (args: {
+    npub: string;
+    page: number;
+    limit: number;
+    accountId?: number;
+}) => {
+    const url = copyURL(urlArg);
+    // https://github.com/search?q=repo%3Asatlantis-dev%2Fapi%20GetMediaNotesByNPubPaginated&type=code
+    url.pathname = `/getNotes/${args.npub}`;
+    url.searchParams.set("page", String(args.page));
+    url.searchParams.set("limit", String(args.limit));
+    if (args.accountId) {
+        url.searchParams.set("accountId", String(args.accountId));
+    }
 
-        const response = await safeFetch(url);
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<Note[]>(response);
-    };
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<Note[]>(response);
+};
 
 export const getNotes = (urlArg: URL, getJwt: func_GetJwt) =>
 async (args: {
