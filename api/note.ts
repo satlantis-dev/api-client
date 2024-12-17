@@ -32,7 +32,8 @@ export type Note = {
     readonly accountId: number;
     readonly account: AccountDTO;
     readonly createdAt: string;
-    readonly commentCount?: number;
+    readonly commentCount?: number; // next level comments
+    readonly allCommentCount?: number; // all level comments
     readonly commentedByUser?: boolean;
     readonly content: string;
     readonly eventId: number;
