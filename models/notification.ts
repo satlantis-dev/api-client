@@ -6,6 +6,7 @@ export interface Notification {
     creatorAccount: AccountDTO;
     action: string;
     type: string;
+    imageUrl: string;
     link: string;
     message: string;
     isRead: boolean;
