@@ -1132,6 +1132,7 @@ export class Client {
      */
     postPlaceMediaNote = async (args: {
         content: string;
+        images: string[];
         placeID: number;
     }) => {
         const { content, placeID: placeId } = args;
@@ -1140,9 +1141,15 @@ export class Client {
             return signer;
         }
 
+        const tags: Tag[] = [];
+        for (const image of args.images) {
+            tags.push(["image", image]);
+        }
+
         const event = await prepareNostrEvent(signer, {
             kind: NostrKind.TEXT_NOTE,
             content,
+            tags,
         });
         if (event instanceof Error) {
             return event;
