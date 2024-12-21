@@ -613,3 +613,71 @@ WhatsApp: who?
         );
     });
 });
+
+Deno.test("getAccountsBySearch", async (t) => {
+    await t.step("should find accounts with basic search patterns", async (t) => {
+        const testCases = [
+            { name: "Exact match with lowercase", query: "satlantis" },
+            { name: "Exact match with proper case", query: "Satlantis" },
+            { name: "Partial match with prefix", query: "sat" },
+        ];
+
+        for (const tc of testCases) {
+            await t.step(tc.name, async () => {
+                const res2 = await client.getAccountsBySearch({
+                    username: tc.query,
+                });
+                if (res2 instanceof Error) {
+                    fail(res2.message);
+                }
+                assertEquals(res2.length > 0, true);
+            });
+        }
+    });
+
+    await t.step("should handle invalid username patterns", async (t) => {
+        const testCases = [
+            { name: "Invalid username with number suffix", query: "satlantis1" },
+            { name: "Invalid username with number prefix", query: "1satlantis" },
+            { name: "Invalid username with number in middle", query: "sat1antis" },
+        ];
+
+        for (const tc of testCases) {
+            await t.step(tc.name, async () => {
+                const res2 = await client.getAccountsBySearch({
+                    username: tc.query,
+                });
+                if (res2 instanceof Error) {
+                    fail(res2.message);
+                }
+                assertEquals(res2.length, 0);
+            });
+        }
+    });
+
+    await t.step("should find known community members", async (t) => {
+        // Reference: https://api-dev.satlantis.io/getPeopleOfPlace/23090
+        const testCases = [
+            "novica",
+            "svetski",
+            "remnantal",
+            "nielliesmons",
+            "satoshi",
+            "oumar",
+            "glow",
+            "jason",
+        ];
+
+        for (const tc of testCases) {
+            await t.step(`should find user "${tc}"`, async () => {
+                const res2 = await client.getAccountsBySearch({
+                    username: tc,
+                });
+                if (res2 instanceof Error) {
+                    fail(res2.message);
+                }
+                assertEquals(res2.length > 0, true);
+            });
+        }
+    });
+});
