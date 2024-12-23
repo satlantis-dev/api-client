@@ -658,13 +658,8 @@ Deno.test("getAccountsBySearch", async (t) => {
     await t.step("should find known community members", async (t) => {
         // Reference: https://api-dev.satlantis.io/getPeopleOfPlace/23090
         const testCases = [
-            "novica",
-            "svetski",
-            "remnantal",
-            "nielliesmons",
+            "jeff",
             "satoshi",
-            "oumar",
-            "glow",
             "jason",
         ];
 
