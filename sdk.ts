@@ -70,6 +70,7 @@ import {
 } from "./api/secure/account.ts";
 import { updatePlace } from "./api/secure/place.ts";
 import { deleteNote, postNote, postReaction } from "./api/secure/note.ts";
+import { getNotifications } from "./api/secure/notification.ts";
 import { presign } from "./api/secure/presign.ts";
 import { newURL } from "./helpers/_helper.ts";
 import { addressLookup } from "./api/address.ts";
@@ -155,6 +156,9 @@ export class Client {
     getIpInfo: ReturnType<typeof getIpInfo>;
     getNoteReactionsById: ReturnType<typeof getNoteReactionsById>;
     getNoteCommentsById: ReturnType<typeof getNoteCommentsById>;
+    
+    // Notifications
+    getNotifications: ReturnType<typeof getNotifications>;
 
     // Location
     getLocationsWithinBoundingBox: ReturnType<
@@ -271,6 +275,9 @@ export class Client {
         this.getNotes = getNotes(rest_api_url, getJwt);
         this.getNote = getNote(rest_api_url);
         this.getIpInfo = getIpInfo(rest_api_url);
+
+        // notifications
+        this.getNotifications = getNotifications(rest_api_url, getJwt);
 
         // location
         this.getLocationsWithinBoundingBox = getLocationsWithinBoundingBox(rest_api_url);
