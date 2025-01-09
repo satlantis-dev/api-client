@@ -62,7 +62,7 @@ Deno.test("AccountRole", async () => {
     assertEquals(res.account.npub, signer.publicKey.bech32());
 
     const client = Client.New({
-        baseURL: "https://api-dev.satlantis.io",
+        baseURL: rest_url,
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
         relay_url,
@@ -129,7 +129,7 @@ Deno.test("post notes", async () => {
     const res = await clientNoAuth.loginNostr(signer, { name: "test" });
     if (res instanceof Error) fail(res.message);
     const client = Client.New({
-        baseURL: "https://api-dev.satlantis.io",
+        baseURL: rest_url,
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
         relay_url,
@@ -176,7 +176,7 @@ Deno.test("update place", async () => {
     const res = await clientNoAuth.loginNostr(signer, { name: "test" });
     if (res instanceof Error) fail(res.message);
     const client = Client.New({
-        baseURL: "https://api-dev.satlantis.io",
+        baseURL: rest_url,
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
         relay_url,
@@ -357,7 +357,7 @@ Deno.test("getInterests", async () => {
     if (res instanceof Error) fail(res.message);
 
     const client = Client.New({
-        baseURL: "https://api-dev.satlantis.io",
+        baseURL: rest_url,
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
         relay_url,
@@ -413,7 +413,7 @@ Deno.test("calendar events", async () => {
 
     const account = res.account;
     const client = Client.New({
-        baseURL: "https://api-dev.satlantis.io",
+        baseURL: rest_url,
         getJwt: () => res.token,
         getNostrSigner: async () => signer,
         relay_url,
