@@ -156,7 +156,7 @@ export class Client {
     getIpInfo: ReturnType<typeof getIpInfo>;
     getNoteReactionsById: ReturnType<typeof getNoteReactionsById>;
     getNoteCommentsById: ReturnType<typeof getNoteCommentsById>;
-    
+
     // Notifications
     getNotifications: ReturnType<typeof getNotifications>;
 
