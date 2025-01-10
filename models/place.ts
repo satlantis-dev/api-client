@@ -44,21 +44,22 @@ export interface PlaceMetric {
 }
 
 export interface PlaceCategoryScore {
-    categoryId: number;
-    category: Category;
-    cityId: number;
-    score: number;
-    topicScores: PlaceTopicScore[];
-    updatedAt: Date;
+    readonly categoryId: number;
+    readonly category: Category;
+    readonly score: number;
+    readonly rank: number;
+    readonly topicScores: PlaceTopicScore[];
 }
 
 export interface PlaceTopicScore {
-    categoryId: number;
-    cityId: number;
-    score: number;
-    topicId: number;
-    topic: Topic;
-    updatedAt: Date;
+    readonly categoryId: number;
+    readonly placeId: number;
+    readonly score: number;
+    readonly updatedAt: Date;
+    readonly topicId: number;
+    readonly topic: Topic;
+    readonly userNumber: number;
+    readonly userScore: number;
 }
 
 export type PlaceEvent = {
