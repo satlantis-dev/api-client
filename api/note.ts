@@ -2,7 +2,18 @@ import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { AccountDTO } from "../models/account.ts";
 import type { Reaction } from "../models/reaction.ts";
-import type { func_GetJwt } from "../sdk.ts";
+import type { func_GetJwt, Place } from "../sdk.ts";
+
+export interface FeedNote extends Note {
+    readonly source: string;
+    readonly score: number;
+    readonly commentCount: number;
+    readonly allCommentCount: number;
+    readonly reactionCount: number;
+    readonly commentedByUser: boolean;
+    readonly reactedByUser: boolean;
+    readonly place: Place;
+}
 
 export interface PlaceNote {
     id: number;
