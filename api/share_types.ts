@@ -45,7 +45,6 @@ export interface Category {
 
 export interface Topic {
     id: number;
-    categoryId: number;
     description: string;
     inFocus: boolean;
     name: string;
