@@ -42,3 +42,10 @@ export interface MetricSource {
     name: string;
     url: string;
 }
+
+export interface Brand {
+    readonly name: string;
+    readonly type: string;
+    readonly website: string;
+    readonly logo: string;
+}

@@ -545,6 +545,15 @@ Deno.test("follow & unfollow", async () => {
     }
 });
 
+Deno.test("get brands", async () => {
+    const brands = ["Uber", "DiDi"];
+    const result = await client.getBrands(brands);
+    if (result instanceof Error) {
+        fail(result.message);
+    }
+    assertEquals(result.length === 2, true);
+});
+
 export function randomString() {
     return String(Date.now());
 }
