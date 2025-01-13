@@ -1582,29 +1582,6 @@ export class Client {
         /**
          * @unstable
          */
-        getPlaceNotes: async (args: {
-            page: number;
-            limit: number;
-            placeID: string | number;
-            accountID?: number;
-        }) => {
-            const notes = await this.getPlaceNotes(args);
-            if (notes instanceof Error) {
-                return notes;
-            }
-            const noteResolvers = [];
-            for (const note of notes) {
-                const r = new NoteResolver(this, {
-                    type: "backend-place",
-                    data: note,
-                });
-                noteResolvers.push(r);
-            }
-            return noteResolvers;
-        },
-        /**
-         * @unstable
-         */
         getNotesOfPubkey: async (args: {
             page: number;
             limit: number;
