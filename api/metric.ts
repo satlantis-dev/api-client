@@ -15,3 +15,18 @@ export const getBrands = (urlArg: URL) => async (args: { names: string[] }) => {
     }
     return handleResponse<Brand[]>(response);
 };
+
+/**
+ * GET /getExchangeRate
+ */
+export const getExchangeRate = (urlArg: URL) => async (args: { code: string }) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getExchangeRate/${args.code}`;
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{
+        rate: number;
+    }>(response);
+};

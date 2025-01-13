@@ -95,7 +95,7 @@ import type { Place } from "./models/place.ts";
 import type { LocationCategory, LocationCategoryName, LocationTag } from "./models/location.ts";
 import { postAmbassadorInquiry } from "./api/secure/ambassador.ts";
 import type { Interest } from "./models/interest.ts";
-import { getBrands } from "./api/metric.ts";
+import { getBrands, getExchangeRate } from "./api/metric.ts";
 
 export type func_GetNostrSigner = () => Promise<(Signer & Encrypter) | Error>;
 export type func_GetJwt = () => string;
@@ -125,6 +125,7 @@ export class Client {
 
     getRegion: ReturnType<typeof getRegion>;
     getBrands: ReturnType<typeof getBrands>;
+    getExchangeRate: ReturnType<typeof getExchangeRate>;
 
     // Calendar Events
     getPlaceCalendarEvents: ReturnType<typeof getPlaceCalendarEvents>;
@@ -244,6 +245,7 @@ export class Client {
 
         this.getRegion = getRegion(rest_api_url);
         this.getBrands = getBrands(rest_api_url);
+        this.getExchangeRate = getExchangeRate(rest_api_url);
 
         // Calendar Events
         this.getPlaceCalendarEvents = getPlaceCalendarEvents(rest_api_url);

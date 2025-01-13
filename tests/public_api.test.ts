@@ -547,11 +547,19 @@ Deno.test("follow & unfollow", async () => {
 
 Deno.test("get brands", async () => {
     const brands = ["Uber", "DiDi"];
-    const result = await client.getBrands(brands);
+    const result = await client.getBrands({ names: brands });
     if (result instanceof Error) {
         fail(result.message);
     }
     assertEquals(result.length === 2, true);
+});
+
+Deno.test("get exchange rate", async () => {
+    const result = await client.getExchangeRate({ code: "COP" });
+    if (result instanceof Error) {
+        fail(result.message);
+    }
+    assertEquals(typeof result.rate, "number");
 });
 
 export function randomString() {
