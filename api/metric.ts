@@ -23,7 +23,7 @@ export const getBrands = (urlArg: URL) => async (args: { names: string[] }) => {
             new URL(brand.website);
             new URL(brand.logo);
             return true;
-        } catch (e) {
+        } catch {
             console.warn(
                 `Brand at index ${index} (${brand.name}) has invalid URL: ${brand.website} or ${brand.logo}`,
             );
