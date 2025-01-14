@@ -516,7 +516,6 @@ Deno.test("getUserProfile & updateUserProfile", async (t) => {
 Deno.test("claim location", async (t) => {
     // https://www.dev.satlantis.io/location/1998
     const res = await client.claimLocation({ locationId: 1998 });
-    console.log(res);
     if (res instanceof Error) fail(res.message);
     // // the lenght of the code might not be part of the API
     // // put it here just to be safe
