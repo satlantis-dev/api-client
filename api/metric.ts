@@ -13,7 +13,25 @@ export const getBrands = (urlArg: URL) => async (args: { names: string[] }) => {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<Brand[]>(response);
+    const brands = await handleResponse<Brand[]>(response);
+    if (brands instanceof Error) {
+        return brands;
+    }
+
+    const validBrands = brands.filter((brand, index) => {
+        try {
+            new URL(brand.website);
+            new URL(brand.logo);
+            return true;
+        } catch (e) {
+            console.warn(
+                `Brand at index ${index} (${brand.name}) has invalid URL: ${brand.website} or ${brand.logo}`,
+            );
+            return false;
+        }
+    });
+
+    return validBrands;
 };
 
 /**
