@@ -1,22 +1,28 @@
 import type { Category, Topic } from "../api/share_types.ts";
 
 export interface Metric {
-    id: number;
-    categoryId: number;
-    category: Category;
-    description: string;
-    format: MetricFormat;
-    metricSourceId: number;
-    metricSource: MetricSource;
-    name: string;
-    prompt?: string;
-    slug?: string;
-    sourceId: string;
-    suffix?: string;
-    tags?: string;
-    topicId: number;
-    topic: Topic;
-    weight: number;
+    readonly id: number;
+    readonly categoryId: number;
+    readonly category: Category;
+    readonly description: string;
+    readonly name: string;
+    readonly order: number;
+    readonly prompt: string;
+    readonly slug: string;
+    readonly suffix: string;
+    readonly tags: Tags;
+    readonly topicId: number;
+    readonly topic: Topic;
+}
+
+export enum Tags {
+    CostOfLiving = "{cost_of_living}",
+    Demographics = "{demographics}",
+    Empty = "{}",
+    MobileInternet = "{mobile_&_internet}",
+    Money = "{money}",
+    Transport = "{transport}",
+    TravelerInformation = "{traveler_information}",
 }
 
 export enum MetricFormat {

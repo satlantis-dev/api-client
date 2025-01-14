@@ -31,16 +31,10 @@ export type Place = {
 };
 
 export interface PlaceMetric {
-    dataPoints: number;
-    cityId: number;
-    metricId: number;
-    metric: Metric;
-    updatedAt?: Date;
-    score: number;
-    topicId: number;
-    topic: Topic;
-    value: number;
-    valueStr: string;
+    readonly metric: Metric;
+    readonly value: number;
+    readonly valueStr: string;
+    readonly score: number;
 }
 
 export interface PlaceCategoryScore {
