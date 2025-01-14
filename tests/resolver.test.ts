@@ -237,8 +237,8 @@ Deno.test("getPlacesMinimal", async () => {
     if (places instanceof Error) {
         fail(places.message);
     }
-    // currently we have 90 cities
+    // currently we have 95 cities
     // once the data team adds more cities, this test will fail
     // and we should update the number here
-    assertEquals(places.length, 90);
+    assertEquals(places.length, 95);
 });
