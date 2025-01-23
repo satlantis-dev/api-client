@@ -34,12 +34,13 @@ import {
 } from "./api/location.ts";
 import { loginNostr } from "./api/login.ts";
 import {
+    buildGlobalFeed,
     getNote,
     getNoteCommentsById,
     getNoteReactionsById,
     getNotes,
     getNotesOfPubkey,
-    NoteType,
+    NoteType
 } from "./api/note.ts";
 import { getAccountPlaceRoles } from "./api/people.ts";
 import {
@@ -155,6 +156,7 @@ export class Client {
     // note
     private getNotesOfPubkey: ReturnType<typeof getNotesOfPubkey>;
     private getNotes: ReturnType<typeof getNotes>;
+    private buildGlobalFeed: ReturnType<typeof buildGlobalFeed>;
     getNote: ReturnType<typeof getNote>;
     getIpInfo: ReturnType<typeof getIpInfo>;
     getNoteReactionsById: ReturnType<typeof getNoteReactionsById>;
@@ -278,6 +280,7 @@ export class Client {
         this.getNoteReactionsById = getNoteReactionsById(rest_api_url);
         this.getNoteCommentsById = getNoteCommentsById(rest_api_url);
         this.getNotes = getNotes(rest_api_url, getJwt);
+        this.buildGlobalFeed = buildGlobalFeed(rest_api_url, getJwt);
         this.getNote = getNote(rest_api_url);
         this.getIpInfo = getIpInfo(rest_api_url);
 
@@ -1497,10 +1500,19 @@ export class Client {
             page: number;
             limit: number;
             accountId?: number;
+            shouldBuildFeed?: boolean;
+            lastNoteId?: number;
         }) => {
             const me = await this.getNostrSigner();
             if (me instanceof Error) {
                 return me;
+            }
+            if (args.shouldBuildFeed) {
+                const res = await this.buildGlobalFeed({
+                    accountId: args.accountId,
+                    secure: true,
+                    lastNoteId: args.lastNoteId
+                });
             }
             const notes = await this.getNotes({
                 page: args.page,
