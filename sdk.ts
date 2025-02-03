@@ -1512,7 +1512,7 @@ export class Client {
                 return me;
             }
             if (args.shouldBuildFeed) {
-                const res = await this.buildGlobalFeed({
+                await this.buildGlobalFeed({
                     accountId: args.accountId,
                     secure: true,
                     lastNoteId: args.lastNoteId,
