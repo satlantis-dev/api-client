@@ -508,7 +508,7 @@ Deno.test("getUserProfile & updateUserProfile", async (t) => {
                 name: "this is a test",
                 about: "",
                 banner: "",
-                displayName: "test",
+                displayName: "this is a test",
                 lud06: "",
                 lud16: "",
                 picture: "",
