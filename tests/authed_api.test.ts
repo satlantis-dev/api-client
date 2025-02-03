@@ -435,6 +435,7 @@ Deno.test("calendar events", async () => {
             title: "song",
             url: "",
             summary: "this is from integration tests of api-client",
+            website: "https://website.satlantis.io",
         });
         if (res instanceof Error) {
             fail(res.message);
@@ -451,6 +452,28 @@ Deno.test("calendar events", async () => {
         });
         if (res2 instanceof Error) {
             fail(res2.message);
+        }
+
+        const res3 = await client.updateCalendarEvent({
+            dTag: res.postResult.calendarEvent.dtag,
+            calendarEventId: res.postResult.calendarEvent.id,
+            placeId: 23751,
+            calendarEventType: "2concert",
+            description: "2a concert",
+            endDate: new Date(Date.now() + 1000 * 120),
+            geoHash: "2rwerwr",
+            imageURL: "",
+            location: "2somewhere",
+            placeATag: "",
+            startDate: new Date(Date.now() + 1000 * 60),
+            timezone: "",
+            title: "2song",
+            url: "",
+            summary: "this is from integration tests of api-client",
+            website: "2website.satlantis.io",
+        });
+        if (res3 instanceof Error) {
+            fail(res3.message);
         }
     }
 });

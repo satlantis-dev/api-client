@@ -5,210 +5,204 @@ import type { Reaction } from "../models/reaction.ts";
 import type { func_GetJwt, Place } from "../sdk.ts";
 
 export interface FeedNote extends Note {
-  readonly source: string;
-  readonly score: number;
-  readonly commentCount: number;
-  readonly allCommentCount: number;
-  readonly reactionCount: number;
-  readonly commentedByUser: boolean;
-  readonly reactedByUser: boolean;
-  readonly place: Place;
+    readonly source: string;
+    readonly score: number;
+    readonly commentCount: number;
+    readonly allCommentCount: number;
+    readonly reactionCount: number;
+    readonly commentedByUser: boolean;
+    readonly reactedByUser: boolean;
+    readonly place: Place;
 }
 
 export interface PlaceNote {
-  id: number;
-  placeId: number;
-  noteId: number;
-  note: Note;
-  type: NoteType;
+    id: number;
+    placeId: number;
+    noteId: number;
+    note: Note;
+    type: NoteType;
 }
 
 export enum NoteType {
-  BASIC = 1,
-  REVIEW,
-  GALLERY,
-  PUBLIC_CHAT,
-  PRIVATE_CHAT,
-  CALENDAR_EVENT,
-  CALENDAR,
-  PING,
-  REACTION,
-  DELETE_NOTE,
-  REPLY_NOTE,
-  MEDIA,
+    BASIC = 1,
+    REVIEW,
+    GALLERY,
+    PUBLIC_CHAT,
+    PRIVATE_CHAT,
+    CALENDAR_EVENT,
+    CALENDAR,
+    PING,
+    REACTION,
+    DELETE_NOTE,
+    REPLY_NOTE,
+    MEDIA,
 }
 
 export type Note = {
-  readonly id: number;
-  readonly accountId: number;
-  readonly account: AccountDTO;
-  readonly createdAt: string;
-  readonly commentCount?: number; // next level comments
-  readonly allCommentCount?: number; // all level comments
-  readonly commentedByUser?: boolean;
-  readonly content: string;
-  readonly eventId: number;
-  readonly kind: number;
-  readonly nostrId: string;
-  readonly pubkey: string;
-  readonly reactionCount?: number;
-  readonly reactedByUser?: boolean;
-  readonly sig: string;
-  readonly source?: string;
-  readonly score?: number;
-  readonly tags: string;
-  readonly type: number;
+    readonly id: number;
+    readonly accountId: number;
+    readonly account: AccountDTO;
+    readonly createdAt: string;
+    readonly commentCount?: number; // next level comments
+    readonly allCommentCount?: number; // all level comments
+    readonly commentedByUser?: boolean;
+    readonly content: string;
+    readonly eventId: number;
+    readonly kind: number;
+    readonly nostrId: string;
+    readonly pubkey: string;
+    readonly reactionCount?: number;
+    readonly reactedByUser?: boolean;
+    readonly sig: string;
+    readonly source?: string;
+    readonly score?: number;
+    readonly tags: string;
+    readonly type: number;
 };
 
 export const getNotesOfPubkey =
-  (urlArg: URL) =>
-  async (args: { npub: string; page: number; limit: number }) => {
-    const url = copyURL(urlArg);
-    url.pathname = `/getNotes/${args.npub}`;
-    url.searchParams.set("page", String(args.page));
-    url.searchParams.set("limit", String(args.limit));
+    (urlArg: URL) => async (args: { npub: string; page: number; limit: number }) => {
+        const url = copyURL(urlArg);
+        url.pathname = `/getNotes/${args.npub}`;
+        url.searchParams.set("page", String(args.page));
+        url.searchParams.set("limit", String(args.limit));
 
-    const response = await safeFetch(url);
-    if (response instanceof Error) {
-      return response;
-    }
-    return handleResponse<Note[]>(response);
-  };
+        const response = await safeFetch(url);
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<Note[]>(response);
+    };
 
-export const getNotes =
-  (urlArg: URL, getJwt: func_GetJwt) =>
-  async (args: {
+export const getNotes = (urlArg: URL, getJwt: func_GetJwt) =>
+async (args: {
     page: number;
     limit: number;
     placeId?: string;
     sort?: "recent" | "trending";
     secure?: boolean;
     accountId?: number;
-  }) => {
+}) => {
     const url = copyURL(urlArg);
     const headers = new Headers();
     url.pathname = args.secure ? `/secure/getFeedNotes` : `/getNotes`;
     url.searchParams.set("page", String(args.page));
     url.searchParams.set("limit", String(args.limit));
     if (args.placeId) {
-      url.searchParams.set("place_id", String(args.placeId));
+        url.searchParams.set("place_id", String(args.placeId));
     }
     if (args.sort) {
-      url.searchParams.set("sort", String(args.sort));
+        url.searchParams.set("sort", String(args.sort));
     }
     if (args.accountId) {
-      url.searchParams.set("accountId", String(args.accountId));
+        url.searchParams.set("accountId", String(args.accountId));
     }
 
     if (args.secure) {
-      const jwtToken = getJwt();
-      if (jwtToken == "") {
-        return new Error("jwt token is empty");
-      }
-      headers.set("Authorization", `Bearer ${jwtToken}`);
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+        headers.set("Authorization", `Bearer ${jwtToken}`);
     }
 
     const response = await safeFetch(url, { headers });
     if (response instanceof Error) {
-      return response;
+        return response;
     }
     return handleResponse<Note[]>(response);
-  };
+};
 
-export const buildGlobalFeed =
-  (urlArg: URL, getJwt: func_GetJwt) =>
-  async (args: {
+export const buildGlobalFeed = (urlArg: URL, getJwt: func_GetJwt) =>
+async (args: {
     secure?: boolean;
     accountId?: number;
     lastNoteId?: number;
-  }) => {
+}) => {
     const url = copyURL(urlArg);
     const headers = new Headers();
     url.pathname = "secure/buildGlobalFeed";
 
     if (args.secure) {
-      const jwtToken = getJwt();
-      if (jwtToken == "") {
-        return new Error("jwt token is empty");
-      }
-      headers.set("Authorization", `Bearer ${jwtToken}`);
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+        headers.set("Authorization", `Bearer ${jwtToken}`);
     }
 
     console.log(headers, "headers");
     const response = await safeFetch(url, {
-      headers,
-      method: "POST",
-      body: JSON.stringify({
-        accountId: args.accountId,
-        last_note_id: args.lastNoteId,
-      }),
+        headers,
+        method: "POST",
+        body: JSON.stringify({
+            accountId: args.accountId,
+            last_note_id: args.lastNoteId,
+        }),
     });
     if (response instanceof Error) {
-      return response;
+        return response;
     }
     return handleResponse<Note[]>(response);
-  };
+};
 
-export const getNote =
-  (urlArg: URL) => async (args: { accountID?: number; noteID: number }) => {
+export const getNote = (urlArg: URL) => async (args: { accountID?: number; noteID: number }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getNote/${args.noteID}`;
 
     if (args.accountID) {
-      url.searchParams.set("accountId", String(args.accountID));
+        url.searchParams.set("accountId", String(args.accountID));
     }
 
     const response = await safeFetch(url);
     if (response instanceof Error) {
-      return response;
+        return response;
     }
     const note = await handleResponse<Note>(response);
     if (note instanceof Error) {
-      return note;
+        return note;
     }
     return note;
-  };
+};
 
-export const getNoteReactionsById =
-  (urlArg: URL) =>
-  async (args: {
+export const getNoteReactionsById = (urlArg: URL) =>
+async (args: {
     accountID?: number;
     noteID: number;
     page: number;
     limit: number;
-  }) => {
+}) => {
     const url = copyURL(urlArg);
     url.pathname = `/getNoteReactions/${args.noteID}`;
     url.searchParams.set("page", String(args.page));
     url.searchParams.set("limit", String(args.limit));
     if (args.accountID) {
-      url.searchParams.set("accountId", String(args.accountID));
+        url.searchParams.set("accountId", String(args.accountID));
     }
     const response = await safeFetch(url);
     if (response instanceof Error) {
-      return response;
+        return response;
     }
     return handleResponse<Reaction[]>(response);
-  };
+};
 
-export const getNoteCommentsById =
-  (urlArg: URL) =>
-  async (args: {
+export const getNoteCommentsById = (urlArg: URL) =>
+async (args: {
     accountID?: number;
     noteID: number;
     page: number;
     limit: number;
-  }) => {
+}) => {
     const url = copyURL(urlArg);
     url.pathname = `/getNoteComments/${args.noteID}`;
     url.searchParams.set("page", String(args.page));
     url.searchParams.set("limit", String(args.limit));
     if (args.accountID) {
-      url.searchParams.set("accountId", String(args.accountID));
+        url.searchParams.set("accountId", String(args.accountID));
     }
     const response = await safeFetch(url);
     if (response instanceof Error) {
-      return response;
+        return response;
     }
     return handleResponse<Note[]>(response);
-  };
+};
