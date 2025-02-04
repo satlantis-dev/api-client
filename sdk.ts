@@ -40,7 +40,7 @@ import {
     getNoteReactionsById,
     getNotes,
     getNotesOfPubkey,
-    NoteType
+    NoteType,
 } from "./api/note.ts";
 import { getAccountPlaceRoles } from "./api/people.ts";
 import {
@@ -511,6 +511,7 @@ export class Client {
         location: string;
         placeId: number;
         summary: string;
+        website: string;
     }) => {
         const jwtToken = this.getJwt();
         if (jwtToken == "") {
@@ -539,6 +540,7 @@ export class Client {
                 ["location", args.location],
                 ["summary", args.summary],
                 ["url", args.url],
+                ["website", args.website],
             ],
         });
         if (event instanceof Error) {
@@ -572,6 +574,7 @@ export class Client {
         location: string;
         placeId: number;
         summary: string;
+        website: string;
     }) => {
         const jwtToken = this.getJwt();
         if (jwtToken == "") {
@@ -600,6 +603,7 @@ export class Client {
                 ["location", args.location],
                 ["summary", args.summary],
                 ["url", args.url],
+                ["website", args.website],
             ],
         });
         if (event instanceof Error) {
@@ -1508,10 +1512,10 @@ export class Client {
                 return me;
             }
             if (args.shouldBuildFeed) {
-                const res = await this.buildGlobalFeed({
+                await this.buildGlobalFeed({
                     accountId: args.accountId,
                     secure: true,
-                    lastNoteId: args.lastNoteId
+                    lastNoteId: args.lastNoteId,
                 });
             }
             const notes = await this.getNotes({

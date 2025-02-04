@@ -59,6 +59,7 @@ export type CalendarEvent = {
     title: string;
     type: string;
     url: string;
+    website: string;
 };
 
 export type PlaceCalendarEvent = {
