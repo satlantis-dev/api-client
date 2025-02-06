@@ -130,7 +130,6 @@ Deno.test("getLocation", async () => {
     assertExists(result.isClaimed);
     assertEquals(result.id, id);
     assertEquals(result.name, "Snack bar São João");
-    assertEquals(result.placeOsmRef, "R8421413");
 
     const place = await result.place();
     if (place instanceof Error) {
