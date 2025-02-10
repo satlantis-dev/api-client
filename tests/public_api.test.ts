@@ -454,6 +454,17 @@ Deno.test("addressLookup", async () => {
     ]);
 });
 
+Deno.test("getCoordinatesByAddress", async () => {
+    const result = await client.getCoordinatesByAddress({
+        searchValue: "paris",
+    });
+    if (result instanceof Error) fail(result.message);
+    assertEquals(result, {
+        lat: 48.8534951,
+        lng: 2.3483915,
+    });
+});
+
 Deno.test("initiatePasswordReset", async () => {
     const result = await client.initiatePasswordReset({
         username: "albert",

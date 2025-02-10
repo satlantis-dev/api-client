@@ -74,7 +74,7 @@ import { deleteNote, postNote, postReaction } from "./api/secure/note.ts";
 import { getNotifications } from "./api/secure/notification.ts";
 import { presign } from "./api/secure/presign.ts";
 import { newURL } from "./helpers/_helper.ts";
-import { addressLookup } from "./api/address.ts";
+import { addressLookup, getCoordinatesByAddress } from "./api/address.ts";
 import { signEvent } from "./api/nostr_event.ts";
 import { createInterests, getAccountInterests, getInterests } from "./api/secure/interests.ts";
 import {
@@ -177,8 +177,9 @@ export class Client {
     updateLocation: ReturnType<typeof updateLocation>;
     private getAccountsForLocation: ReturnType<typeof getAccountsForLocation>;
 
-    //
+    // address
     addressLookup: ReturnType<typeof addressLookup>;
+    getCoordinatesByAddress: ReturnType<typeof getCoordinatesByAddress>;
 
     // auth
     loginNostr: ReturnType<typeof loginNostr>;
@@ -301,8 +302,9 @@ export class Client {
         this.updateLocation = updateLocation(rest_api_url, getJwt);
         this.getAccountsForLocation = getAccountsForLocation(rest_api_url);
 
-        //
+        // address
         this.addressLookup = addressLookup(rest_api_url);
+        this.getCoordinatesByAddress = getCoordinatesByAddress(rest_api_url);
 
         // authed APIs
         this.removeAccountRole = removeAccountRole(
