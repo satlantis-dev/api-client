@@ -121,10 +121,13 @@ async (args: {
     if (res instanceof Error) {
         return res;
     }
-    console.log("res", res);
     const resultData = res.results[0];
-    return {
-        lat: resultData.lat,
-        lng: resultData.lon,
-    };
+    if (resultData) {
+        return {
+            lat: resultData.lat,
+            lng: resultData.lon,
+        };
+    } else {
+        return null;
+    }
 };
