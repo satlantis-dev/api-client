@@ -36,8 +36,8 @@ export class UserResolver {
         return this.nip5;
     }
 
-    async getAccount() {
-        return await this.client.getAccount({ npub: this.pubkey.bech32() });
+    async getAccount(options?: { useCache: boolean }) {
+        return await this.client.getAccount({ npub: this.pubkey.bech32() }, options);
     }
 
     /**
