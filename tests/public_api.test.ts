@@ -30,7 +30,7 @@ Deno.test("getPlace", async () => {
         console.log(result);
         fail();
     }
-    console.log(result.regionId);
+    //console.log(result.regionId);
 });
 
 Deno.test("getPlaceById", async () => {
@@ -134,7 +134,7 @@ Deno.test("/getPlaceChats", async () => {
         console.log(result);
         fail();
     }
-    console.log(result);
+    //console.log(result);
 });
 
 Deno.test("/getPlaceCategoryScores", async () => {
@@ -156,7 +156,7 @@ Deno.test("getPlaceEvent", async () => {
         console.log(result);
         fail();
     }
-    console.log(result);
+    //console.log(result);
 });
 
 Deno.test("getRegion", async () => {
@@ -407,7 +407,7 @@ Deno.test("getNoteReactionsById", async () => {
         limit: 3,
         page: 0,
     });
-    console.log(result);
+    //console.log(result);
     if (result instanceof Error) {
         console.log(result);
         fail();
@@ -422,7 +422,7 @@ Deno.test("getIpInfo", async () => {
         console.log(result);
         fail();
     }
-    console.log(JSON.stringify(result));
+    //console.log(JSON.stringify(result));
 });
 
 Deno.test("getLocationReviews", async () => {
@@ -470,7 +470,7 @@ Deno.test("initiatePasswordReset", async () => {
         username: "albert",
     });
     if (result instanceof Error) fail(result.message);
-    console.log(result);
+    //console.log(result);
 });
 
 Deno.test("resetPassword", async () => {
