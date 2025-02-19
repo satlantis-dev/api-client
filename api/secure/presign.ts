@@ -22,7 +22,7 @@ async (args: {
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
-    const newFileName = `${signer.publicKey.bech32()}-${Date.now()}-${args.filename}`;
+    const newFileName = `${signer.publicKey.bech32().replace("npub", "")}-${Date.now()}-${args.filename}`;
     const response = await safeFetch(url, {
         method: "POST",
         body: JSON.stringify({
