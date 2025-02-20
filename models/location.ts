@@ -83,7 +83,7 @@ export interface LocationTag {
 
 export enum LocationCategoryName {
     Attractions = "Attractions",
-    Coworking = "Coworking",
+    Coworking = "Coworking & Event Spaces",
     Healthcare = "Healthcare",
     RestaurantsCafes = "Restaurants & Cafes",
     Extras = "extras",
