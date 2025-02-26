@@ -8,6 +8,8 @@ export type Account = {
     about?: string;
     following: AccountDTO[];
     followedBy: AccountDTO[];
+    followingCount?: number;
+    followersCount?: number;
     npub: string;
     pubKey: string;
     accountPlaceRoles?: AccountPlaceRole[];

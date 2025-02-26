@@ -14,11 +14,11 @@ import {
 
 import {
     createAccount,
-    getAccount,
+    getAccount, getAccountFollowers, getAccountFollowings,
     initiatePasswordReset,
     login,
     resetPassword,
-    verifyEmail,
+    verifyEmail
 } from "./api/account.ts";
 import { getIpInfo } from "./api/ip.ts";
 import {
@@ -144,6 +144,8 @@ export class Client {
      * @unstable
      */
     private _getAccount: ReturnType<typeof getAccount>;
+    private _getAccountFollowings: ReturnType<typeof getAccountFollowings>;
+    private _getAccountFollowers: ReturnType<typeof getAccountFollowers>;
     getAccountsBySearch: ReturnType<typeof getAccountsBySearch>;
     createAccount: ReturnType<typeof createAccount>;
     /**
@@ -271,6 +273,8 @@ export class Client {
 
         // account
         this._getAccount = getAccount(rest_api_url);
+        this._getAccountFollowings = getAccountFollowings(rest_api_url);
+        this._getAccountFollowers = getAccountFollowers(rest_api_url);
         this.getAccountsBySearch = getAccountsBySearch(rest_api_url, getJwt);
         this.createAccount = createAccount(rest_api_url);
         this.updateAccount = updateAccount(rest_api_url, getJwt);
@@ -1363,6 +1367,30 @@ export class Client {
         }
         this.accounts.set(args.npub, account);
         return account;
+    };
+
+    getAccountFollowers = async (args: {
+        npub: string;
+        page: number;
+        limit: number;
+    }) => {
+        const response = await this._getAccountFollowers(args);
+        if (response instanceof Error) {
+            return response;
+        }
+        return response;
+    };
+
+    getAccountFollowings = async (args: {
+        npub: string;
+        page: number;
+        limit: number;
+    }) => {
+        const response = await this._getAccountFollowings(args);
+        if (response instanceof Error) {
+            return response;
+        }
+        return response;
     };
 
     fetchMetadataFromRelay = async (args: {

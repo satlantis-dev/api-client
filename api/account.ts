@@ -1,6 +1,6 @@
 import { ApiError, copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
-import type { Account } from "../models/account.ts";
+import { Account, AccountDTO } from "../models/account.ts";
 
 export const getAccount = (urlArg: URL) => async (args: { npub: string }) => {
     const url = copyURL(urlArg);
@@ -11,6 +11,34 @@ export const getAccount = (urlArg: URL) => async (args: { npub: string }) => {
     }
     return handleResponse<Account>(response);
 };
+
+export const getAccountFollowings =
+  (urlArg: URL) =>
+    async (args: { npub: string; page: number; limit: number }) => {
+        const url = copyURL(urlArg);
+        url.pathname = `/getAccountFollowings/${args.npub}`;
+        url.searchParams.append("limit", JSON.stringify(args.limit));
+        url.searchParams.append("page", JSON.stringify(args.page));
+        const response = await safeFetch(url);
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<AccountDTO[]>(response);
+    };
+
+export const getAccountFollowers =
+  (urlArg: URL) =>
+    async (args: { npub: string; page: number; limit: number }) => {
+        const url = copyURL(urlArg);
+        url.pathname = `/getAccountFollowers/${args.npub}`;
+        url.searchParams.append("limit", JSON.stringify(args.limit));
+        url.searchParams.append("page", JSON.stringify(args.page));
+        const response = await safeFetch(url);
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<AccountDTO[]>(response);
+    };
 
 export const login = (urlArg: URL) => async (args: { username: string; password: string }) => {
     const url = copyURL(urlArg);
