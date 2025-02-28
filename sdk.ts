@@ -14,11 +14,13 @@ import {
 
 import {
     createAccount,
-    getAccount, getAccountFollowers, getAccountFollowings,
+    getAccount,
+    getAccountFollowers,
+    getAccountFollowings,
     initiatePasswordReset,
     login,
     resetPassword,
-    verifyEmail
+    verifyEmail,
 } from "./api/account.ts";
 import { getIpInfo } from "./api/ip.ts";
 import {

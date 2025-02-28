@@ -124,7 +124,7 @@ Deno.test("notes in a place", async () => {
     }
 
     assertEquals(
-        notes.slice(0, 1).map((n) => n.note.content),
+        notes.slice(0, 1).map((n) => n.content),
         contents,
     );
 });

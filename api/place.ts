@@ -1,4 +1,4 @@
-import type { PlaceCalendarEvent } from "@satlantis/api-client";
+import type { Note, PlaceCalendarEvent } from "@satlantis/api-client";
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { Place, PlaceCategoryScore, PlaceEvent, PlaceMetric } from "../models/place.ts";
@@ -118,7 +118,7 @@ export const getPlaceNotes =
         if (response instanceof Error) {
             return response;
         }
-        return handleResponse<PlaceNote[]>(response);
+        return handleResponse<Note[]>(response);
     };
 
 /**

@@ -1,6 +1,6 @@
 import { ApiError, copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
-import { Account, AccountDTO } from "../models/account.ts";
+import type { Account, AccountDTO } from "../models/account.ts";
 
 export const getAccount = (urlArg: URL) => async (args: { npub: string }) => {
     const url = copyURL(urlArg);
@@ -13,8 +13,7 @@ export const getAccount = (urlArg: URL) => async (args: { npub: string }) => {
 };
 
 export const getAccountFollowings =
-  (urlArg: URL) =>
-    async (args: { npub: string; page: number; limit: number }) => {
+    (urlArg: URL) => async (args: { npub: string; page: number; limit: number }) => {
         const url = copyURL(urlArg);
         url.pathname = `/getAccountFollowings/${args.npub}`;
         url.searchParams.append("limit", JSON.stringify(args.limit));
@@ -27,8 +26,7 @@ export const getAccountFollowings =
     };
 
 export const getAccountFollowers =
-  (urlArg: URL) =>
-    async (args: { npub: string; page: number; limit: number }) => {
+    (urlArg: URL) => async (args: { npub: string; page: number; limit: number }) => {
         const url = copyURL(urlArg);
         url.pathname = `/getAccountFollowers/${args.npub}`;
         url.searchParams.append("limit", JSON.stringify(args.limit));
