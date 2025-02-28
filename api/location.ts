@@ -71,7 +71,7 @@ async (args: {
         const tagsArray: string[] = [];
 
         for (const tag of args.tags) {
-            tagsArray.push(`${tag.key}-${tag.value}`);
+            tagsArray.push(`${tag.key}=${tag.value}`);
         }
 
         tags = tagsArray.join(",");
