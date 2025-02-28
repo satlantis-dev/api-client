@@ -1,4 +1,4 @@
-import type { Note, PlaceCalendarEvent } from "@satlantis/api-client";
+import type { FeedNote, PlaceCalendarEvent } from "@satlantis/api-client";
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { Place, PlaceCategoryScore, PlaceEvent, PlaceMetric } from "../models/place.ts";
@@ -118,7 +118,7 @@ export const getPlaceNotes =
         if (response instanceof Error) {
             return response;
         }
-        return handleResponse<Note[]>(response);
+        return handleResponse<FeedNote[]>(response);
     };
 
 /**
@@ -132,20 +132,6 @@ export const getPlaceMetrics = (urlArg: URL) => async (args: { placeID: string |
         return response;
     }
     return handleResponse<PlaceMetric[]>(response);
-};
-
-/**
- * GET /getPlaceGallery/{placeID}
- */
-export const getPlaceGallery = (urlArg: URL) => async (args: { placeID: string | number }) => {
-    const url = copyURL(urlArg);
-    url.pathname = `/getPlaceGallery/${args.placeID}`;
-
-    const response = await safeFetch(url);
-    if (response instanceof Error) {
-        return response;
-    }
-    return handleResponse<PlaceNote[]>(response);
 };
 
 /**

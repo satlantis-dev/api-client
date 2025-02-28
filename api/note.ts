@@ -1,6 +1,7 @@
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { AccountDTO } from "../models/account.ts";
+import type { Place } from "../models/place.ts";
 import type { Reaction } from "../models/reaction.ts";
 import type { func_GetJwt } from "../sdk.ts";
 
@@ -32,22 +33,28 @@ export type Note = {
     readonly accountId: number;
     readonly account: AccountDTO;
     readonly createdAt: string;
-    readonly commentCount?: number; // next level comments
-    readonly allCommentCount?: number; // all level comments
-    readonly commentedByUser?: boolean;
     readonly content: string;
     readonly eventId: number;
     readonly kind: number;
     readonly nostrId: string;
     readonly pubkey: string;
-    readonly reactionCount?: number;
-    readonly reactedByUser?: boolean;
     readonly sig: string;
-    readonly source?: string;
-    readonly score?: number;
     readonly tags: string;
     readonly type: number;
+    readonly repostedNoteId: number;
+    readonly repostedNote: Note;
 };
+
+export interface FeedNote extends Note {
+    readonly source: string;
+    readonly score: number;
+    readonly commentCount: number; // next level comments
+    readonly allCommentCount: number; // all level comments
+    readonly reactionCount: number;
+    readonly commentedByUser: boolean;
+    readonly reactedByUser: boolean;
+    readonly place: Place;
+}
 
 export const getNotesOfPubkey =
     (urlArg: URL) => async (args: { npub: string; page: number; limit: number }) => {
@@ -60,7 +67,7 @@ export const getNotesOfPubkey =
         if (response instanceof Error) {
             return response;
         }
-        return handleResponse<Note[]>(response);
+        return handleResponse<FeedNote[]>(response);
     };
 
 export const getNotes = (urlArg: URL, getJwt: func_GetJwt) =>
@@ -99,7 +106,7 @@ async (args: {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<Note[]>(response);
+    return handleResponse<FeedNote[]>(response);
 };
 
 export const buildGlobalFeed = (urlArg: URL, getJwt: func_GetJwt) =>
@@ -147,7 +154,7 @@ export const getNote = (urlArg: URL) => async (args: { accountID?: number; noteI
     if (response instanceof Error) {
         return response;
     }
-    const note = await handleResponse<Note>(response);
+    const note = await handleResponse<FeedNote>(response);
     if (note instanceof Error) {
         return note;
     }
@@ -193,5 +200,5 @@ async (args: {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<Note[]>(response);
+    return handleResponse<FeedNote[]>(response);
 };
