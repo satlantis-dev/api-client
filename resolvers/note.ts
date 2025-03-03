@@ -1,5 +1,5 @@
 import { type NostrEvent, NostrKind, SingleRelayConnection } from "@blowater/nostr-sdk";
-import type { AccountDTO, Client, Note, NoteType, PlaceNote } from "../sdk.ts";
+import type { AccountDTO, Client, FeedNote, Note, NoteType } from "../sdk.ts";
 import { getRawNostrEventFromNote } from "../helpers/_helper.ts";
 
 type BEMeta = {
@@ -16,11 +16,11 @@ type BEMeta = {
 };
 
 export class NoteResolver {
-    nostrId: string;
-    pubkey: string;
-    content: string;
-    createdAt: Date;
-    nostrEvent: NostrEvent;
+    nostrId!: string;
+    pubkey!: string;
+    content!: string;
+    createdAt!: Date;
+    nostrEvent!: NostrEvent;
     public readonly source:
         | {
             type: "nostr";
@@ -29,10 +29,6 @@ export class NoteResolver {
         | {
             type: "backend";
             data: Note;
-        }
-        | {
-            type: "backend-place";
-            data: PlaceNote;
         };
     private client: Client;
     /**
@@ -51,11 +47,7 @@ export class NoteResolver {
             }
             | {
                 type: "backend";
-                data: Note;
-            }
-            | {
-                type: "backend-place";
-                data: PlaceNote;
+                data: FeedNote;
             },
     ) {
         this.client = client;
@@ -82,25 +74,6 @@ export class NoteResolver {
                 reactedByUser: source.data.reactedByUser,
                 source: source.data.source,
                 score: source.data.score,
-            };
-        } else {
-            this.nostrId = source.data.note.nostrId;
-            this.pubkey = source.data.note.pubkey;
-            this.content = source.data.note.content;
-            this.createdAt = new Date(source.data.note.createdAt);
-            this.nostrEvent = getRawNostrEventFromNote(source.data.note);
-            this.beMeta = {
-                placeId: source.data.placeId,
-
-                noteId: source.data.note.id,
-                noteType: source.data.type,
-                account: source.data.note.account,
-                commentCount: source.data.note.commentCount,
-                commentedByUser: source.data.note.commentedByUser,
-                reactionCount: source.data.note.reactionCount,
-                reactedByUser: source.data.note.reactedByUser,
-                source: source.data.note.source,
-                score: source.data.note.score,
             };
         }
     }

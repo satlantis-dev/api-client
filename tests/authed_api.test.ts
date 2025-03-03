@@ -374,7 +374,8 @@ Deno.test("getInterests", async () => {
     );
 });
 
-//Todo: unfinished
+// TODO: unfinished
+/*
 Deno.test("update location", async () => {
     const signer = InMemoryAccountContext.Generate();
     const res = await clientNoAuth.loginNostr(signer, { name: "test" });
@@ -401,9 +402,10 @@ Deno.test("update location", async () => {
             email: "test@test.com",
         },
     });
-    console.log(res2);
+    //console.log(res2);
     // if (res2 instanceof Error) fail(res2.message);
 });
+*/
 
 Deno.test("calendar events", async () => {
     const signer = InMemoryAccountContext.Generate();

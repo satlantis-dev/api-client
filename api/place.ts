@@ -135,20 +135,6 @@ export const getPlaceMetrics = (urlArg: URL) => async (args: { placeID: string |
 };
 
 /**
- * GET /getPlaceGallery/{placeID}
- */
-export const getPlaceGallery = (urlArg: URL) => async (args: { placeID: string | number }) => {
-    const url = copyURL(urlArg);
-    url.pathname = `/getPlaceGallery/${args.placeID}`;
-
-    const response = await safeFetch(url);
-    if (response instanceof Error) {
-        return response;
-    }
-    return handleResponse<PlaceNote[]>(response);
-};
-
-/**
  * GET /getPlaceCalendarEvents/{placeID}
  */
 export const getPlaceCalendarEvents = (urlArg: URL) => async (args: { placeID: string | number }) => {

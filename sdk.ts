@@ -14,11 +14,13 @@ import {
 
 import {
     createAccount,
-    getAccount, getAccountFollowers, getAccountFollowings,
+    getAccount,
+    getAccountFollowers,
+    getAccountFollowings,
     initiatePasswordReset,
     login,
     resetPassword,
-    verifyEmail
+    verifyEmail,
 } from "./api/account.ts";
 import { getIpInfo } from "./api/ip.ts";
 import {
@@ -51,7 +53,6 @@ import {
     getPlaceCategoryScores,
     getPlaceChats,
     getPlaceEvent,
-    getPlaceGallery,
     getPlaceMetrics,
     getPlaceNames,
     getPlaceNotes,
@@ -120,7 +121,6 @@ export class Client {
     getPlaceEvent: ReturnType<typeof getPlaceEvent>;
     getPlaceNotes: ReturnType<typeof getPlaceNotes>;
     getPlaceMetrics: ReturnType<typeof getPlaceMetrics>;
-    getPlaceGallery: ReturnType<typeof getPlaceGallery>;
     getPlaceChats: ReturnType<typeof getPlaceChats>;
     getPlaceCategoryScores: ReturnType<typeof getPlaceCategoryScores>;
 
@@ -243,7 +243,6 @@ export class Client {
         this.getAccountPlaceRoles = getAccountPlaceRoles(rest_api_url);
         this.getPlaceNotes = getPlaceNotes(rest_api_url);
         this.getPlaceMetrics = getPlaceMetrics(rest_api_url);
-        this.getPlaceGallery = getPlaceGallery(rest_api_url);
         this.getPlaceChats = getPlaceChats(rest_api_url);
         this.getPlaceCategoryScores = getPlaceCategoryScores(rest_api_url);
         this.getPlaceEvent = getPlaceEvent(rest_api_url);
@@ -1685,26 +1684,6 @@ export class Client {
             for (const note of notes) {
                 const r = new NoteResolver(this, {
                     type: "backend",
-                    data: note,
-                });
-                noteResolvers.push(r);
-            }
-            return noteResolvers;
-        },
-        /**
-         * @unstable
-         */
-        getPlaceGallery: async (args: {
-            placeID: string | number;
-        }) => {
-            const notes = await this.getPlaceGallery(args);
-            if (notes instanceof Error) {
-                return notes;
-            }
-            const noteResolvers = [];
-            for (const note of notes) {
-                const r = new NoteResolver(this, {
-                    type: "backend-place",
                     data: note,
                 });
                 noteResolvers.push(r);
