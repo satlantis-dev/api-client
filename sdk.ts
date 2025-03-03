@@ -53,6 +53,7 @@ import {
     getPlaceCategoryScores,
     getPlaceChats,
     getPlaceEvent,
+    getPlaceGalleryImages,
     getPlaceMetrics,
     getPlaceNames,
     getPlaceNotes,
@@ -70,7 +71,7 @@ import {
     updateAccount,
     updateAccountFollowingList,
 } from "./api/secure/account.ts";
-import { updatePlace } from "./api/secure/place.ts";
+import { deletePlaceGalleryImage, postPlaceGalleryImage, updatePlace } from "./api/secure/place.ts";
 import { deleteNote, postNote, postReaction } from "./api/secure/note.ts";
 import { getNotifications } from "./api/secure/notification.ts";
 import { presign } from "./api/secure/presign.ts";
@@ -123,6 +124,9 @@ export class Client {
     getPlaceMetrics: ReturnType<typeof getPlaceMetrics>;
     getPlaceChats: ReturnType<typeof getPlaceChats>;
     getPlaceCategoryScores: ReturnType<typeof getPlaceCategoryScores>;
+    getPlaceGalleryImages: ReturnType<typeof getPlaceGalleryImages>;
+    postPlaceGalleryImage: ReturnType<typeof postPlaceGalleryImage>;
+    deletePlaceGalleryImage: ReturnType<typeof deletePlaceGalleryImage>;
 
     getRegion: ReturnType<typeof getRegion>;
     getBrands: ReturnType<typeof getBrands>;
@@ -246,6 +250,9 @@ export class Client {
         this.getPlaceChats = getPlaceChats(rest_api_url);
         this.getPlaceCategoryScores = getPlaceCategoryScores(rest_api_url);
         this.getPlaceEvent = getPlaceEvent(rest_api_url);
+        this.getPlaceGalleryImages = getPlaceGalleryImages(rest_api_url);
+        this.postPlaceGalleryImage = postPlaceGalleryImage(rest_api_url, getJwt);
+        this.deletePlaceGalleryImage = deletePlaceGalleryImage(rest_api_url, getJwt);
 
         this.getRegion = getRegion(rest_api_url);
         this.getBrands = getBrands(rest_api_url);

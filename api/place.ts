@@ -1,7 +1,13 @@
 import type { FeedNote, PlaceCalendarEvent } from "@satlantis/api-client";
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
-import type { Place, PlaceCategoryScore, PlaceEvent, PlaceMetric } from "../models/place.ts";
+import type {
+    Place,
+    PlaceCategoryScore,
+    PlaceEvent,
+    PlaceGalleryImage,
+    PlaceMetric,
+} from "../models/place.ts";
 import { type Region } from "../models/region.ts";
 
 import { type PlaceNote } from "./note.ts";
@@ -50,76 +56,76 @@ export const getPlaceById = (urlArg: URL) => async (args: { id: number }) => {
 };
 
 export const getPlaces = (urlArg: URL) =>
-async (args: {
-    filters: {
-        name: string;
-    };
-    limit: number;
-    page: number;
-    sortColumn: "score" | "id" | "price" | "trending" | "topPicks";
-    sortDirection: "desc" | "asc";
-}) => {
-    const url = copyURL(urlArg);
-    url.pathname = `/getPlaces`;
-    url.searchParams.append("filters", JSON.stringify(args.filters));
-    url.searchParams.append("limit", JSON.stringify(args.limit));
-    url.searchParams.append("page", JSON.stringify(args.page));
-    url.searchParams.append("sortColumn", args.sortColumn);
-    url.searchParams.append("sortDirection", args.sortDirection);
+    async (args: {
+        filters: {
+            name: string;
+        };
+        limit: number;
+        page: number;
+        sortColumn: "score" | "id" | "price" | "trending" | "topPicks";
+        sortDirection: "desc" | "asc";
+    }) => {
+        const url = copyURL(urlArg);
+        url.pathname = `/getPlaces`;
+        url.searchParams.append("filters", JSON.stringify(args.filters));
+        url.searchParams.append("limit", JSON.stringify(args.limit));
+        url.searchParams.append("page", JSON.stringify(args.page));
+        url.searchParams.append("sortColumn", args.sortColumn);
+        url.searchParams.append("sortDirection", args.sortDirection);
 
-    const response = await safeFetch(url);
-    if (response instanceof Error) {
-        return response;
-    }
-    return handleResponse<Place[]>(response);
-};
+        const response = await safeFetch(url);
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<Place[]>(response);
+    };
 
 export const getPlacesMinimal = (urlArg: URL) =>
-async (args: {
-    filters: {
-        name: string;
-    };
-    limit: number;
-    page: number;
-    sortColumn: "score" | "id" | "price";
-    sortDirection: "desc" | "asc";
-}) => {
-    const url = copyURL(urlArg);
-    url.pathname = `/getPlacesMinimal`;
-    url.searchParams.append("filters", JSON.stringify(args.filters));
-    url.searchParams.append("limit", JSON.stringify(args.limit));
-    url.searchParams.append("page", JSON.stringify(args.page));
-    url.searchParams.append("sortColumn", args.sortColumn);
-    url.searchParams.append("sortDirection", args.sortDirection);
+    async (args: {
+        filters: {
+            name: string;
+        };
+        limit: number;
+        page: number;
+        sortColumn: "score" | "id" | "price";
+        sortDirection: "desc" | "asc";
+    }) => {
+        const url = copyURL(urlArg);
+        url.pathname = `/getPlacesMinimal`;
+        url.searchParams.append("filters", JSON.stringify(args.filters));
+        url.searchParams.append("limit", JSON.stringify(args.limit));
+        url.searchParams.append("page", JSON.stringify(args.page));
+        url.searchParams.append("sortColumn", args.sortColumn);
+        url.searchParams.append("sortDirection", args.sortDirection);
 
-    const response = await safeFetch(url);
-    if (response instanceof Error) {
-        return response;
-    }
-    return handleResponse<{ id: number; name: string; country_name: string }[]>(response);
-};
+        const response = await safeFetch(url);
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<{ id: number; name: string; country_name: string }[]>(response);
+    };
 
 /**
  * GET getPlaceNotes/{placeID}
  */
 export const getPlaceNotes =
     (urlArg: URL) =>
-    async (args: { accountID?: number; placeID: string | number; page: number; limit: number }) => {
-        const url = copyURL(urlArg);
-        url.pathname = `/getPlaceNotes/${args.placeID}`;
-        url.searchParams.set("page", String(args.page));
-        url.searchParams.set("limit", String(args.limit));
+        async (args: { accountID?: number; placeID: string | number; page: number; limit: number }) => {
+            const url = copyURL(urlArg);
+            url.pathname = `/getPlaceNotes/${args.placeID}`;
+            url.searchParams.set("page", String(args.page));
+            url.searchParams.set("limit", String(args.limit));
 
-        if (args.accountID) {
-            url.searchParams.set("accountId", String(args.accountID));
-        }
+            if (args.accountID) {
+                url.searchParams.set("accountId", String(args.accountID));
+            }
 
-        const response = await safeFetch(url);
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<FeedNote[]>(response);
-    };
+            const response = await safeFetch(url);
+            if (response instanceof Error) {
+                return response;
+            }
+            return handleResponse<FeedNote[]>(response);
+        };
 
 /**
  * GET /getPlaceMetrics/{placeID}
@@ -192,4 +198,17 @@ export const getPlaceEvent = (urlArg: URL) => async (args: { placeID: number }) 
         return response;
     }
     return handleResponse<PlaceEvent>(response);
+};
+
+/**
+ * GET /getPlaceGalleryImages/{placeID}
+ */
+export const getPlaceGalleryImages = (urlArg: URL) => async (args: { placeID: number }) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getPlaceGalleryImages/${args.placeID}`;
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<PlaceGalleryImage[]>(response);
 };

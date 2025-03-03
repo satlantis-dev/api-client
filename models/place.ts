@@ -67,3 +67,12 @@ export type PlaceEvent = {
     readonly tags: ProcessedTag[];
     readonly reconciled: boolean;
 };
+
+export interface PlaceGalleryImage {
+    readonly id: number;
+    readonly placeId: number;
+    readonly url: string;
+    readonly caption?: string;
+    readonly source: string;
+    readonly createdAt: Date;
+}
