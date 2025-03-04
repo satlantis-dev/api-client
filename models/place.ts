@@ -73,6 +73,6 @@ export interface PlaceGalleryImage {
     readonly placeId: number;
     readonly url: string;
     readonly caption?: string;
-    readonly source: string;
+    readonly source?: string;
     readonly createdAt: string; //  ISO 8601 string
 }
