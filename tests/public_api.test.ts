@@ -576,3 +576,11 @@ Deno.test("get exchange rate", async () => {
 export function randomString() {
     return String(Date.now());
 }
+
+Deno.test("getPlaceGalleryImages", async () => {
+    const result = await client.getPlaceGalleryImages({ placeID: 23090 });
+    if (result instanceof Error) {
+        console.log(result);
+        fail();
+    }
+});

@@ -37,6 +37,9 @@ export async function handleResponse<T extends {}>(response: FetchResult) {
     if (response.status != 200) {
         return new ApiError(response.status, body);
     }
+    if (!body) {
+        return {} as T;
+    }
     const result = parseJSON<T>(body);
     if (result instanceof InvalidJSON) {
         return result;
@@ -69,3 +72,12 @@ export const getRawNostrEventFromNote = (note: Note) => {
     };
     return nostrEvent;
 };
+
+export function bkdrHash(str: string): number {
+    let hash = 0;
+    const seed = 131;
+    for (let i = 0; i < str.length; i++) {
+        hash = (hash * seed + str.charCodeAt(i)) >>> 0;
+    }
+    return hash;
+}
