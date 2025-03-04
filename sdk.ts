@@ -1457,7 +1457,7 @@ export class Client {
             url: args.url,
             source: args.source || "",
             caption: args.caption,
-            createdAt: new Date(),
+            createdAt: new Date().toISOString(),
         });
         return res;
     };
