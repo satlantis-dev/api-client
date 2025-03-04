@@ -39,7 +39,7 @@ export const postPlaceGalleryImage = (urlArg: URL, getJwt: () => string) =>
 async (args: {
     placeId: number;
     url: string;
-    source: string;
+    source?: string;
     caption?: string;
 }) => {
     const jwtToken = getJwt();
