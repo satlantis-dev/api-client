@@ -37,6 +37,9 @@ export async function handleResponse<T extends {}>(response: FetchResult) {
     if (response.status != 200) {
         return new ApiError(response.status, body);
     }
+    if (!body) {
+        return {} as T;
+    }
     const result = parseJSON<T>(body);
     if (result instanceof InvalidJSON) {
         return result;

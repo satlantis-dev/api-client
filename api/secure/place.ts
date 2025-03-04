@@ -29,6 +29,12 @@ export const updatePlace = (urlArg: URL, getJwt: () => string) => async (place: 
     return handleResponse<Place>(response);
 };
 
+/**
+ * POST /secure/postPlaceGalleryImage
+ * Roles with permission: Admin and Place's Ambassador
+ * @returns id of the new image
+ * https://github.com/satlantis-dev/api/blob/dev/rest/place_gallery.go
+ */
 export const postPlaceGalleryImage =
     (urlArg: URL, getJwt: () => string) => async (args: PlaceGalleryImage) => {
         const jwtToken = getJwt();
@@ -53,6 +59,12 @@ export const postPlaceGalleryImage =
         return handleResponse<string>(response);
     };
 
+/**
+ * DELETE /secure/deletePlaceGalleryImage/:id
+ * Roles with permission: Admin and Place's Ambassador
+ * @returns nothing
+ * https://github.com/satlantis-dev/api/blob/dev/rest/place_gallery.go
+ */
 export const deletePlaceGalleryImage =
     (urlArg: URL, getJwt: () => string) => async (args: { id: number }) => {
         const jwtToken = getJwt();

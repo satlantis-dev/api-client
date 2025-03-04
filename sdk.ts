@@ -1450,7 +1450,7 @@ export class Client {
         source?: string;
         caption?: string;
     }) => {
-        const id = bkdrHash(`${args.placeId}-${args.url}-${args.source || ''}-${args.caption || ''}`);
+        const id = bkdrHash(`${args.placeId}-${args.url}-${args.source || ""}-${args.caption || ""}`);
         const res = await this._postPlaceGalleryImage({
             id,
             placeId: args.placeId,
@@ -1460,7 +1460,7 @@ export class Client {
             createdAt: new Date(),
         });
         return res;
-    }
+    };
 
     /**
      * Resolver APIs that provides callers a cleaner relationships among all data types
