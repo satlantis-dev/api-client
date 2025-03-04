@@ -27,6 +27,7 @@ import {
     claimLocation,
     getAccountsForLocation,
     getLocation,
+    getLocationGalleryImages,
     getLocationReviews,
     getLocationsByPlaceID,
     getLocationsWithinBoundingBox,
@@ -99,6 +100,11 @@ import type { LocationCategory, LocationCategoryName, LocationTag } from "./mode
 import { postAmbassadorInquiry } from "./api/secure/ambassador.ts";
 import type { Interest } from "./models/interest.ts";
 import { getBrands, getExchangeRate } from "./api/metric.ts";
+import {
+    deleteLocationGalleryImage,
+    postLocationGalleryImage,
+    updateLocationGalleryImage,
+} from "./api/secure/location.ts";
 
 export type func_GetNostrSigner = () => Promise<(Signer & Encrypter) | Error>;
 export type func_GetJwt = () => string;
@@ -182,6 +188,10 @@ export class Client {
     proveLocationClaim: ReturnType<typeof proveLocationClaim>;
     updateLocation: ReturnType<typeof updateLocation>;
     private getAccountsForLocation: ReturnType<typeof getAccountsForLocation>;
+    getLocationGalleryImages: ReturnType<typeof getLocationGalleryImages>;
+    postLocationGalleryImage: ReturnType<typeof postLocationGalleryImage>;
+    updateLocationGalleryImage: ReturnType<typeof updateLocationGalleryImage>;
+    deleteLocationGalleryImage: ReturnType<typeof deleteLocationGalleryImage>;
 
     // address
     addressLookup: ReturnType<typeof addressLookup>;
@@ -311,6 +321,10 @@ export class Client {
         );
         this.updateLocation = updateLocation(rest_api_url, getJwt);
         this.getAccountsForLocation = getAccountsForLocation(rest_api_url);
+        this.getLocationGalleryImages = getLocationGalleryImages(rest_api_url);
+        this.postLocationGalleryImage = postLocationGalleryImage(rest_api_url, getJwt);
+        this.updateLocationGalleryImage = updateLocationGalleryImage(rest_api_url, getJwt);
+        this.deleteLocationGalleryImage = deleteLocationGalleryImage(rest_api_url, getJwt);
 
         // address
         this.addressLookup = addressLookup(rest_api_url);
