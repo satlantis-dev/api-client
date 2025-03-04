@@ -69,3 +69,12 @@ export const getRawNostrEventFromNote = (note: Note) => {
     };
     return nostrEvent;
 };
+
+export function bkdrHash(str: string): number {
+    let hash = 0;
+    const seed = 131;
+    for (let i = 0; i < str.length; i++) {
+        hash = (hash * seed + str.charCodeAt(i)) >>> 0;
+    }
+    return hash;
+}

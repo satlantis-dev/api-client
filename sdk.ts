@@ -75,7 +75,7 @@ import { deletePlaceGalleryImage, postPlaceGalleryImage, updatePlace } from "./a
 import { deleteNote, postNote, postReaction } from "./api/secure/note.ts";
 import { getNotifications } from "./api/secure/notification.ts";
 import { presign } from "./api/secure/presign.ts";
-import { newURL } from "./helpers/_helper.ts";
+import { bkdrHash, newURL } from "./helpers/_helper.ts";
 import { addressLookup, getCoordinatesByAddress } from "./api/address.ts";
 import { signEvent } from "./api/nostr_event.ts";
 import { createInterests, getAccountInterests, getInterests } from "./api/secure/interests.ts";
@@ -125,7 +125,7 @@ export class Client {
     getPlaceChats: ReturnType<typeof getPlaceChats>;
     getPlaceCategoryScores: ReturnType<typeof getPlaceCategoryScores>;
     getPlaceGalleryImages: ReturnType<typeof getPlaceGalleryImages>;
-    postPlaceGalleryImage: ReturnType<typeof postPlaceGalleryImage>;
+    private _postPlaceGalleryImage: ReturnType<typeof postPlaceGalleryImage>;
     deletePlaceGalleryImage: ReturnType<typeof deletePlaceGalleryImage>;
 
     getRegion: ReturnType<typeof getRegion>;
@@ -251,7 +251,7 @@ export class Client {
         this.getPlaceCategoryScores = getPlaceCategoryScores(rest_api_url);
         this.getPlaceEvent = getPlaceEvent(rest_api_url);
         this.getPlaceGalleryImages = getPlaceGalleryImages(rest_api_url);
-        this.postPlaceGalleryImage = postPlaceGalleryImage(rest_api_url, getJwt);
+        this._postPlaceGalleryImage = postPlaceGalleryImage(rest_api_url, getJwt);
         this.deletePlaceGalleryImage = deletePlaceGalleryImage(rest_api_url, getJwt);
 
         this.getRegion = getRegion(rest_api_url);
@@ -1443,6 +1443,24 @@ export class Client {
 
         return metadataList;
     };
+
+    postPlaceGalleryImage = async (args: {
+        placeId: number;
+        url: string;
+        source?: string;
+        caption?: string;
+    }) => {
+        const id = bkdrHash(`${args.placeId}-${args.url}-${args.source || ''}-${args.caption || ''}`);
+        const res = await this._postPlaceGalleryImage({
+            id,
+            placeId: args.placeId,
+            url: args.url,
+            source: args.source || "",
+            caption: args.caption,
+            createdAt: new Date(),
+        });
+        return res;
+    }
 
     /**
      * Resolver APIs that provides callers a cleaner relationships among all data types
