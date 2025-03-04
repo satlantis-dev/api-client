@@ -116,3 +116,23 @@ export interface LocationAccount {
     accountId: number;
     type: LocationAccountTypeEnum;
 }
+
+export interface LocationGalleryImage {
+    id: number;
+    locationId: number;
+    url: string;
+    caption: string | null;
+    category: ImageCategory;
+    highlight: boolean;
+    source: string;
+    createdAt: Date;
+}
+
+export enum ImageCategory {
+    General = "general",
+    Exterior = "exterior",
+    Interior = "interior",
+    Amenities = "amenities",
+    FoodAndDrinks = "foodandrinks",
+    Menu = "menu",
+}
