@@ -2,7 +2,13 @@ import { ApiError, copyURL, handleResponse } from "../helpers/_helper.ts";
 import { Aborted, safeFetch } from "../helpers/safe-fetch.ts";
 import { type Location, type LocationByID, type LocationTag } from "../models/location.ts";
 import { prepareLocationSetEvent, preparePlaceEvent } from "../nostr-helpers.ts";
-import type { Address, func_GetJwt, func_GetNostrSigner, LocationInfo, OpeningHours } from "../sdk.ts";
+import type {
+    func_GetJwt,
+    func_GetNostrSigner,
+    LocationByPlace,
+    LocationGalleryImage,
+    LocationInfo,
+} from "../sdk.ts";
 
 export const getLocationTags = (urlArg: URL) => async () => {
     const url = copyURL(urlArg);
@@ -142,10 +148,10 @@ async (args: {
 
 /**
 type ProveLocationClaimRequest struct {
-	Url              string       `json:"url"`
-	ReferredBy       string       `json:"referredBy"`
-	LocationSetEvent *nostr.Event `json:"locationSetEvent"`
-	PlaceEvent       *nostr.Event `json:"placeEvent"`
+    Url              string       `json:"url"`
+    ReferredBy       string       `json:"referredBy"`
+    LocationSetEvent *nostr.Event `json:"locationSetEvent"`
+    PlaceEvent       *nostr.Event `json:"placeEvent"`
 }
  */
 export const proveLocationClaim =
@@ -260,36 +266,19 @@ async (args: {
     }[]>(response);
 };
 
-type LocationByPlace = {
-    readonly id: number;
-    readonly accounts: null;
-    readonly address: Address;
-    readonly bio: null;
-    readonly businessStatus: BusinessStatus;
-    readonly eventId: number;
-    readonly event: Event;
-    readonly googleId: string;
-    readonly googleMapsUrl: string;
-    readonly googleRating: number;
-    readonly googleUserRatingCount: number;
-    readonly image: string;
-    readonly isClaimed: boolean;
-    readonly lat: number;
-    readonly lng: number;
-    readonly locationTags: LocationTag[];
-    readonly placeId: number;
-    readonly name: string;
-    // todo: the frontend does not use this field, should remove in the backend API
-    // readonly notes:                 NoteElement[];
-    readonly openingHours: OpeningHours;
-    readonly osmRef: string;
-    readonly phone: string;
-    readonly priceLevel: PriceLevel;
-    readonly score: number;
-    readonly websiteUrl: string;
-    readonly email: string;
+/**
+ * GET /getLocationGalleryImages/:locationId
+ */
+export const getLocationGalleryImages = (urlArg: URL) =>
+async (args: {
+    locationId: number;
+}) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getLocationGalleryImages/${args.locationId}`;
+
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<LocationGalleryImage[]>(response);
 };
-
-type BusinessStatus = "OPERATIONAL";
-
-type PriceLevel = "PRICE_LEVEL_MODERATE" | "PRICE_LEVEL_INEXPENSIVE" | "PRICE_LEVEL_UNSPECIFIED";

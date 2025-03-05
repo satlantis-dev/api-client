@@ -116,3 +116,57 @@ export interface LocationAccount {
     accountId: number;
     type: LocationAccountTypeEnum;
 }
+
+export type LocationByPlace = {
+    readonly id: number;
+    readonly accounts: null;
+    readonly address: Address;
+    readonly bio: null;
+    readonly businessStatus: BusinessStatus;
+    readonly eventId: number;
+    readonly event: Event;
+    readonly googleId: string;
+    readonly googleMapsUrl: string;
+    readonly googleRating: number;
+    readonly googleUserRatingCount: number;
+    readonly image: string;
+    readonly isClaimed: boolean;
+    readonly lat: number;
+    readonly lng: number;
+    readonly locationTags: LocationTag[];
+    readonly placeId: number;
+    readonly name: string;
+    // todo: the frontend does not use this field, should remove in the backend API
+    // readonly notes:                 NoteElement[];
+    readonly openingHours: OpeningHours;
+    readonly osmRef: string;
+    readonly phone: string;
+    readonly priceLevel: PriceLevel;
+    readonly score: number;
+    readonly websiteUrl: string;
+    readonly email: string;
+};
+
+export type BusinessStatus = "OPERATIONAL";
+
+export type PriceLevel = "PRICE_LEVEL_MODERATE" | "PRICE_LEVEL_INEXPENSIVE" | "PRICE_LEVEL_UNSPECIFIED";
+
+export interface LocationGalleryImage {
+    id: number;
+    locationId: number;
+    url: string;
+    caption: string | null;
+    category: ImageCategory;
+    highlight: boolean;
+    source: string;
+    createdAt: Date;
+}
+
+export enum ImageCategory {
+    General = "general",
+    Exterior = "exterior",
+    Interior = "interior",
+    Amenities = "amenities",
+    FoodAndDrinks = "foodandrinks",
+    Menu = "menu",
+}

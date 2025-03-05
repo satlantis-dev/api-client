@@ -578,7 +578,16 @@ export function randomString() {
 }
 
 Deno.test("getPlaceGalleryImages", async () => {
-    const result = await client.getPlaceGalleryImages({ placeID: 23090 });
+    const result = await client.getPlaceCategoryScores({ placeID: 23751 }); // Florianópolis
+    if (result instanceof Error) {
+        console.log(result);
+        fail();
+    }
+    assertEquals(result.length > 0, true);
+});
+
+Deno.test("getLocationGalleryImages", async () => {
+    const result = await client.getLocationGalleryImages({ locationId: 2313 });
     if (result instanceof Error) {
         console.log(result);
         fail();
