@@ -147,10 +147,6 @@ export type LocationByPlace = {
     readonly email: string;
 };
 
-export type BusinessStatus = "OPERATIONAL";
-
-export type PriceLevel = "PRICE_LEVEL_MODERATE" | "PRICE_LEVEL_INEXPENSIVE" | "PRICE_LEVEL_UNSPECIFIED";
-
 export interface LocationGalleryImage {
     id: number;
     locationId: number;
