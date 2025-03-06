@@ -1,31 +1,146 @@
-import type { BusinessStatus, Note, NoteType, OpeningHours, PriceLevel, ReshapedNostrEvent } from "../sdk.ts";
+import type {
+    BusinessStatus,
+    Note,
+    NoteType,
+    OpeningHours,
+    Place,
+    PriceLevel,
+    ReshapedNostrEvent,
+} from "../sdk.ts";
+import type { AccountDTO } from "./account.ts";
 
+// https://github.com/satlantis-dev/models/blob/main/account_location_role.go#L11
+export enum AccountLocationRoleType {
+    Owner = 1,
+    Admin,
+    Staff,
+    DiscoveredBy,
+    RecommendedBy,
+    BookmarkedBy,
+}
+
+export enum LocationCategoryName {
+    Attractions = "Attractions",
+    Coworking = "Coworking & Event Spaces",
+    Healthcare = "Healthcare",
+    RestaurantsCafes = "Restaurants & Cafes",
+    Extras = "extras",
+    Nightlife = "Nightlife",
+    Others = "Others",
+    Lodging = "Lodging",
+    WellnessFitness = "Wellness & Fitness",
+    GrocerySpecialtyFoods = "Grocery & Specialty Foods",
+    SouvenirsGifts = "Souvenirs & Gifts",
+    Satlantis = "satlantis",
+}
+
+export enum ImageCategory {
+    General = "general",
+    Exterior = "exterior",
+    Interior = "interior",
+    Amenities = "amenities",
+    FoodAndDrinks = "foodandrinks",
+    Menu = "menu",
+}
+
+// export enum LocationAccountTypeEnum {
+//     OWNER = "owner",
+//     MANAGER = "manager",
+//     MEMBER = "member",
+//     VISITOR = "visitor",
+// }
+
+// export interface LocationAccount {
+//     locationId: number;
+//     accountId: number;
+//     type: LocationAccountTypeEnum;
+// }
+
+// https://github.com/satlantis-dev/models/blob/main/location.go#L117
 export type Location = {
     id: number;
-    name: string;
-    accounts: LocationAccount[];
+    accountRoles: AccountLocationRole;
+    address: Address;
+    bio: string;
+    businessStatus: BusinessStatus;
+    claim: LocationClaim;
+    eventId: number;
+    event: ReshapedNostrEvent;
+    googleId: string;
+    googleMapsUrl: string;
+    rating: number;
+    userRatingCount: number;
+    hook: null;
+    image: string;
+    isClaimed: boolean;
     lat: number;
     lng: number;
     locationTags: LocationTag[];
-    image: string;
-    osmRef: string;
-    googleId: string;
     placeId: number;
-    eventId: number;
-    event: ReshapedNostrEvent;
-    score: number;
-    address: Address;
-    phone: string;
+    place: Place;
+    name: string;
     notes: LocationNote[];
-    businessStatus: BusinessStatus;
     openingHours: OpeningHours;
+    osmRef: string;
+    phone: string;
     priceLevel: PriceLevel;
-    googleRating: number;
-    googleUserRatingCount: number;
+    score: number;
+    tripadvisorRating: Rating;
+    googlePlacesRating: Rating;
     websiteUrl: string;
-    bio: string;
-    googleMapsUrl: string;
+    email: string;
+    reviewSummary: string;
 };
+
+// https://github.com/satlantis-dev/models/blob/main/account_location_role.go#L20
+export interface AccountLocationRole {
+    accountId: number;
+    account: AccountDTO;
+    locationId: number;
+    location?: Location;
+    type: AccountLocationRoleType;
+}
+
+// https://github.com/satlantis-dev/models/blob/main/location_claim.go#L7
+export interface LocationClaim {
+    locationId: number;
+    location: LocationDTO;
+    ownerAccountId: number;
+    ownerAccount: AccountDTO;
+    claimCode: string;
+    referredBy: string | null;
+}
+
+// https://github.com/satlantis-dev/models/blob/main/location.go#L157
+export interface LocationDTO {
+    id: number;
+    address: Address;
+    bio: string | null;
+    email: string;
+    Rating: number;
+    UserRatingCount: number;
+    googleMapsUrl: string;
+    hook: string | null;
+    image: string;
+    isClaimed: boolean;
+    lat: number;
+    lng: number;
+    locationTags: LocationTag[];
+    name: string;
+    openingHours: OpeningHours;
+    osmRef: string;
+    placeId: number;
+    placeOsmRef: string;
+    reviewSummary: string;
+}
+
+export interface Rating {
+    source: string;
+    id: string;
+    rating: number;
+    count: number;
+    link: string;
+}
 
 export type LocationInfo = {
     bio: string;
@@ -65,6 +180,7 @@ export type Address = {
     readonly formatted: string;
 };
 
+// https://github.com/satlantis-dev/models/blob/main/location_note.go#L7
 export interface LocationNote {
     id: number;
     locationId: number;
@@ -73,79 +189,24 @@ export interface LocationNote {
     type: NoteType;
 }
 
+// https://github.com/satlantis-dev/models/blob/main/location_tag.go#L9
 export interface LocationTag {
     id: number;
     category: string;
+    locationCategory: LocationCategory;
     key: string;
     value: string;
+    osmPull: boolean;
     eligible: boolean;
+    locations: Location[];
 }
 
-export enum LocationCategoryName {
-    Attractions = "Attractions",
-    Coworking = "Coworking & Event Spaces",
-    Healthcare = "Healthcare",
-    RestaurantsCafes = "Restaurants & Cafes",
-    Extras = "extras",
-    Nightlife = "Nightlife",
-    Others = "Others",
-    Lodging = "Lodging",
-    WellnessFitness = "Wellness & Fitness",
-    GrocerySpecialtyFoods = "Grocery & Specialty Foods",
-    SouvenirsGifts = "Souvenirs & Gifts",
-    Satlantis = "satlantis",
+// https://github.com/satlantis-dev/models/blob/main/location_tag.go#L3
+interface LocationCategory {
+    name: string;
+    eligible: boolean;
+    primary: boolean;
 }
-
-export interface LocationCategory {
-    name: LocationCategoryName;
-    subCategory: {
-        key: string;
-        value: string[];
-    }[];
-}
-
-export enum LocationAccountTypeEnum {
-    OWNER = "owner",
-    MANAGER = "manager",
-    MEMBER = "member",
-    VISITOR = "visitor",
-}
-
-export interface LocationAccount {
-    locationId: number;
-    accountId: number;
-    type: LocationAccountTypeEnum;
-}
-
-export type LocationByPlace = {
-    readonly id: number;
-    readonly accounts: null;
-    readonly address: Address;
-    readonly bio: null;
-    readonly businessStatus: BusinessStatus;
-    readonly eventId: number;
-    readonly event: Event;
-    readonly googleId: string;
-    readonly googleMapsUrl: string;
-    readonly googleRating: number;
-    readonly googleUserRatingCount: number;
-    readonly image: string;
-    readonly isClaimed: boolean;
-    readonly lat: number;
-    readonly lng: number;
-    readonly locationTags: LocationTag[];
-    readonly placeId: number;
-    readonly name: string;
-    // todo: the frontend does not use this field, should remove in the backend API
-    // readonly notes:                 NoteElement[];
-    readonly openingHours: OpeningHours;
-    readonly osmRef: string;
-    readonly phone: string;
-    readonly priceLevel: PriceLevel;
-    readonly score: number;
-    readonly websiteUrl: string;
-    readonly email: string;
-};
 
 export interface LocationGalleryImage {
     id: number;
@@ -156,13 +217,4 @@ export interface LocationGalleryImage {
     highlight: boolean;
     source: string;
     createdAt: Date;
-}
-
-export enum ImageCategory {
-    General = "general",
-    Exterior = "exterior",
-    Interior = "interior",
-    Amenities = "amenities",
-    FoodAndDrinks = "foodandrinks",
-    Menu = "menu",
 }

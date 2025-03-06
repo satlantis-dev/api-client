@@ -19,15 +19,17 @@ export interface AuthDetail {
     password: string;
 }
 
+// https://github.com/satlantis-dev/models/blob/main/event.go
 export interface ReshapedNostrEvent {
     id: number;
-    content: string;
-    createdAt: number;
-    kind: number;
     nostrId: string;
+    createdAt: number;
+    content: string;
+    kind: number;
     pubkey: string;
     sig: string;
     tags: NostrEventTag[];
+    reconciled: boolean;
 }
 
 export interface NostrEventTag {
@@ -37,12 +39,14 @@ export interface NostrEventTag {
     values: string[];
 }
 
+// https://github.com/satlantis-dev/models/blob/main/category.go#L3
 export interface Category {
     id: number;
     description: string;
     name: string;
 }
 
+// https://github.com/satlantis-dev/models/blob/main/topic.go#L3
 export interface Topic {
     id: number;
     description: string;

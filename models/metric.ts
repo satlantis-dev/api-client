@@ -1,5 +1,6 @@
 import type { Category, Topic } from "../api/share_types.ts";
 
+// https://github.com/satlantis-dev/models/blob/main/metric.go#L41
 export interface Metric {
     readonly id: number;
     readonly categoryId: number;

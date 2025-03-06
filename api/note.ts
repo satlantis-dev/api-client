@@ -5,14 +5,23 @@ import type { Place } from "../models/place.ts";
 import type { Reaction } from "../models/reaction.ts";
 import type { func_GetJwt } from "../sdk.ts";
 
+// https://github.com/satlantis-dev/models/blob/main/place_note.go#L7
 export interface PlaceNote {
     id: number;
     placeId: number;
     noteId: number;
     note: Note;
+    nsfw: boolean;
     type: NoteType;
+    onSatlantis: boolean;
+    isNews: boolean;
+    reactions: number;
+    replies: number;
+    allReplies: number;
+    score: number;
 }
 
+// https://github.com/satlantis-dev/models/blob/main/note.go#L7
 export enum NoteType {
     BASIC = 1,
     REVIEW,
@@ -28,6 +37,7 @@ export enum NoteType {
     MEDIA,
 }
 
+// https://github.com/satlantis-dev/models/blob/main/note.go#L24
 export type Note = {
     readonly id: number;
     readonly accountId: number;
@@ -40,7 +50,7 @@ export type Note = {
     readonly pubkey: string;
     readonly sig: string;
     readonly tags: string;
-    readonly type: number;
+    readonly type: NoteType;
     readonly repostedNoteId: number;
     readonly repostedNote: Note;
 };
