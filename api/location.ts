@@ -1,6 +1,6 @@
 import { ApiError, copyURL, handleResponse } from "../helpers/_helper.ts";
 import { Aborted, safeFetch } from "../helpers/safe-fetch.ts";
-import { type Location, type LocationByID, type LocationDTO, type LocationTag } from "../models/location.ts";
+import { type Location, type LocationDTO, type LocationTag } from "../models/location.ts";
 import { prepareLocationSetEvent, preparePlaceEvent } from "../nostr-helpers.ts";
 import type { func_GetJwt, func_GetNostrSigner, LocationGalleryImage, LocationInfo } from "../sdk.ts";
 
@@ -22,9 +22,10 @@ export const getLocation = (urlArg: URL) => async (args: { id: number }) => {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<LocationByID>(response);
+    return handleResponse<Location>(response);
 };
 
+// https://github.com/satlantis-dev/api/blob/main/rest/location.go#L67
 export const getLocationsByPlaceID = (urlArg: URL) =>
 async (args: {
     placeID: number;
@@ -50,7 +51,7 @@ async (args: {
 
 /**
  * @unstable
- * @param tags currently tags are not used
+ * https://github.com/satlantis-dev/api/blob/main/rest/location.go#L144
  */
 export const getLocationsWithinBoundingBox = (urlArg: URL) =>
 async (args: {
@@ -58,10 +59,11 @@ async (args: {
     sw_lng: number;
     ne_lat: number;
     ne_lng: number;
-    google_rating: number;
-    search?: string;
     tag_category?: string;
+    search?: string;
     tags?: { key: string; value: string }[];
+    page?: number;
+    limit?: number;
 }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getLocationsWithinBoundingBox`;
@@ -81,7 +83,6 @@ async (args: {
     url.searchParams.set("sw_lng", String(args.sw_lng));
     url.searchParams.set("ne_lat", String(args.ne_lat));
     url.searchParams.set("ne_lng", String(args.ne_lng));
-    url.searchParams.set("google_rating", String(args.google_rating));
     if (args.tag_category) {
         url.searchParams.set("tag_category", args.tag_category);
     }
@@ -90,6 +91,12 @@ async (args: {
     }
     if (args.search) {
         url.searchParams.set("search", args.search);
+    }
+    if (args.limit) {
+        url.searchParams.set("limit", String(args.limit));
+    }
+    if (args.page) {
+        url.searchParams.set("page", String(args.page));
     }
 
     const response = await safeFetch(url);

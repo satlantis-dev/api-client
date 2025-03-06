@@ -70,7 +70,7 @@ export type Location = {
     googleMapsUrl: string;
     rating: number;
     userRatingCount: number;
-    hook: null;
+    hook: string | null;
     image: string;
     isClaimed: boolean;
     lat: number;
@@ -117,8 +117,8 @@ export interface LocationDTO {
     address: Address;
     bio: string | null;
     email: string;
-    Rating: number;
-    UserRatingCount: number;
+    rating: number;
+    userRatingCount: number;
     googleMapsUrl: string;
     hook: string | null;
     image: string;
@@ -193,7 +193,7 @@ export interface LocationNote {
 export interface LocationTag {
     id: number;
     category: string;
-    locationCategory: LocationCategory;
+    locationCategory: LocationTagCategory;
     key: string;
     value: string;
     osmPull: boolean;
@@ -202,10 +202,18 @@ export interface LocationTag {
 }
 
 // https://github.com/satlantis-dev/models/blob/main/location_tag.go#L3
-interface LocationCategory {
+interface LocationTagCategory {
     name: string;
     eligible: boolean;
     primary: boolean;
+}
+
+export interface LocationCategory {
+    name: LocationCategoryName;
+    subCategory: {
+        key: string;
+        value: string[];
+    }[];
 }
 
 export interface LocationGalleryImage {

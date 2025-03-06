@@ -160,13 +160,27 @@ Deno.test("getLocation", async () => {
             "the same location is not returned from the getLocationsByPlaceID API",
         );
     }
+    console.log("location: ", location);
+    console.log("result: ", result);
     assertEquals(location.id, result.id);
+    assertEquals(location.address, result.address);
+    assertEquals(location.bio, result.bio);
+    assertEquals(location.email, result.email);
+    assertEquals(location.rating, result.rating);
+    assertEquals(location.userRatingCount, result.userRatingCount);
+    assertEquals(location.googleMapsUrl, result.googleMapsUrl);
+    assertEquals(location.hook, result.hook);
+    assertEquals(location.image, result.image);
+    assertEquals(location.isClaimed, result.isClaimed);
+    assertEquals(location.lat, result.lat);
+    assertEquals(location.lng, result.lng);
+    assertEquals(location.locationTags, result.locationTags);
     assertEquals(location.name, result.name);
     assertEquals(location.openingHours, result.openingHours);
-    assertEquals(location.address, result.address);
-    assertEquals(location.score, result.score);
-    assertEquals(location.googleRating, result.googleRating);
-    // assertEquals(location.placeOsmRef, result.placeOsmRef);
+    assertEquals(location.osmRef, result.osmRef);
+    assertEquals(location.placeId, result.placeId);
+    assertEquals(location.reviewSummary, result.reviewSummary);
+    // assertEquals(location.place?.osmRef, result.placeOsmRef);
 });
 
 Deno.test("a user's interests", async () => {
