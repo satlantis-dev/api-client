@@ -1,4 +1,4 @@
-import type { Location, LocationTag } from "../models/location.ts";
+import type { Location, LocationTag, Socials } from "../models/location.ts";
 import type {
     AccountLocationRole,
     Address,
@@ -11,82 +11,119 @@ import type {
     Place,
     PriceLevel,
     Rating,
-    ReshapedNostrEvent,
 } from "../sdk.ts";
 import { UserResolver } from "./user.ts";
 
 export class LocationResolver {
     id: number;
-    accountRoles: AccountLocationRole | null;
     address: Address;
-    bio: string | null;
-    businessStatus: BusinessStatus | null;
-    claim: LocationClaim | null;
-    eventId: number | null;
-    event: ReshapedNostrEvent | null;
-    googleId: string | null;
     googleMapsUrl: string;
-    rating: number | null;
-    userRatingCount: number | null;
-    hook: string | null;
     image: string;
     isClaimed: boolean;
     lat: number;
     lng: number;
     locationTags: LocationTag[];
-    placeId: number;
-    place: Place | null;
     name: string;
-    notes: LocationNote[] | null;
+    placeId: number;
     openingHours: OpeningHours;
-    osmRef: string;
-    phone: string | null;
-    priceLevel: PriceLevel | null;
-    score: number | null;
-    tripadvisorRating: Rating | null;
-    googlePlacesRating: Rating | null;
-    websiteUrl: string | null;
     email: string;
     reviewSummary: string;
-    placeOsmRef: string | null; // on LocationDTO but not on Location
+    osmRef: string;
+    score?: number;
+    accountRoles?: AccountLocationRole;
+    bio?: string;
+    businessStatus?: BusinessStatus;
+    claim?: LocationClaim;
+    googleId?: string;
+    rating?: number;
+    userRatingCount?: number;
+    hook?: string;
+    place?: Place;
+    notes?: LocationNote[];
+    phone?: string;
+    priceLevel?: PriceLevel;
+    tripadvisorRating?: Rating;
+    googlePlacesRating?: Rating;
+    websiteUrl?: string;
+    placeOsmRef?: string;
+    socials?: Socials;
 
     /**
      * @unstable
      */
     constructor(private readonly client: Client, data: Location | LocationDTO) {
         this.id = data.id;
-        this.accountRoles = "accountRoles" in data ? data.accountRoles : null;
         this.address = data.address;
-        this.bio = data.bio;
-        this.businessStatus = "businessStatus" in data ? data.businessStatus : null;
-        this.claim = "claim" in data ? data.claim : null;
-        this.eventId = "eventId" in data ? data.eventId : null;
-        this.event = "event" in data ? data.event : null;
-        this.googleId = "googleId" in data ? data.googleId : null;
         this.googleMapsUrl = data.googleMapsUrl;
-        this.rating = "rating" in data ? data.rating : null;
-        this.userRatingCount = "userRatingCount" in data ? data.userRatingCount : null;
-        this.hook = "hook" in data ? data.hook : null;
         this.image = data.image;
         this.isClaimed = data.isClaimed;
         this.lat = data.lat;
         this.lng = data.lng;
         this.locationTags = data.locationTags;
-        this.placeId = data.placeId;
-        this.place = "place" in data ? data.place : null;
         this.name = data.name;
-        this.notes = "notes" in data ? data.notes : null;
+        this.placeId = data.placeId;
         this.openingHours = data.openingHours;
-        this.osmRef = data.osmRef;
-        this.phone = "phone" in data ? data.phone : null;
-        this.priceLevel = "priceLevel" in data ? data.priceLevel : null;
-        this.score = "score" in data ? data.score : null;
-        this.tripadvisorRating = "tripadvisorRating" in data ? data.tripadvisorRating : null;
-        this.googlePlacesRating = "googlePlacesRating" in data ? data.googlePlacesRating : null;
-        this.websiteUrl = "websiteUrl" in data ? data.websiteUrl : null;
         this.email = data.email;
         this.reviewSummary = data.reviewSummary;
-        this.placeOsmRef = "placeOsmRef" in data ? data.placeOsmRef : null;
+        this.osmRef = data.osmRef;
+
+        // Handle fields that are specific to Location
+        if ("accountRoles" in data) {
+            this.accountRoles = data.accountRoles;
+        }
+        if ("bio" in data) {
+            this.bio = data.bio;
+        }
+        if ("businessStatus" in data) {
+            this.businessStatus = data.businessStatus;
+        }
+        if ("claim" in data) {
+            this.claim = data.claim;
+        }
+        if ("googleId" in data) {
+            this.googleId = data.googleId;
+        }
+        if ("rating" in data) {
+            this.rating = data.rating;
+        }
+        if ("userRatingCount" in data) {
+            this.userRatingCount = data.userRatingCount;
+        }
+        if ("hook" in data) {
+            this.hook = data.hook;
+        }
+        if ("place" in data) {
+            this.place = data.place;
+        }
+        if ("notes" in data) {
+            this.notes = data.notes;
+        }
+        if ("phone" in data) {
+            this.phone = data.phone;
+        }
+        if ("priceLevel" in data) {
+            this.priceLevel = data.priceLevel;
+        }
+        if ("tripadvisorRating" in data) {
+            this.tripadvisorRating = data.tripadvisorRating;
+        }
+        if ("googlePlacesRating" in data) {
+            this.googlePlacesRating = data.googlePlacesRating;
+        }
+        if ("websiteUrl" in data) {
+            this.websiteUrl = data.websiteUrl;
+        }
+        if ("socials" in data) {
+            this.socials = data.socials;
+        }
+        if ("score" in data) {
+            this.score = data.score;
+        }
+
+        // Handle fields that are specific to LocationDTO
+        if ("placeOsmRef" in data) {
+            this.placeOsmRef = data.placeOsmRef;
+        }
     }
 
     /**

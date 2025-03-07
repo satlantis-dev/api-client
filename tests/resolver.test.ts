@@ -1,7 +1,7 @@
 import { assertEquals, assertExists, assertGreaterOrEqual, fail } from "@std/assert";
 import { Client } from "../sdk.ts";
 import { InMemoryAccountContext } from "@blowater/nostr-sdk";
-import type { UserResolver } from "../sdk.ts";
+import type { LocationResolver, UserResolver } from "../sdk.ts";
 import { sleep } from "jsr:@blowater/csp@1.0.0";
 import { aws_cdn_url, relay_url, rest_url } from "./urls.ts";
 
@@ -129,58 +129,103 @@ Deno.test("notes in a place", async () => {
     );
 });
 
-Deno.test("getLocation", async () => {
+Deno.test("getLocation", async (t) => {
     const id = 1889;
-    const result = await client.resolver.getLocationByID(id);
-    if (result instanceof Error) {
-        fail(result.message);
-    }
-    assertExists(result.isClaimed);
-    assertEquals(result.id, id);
-    assertEquals(result.name, "Snack bar São João");
-
-    /*
-    const place = await result.place();
-    if (place instanceof Error) {
-        fail(place.message);
-    }
-    assertEquals(place.name, "Funchal");
-    */
-
     const place_id = 28564;
-    const locations = await client.resolver.getLocationsByPlaceID({
-        placeID: place_id,
-        search: result.name,
-    });
-    if (locations instanceof Error) fail(locations.message);
+    const expectedName = "Snack bar São João";
+    const errors: string[] = [];
+    let byLocationId: LocationResolver;
+    let byPlaceId: LocationResolver;
 
-    const location = locations.find((l) => l.id == id);
-    if (location == undefined) {
-        fail(
-            "the same location is not returned from the getLocationsByPlaceID API",
-        );
-    }
-    console.log("location: ", location);
-    console.log("result: ", result);
-    assertEquals(location.id, result.id);
-    assertEquals(location.address, result.address);
-    assertEquals(location.bio, result.bio);
-    assertEquals(location.email, result.email);
-    assertEquals(location.rating, result.rating);
-    assertEquals(location.userRatingCount, result.userRatingCount);
-    assertEquals(location.googleMapsUrl, result.googleMapsUrl);
-    assertEquals(location.hook, result.hook);
-    assertEquals(location.image, result.image);
-    assertEquals(location.isClaimed, result.isClaimed);
-    assertEquals(location.lat, result.lat);
-    assertEquals(location.lng, result.lng);
-    assertEquals(location.locationTags, result.locationTags);
-    assertEquals(location.name, result.name);
-    assertEquals(location.openingHours, result.openingHours);
-    assertEquals(location.osmRef, result.osmRef);
-    assertEquals(location.placeId, result.placeId);
-    assertEquals(location.reviewSummary, result.reviewSummary);
-    // assertEquals(location.place?.osmRef, result.placeOsmRef);
+    await t.step("getLocationByID", async () => {
+        try {
+            const _byLocationId = await client.resolver.getLocationByID(id);
+            if (_byLocationId instanceof Error) {
+                fail(_byLocationId.message);
+            }
+            byLocationId = _byLocationId;
+            assertExists(byLocationId, "Location should exist");
+            assertExists(byLocationId.isClaimed, "isClaimed should exist");
+            assertEquals(byLocationId.id, id, `id should be ${id}`);
+            assertEquals(byLocationId.name, expectedName, `name should be "${expectedName}"`);
+        } catch (error) {
+            fail(`getLocationByID failed: ${error}`);
+        }
+    });
+
+    await t.step("getLocationsByPlaceID", async () => {
+        try {
+            const locations = await client.resolver.getLocationsByPlaceID({
+                placeID: place_id,
+                search: expectedName,
+            });
+            if (locations instanceof Error) {
+                fail(locations.message);
+            }
+
+            assertExists(locations, "Locations should exist");
+
+            const _byPlaceId = locations.find((l) => l.id === id);
+            if (!_byPlaceId) {
+                fail("The same location is not returned from the getLocationsByPlaceID API");
+            }
+            byPlaceId = _byPlaceId;
+
+            const byLocationId = await client.resolver.getLocationByID(id);
+            assertExists(byLocationId, "Location should exist");
+
+            const assertProperty = <T>(property: string, value: T, expectedValue: T) => {
+                if (value === undefined) {
+                    errors.push(`${property} should not be undefined from the getLocationsByPlaceID API`);
+                }
+                if (expectedValue === undefined) {
+                    errors.push(`${property} should not be undefined from the getLocationByID API`);
+                }
+                if (value !== expectedValue) {
+                    errors.push(`${property} should be ${expectedValue}, but got ${value}`);
+                }
+            };
+
+            if (byLocationId instanceof Error) {
+                fail(byLocationId.message);
+            }
+            assertProperty("id", byPlaceId.id, byLocationId.id);
+            assertProperty("name", byPlaceId.name, byLocationId.name);
+            assertProperty("address.formatted", byPlaceId.address.formatted, byLocationId.address.formatted);
+            assertProperty("bio", byPlaceId.bio, byLocationId.bio);
+            assertProperty("email", byPlaceId.email, byLocationId.email);
+            assertProperty("rating", byPlaceId.rating, byLocationId.rating);
+            assertProperty("userRatingCount", byPlaceId.userRatingCount, byLocationId.userRatingCount);
+            assertProperty("googleMapsUrl", byPlaceId.googleMapsUrl, byLocationId.googleMapsUrl);
+            assertProperty("hook", byPlaceId.hook, byLocationId.hook);
+            assertProperty("image", byPlaceId.image, byLocationId.image);
+            assertProperty("isClaimed", byPlaceId.isClaimed, byLocationId.isClaimed);
+            assertProperty("lat", byPlaceId.lat, byLocationId.lat);
+            assertProperty("lng", byPlaceId.lng, byLocationId.lng);
+            assertProperty(
+                "locationTags[0].id",
+                byPlaceId.locationTags[0].id,
+                byLocationId.locationTags[0].id,
+            );
+            assertProperty(
+                "openingHours.saturday",
+                byPlaceId.openingHours.saturday,
+                byLocationId.openingHours.saturday,
+            );
+            assertProperty("osmRef", byPlaceId.osmRef, byLocationId.osmRef);
+            assertProperty("placeId", byPlaceId.placeId, byLocationId.placeId);
+            assertProperty("reviewSummary", byPlaceId.reviewSummary, byLocationId.reviewSummary);
+            assertProperty("place.osmRef", byPlaceId.place?.osmRef, byLocationId.placeOsmRef);
+
+            if (errors.length > 0) {
+                console.error("Test failed with the following errors:");
+                errors.forEach((error) => console.error(error));
+                fail("One or more assertions failed");
+            }
+        } catch (error) {
+            fail(`getLocationsByPlaceID failed: ${error}`);
+        }
+    });
 });
 
 Deno.test("a user's interests", async () => {

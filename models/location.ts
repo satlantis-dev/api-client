@@ -1,12 +1,4 @@
-import type {
-    BusinessStatus,
-    Note,
-    NoteType,
-    OpeningHours,
-    Place,
-    PriceLevel,
-    ReshapedNostrEvent,
-} from "../sdk.ts";
+import type { BusinessStatus, Note, NoteType, OpeningHours, Place, PriceLevel } from "../sdk.ts";
 import type { AccountDTO } from "./account.ts";
 
 // https://github.com/satlantis-dev/models/blob/main/account_location_role.go#L11
@@ -64,13 +56,11 @@ export type Location = {
     bio: string;
     businessStatus: BusinessStatus;
     claim: LocationClaim;
-    eventId: number;
-    event: ReshapedNostrEvent;
     googleId: string;
     googleMapsUrl: string;
     rating: number;
     userRatingCount: number;
-    hook: string | null;
+    hook?: string;
     image: string;
     isClaimed: boolean;
     lat: number;
@@ -90,6 +80,7 @@ export type Location = {
     websiteUrl: string;
     email: string;
     reviewSummary: string;
+    socials: Socials;
 };
 
 // https://github.com/satlantis-dev/models/blob/main/account_location_role.go#L20
@@ -108,19 +99,19 @@ export interface LocationClaim {
     ownerAccountId: number;
     ownerAccount: AccountDTO;
     claimCode: string;
-    referredBy: string | null;
+    referredBy?: string;
 }
 
 // https://github.com/satlantis-dev/models/blob/main/location.go#L157
 export interface LocationDTO {
     id: number;
     address: Address;
-    bio: string | null;
+    bio?: string;
     email: string;
     rating: number;
     userRatingCount: number;
     googleMapsUrl: string;
-    hook: string | null;
+    hook?: string;
     image: string;
     isClaimed: boolean;
     lat: number;
@@ -142,6 +133,17 @@ export interface Rating {
     link: string;
 }
 
+export interface Socials {
+    facebook?: string;
+    instagram?: string;
+    line?: string;
+    telegram?: string;
+    tiktok?: string;
+    whatsapp?: string;
+    x?: string;
+    youtube?: string;
+}
+
 export type LocationInfo = {
     bio: string;
     websiteUrl: string;
@@ -152,11 +154,11 @@ export type LocationInfo = {
 
 export type LocationByID = {
     id: number;
-    bio: string | null;
+    bio?: string;
     image: string;
     lat: number;
     lng: number;
-    locationTags: LocationTag[] | null;
+    locationTags?: LocationTag[];
     name: string;
     placeOsmRef: string;
     score: number;
@@ -220,7 +222,7 @@ export interface LocationGalleryImage {
     id: number;
     locationId: number;
     url: string;
-    caption: string | null;
+    caption?: string;
     category: ImageCategory;
     highlight: boolean;
     source: string;
