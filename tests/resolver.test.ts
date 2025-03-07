@@ -215,7 +215,9 @@ Deno.test("getLocation", async (t) => {
             assertProperty("osmRef", byPlaceId.osmRef, byLocationId.osmRef);
             assertProperty("placeId", byPlaceId.placeId, byLocationId.placeId);
             assertProperty("reviewSummary", byPlaceId.reviewSummary, byLocationId.reviewSummary);
-            assertProperty("place.osmRef", byPlaceId.place?.osmRef, byLocationId.placeOsmRef);
+            // Only the preloaded Place table will return placeOsmRef, while the getLocationsByPlaceId endpoint will not.
+            // https://linear.app/sat-lantis/issue/SAT-1946/update-location-type-and-related-apis-in-api-client#comment-3b02cb62
+            // assertProperty("place.osmRef", byPlaceId.place?.osmRef, byLocationId.placeOsmRef);
 
             if (errors.length > 0) {
                 console.error("Test failed with the following errors:");

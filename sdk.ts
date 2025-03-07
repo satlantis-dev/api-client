@@ -195,8 +195,8 @@ export class Client {
     postLocationGalleryImage: ReturnType<typeof postLocationGalleryImage>;
     updateLocationGalleryImage: ReturnType<typeof updateLocationGalleryImage>;
     deleteLocationGalleryImage: ReturnType<typeof deleteLocationGalleryImage>;
-    private getLocationsBySearch: ReturnType<typeof getLocationsBySearch>;
-    private getLocationsByPlaceIDRandomized: ReturnType<typeof getLocationsByPlaceIDRandomized>;
+    getLocationsBySearch: ReturnType<typeof getLocationsBySearch>;
+    getLocationsByPlaceIDRandomized: ReturnType<typeof getLocationsByPlaceIDRandomized>;
     getLocationLinks: ReturnType<typeof getLocationLinks>;
 
     // address
@@ -1470,6 +1470,7 @@ export class Client {
     /**
      * Resolver APIs that provides callers a cleaner relationships among all data types
      * @unstable
+     * @returns Resolver
      */
     resolver = {
         getUser: async (
