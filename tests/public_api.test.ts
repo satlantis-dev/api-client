@@ -569,3 +569,10 @@ Deno.test("getLocationGalleryImages", async () => {
         fail(result.message);
     }
 });
+
+Deno.test("getLocationLinks", async () => {
+    const result = await client.getLocationLinks({ locationId: 2313 });
+    if (result instanceof Error) {
+        fail(result.message);
+    }
+});

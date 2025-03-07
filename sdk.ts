@@ -28,6 +28,7 @@ import {
     getAccountsForLocation,
     getLocation,
     getLocationGalleryImages,
+    getLocationLinks,
     getLocationReviews,
     getLocationsByPlaceID,
     getLocationsByPlaceIDRandomized,
@@ -196,6 +197,7 @@ export class Client {
     deleteLocationGalleryImage: ReturnType<typeof deleteLocationGalleryImage>;
     private getLocationsBySearch: ReturnType<typeof getLocationsBySearch>;
     private getLocationsByPlaceIDRandomized: ReturnType<typeof getLocationsByPlaceIDRandomized>;
+    getLocationLinks: ReturnType<typeof getLocationLinks>;
 
     // address
     addressLookup: ReturnType<typeof addressLookup>;
@@ -331,6 +333,7 @@ export class Client {
         this.deleteLocationGalleryImage = deleteLocationGalleryImage(rest_api_url, getJwt);
         this.getLocationsBySearch = getLocationsBySearch(rest_api_url);
         this.getLocationsByPlaceIDRandomized = getLocationsByPlaceIDRandomized(rest_api_url);
+        this.getLocationLinks = getLocationLinks(rest_api_url);
 
         // address
         this.addressLookup = addressLookup(rest_api_url);

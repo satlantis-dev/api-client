@@ -228,3 +228,8 @@ export interface LocationGalleryImage {
     source: string;
     createdAt: Date;
 }
+
+export interface LocationLink {
+    app: string;
+    link: string;
+}

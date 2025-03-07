@@ -1,4 +1,4 @@
-import type { Location, LocationTag, Socials } from "../models/location.ts";
+import type { Location, LocationLink, LocationTag, Socials } from "../models/location.ts";
 import type {
     AccountLocationRole,
     Address,
@@ -143,5 +143,12 @@ export class LocationResolver {
      */
     getOwner = async (): Promise<UserResolver | undefined | Error> => {
         return this.client.resolver.getOwnerForLocation({ locationId: this.id });
+    };
+
+    /**
+     * @unstable
+     */
+    getLinks = async (): Promise<LocationLink[] | Error> => {
+        return this.client.getLocationLinks({ locationId: this.id });
     };
 }

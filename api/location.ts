@@ -1,8 +1,15 @@
 import { ApiError, copyURL, handleResponse } from "../helpers/_helper.ts";
 import { Aborted, safeFetch } from "../helpers/safe-fetch.ts";
-import { type Location, type LocationDTO, type LocationTag } from "../models/location.ts";
+import {
+    type Location,
+    type LocationDTO,
+    type LocationGalleryImage,
+    type LocationInfo,
+    type LocationLink,
+    type LocationTag,
+} from "../models/location.ts";
 import { prepareLocationSetEvent, preparePlaceEvent } from "../nostr-helpers.ts";
-import type { func_GetJwt, func_GetNostrSigner, LocationGalleryImage, LocationInfo } from "../sdk.ts";
+import { type func_GetJwt, type func_GetNostrSigner } from "../sdk.ts";
 
 export const getLocationTags = (urlArg: URL) => async () => {
     const url = copyURL(urlArg);
@@ -354,4 +361,21 @@ async (args: {
         return response;
     }
     return handleResponse<LocationDTO[]>(response);
+};
+
+/**
+ * GET /getLocationLinks/{locationId}
+ * https://github.com/satlantis-dev/api/blob/dev/rest/location.go#L883
+ */
+export const getLocationLinks = (urlArg: URL) =>
+async (args: {
+    locationId: number;
+}) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getLocationLinks/${args.locationId}`;
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<LocationLink[]>(response);
 };
