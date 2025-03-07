@@ -28,8 +28,11 @@ import {
     getAccountsForLocation,
     getLocation,
     getLocationGalleryImages,
+    getLocationLinks,
     getLocationReviews,
     getLocationsByPlaceID,
+    getLocationsByPlaceIDRandomized,
+    getLocationsBySearch,
     getLocationsWithinBoundingBox,
     getLocationTags,
     proveLocationClaim,
@@ -192,6 +195,9 @@ export class Client {
     postLocationGalleryImage: ReturnType<typeof postLocationGalleryImage>;
     updateLocationGalleryImage: ReturnType<typeof updateLocationGalleryImage>;
     deleteLocationGalleryImage: ReturnType<typeof deleteLocationGalleryImage>;
+    getLocationsBySearch: ReturnType<typeof getLocationsBySearch>;
+    getLocationsByPlaceIDRandomized: ReturnType<typeof getLocationsByPlaceIDRandomized>;
+    getLocationLinks: ReturnType<typeof getLocationLinks>;
 
     // address
     addressLookup: ReturnType<typeof addressLookup>;
@@ -325,6 +331,9 @@ export class Client {
         this.postLocationGalleryImage = postLocationGalleryImage(rest_api_url, getJwt);
         this.updateLocationGalleryImage = updateLocationGalleryImage(rest_api_url, getJwt);
         this.deleteLocationGalleryImage = deleteLocationGalleryImage(rest_api_url, getJwt);
+        this.getLocationsBySearch = getLocationsBySearch(rest_api_url);
+        this.getLocationsByPlaceIDRandomized = getLocationsByPlaceIDRandomized(rest_api_url);
+        this.getLocationLinks = getLocationLinks(rest_api_url);
 
         // address
         this.addressLookup = addressLookup(rest_api_url);
@@ -1461,6 +1470,7 @@ export class Client {
     /**
      * Resolver APIs that provides callers a cleaner relationships among all data types
      * @unstable
+     * @returns Resolver
      */
     resolver = {
         getUser: async (
@@ -1599,24 +1609,8 @@ export class Client {
             if (locations instanceof Error) {
                 return locations;
             }
-            // for(const location of locations) {}
             return locations.map(
-                (l) =>
-                    new LocationResolver(this, {
-                        address: l.address,
-                        bio: l.bio,
-                        id: l.id,
-                        image: l.image,
-                        lat: l.lat,
-                        lng: l.lng,
-                        locationTags: l.locationTags,
-                        name: l.name,
-                        openingHours: l.openingHours,
-                        // @ts-ignore: missing
-                        placeOsmRef: null, // todo: this is missing from backend
-                        score: l.score,
-                        googleRating: l.googleRating,
-                    }),
+                (l) => new LocationResolver(this, l),
             );
         },
         /**
@@ -1710,6 +1704,42 @@ export class Client {
                 noteResolvers.push(r);
             }
             return noteResolvers;
+        },
+        /**
+         * @unstable
+         */
+        getLocationsBySearch: async (args: {
+            rating: number;
+            search?: string;
+            tag_category?: string;
+            place_id?: number;
+            limit?: number;
+            page?: number;
+            sortColumn?: string;
+            sortDirection?: "asc" | "desc";
+        }) => {
+            const locations = await this.getLocationsBySearch(args);
+            if (locations instanceof Error) {
+                return locations;
+            }
+            return locations.map(
+                (l) => new LocationResolver(this, l),
+            );
+        },
+        /**
+         * @unstable
+         */
+        getLocationsByPlaceIDRandomized: async (args: {
+            placeId: number;
+            tags?: { key: string; value: string }[];
+        }) => {
+            const locations = await this.getLocationsByPlaceIDRandomized(args);
+            if (locations instanceof Error) {
+                return locations;
+            }
+            return locations.map(
+                (l) => new LocationResolver(this, l),
+            );
         },
     };
 }

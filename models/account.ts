@@ -46,6 +46,7 @@ export type Account = {
     }[];
 };
 
+// https://github.com/satlantis-dev/models/blob/main/account.go#L92
 export type AccountDTO = {
     id: number;
     about: string;

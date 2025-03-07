@@ -1,7 +1,7 @@
 import { assertEquals, assertExists, assertGreaterOrEqual, fail } from "@std/assert";
 import { Client } from "../sdk.ts";
 import { InMemoryAccountContext } from "@blowater/nostr-sdk";
-import type { UserResolver } from "../sdk.ts";
+import type { LocationResolver, UserResolver } from "../sdk.ts";
 import { sleep } from "jsr:@blowater/csp@1.0.0";
 import { aws_cdn_url, relay_url, rest_url } from "./urls.ts";
 
@@ -129,44 +129,105 @@ Deno.test("notes in a place", async () => {
     );
 });
 
-Deno.test("getLocation", async () => {
+Deno.test("getLocation", async (t) => {
     const id = 1889;
-    const result = await client.resolver.getLocationByID(id);
-    if (result instanceof Error) {
-        fail(result.message);
-    }
-    assertExists(result.isClaimed);
-    assertEquals(result.id, id);
-    assertEquals(result.name, "Snack bar São João");
-
-    /*
-    const place = await result.place();
-    if (place instanceof Error) {
-        fail(place.message);
-    }
-    assertEquals(place.name, "Funchal");
-    */
-
     const place_id = 28564;
-    const locations = await client.resolver.getLocationsByPlaceID({
-        placeID: place_id,
-        search: result.name,
-    });
-    if (locations instanceof Error) fail(locations.message);
+    const expectedName = "Snack bar São João";
+    const errors: string[] = [];
+    let byLocationId: LocationResolver;
+    let byPlaceId: LocationResolver;
 
-    const location = locations.find((l) => l.id == id);
-    if (location == undefined) {
-        fail(
-            "the same location is not returned from the getLocationsByPlaceID API",
-        );
-    }
-    assertEquals(location.id, result.id);
-    assertEquals(location.name, result.name);
-    assertEquals(location.openingHours, result.openingHours);
-    assertEquals(location.address, result.address);
-    assertEquals(location.score, result.score);
-    assertEquals(location.googleRating, result.googleRating);
-    // assertEquals(location.placeOsmRef, result.placeOsmRef);
+    await t.step("getLocationByID", async () => {
+        try {
+            const _byLocationId = await client.resolver.getLocationByID(id);
+            if (_byLocationId instanceof Error) {
+                fail(_byLocationId.message);
+            }
+            byLocationId = _byLocationId;
+            assertExists(byLocationId, "Location should exist");
+            assertExists(byLocationId.isClaimed, "isClaimed should exist");
+            assertEquals(byLocationId.id, id, `id should be ${id}`);
+            assertEquals(byLocationId.name, expectedName, `name should be "${expectedName}"`);
+        } catch (error) {
+            fail(`getLocationByID failed: ${error}`);
+        }
+    });
+
+    await t.step("getLocationsByPlaceID", async () => {
+        try {
+            const locations = await client.resolver.getLocationsByPlaceID({
+                placeID: place_id,
+                search: expectedName,
+            });
+            if (locations instanceof Error) {
+                fail(locations.message);
+            }
+
+            assertExists(locations, "Locations should exist");
+
+            const _byPlaceId = locations.find((l) => l.id === id);
+            if (!_byPlaceId) {
+                fail("The same location is not returned from the getLocationsByPlaceID API");
+            }
+            byPlaceId = _byPlaceId;
+
+            const byLocationId = await client.resolver.getLocationByID(id);
+            assertExists(byLocationId, "Location should exist");
+
+            const assertProperty = <T>(property: string, value: T, expectedValue: T) => {
+                if (value === undefined) {
+                    errors.push(`${property} should not be undefined from the getLocationsByPlaceID API`);
+                }
+                if (expectedValue === undefined) {
+                    errors.push(`${property} should not be undefined from the getLocationByID API`);
+                }
+                if (value !== expectedValue) {
+                    errors.push(`${property} should be ${expectedValue}, but got ${value}`);
+                }
+            };
+
+            if (byLocationId instanceof Error) {
+                fail(byLocationId.message);
+            }
+            assertProperty("id", byPlaceId.id, byLocationId.id);
+            assertProperty("name", byPlaceId.name, byLocationId.name);
+            assertProperty("address.formatted", byPlaceId.address.formatted, byLocationId.address.formatted);
+            assertProperty("bio", byPlaceId.bio, byLocationId.bio);
+            assertProperty("email", byPlaceId.email, byLocationId.email);
+            assertProperty("rating", byPlaceId.rating, byLocationId.rating);
+            assertProperty("userRatingCount", byPlaceId.userRatingCount, byLocationId.userRatingCount);
+            assertProperty("googleMapsUrl", byPlaceId.googleMapsUrl, byLocationId.googleMapsUrl);
+            assertProperty("hook", byPlaceId.hook, byLocationId.hook);
+            assertProperty("image", byPlaceId.image, byLocationId.image);
+            assertProperty("isClaimed", byPlaceId.isClaimed, byLocationId.isClaimed);
+            assertProperty("lat", byPlaceId.lat, byLocationId.lat);
+            assertProperty("lng", byPlaceId.lng, byLocationId.lng);
+            assertProperty(
+                "locationTags[0].id",
+                byPlaceId.locationTags[0].id,
+                byLocationId.locationTags[0].id,
+            );
+            assertProperty(
+                "openingHours.saturday",
+                byPlaceId.openingHours.saturday,
+                byLocationId.openingHours.saturday,
+            );
+            assertProperty("osmRef", byPlaceId.osmRef, byLocationId.osmRef);
+            assertProperty("placeId", byPlaceId.placeId, byLocationId.placeId);
+            assertProperty("reviewSummary", byPlaceId.reviewSummary, byLocationId.reviewSummary);
+            // Only the preloaded Place table will return placeOsmRef, while the getLocationsByPlaceId endpoint will not.
+            // https://linear.app/sat-lantis/issue/SAT-1946/update-location-type-and-related-apis-in-api-client#comment-3b02cb62
+            // assertProperty("place.osmRef", byPlaceId.place?.osmRef, byLocationId.placeOsmRef);
+
+            if (errors.length > 0) {
+                console.error("Test failed with the following errors:");
+                errors.forEach((error) => console.error(error));
+                fail("One or more assertions failed");
+            }
+        } catch (error) {
+            fail(`getLocationsByPlaceID failed: ${error}`);
+        }
+    });
 });
 
 Deno.test("a user's interests", async () => {
@@ -236,4 +297,26 @@ Deno.test("getPlacesMinimal", async () => {
         fail(places.message);
     }
     assertGreaterOrEqual(places.length, 90);
+});
+
+Deno.test("getLocationsBySearch", async () => {
+    const result = await client.resolver.getLocationsBySearch({
+        rating: 0,
+        tag_category: "Restaurants & Cafes",
+        search: "Dragon",
+    });
+    if (result instanceof Error) {
+        fail(result.message);
+    }
+    assertEquals(result.length, 1);
+});
+
+Deno.test("getLocationsByPlaceIDRandomized", async () => {
+    const result = await client.resolver.getLocationsByPlaceIDRandomized({
+        placeId: 28564,
+    });
+    if (result instanceof Error) {
+        fail(result.message);
+    }
+    assertEquals(result.length, 10);
 });

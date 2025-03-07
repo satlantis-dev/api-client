@@ -14,6 +14,7 @@ export type RegionMetric = {
     score: number;
 };
 
+// https://github.com/satlantis-dev/models/blob/main/region.go#L9
 export interface Region {
     id: number;
     code: string;
