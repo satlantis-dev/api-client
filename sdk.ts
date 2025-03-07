@@ -30,6 +30,7 @@ import {
     getLocationGalleryImages,
     getLocationReviews,
     getLocationsByPlaceID,
+    getLocationsBySearch,
     getLocationsWithinBoundingBox,
     getLocationTags,
     proveLocationClaim,
@@ -192,6 +193,7 @@ export class Client {
     postLocationGalleryImage: ReturnType<typeof postLocationGalleryImage>;
     updateLocationGalleryImage: ReturnType<typeof updateLocationGalleryImage>;
     deleteLocationGalleryImage: ReturnType<typeof deleteLocationGalleryImage>;
+    private getLocationsBySearch: ReturnType<typeof getLocationsBySearch>;
 
     // address
     addressLookup: ReturnType<typeof addressLookup>;
@@ -325,6 +327,7 @@ export class Client {
         this.postLocationGalleryImage = postLocationGalleryImage(rest_api_url, getJwt);
         this.updateLocationGalleryImage = updateLocationGalleryImage(rest_api_url, getJwt);
         this.deleteLocationGalleryImage = deleteLocationGalleryImage(rest_api_url, getJwt);
+        this.getLocationsBySearch = getLocationsBySearch(rest_api_url);
 
         // address
         this.addressLookup = addressLookup(rest_api_url);
@@ -1694,6 +1697,27 @@ export class Client {
                 noteResolvers.push(r);
             }
             return noteResolvers;
+        },
+        /**
+         * @unstable
+         */
+        getLocationsBySearch: async (args: {
+            rating: number;
+            search?: string;
+            tag_category?: string;
+            place_id?: number;
+            limit?: number;
+            page?: number;
+            sortColumn?: string;
+            sortDirection?: "asc" | "desc";
+        }) => {
+            const locations = await this.getLocationsBySearch(args);
+            if (locations instanceof Error) {
+                return locations;
+            }
+            return locations.map(
+                (l) => new LocationResolver(this, l),
+            );
         },
     };
 }

@@ -296,3 +296,15 @@ Deno.test("getPlacesMinimal", async () => {
     }
     assertGreaterOrEqual(places.length, 90);
 });
+
+Deno.test("getLocationsBySearch", async () => {
+    const result = await client.resolver.getLocationsBySearch({
+        rating: 0,
+        tag_category: "Restaurants & Cafes",
+        search: "Dragon",
+    });
+    if (result instanceof Error) {
+        fail(result.message);
+    }
+    assertEquals(result.length, 1);
+});

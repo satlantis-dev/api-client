@@ -283,3 +283,49 @@ async (args: {
     }
     return handleResponse<LocationGalleryImage[]>(response);
 };
+
+/**
+ * GET /getLocationsBySearch
+ * https://github.com/satlantis-dev/api/blob/dev/rest/location.go#L203
+ */
+export const getLocationsBySearch = (urlArg: URL) =>
+async (args: {
+    rating: number;
+    search?: string;
+    tag_category?: string;
+    place_id?: number;
+    limit?: number;
+    page?: number;
+    sortColumn?: string;
+    sortDirection?: "asc" | "desc";
+}) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getLocationsBySearch`;
+    url.searchParams.set("rating", String(args.rating));
+    if (args.search) {
+        url.searchParams.set("search", args.search);
+    }
+    if (args.tag_category) {
+        url.searchParams.set("tag_category", args.tag_category);
+    }
+    if (args.place_id) {
+        url.searchParams.set("place_id", String(args.place_id));
+    }
+    if (args.sortColumn) {
+        url.searchParams.set("sortColumn", args.sortColumn);
+    }
+    if (args.sortDirection) {
+        url.searchParams.set("sortDirection", args.sortDirection);
+    }
+    if (args.limit) {
+        url.searchParams.set("limit", String(args.limit));
+    }
+    if (args.page) {
+        url.searchParams.set("page", String(args.page));
+    }
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<LocationDTO[]>(response);
+};
