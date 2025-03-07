@@ -308,3 +308,13 @@ Deno.test("getLocationsBySearch", async () => {
     }
     assertEquals(result.length, 1);
 });
+
+Deno.test("getLocationsByPlaceIDRandomized", async () => {
+    const result = await client.resolver.getLocationsByPlaceIDRandomized({
+        placeId: 28564,
+    });
+    if (result instanceof Error) {
+        fail(result.message);
+    }
+    assertEquals(result.length, 10);
+});

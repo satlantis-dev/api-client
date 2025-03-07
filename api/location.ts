@@ -329,3 +329,30 @@ async (args: {
     }
     return handleResponse<LocationDTO[]>(response);
 };
+
+/**
+ * GET /getLocationsByPlaceIDRandomized/{placeId}
+ * https://github.com/satlantis-dev/api/blob/dev/rest/location.go#L105
+ */
+export const getLocationsByPlaceIDRandomized = (urlArg: URL) =>
+async (args: {
+    placeId: number;
+    tags?: { key: string; value: string }[];
+}) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getLocationsByPlaceIDRandomized/${args.placeId}`;
+
+    if (args.tags) {
+        const tagsArray: string[] = [];
+        for (const tag of args.tags) {
+            tagsArray.push(`${tag.key}=${tag.value}`);
+        }
+        url.searchParams.set("tags", tagsArray.join(","));
+    }
+
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<LocationDTO[]>(response);
+};

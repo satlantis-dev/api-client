@@ -30,6 +30,7 @@ import {
     getLocationGalleryImages,
     getLocationReviews,
     getLocationsByPlaceID,
+    getLocationsByPlaceIDRandomized,
     getLocationsBySearch,
     getLocationsWithinBoundingBox,
     getLocationTags,
@@ -194,6 +195,7 @@ export class Client {
     updateLocationGalleryImage: ReturnType<typeof updateLocationGalleryImage>;
     deleteLocationGalleryImage: ReturnType<typeof deleteLocationGalleryImage>;
     private getLocationsBySearch: ReturnType<typeof getLocationsBySearch>;
+    private getLocationsByPlaceIDRandomized: ReturnType<typeof getLocationsByPlaceIDRandomized>;
 
     // address
     addressLookup: ReturnType<typeof addressLookup>;
@@ -328,6 +330,7 @@ export class Client {
         this.updateLocationGalleryImage = updateLocationGalleryImage(rest_api_url, getJwt);
         this.deleteLocationGalleryImage = deleteLocationGalleryImage(rest_api_url, getJwt);
         this.getLocationsBySearch = getLocationsBySearch(rest_api_url);
+        this.getLocationsByPlaceIDRandomized = getLocationsByPlaceIDRandomized(rest_api_url);
 
         // address
         this.addressLookup = addressLookup(rest_api_url);
@@ -1712,6 +1715,21 @@ export class Client {
             sortDirection?: "asc" | "desc";
         }) => {
             const locations = await this.getLocationsBySearch(args);
+            if (locations instanceof Error) {
+                return locations;
+            }
+            return locations.map(
+                (l) => new LocationResolver(this, l),
+            );
+        },
+        /**
+         * @unstable
+         */
+        getLocationsByPlaceIDRandomized: async (args: {
+            placeId: number;
+            tags?: { key: string; value: string }[];
+        }) => {
+            const locations = await this.getLocationsByPlaceIDRandomized(args);
             if (locations instanceof Error) {
                 return locations;
             }
