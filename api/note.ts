@@ -137,7 +137,6 @@ async (args: {
         headers.set("Authorization", `Bearer ${jwtToken}`);
     }
 
-    console.log(headers, "headers");
     const response = await safeFetch(url, {
         headers,
         method: "POST",

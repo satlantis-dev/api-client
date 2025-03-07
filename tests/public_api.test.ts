@@ -27,10 +27,8 @@ Deno.test("getPlace", async () => {
         osmRef: "R8421413",
     });
     if (result instanceof Error) {
-        console.log(result);
-        fail();
+        fail(result.message);
     }
-    //console.log(result.regionId);
 });
 
 Deno.test("getPlaceById", async () => {
@@ -38,8 +36,7 @@ Deno.test("getPlaceById", async () => {
         id: 39645,
     });
     if (result instanceof Error) {
-        console.log(result);
-        fail();
+        fail(result.message);
     }
     assertEquals(result.regionId, 1606);
 });
@@ -53,8 +50,7 @@ Deno.test("getPlaces", async () => {
         sortDirection: "desc",
     });
     if (result instanceof Error) {
-        console.log(result);
-        fail();
+        fail(result.message);
     }
 
     const ok = result.find((p) => p.name.toLowerCase() == "london") as Place;
@@ -66,8 +62,7 @@ Deno.test("/getPeopleOfPlace", async () => {
         placeID: 23949,
     });
     if (result instanceof Error) {
-        console.log(result);
-        fail();
+        fail(result.message);
     }
 
     assertEquals(result.length > 0, true);
@@ -84,8 +79,7 @@ Deno.test("/getPlaceNotes", async () => {
         page: 0,
     });
     if (result instanceof Error) {
-        console.log(result);
-        fail();
+        fail(result.message);
     }
     assertEquals(result.length > 0, true);
 });
@@ -110,8 +104,7 @@ Deno.test("/getPlaceMetrics", async () => {
         placeID: 23949,
     });
     if (result instanceof Error) {
-        console.log(result);
-        fail();
+        fail(result.message);
     }
     assertEquals(result.length > 0, true);
 });
@@ -131,10 +124,8 @@ Deno.test("/getPlaceChats", async () => {
         placeID: 23949,
     });
     if (result instanceof Error) {
-        console.log(result);
-        fail();
+        fail(result.message);
     }
-    //console.log(result);
 });
 
 Deno.test("/getPlaceCategoryScores", async () => {
@@ -142,8 +133,7 @@ Deno.test("/getPlaceCategoryScores", async () => {
         placeID: 23949,
     });
     if (result instanceof Error) {
-        console.log(result);
-        fail();
+        fail(result.message);
     }
     assertEquals(result.length > 0, true);
 });
@@ -153,10 +143,8 @@ Deno.test("getPlaceEvent", async () => {
         placeID: 23949,
     });
     if (result instanceof Error) {
-        console.log(result);
-        fail();
+        fail(result.message);
     }
-    //console.log(result);
 });
 
 Deno.test("getRegion", async () => {
@@ -164,8 +152,7 @@ Deno.test("getRegion", async () => {
         regionID: 1170,
     });
     if (result instanceof Error) {
-        console.log(result);
-        fail();
+        fail(result.message);
     }
     assertEquals(result.places.length > 0, true);
 });
@@ -178,8 +165,7 @@ Deno.test("/getLocationsWithinBoundingBox", async () => {
         sw_lng: -17.04730786865258,
     });
     if (result instanceof Error) {
-        console.log(result);
-        fail();
+        fail(result.message);
     }
     assertEquals(result.length > 0, true);
     const locationID = result[0].id;
@@ -300,7 +286,6 @@ Deno.test({
                 username: randomString(),
             });
             if (result instanceof Error) {
-                console.log(result);
                 fail(result.message);
             }
             assertEquals(result, true);
@@ -378,8 +363,7 @@ Deno.test("getNotes", async () => {
         page: 0,
     });
     if (result instanceof Error) {
-        console.log(result);
-        fail();
+        fail(result.message);
     }
     assertEquals(result.length == 2, true);
 
@@ -406,10 +390,8 @@ Deno.test("getNoteReactionsById", async () => {
         limit: 3,
         page: 0,
     });
-    //console.log(result);
     if (result instanceof Error) {
-        console.log(result);
-        fail();
+        fail(result.message);
     }
     assertEquals(result.length == 3, true);
     assertExists(result[0].account?.name);
@@ -418,10 +400,8 @@ Deno.test("getNoteReactionsById", async () => {
 Deno.test("getIpInfo", async () => {
     const result = await client.getIpInfo();
     if (result instanceof Error) {
-        console.log(result);
-        fail();
+        fail(result.message);
     }
-    //console.log(JSON.stringify(result));
 });
 
 Deno.test("getLocationReviews", async () => {
@@ -469,7 +449,6 @@ Deno.test("initiatePasswordReset", async () => {
         username: "albert",
     });
     if (result instanceof Error) fail(result.message);
-    //console.log(result);
 });
 
 Deno.test("resetPassword", async () => {
@@ -579,8 +558,7 @@ export function randomString() {
 Deno.test("getPlaceGalleryImages", async () => {
     const result = await client.getPlaceCategoryScores({ placeID: 23751 }); // Florianópolis
     if (result instanceof Error) {
-        console.log(result);
-        fail();
+        fail(result.message);
     }
     assertEquals(result.length > 0, true);
 });
@@ -588,7 +566,6 @@ Deno.test("getPlaceGalleryImages", async () => {
 Deno.test("getLocationGalleryImages", async () => {
     const result = await client.getLocationGalleryImages({ locationId: 2313 });
     if (result instanceof Error) {
-        console.log(result);
-        fail();
+        fail(result.message);
     }
 });

@@ -82,7 +82,6 @@ Deno.test("AccountRole", async () => {
         type: AccountPlaceRoleTypeEnum.FOLLOWER,
     });
     if (res2 instanceof Error) fail(res2.message);
-    console.log(res2);
 
     // update contact list
     const event = (await prepareNostrEvent(signer, {
@@ -149,7 +148,6 @@ Deno.test("post notes", async () => {
         if (rootNote instanceof Error) {
             fail(rootNote.message);
         }
-        console.log(rootNote);
         assertEquals(rootNote.nostrId, root_event.id);
 
         const reaction_event = (await prepareNostrEvent(signer, {
@@ -166,7 +164,6 @@ Deno.test("post notes", async () => {
         if (result instanceof Error) {
             fail(result.message);
         }
-        console.log(result);
         assertEquals(result.noteId, rootNote.id);
     }
 });
@@ -306,7 +303,6 @@ Deno.test({
                 if (signed instanceof Error) {
                     fail(signed.message);
                 }
-                console.log(signed);
             },
         });
     },
