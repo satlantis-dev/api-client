@@ -61,7 +61,6 @@ export type Location = {
     rating: number;
     userRatingCount: number;
     hook?: string;
-    banner?: string;
     image: string;
     isClaimed: boolean;
     lat: number;
@@ -113,7 +112,6 @@ export interface LocationDTO {
     userRatingCount: number;
     googleMapsUrl: string;
     hook?: string;
-    banner?: string;
     image: string;
     isClaimed: boolean;
     lat: number;

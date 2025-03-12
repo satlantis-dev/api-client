@@ -19,7 +19,6 @@ export class LocationResolver {
     address: Address;
     googleMapsUrl: string;
     image: string;
-    banner?: string;
     isClaimed: boolean;
     lat: number;
     lng: number;
@@ -57,7 +56,6 @@ export class LocationResolver {
         this.address = data.address;
         this.googleMapsUrl = data.googleMapsUrl;
         this.image = data.image;
-        this.banner = data.banner;
         this.isClaimed = data.isClaimed;
         this.lat = data.lat;
         this.lng = data.lng;
