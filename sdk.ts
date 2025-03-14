@@ -1548,6 +1548,49 @@ export class Client {
             return user;
         },
 
+        getAccountFollowers: async (args: {
+            npub: string;
+            page: number;
+            limit: number;
+        }): Promise<Set<UserResolver> | Error> => {
+            const followers = new Set<UserResolver>();
+            const _followers = await this._getAccountFollowers(args);
+            if (_followers instanceof Error) {
+                return _followers;
+            }
+
+            for (const f of _followers) {
+                const _pubkey = PublicKey.FromString(f.pubKey);
+                if (_pubkey instanceof Error) {
+                    console.error(`Invalid pubkey: ${f.pubKey}`);
+                    continue;
+                }
+                followers.add(new UserResolver(this, _pubkey, f.isAdmin, f.isBusiness, f.nip05, f));
+            }
+            return followers;
+        },
+
+        getAccountFollowings: async (args: {
+            npub: string;
+            page: number;
+            limit: number;
+        }): Promise<Set<UserResolver> | Error> => {
+            const followings = new Set<UserResolver>();
+            const response = await this._getAccountFollowings(args);
+            if (response instanceof Error) {
+                return response;
+            }
+            for (const f of response) {
+                const _pubkey = PublicKey.FromString(f.pubKey);
+                if (_pubkey instanceof Error) {
+                    console.error(`Invalid pubkey: ${f.pubKey}`);
+                    continue;
+                }
+                followings.add(new UserResolver(this, _pubkey, f.isAdmin, f.isBusiness, f.nip05, f));
+            }
+            return followings;
+        },
+
         /**
          * @unstable
          */
