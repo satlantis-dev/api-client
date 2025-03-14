@@ -856,6 +856,29 @@ export class Client {
         return following;
     };
 
+    /**
+     * get following list of the given pubkey
+     * @unstable
+     */
+    getAccountFollowingPubkeys = async (pubkey: string | PublicKey) => {
+        const relay = SingleRelayConnection.New(this.relay_url);
+        if (relay instanceof Error) {
+            return relay;
+        }
+
+        try {
+            const publicKey = pubkey instanceof PublicKey ? pubkey : PublicKey.FromString(pubkey);
+
+            if (publicKey instanceof Error) {
+                return publicKey;
+            }
+
+            return await getFollowingPubkeys(publicKey, relay);
+        } finally {
+            await relay.close();
+        }
+    };
+
     followPubkeys = async (toFollow: PublicKey[]) => {
         return followPubkeys(this.relay_url, toFollow, this);
     };
