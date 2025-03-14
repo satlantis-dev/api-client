@@ -1548,7 +1548,7 @@ export class Client {
             return user;
         },
 
-        getAccountFollowers: async (args: {
+        getFollowers: async (args: {
             npub: string;
             page: number;
             limit: number;
@@ -1570,7 +1570,7 @@ export class Client {
             return followers;
         },
 
-        getAccountFollowings: async (args: {
+        getFollowings: async (args: {
             npub: string;
             page: number;
             limit: number;

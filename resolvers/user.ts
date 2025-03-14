@@ -60,7 +60,7 @@ export class UserResolver {
         page: number;
         limit: number;
     }) {
-        const _followings = await this.client.resolver.getAccountFollowings({
+        const _followings = await this.client.resolver.getFollowings({
             npub: this.pubkey.bech32(),
             page: args.page,
             limit: args.limit,
@@ -112,7 +112,7 @@ export class UserResolver {
         page: number;
         limit: number;
     }) {
-        const _followers = await this.client.resolver.getAccountFollowers({
+        const _followers = await this.client.resolver.getFollowers({
             npub: this.pubkey.bech32(),
             page: args.page,
             limit: args.limit,
