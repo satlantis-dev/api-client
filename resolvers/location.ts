@@ -28,6 +28,7 @@ export class LocationResolver {
     openingHours: OpeningHours;
     email: string;
     reviewSummary: string;
+    reviewHighlights: { [key: string]: string };
     osmRef: string;
     score?: number;
     accountRoles?: AccountLocationRole;
@@ -65,6 +66,7 @@ export class LocationResolver {
         this.openingHours = data.openingHours;
         this.email = data.email;
         this.reviewSummary = data.reviewSummary;
+        this.reviewHighlights = data.reviewHighlights;
         this.osmRef = data.osmRef;
 
         // Handle fields that are specific to Location

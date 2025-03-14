@@ -80,6 +80,7 @@ export type Location = {
     websiteUrl: string;
     email: string;
     reviewSummary: string;
+    reviewHighlights: { [key: string]: string };
     socials: Socials;
 };
 
@@ -123,6 +124,7 @@ export interface LocationDTO {
     placeId: number;
     placeOsmRef: string;
     reviewSummary: string;
+    reviewHighlights: { [key: string]: string };
 }
 
 export interface Rating {
