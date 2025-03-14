@@ -484,6 +484,40 @@ Deno.test("interests", async () => {
     assertEquals(res.interests, ["food", "travel"]);
 });
 
+Deno.test("getAccountFollowingPubkeys", async () => {
+    const result = await client.getAccountFollowingPubkeys(
+        "npub1k07dmj2h95c7kd69gzwcg4rswwx4096ka8v0mltymewdzp3lck8q44tz6s",
+    );
+    if (result instanceof Error) {
+        fail(result.message);
+    }
+    console.log(result);
+    assertEquals(result.size > 0, true);
+});
+
+Deno.test("getAccountFollowers & getAccountFollowings", async () => {
+    const _followers = await client.getAccountFollowers({
+        npub: "npub1k07dmj2h95c7kd69gzwcg4rswwx4096ka8v0mltymewdzp3lck8q44tz6s",
+        limit: 2,
+        page: 1,
+    });
+    if (_followers instanceof Error) {
+        fail(_followers.message);
+    }
+    console.log(_followers);
+    assertEquals(_followers.length === 2, true);
+
+    const _followings = await client.getAccountFollowings({
+        npub: "npub1k07dmj2h95c7kd69gzwcg4rswwx4096ka8v0mltymewdzp3lck8q44tz6s",
+        limit: 2,
+        page: 1,
+    });
+    if (_followings instanceof Error) {
+        fail(_followings.message);
+    }
+    assertEquals(_followings.length === 2, true);
+});
+
 Deno.test("follow & unfollow", async () => {
     const user1 = InMemoryAccountContext.Generate();
     const res = await client.loginNostr(user1, { name: "user1" });

@@ -206,6 +206,8 @@ async (args: {
     username?: string;
     limit?: number;
     page?: number;
+}, options?: {
+    signal: AbortSignal;
 }) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
@@ -227,7 +229,10 @@ async (args: {
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
-    const response = await safeFetch(url, { headers });
+    const response = await safeFetch(url, {
+        headers,
+        signal: options?.signal,
+    });
     if (response instanceof Error) {
         return response;
     }
