@@ -1552,8 +1552,8 @@ export class Client {
             npub: string;
             page: number;
             limit: number;
-        }): Promise<Set<UserResolver> | Error> => {
-            const followers = new Set<UserResolver>();
+        }): Promise<UserResolver[] | Error> => {
+            const followers = [];
             const _followers = await this._getAccountFollowers(args);
             if (_followers instanceof Error) {
                 return _followers;
@@ -1565,7 +1565,7 @@ export class Client {
                     console.error(`Invalid pubkey: ${f.pubKey}`);
                     continue;
                 }
-                followers.add(new UserResolver(this, _pubkey, f.isAdmin, f.isBusiness, f.nip05, f));
+                followers.push(new UserResolver(this, _pubkey, f.isAdmin, f.isBusiness, f.nip05, f));
             }
             return followers;
         },
@@ -1574,8 +1574,8 @@ export class Client {
             npub: string;
             page: number;
             limit: number;
-        }): Promise<Set<UserResolver> | Error> => {
-            const followings = new Set<UserResolver>();
+        }): Promise<UserResolver[] | Error> => {
+            const followings = [];
             const response = await this._getAccountFollowings(args);
             if (response instanceof Error) {
                 return response;
@@ -1586,7 +1586,7 @@ export class Client {
                     console.error(`Invalid pubkey: ${f.pubKey}`);
                     continue;
                 }
-                followings.add(new UserResolver(this, _pubkey, f.isAdmin, f.isBusiness, f.nip05, f));
+                followings.push(new UserResolver(this, _pubkey, f.isAdmin, f.isBusiness, f.nip05, f));
             }
             return followings;
         },

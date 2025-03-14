@@ -55,22 +55,6 @@ export class UserResolver {
         return this.isBusiness;
     }
 
-    followingSet: Set<UserResolver> = new Set();
-    async getFollowingPagnation(args: {
-        page: number;
-        limit: number;
-    }) {
-        const _followings = await this.client.resolver.getFollowings({
-            npub: this.pubkey.bech32(),
-            page: args.page,
-            limit: args.limit,
-        });
-        if (_followings instanceof Error) {
-            return _followings;
-        }
-        this.followingSet.union(_followings);
-        return _followings;
-    }
     /**
      * @deprecated
      */
@@ -107,22 +91,6 @@ export class UserResolver {
         return newList;
     }
 
-    followersSet: Set<UserResolver> = new Set();
-    async getFollowersPagnation(args: {
-        page: number;
-        limit: number;
-    }) {
-        const _followers = await this.client.resolver.getFollowers({
-            npub: this.pubkey.bech32(),
-            page: args.page,
-            limit: args.limit,
-        });
-        if (_followers instanceof Error) {
-            return _followers;
-        }
-        this.followersSet.union(_followers);
-        return _followers;
-    }
     /**
      * @deprecated
      */
