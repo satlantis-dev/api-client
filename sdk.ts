@@ -856,6 +856,29 @@ export class Client {
         return following;
     };
 
+    /**
+     * get following list of the given pubkey
+     * @unstable
+     */
+    getAccountFollowingPubkeys = async (pubkey: string | PublicKey) => {
+        const relay = SingleRelayConnection.New(this.relay_url);
+        if (relay instanceof Error) {
+            return relay;
+        }
+
+        try {
+            const publicKey = pubkey instanceof PublicKey ? pubkey : PublicKey.FromString(pubkey);
+
+            if (publicKey instanceof Error) {
+                return publicKey;
+            }
+
+            return await getFollowingPubkeys(publicKey, relay);
+        } finally {
+            await relay.close();
+        }
+    };
+
     followPubkeys = async (toFollow: PublicKey[]) => {
         return followPubkeys(this.relay_url, toFollow, this);
     };
@@ -1523,6 +1546,49 @@ export class Client {
             );
             this.users.set(user.pubkey.hex, user);
             return user;
+        },
+
+        getFollowers: async (args: {
+            npub: string;
+            page: number;
+            limit: number;
+        }): Promise<UserResolver[] | Error> => {
+            const followers = [];
+            const _followers = await this._getAccountFollowers(args);
+            if (_followers instanceof Error) {
+                return _followers;
+            }
+
+            for (const f of _followers) {
+                const _pubkey = PublicKey.FromString(f.pubKey);
+                if (_pubkey instanceof Error) {
+                    console.error(`Invalid pubkey: ${f.pubKey}`);
+                    continue;
+                }
+                followers.push(new UserResolver(this, _pubkey, f.isAdmin, f.isBusiness, f.nip05, f));
+            }
+            return followers;
+        },
+
+        getFollowings: async (args: {
+            npub: string;
+            page: number;
+            limit: number;
+        }): Promise<UserResolver[] | Error> => {
+            const followings = [];
+            const response = await this._getAccountFollowings(args);
+            if (response instanceof Error) {
+                return response;
+            }
+            for (const f of response) {
+                const _pubkey = PublicKey.FromString(f.pubKey);
+                if (_pubkey instanceof Error) {
+                    console.error(`Invalid pubkey: ${f.pubKey}`);
+                    continue;
+                }
+                followings.push(new UserResolver(this, _pubkey, f.isAdmin, f.isBusiness, f.nip05, f));
+            }
+            return followings;
         },
 
         /**

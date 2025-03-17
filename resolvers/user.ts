@@ -56,11 +56,11 @@ export class UserResolver {
     }
 
     /**
-     * @unstable
+     * @deprecated
      */
     following: UserResolver[] = [];
     /**
-     * @unstable
+     * @deprecated account.following will be removed in a future version
      */
     async getFollowing(options?: { useCache: boolean }) {
         const account = await this.client.getAccount(
@@ -91,7 +91,13 @@ export class UserResolver {
         return newList;
     }
 
+    /**
+     * @deprecated
+     */
     followedBy: UserResolver[] = [];
+    /**
+     * @deprecated account.followedBy will be removed in a future version
+     */
     getFollowedBy = async (options?: { useCache: boolean }) => {
         const account = await this.client.getAccount(
             { npub: this.pubkey.bech32() },
