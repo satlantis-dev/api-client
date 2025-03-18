@@ -294,7 +294,7 @@ export class Client {
         );
         this.postCalendarEventNote = postCalendarEventNote(rest_api_url, getJwt);
         this.putUpdateCalendarEvent = putUpdateCalendarEvent(rest_api_url, getJwt);
-        this.getAccountCalendarEvents = getAccountCalendarEvents(rest_api_url, getJwt);
+        this.getAccountCalendarEvents = getAccountCalendarEvents(rest_api_url);
 
         // account
         this._getAccount = getAccount(rest_api_url);
