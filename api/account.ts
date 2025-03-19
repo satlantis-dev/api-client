@@ -1,6 +1,7 @@
 import { ApiError, copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { Account, AccountDTO } from "../models/account.ts";
+import type { CalendarEvent } from "../sdk.ts";
 
 export const getAccount = (urlArg: URL) => async (args: { npub: string }) => {
     const url = copyURL(urlArg);
@@ -121,4 +122,14 @@ export const verifyEmail = (urlArg: URL) => async (args: { token: string }) => {
         return response;
     }
     return handleResponse<{ success: boolean }>(response);
+};
+
+export const getAccountCalendarEvents = (urlArg: URL) => async (args: { npub: string }) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getAccountCalendarEvents/${args.npub}`;
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CalendarEvent[]>(response);
 };

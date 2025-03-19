@@ -229,4 +229,14 @@ export class UserResolver {
             }) || false
         );
     };
+
+    getCalendarEvents = async () => {
+        const events = await this.client.getAccountCalendarEvents({
+            npub: this.pubkey.bech32(),
+        });
+        if (events instanceof Error) {
+            return events;
+        }
+        return events;
+    };
 }
