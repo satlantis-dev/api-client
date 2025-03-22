@@ -81,3 +81,40 @@ export function bkdrHash(str: string): number {
     }
     return hash;
 }
+
+export function generateUUID() {
+    // Use crypto.randomUUID() if available (web environment)
+    if (
+      typeof crypto !== "undefined" &&
+      typeof crypto.randomUUID === "function"
+    ) {
+        return crypto.randomUUID();
+    }
+
+    // Create an array of random bytes
+    const bytes = new Uint8Array(16);
+
+    // Use Math.random() to populate the array (less secure but universally available)
+    for (let i = 0; i < 16; i++) {
+        bytes[i] = Math.floor(Math.random() * 256);
+    }
+
+    // Set version bits for v4 UUID
+    bytes[6] = (bytes[6] & 0x0f) | 0x40; // Version 4
+    bytes[8] = (bytes[8] & 0x3f) | 0x80; // Variant
+
+    // Convert bytes to hex strings
+    const hex = [];
+    for (let i = 0; i < 16; i++) {
+        hex.push(bytes[i].toString(16).padStart(2, "0"));
+    }
+
+    // Format as UUID string
+    return [
+        hex.slice(0, 4).join(""),
+        hex.slice(4, 6).join(""),
+        hex.slice(6, 8).join(""),
+        hex.slice(8, 10).join(""),
+        hex.slice(10, 16).join(""),
+    ].join("-");
+}

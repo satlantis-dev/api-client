@@ -1,12 +1,12 @@
 import { type NostrEvent, NostrKind, prepareNostrEvent } from "@blowater/nostr-sdk";
-import { copyURL, handleResponse } from "../../helpers/_helper.ts";
+import { copyURL, generateUUID, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
 import {
-    type Account,
-    type CalendarEventNote,
-    type func_GetJwt,
-    type func_GetNostrSigner,
-    type PlaceCalendarEvent,
+  type Account, CalendarEvent,
+  type CalendarEventNote,
+  type func_GetJwt,
+  type func_GetNostrSigner,
+  type PlaceCalendarEvent
 } from "../../sdk.ts";
 
 export interface PlaceCalendarEventPost {
@@ -28,6 +28,16 @@ export interface CalendarEventNotePost {
     event: NostrEvent;
     calendarEventId: number;
 }
+
+export const getEventById = (urlArg: URL) => async (args: { id: number }) => {
+  const url = copyURL(urlArg);
+  url.pathname = `/getCalendarEventByID/${args.id}`;
+  const response = await safeFetch(url);
+  if (response instanceof Error) {
+    return response;
+  }
+  return handleResponse<CalendarEvent>(response);
+};
 
 export const postPlaceCalendarEvent =
     (urlArg: URL, getJwt: () => string) => async (args: PlaceCalendarEventPost) => {
@@ -180,7 +190,7 @@ export const postCalendarEventRSVP =
             return signer;
         }
 
-        const uuid = crypto.randomUUID();
+        const uuid = generateUUID();
         const dTag = args.calendarEvent.dtag;
         const aTag = `${NostrKind.Calendar_Time}:${args.calendarEvent.pubkey}:${dTag}`;
 

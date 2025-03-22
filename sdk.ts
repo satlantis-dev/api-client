@@ -85,12 +85,12 @@ import { addressLookup, getCoordinatesByAddress } from "./api/address.ts";
 import { signEvent } from "./api/nostr_event.ts";
 import { createInterests, getAccountInterests, getInterests } from "./api/secure/interests.ts";
 import {
-    deletePlaceCalendarEvent,
+    deletePlaceCalendarEvent, getEventById,
     postCalendarEventAnnouncement,
     postCalendarEventNote,
     postCalendarEventRSVP,
     postPlaceCalendarEvent,
-    putUpdateCalendarEvent,
+    putUpdateCalendarEvent
 } from "./api/secure/calendar.ts";
 import { followPubkeys, getFollowingPubkeys, getInterestsOf } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
@@ -143,6 +143,7 @@ export class Client {
     getExchangeRate: ReturnType<typeof getExchangeRate>;
 
     // Calendar Events
+    getEventById: ReturnType<typeof getEventById>;
     getPlaceCalendarEvents: ReturnType<typeof getPlaceCalendarEvents>;
     deletePlaceCalendarEvent: ReturnType<typeof deletePlaceCalendarEvent>;
     postCalendarEventRSVP: ReturnType<typeof postCalendarEventRSVP>;
@@ -277,6 +278,7 @@ export class Client {
         this.getExchangeRate = getExchangeRate(rest_api_url);
 
         // Calendar Events
+        this.getEventById = getEventById(rest_api_url);
         this.getPlaceCalendarEvents = getPlaceCalendarEvents(rest_api_url);
         this.deletePlaceCalendarEvent = deletePlaceCalendarEvent(
             rest_api_url,
