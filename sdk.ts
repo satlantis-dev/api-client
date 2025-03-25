@@ -36,8 +36,8 @@ import {
     getLocationsBySearch,
     getLocationsWithinBoundingBox,
     getLocationTags,
-    proveLocationClaim,
-    updateLocation,
+    proveLocationClaim, suggestLocation,
+    updateLocation
 } from "./api/location.ts";
 import { loginNostr } from "./api/login.ts";
 import {
@@ -188,6 +188,7 @@ export class Client {
         typeof getLocationsWithinBoundingBox
     >;
     getLocationReviews: ReturnType<typeof getLocationReviews>;
+    suggestLocation: ReturnType<typeof suggestLocation>;
     private getLocationByID: ReturnType<typeof getLocation>;
     private getLocationsByPlaceID: ReturnType<typeof getLocationsByPlaceID>;
     private _claimLocation: ReturnType<typeof claimLocation>;
@@ -322,6 +323,7 @@ export class Client {
         // location
         this.getLocationsWithinBoundingBox = getLocationsWithinBoundingBox(rest_api_url);
         this.getLocationReviews = getLocationReviews(rest_api_url);
+        this.suggestLocation = suggestLocation(rest_api_url, getJwt);
         this.getLocationByID = getLocation(rest_api_url);
         this.getLocationsByPlaceID = getLocationsByPlaceID(rest_api_url);
         this._claimLocation = claimLocation(rest_api_url, getJwt);

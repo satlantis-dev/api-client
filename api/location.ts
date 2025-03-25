@@ -154,6 +154,30 @@ async (args: {
     return handleResponse<{ code: string }>(response);
 };
 
+export const suggestLocation =
+  (urlArg: URL, getJwt: func_GetJwt) => async (args: { data: any }) => {
+      const jwt = getJwt();
+      if (jwt == "") {
+          return new Error("jwt token is empty");
+      }
+      const headers = new Headers();
+      headers.set("Authorization", `Bearer ${jwt}`);
+
+      const url = copyURL(urlArg);
+      url.pathname = `/secure/suggestLocation`;
+
+      const response = await safeFetch(url, {
+          headers,
+          method: "POST",
+          body: JSON.stringify(args.data),
+      });
+      if (response instanceof Error) {
+          return response;
+      }
+      return handleResponse<{ code: string }>(response);
+  };
+
+
 /**
 type ProveLocationClaimRequest struct {
     Url              string       `json:"url"`
