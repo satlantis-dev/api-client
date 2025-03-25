@@ -85,8 +85,8 @@ export function bkdrHash(str: string): number {
 export function generateUUID() {
     // Use crypto.randomUUID() if available (web environment)
     if (
-      typeof crypto !== "undefined" &&
-      typeof crypto.randomUUID === "function"
+        typeof crypto !== "undefined" &&
+        typeof crypto.randomUUID === "function"
     ) {
         return crypto.randomUUID();
     }
