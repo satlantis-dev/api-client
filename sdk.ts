@@ -36,8 +36,9 @@ import {
     getLocationsBySearch,
     getLocationsWithinBoundingBox,
     getLocationTags,
-    proveLocationClaim, suggestLocation,
-    updateLocation
+    proveLocationClaim,
+    suggestLocation,
+    updateLocation,
 } from "./api/location.ts";
 import { loginNostr } from "./api/login.ts";
 import {
@@ -85,12 +86,13 @@ import { addressLookup, getCoordinatesByAddress } from "./api/address.ts";
 import { signEvent } from "./api/nostr_event.ts";
 import { createInterests, getAccountInterests, getInterests } from "./api/secure/interests.ts";
 import {
-    deletePlaceCalendarEvent, getEventById,
+    deletePlaceCalendarEvent,
+    getEventById,
     postCalendarEventAnnouncement,
     postCalendarEventNote,
     postCalendarEventRSVP,
     postPlaceCalendarEvent,
-    putUpdateCalendarEvent
+    putUpdateCalendarEvent,
 } from "./api/secure/calendar.ts";
 import { followPubkeys, getFollowingPubkeys, getInterestsOf } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
