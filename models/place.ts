@@ -59,10 +59,10 @@ export type Place = {
 };
 
 export interface BoundingBox {
-    minLat: number;
-    maxLat: number;
-    minLng: number;
-    maxLng: number;
+    minlat: number;
+    maxlat: number;
+    minlng: number;
+    maxlng: number;
 }
 
 export interface PlaceWithClosure extends Place {
