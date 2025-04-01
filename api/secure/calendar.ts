@@ -2,11 +2,12 @@ import { type NostrEvent, NostrKind, prepareNostrEvent } from "@blowater/nostr-s
 import { copyURL, generateUUID, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
 import {
-  type Account, CalendarEvent,
-  type CalendarEventNote,
-  type func_GetJwt,
-  type func_GetNostrSigner,
-  type PlaceCalendarEvent
+    type Account,
+    type CalendarEvent,
+    type CalendarEventNote,
+    type func_GetJwt,
+    type func_GetNostrSigner,
+    type PlaceCalendarEvent,
 } from "../../sdk.ts";
 
 export interface PlaceCalendarEventPost {
@@ -30,13 +31,13 @@ export interface CalendarEventNotePost {
 }
 
 export const getEventById = (urlArg: URL) => async (args: { id: number }) => {
-  const url = copyURL(urlArg);
-  url.pathname = `/getCalendarEventByID/${args.id}`;
-  const response = await safeFetch(url);
-  if (response instanceof Error) {
-    return response;
-  }
-  return handleResponse<CalendarEvent>(response);
+    const url = copyURL(urlArg);
+    url.pathname = `/getCalendarEventByID/${args.id}`;
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CalendarEvent>(response);
 };
 
 export const postPlaceCalendarEvent =
