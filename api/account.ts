@@ -121,7 +121,7 @@ export const verifyEmail = (urlArg: URL) => async (args: { token: string }) => {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{ success: boolean }>(response);
+    return handleResponse<{ success: boolean; account: Account; token: string }>(response);
 };
 
 export const getAccountCalendarEvents = (urlArg: URL) => async (args: { npub: string }) => {
