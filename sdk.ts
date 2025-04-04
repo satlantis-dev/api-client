@@ -43,12 +43,12 @@ import {
 import { loginNostr } from "./api/login.ts";
 import {
     buildGlobalFeed,
-    getNote,
+    getNote, getNoteByNostrId,
     getNoteCommentsById,
     getNoteReactionsById,
     getNotes,
     getNotesOfPubkey,
-    NoteType,
+    NoteType
 } from "./api/note.ts";
 import { getAccountPlaceRoles } from "./api/people.ts";
 import {
@@ -178,6 +178,7 @@ export class Client {
     private getNotes: ReturnType<typeof getNotes>;
     private buildGlobalFeed: ReturnType<typeof buildGlobalFeed>;
     getNote: ReturnType<typeof getNote>;
+    getNoteByNostrId: ReturnType<typeof getNoteByNostrId>;
     getIpInfo: ReturnType<typeof getIpInfo>;
     getNoteReactionsById: ReturnType<typeof getNoteReactionsById>;
     getNoteCommentsById: ReturnType<typeof getNoteCommentsById>;
@@ -317,6 +318,7 @@ export class Client {
         this.getNotes = getNotes(rest_api_url, getJwt);
         this.buildGlobalFeed = buildGlobalFeed(rest_api_url, getJwt);
         this.getNote = getNote(rest_api_url);
+        this.getNoteByNostrId = getNoteByNostrId(rest_api_url);
         this.getIpInfo = getIpInfo(rest_api_url);
 
         // notifications
@@ -892,7 +894,7 @@ export class Client {
      * get note by nostrId
      * @unstable
      */
-    getNoteByNostrId = async (noteId: string) => {
+    getOriginalNoteByNostrId = async (noteId: string) => {
         const relay = SingleRelayConnection.New(this.relay_url);
         if (relay instanceof Error) {
             return relay;

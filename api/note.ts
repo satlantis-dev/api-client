@@ -170,6 +170,21 @@ export const getNote = (urlArg: URL) => async (args: { accountID?: number; noteI
     return note;
 };
 
+export const getNoteByNostrId = (urlArg: URL) => async (args: { nostrId: string }) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getNoteByNostrId/${args.nostrId}`;
+
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    const note = await handleResponse<FeedNote>(response);
+    if (note instanceof Error) {
+        return note;
+    }
+    return note;
+};
+
 export const getNoteReactionsById = (urlArg: URL) =>
 async (args: {
     accountID?: number;
