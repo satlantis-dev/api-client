@@ -21,7 +21,9 @@ import {
     initiatePasswordReset,
     login,
     resetPassword,
+    sendOTP,
     verifyEmail,
+    verifyOTP,
 } from "./api/account.ts";
 import { getIpInfo } from "./api/ip.ts";
 import {
@@ -217,6 +219,8 @@ export class Client {
     resetPassword: ReturnType<typeof resetPassword>;
     resendEmailVerification: ReturnType<typeof resendEmailVerification>;
     verifyEmail: ReturnType<typeof verifyEmail>;
+    sendOTP: ReturnType<typeof sendOTP>;
+    verifyOTP: ReturnType<typeof verifyOTP>;
     /////////////////
     // authed APIs //
     /////////////////
@@ -383,6 +387,8 @@ export class Client {
         this.createInterests = createInterests(this.rest_api_url, this.getJwt);
         this.getAccountInterests = getAccountInterests(this.rest_api_url);
         this.getInterests = getInterests(this.rest_api_url);
+        this.sendOTP = sendOTP(this.rest_api_url);
+        this.verifyOTP = verifyOTP(this.rest_api_url);
 
         //
         this.postAmbassadorInquiry = postAmbassadorInquiry(
@@ -1314,7 +1320,7 @@ export class Client {
         const nostrProps: any = {
             kind: args.isRepost ? 6 : NostrKind.TEXT_NOTE,
             content: fullContent,
-            tags: []
+            tags: [],
         };
         if (args.iTag) {
             nostrProps.tags.push(args.iTag);
@@ -1336,11 +1342,7 @@ export class Client {
 
         const res = await this._postNote({
             event,
-            noteType: args.image
-              ? NoteType.MEDIA
-              : args.qTag
-                ? NoteType.REPLY_NOTE
-                : NoteType.BASIC,
+            noteType: args.image ? NoteType.MEDIA : args.qTag ? NoteType.REPLY_NOTE : NoteType.BASIC,
             placeId: args.placeID,
         });
         return res;
