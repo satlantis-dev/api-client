@@ -888,6 +888,23 @@ export class Client {
         }
     };
 
+    /**
+     * get note by nostrId
+     * @unstable
+     */
+    getNoteByNostrId = async (noteId: string) => {
+        const relay = SingleRelayConnection.New(this.relay_url);
+        if (relay instanceof Error) {
+            return relay;
+        }
+
+        try {
+            return await relay.getEvent(noteId);
+        } finally {
+            await relay.close();
+        }
+    };
+
     followPubkeys = async (toFollow: PublicKey[]) => {
         return followPubkeys(this.relay_url, toFollow, this);
     };
@@ -1256,13 +1273,19 @@ export class Client {
      */
     postNote = async (args: {
         content: string;
-        image: File | File[];
+        image?: File | File[];
+        iTag?: any[];
+        eTag?: any[];
+        pTag?: any[];
+        qTag?: any[];
         placeID?: number;
+        isRepost?: boolean;
     }) => {
         const signer = await this.getNostrSigner();
         if (signer instanceof Error) {
             return signer;
         }
+        let fullContent = `${args.content}`;
 
         const uploadedImageUrls: string[] = [];
         if (Array.isArray(args.image)) {
@@ -1273,7 +1296,7 @@ export class Client {
                 }
                 uploadedImageUrls.push(uploadedImageUrl.toString());
             }
-        } else {
+        } else if (args.image) {
             const uploadedImageUrl = await this.uploadFile({ file: args.image });
             if (uploadedImageUrl instanceof Error) {
                 return uploadedImageUrl;
@@ -1281,20 +1304,41 @@ export class Client {
             uploadedImageUrls.push(uploadedImageUrl.toString());
         }
 
-        const imageUrlsString = uploadedImageUrls.join("\n");
-        const fullContent = `${args.content}\n${imageUrlsString}`;
+        if (uploadedImageUrls.length > 0) {
+            const imageUrlsString = uploadedImageUrls.join("\n");
+            fullContent = `${args.content}\n${imageUrlsString}`;
+        }
 
-        const event = await prepareNostrEvent(signer, {
-            kind: NostrKind.TEXT_NOTE,
+        const nostrProps: any = {
+            kind: args.isRepost ? 6 : NostrKind.TEXT_NOTE,
             content: fullContent,
-        });
+            tags: []
+        };
+        if (args.iTag) {
+            nostrProps.tags.push(args.iTag);
+        }
+        if (args.eTag) {
+            nostrProps.tags.push(args.eTag);
+        }
+        if (args.pTag) {
+            nostrProps.tags.push(args.pTag);
+        }
+        if (args.qTag) {
+            nostrProps.tags.push(args.qTag);
+        }
+
+        const event = await prepareNostrEvent(signer, nostrProps);
         if (event instanceof Error) {
             return event;
         }
 
         const res = await this._postNote({
             event,
-            noteType: NoteType.MEDIA,
+            noteType: args.image
+              ? NoteType.MEDIA
+              : args.qTag
+                ? NoteType.REPLY_NOTE
+                : NoteType.BASIC,
             placeId: args.placeID,
         });
         return res;
