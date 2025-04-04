@@ -620,3 +620,12 @@ Deno.test("getAccountCalendarEvents", async () => {
     }
     assertEquals(result.length > 0, true);
 });
+
+Deno.test.ignore("sendOTP", async () => {
+    const result = await client.sendOTP({ email: "openbob2402+testbob1111@gmail.com" });
+    if (result instanceof Error) {
+        fail(result.message);
+    }
+    assertEquals(result.success, true);
+    assertEquals(result.is_new_account, false);
+});

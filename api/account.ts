@@ -133,3 +133,47 @@ export const getAccountCalendarEvents = (urlArg: URL) => async (args: { npub: st
     }
     return handleResponse<CalendarEvent[]>(response);
 };
+
+export const sendOTP = (urlArg: URL) => async (args: { email: string }) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/auth/otp`;
+
+    const response = await safeFetch(
+        url,
+        {
+            method: "POST",
+            body: JSON.stringify({
+                ...args,
+            }),
+        },
+    );
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{
+        is_new_account: boolean; // Account was existing or new created
+        message: string; // e.g. OTP code sent to your email
+        success: boolean;
+        token: string; // Token to use later for `/auth/otp/verify` endpoint
+    }>(response);
+};
+
+export const verifyOTP = (urlArg: URL) => async (args: { token: string; otp: string }) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/auth/otp/verify`;
+    const response = await safeFetch(url, {
+        method: "POST",
+        body: JSON.stringify({
+            ...args,
+        }),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{
+        account: Account;
+        message: string; // e.g. OTP verification successful
+        success: boolean;
+        token: string; // JWT token that can be used as auth token
+    }>(response);
+};
