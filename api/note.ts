@@ -82,75 +82,75 @@ export const getNotesOfPubkey =
     };
 
 export const getNotes = (urlArg: URL, getJwt: func_GetJwt) =>
-    async (args: {
-        page: number;
-        limit: number;
-        placeId?: string;
-        sort?: "recent" | "trending";
-        secure?: boolean;
-        accountId?: number;
-    }) => {
-        const url = copyURL(urlArg);
-        const headers = new Headers();
-        url.pathname = args.secure ? `/secure/getFeedNotes` : `/getNotes`;
-        url.searchParams.set("page", String(args.page));
-        url.searchParams.set("limit", String(args.limit));
-        if (args.placeId) {
-            url.searchParams.set("place_id", String(args.placeId));
-        }
-        if (args.sort) {
-            url.searchParams.set("sort", String(args.sort));
-        }
-        if (args.accountId) {
-            url.searchParams.set("accountId", String(args.accountId));
-        }
+async (args: {
+    page: number;
+    limit: number;
+    placeId?: string;
+    sort?: "recent" | "trending";
+    secure?: boolean;
+    accountId?: number;
+}) => {
+    const url = copyURL(urlArg);
+    const headers = new Headers();
+    url.pathname = args.secure ? `/secure/getFeedNotes` : `/getNotes`;
+    url.searchParams.set("page", String(args.page));
+    url.searchParams.set("limit", String(args.limit));
+    if (args.placeId) {
+        url.searchParams.set("place_id", String(args.placeId));
+    }
+    if (args.sort) {
+        url.searchParams.set("sort", String(args.sort));
+    }
+    if (args.accountId) {
+        url.searchParams.set("accountId", String(args.accountId));
+    }
 
-        if (args.secure) {
-            const jwtToken = getJwt();
-            if (jwtToken == "") {
-                return new Error("jwt token is empty");
-            }
-            headers.set("Authorization", `Bearer ${jwtToken}`);
+    if (args.secure) {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
         }
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
 
-        const response = await safeFetch(url, { headers });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<FeedNote[]>(response);
-    };
+    const response = await safeFetch(url, { headers });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<FeedNote[]>(response);
+};
 
 export const buildGlobalFeed = (urlArg: URL, getJwt: func_GetJwt) =>
-    async (args: {
-        secure?: boolean;
-        accountId?: number;
-        lastNoteId?: number;
-    }) => {
-        const url = copyURL(urlArg);
-        const headers = new Headers();
-        url.pathname = "secure/buildGlobalFeed";
+async (args: {
+    secure?: boolean;
+    accountId?: number;
+    lastNoteId?: number;
+}) => {
+    const url = copyURL(urlArg);
+    const headers = new Headers();
+    url.pathname = "secure/buildGlobalFeed";
 
-        if (args.secure) {
-            const jwtToken = getJwt();
-            if (jwtToken == "") {
-                return new Error("jwt token is empty");
-            }
-            headers.set("Authorization", `Bearer ${jwtToken}`);
+    if (args.secure) {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
         }
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
 
-        const response = await safeFetch(url, {
-            headers,
-            method: "POST",
-            body: JSON.stringify({
-                accountId: args.accountId,
-                last_note_id: args.lastNoteId,
-            }),
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<Note[]>(response);
-    };
+    const response = await safeFetch(url, {
+        headers,
+        method: "POST",
+        body: JSON.stringify({
+            accountId: args.accountId,
+            last_note_id: args.lastNoteId,
+        }),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<Note[]>(response);
+};
 
 export const getNote = (urlArg: URL) => async (args: { accountID?: number; noteID: number }) => {
     const url = copyURL(urlArg);
@@ -187,43 +187,43 @@ export const getNoteByNostrId = (urlArg: URL) => async (args: { nostrId: string 
 };
 
 export const getNoteReactionsById = (urlArg: URL) =>
-    async (args: {
-        accountID?: number;
-        noteID: number;
-        page: number;
-        limit: number;
-    }) => {
-        const url = copyURL(urlArg);
-        url.pathname = `/getNoteReactions/${args.noteID}`;
-        url.searchParams.set("page", String(args.page));
-        url.searchParams.set("limit", String(args.limit));
-        if (args.accountID) {
-            url.searchParams.set("accountId", String(args.accountID));
-        }
-        const response = await safeFetch(url);
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<Reaction[]>(response);
-    };
+async (args: {
+    accountID?: number;
+    noteID: number;
+    page: number;
+    limit: number;
+}) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getNoteReactions/${args.noteID}`;
+    url.searchParams.set("page", String(args.page));
+    url.searchParams.set("limit", String(args.limit));
+    if (args.accountID) {
+        url.searchParams.set("accountId", String(args.accountID));
+    }
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<Reaction[]>(response);
+};
 
 export const getNoteCommentsById = (urlArg: URL) =>
-    async (args: {
-        accountID?: number;
-        noteID: number;
-        page: number;
-        limit: number;
-    }) => {
-        const url = copyURL(urlArg);
-        url.pathname = `/getNoteComments/${args.noteID}`;
-        url.searchParams.set("page", String(args.page));
-        url.searchParams.set("limit", String(args.limit));
-        if (args.accountID) {
-            url.searchParams.set("accountId", String(args.accountID));
-        }
-        const response = await safeFetch(url);
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<FeedNote[]>(response);
-    };
+async (args: {
+    accountID?: number;
+    noteID: number;
+    page: number;
+    limit: number;
+}) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getNoteComments/${args.noteID}`;
+    url.searchParams.set("page", String(args.page));
+    url.searchParams.set("limit", String(args.limit));
+    if (args.accountID) {
+        url.searchParams.set("accountId", String(args.accountID));
+    }
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<FeedNote[]>(response);
+};
