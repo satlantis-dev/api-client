@@ -45,12 +45,13 @@ import {
 import { loginNostr } from "./api/login.ts";
 import {
     buildGlobalFeed,
-    getNote, getNoteByNostrId,
+    getNote,
+    getNoteByNostrId,
     getNoteCommentsById,
     getNoteReactionsById,
     getNotes,
     getNotesOfPubkey,
-    NoteType
+    NoteType,
 } from "./api/note.ts";
 import { getAccountPlaceRoles } from "./api/people.ts";
 import {
@@ -1269,6 +1270,37 @@ export class Client {
         const res = await this._postNote({
             event,
             noteType: NoteType.MEDIA,
+            placeId,
+        });
+        return res;
+    };
+
+    /**
+     * @param args.content example: `${text}`
+     *
+     * @unstable
+     */
+    postPlaceBasicNote = async (args: {
+        content: string;
+        placeID: number;
+    }) => {
+        const { content, placeID: placeId } = args;
+        const signer = await this.getNostrSigner();
+        if (signer instanceof Error) {
+            return signer;
+        }
+
+        const event = await prepareNostrEvent(signer, {
+            kind: NostrKind.TEXT_NOTE,
+            content,
+        });
+        if (event instanceof Error) {
+            return event;
+        }
+
+        const res = await this._postNote({
+            event,
+            noteType: NoteType.BASIC,
             placeId,
         });
         return res;

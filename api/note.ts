@@ -53,6 +53,7 @@ export type Note = {
     readonly type: NoteType;
     readonly repostedNoteId: number;
     readonly repostedNote: Note;
+    readonly createdOnSatlantis: boolean;
 };
 
 export interface FeedNote extends Note {
