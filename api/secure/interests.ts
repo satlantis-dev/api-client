@@ -9,9 +9,23 @@ interface CreateInterestsPost {
     interestIds: number[];
 }
 
-export const getInterests = (urlArg: URL) => async () => {
+export const getInterests = (urlArg: URL) =>
+async (args: {
+    name?: string;
+    use?: string;
+    category?: string;
+}) => {
     const url = copyURL(urlArg);
     url.pathname = `/interests`;
+    if (args.name) {
+        url.searchParams.append("name", args.name);
+    }
+    if (args.use) {
+        url.searchParams.append("use", args.use);
+    }
+    if (args.category) {
+        url.searchParams.append("category", args.category);
+    }
 
     const response = await safeFetch(url, {
         method: "GET",

@@ -698,7 +698,7 @@ Deno.test("getAccountsBySearch", async (t) => {
     });
 });
 
-Deno.test("postPlaceBasicNote", async (t) => {
+Deno.test("postPlaceBasicNote", async () => {
     const res = await client.postPlaceBasicNote({
         content: `test ${Date.now()}`,
         placeID: 23751, // Florianópolis
