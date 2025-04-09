@@ -50,3 +50,19 @@ export const authApple = (urlArg: URL) => async (args: { code: string, id_token:
     }
     return handleResponse<{ token: string; account: Account; isNewAccount: boolean }>(response);
 };
+
+/**
+ * POST /auth/google
+ */
+export const authGoogle = (urlArg: URL) => async (args: { id_token: string }) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/auth/google`;
+    const response = await safeFetch(url, {
+        method: "POST",
+        body: JSON.stringify(args),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{ token: string; account: Account; isNewAccount: boolean }>(response);
+};

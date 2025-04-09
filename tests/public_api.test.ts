@@ -643,3 +643,15 @@ Deno.test.ignore("auth apple", async () => {
     }
     assertEquals(result.isNewAccount, true);
 });
+
+Deno.test.ignore("auth google", async () => {
+    // Can be used for manual testing
+    const result = await client.authGoogle({
+        id_token: "1"
+    });
+    console.log('result', result);
+    if (result instanceof Error) {
+        fail(result.message);
+    }
+    assertEquals(result.isNewAccount, true);
+});

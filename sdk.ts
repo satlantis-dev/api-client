@@ -42,7 +42,7 @@ import {
     suggestLocation,
     updateLocation,
 } from "./api/location.ts";
-import { authApple, loginNostr } from "./api/login.ts";
+import { authApple, authGoogle, loginNostr } from "./api/login.ts";
 import {
     buildGlobalFeed,
     getNote,
@@ -223,6 +223,7 @@ export class Client {
     sendOTP: ReturnType<typeof sendOTP>;
     verifyOTP: ReturnType<typeof verifyOTP>;
     authApple: ReturnType<typeof authApple>;
+    authGoogle: ReturnType<typeof authGoogle>;
     /////////////////
     // authed APIs //
     /////////////////
@@ -392,6 +393,7 @@ export class Client {
         this.sendOTP = sendOTP(this.rest_api_url);
         this.verifyOTP = verifyOTP(this.rest_api_url);
         this.authApple = authApple(this.rest_api_url);
+        this.authGoogle = authGoogle(this.rest_api_url);
 
         //
         this.postAmbassadorInquiry = postAmbassadorInquiry(
