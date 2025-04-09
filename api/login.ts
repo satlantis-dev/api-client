@@ -34,7 +34,11 @@ export const loginNostr = (urlArg: URL) => async (signer: Signer, metadata?: Kin
     }>(response);
 };
 
-export const appleSignIn = (urlArg: URL) => async (args: { code: string, id_token: string, state: string }) => {
+/**
+ * POST /auth/apple
+ * https://github.com/satlantis-dev/api/blob/dev/rest/auth.go#L876
+ */
+export const authApple = (urlArg: URL) => async (args: { code: string, id_token: string, state: string }) => {
     const url = copyURL(urlArg);
     url.pathname = `/auth/apple`;
     const response = await safeFetch(url, {

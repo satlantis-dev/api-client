@@ -630,9 +630,9 @@ Deno.test.ignore("sendOTP", async () => {
     assertEquals(result.is_new_account, false);
 });
 
-Deno.test.ignore("apple sign in", async () => {
+Deno.test.ignore("auth apple", async () => {
     // Can be used for manual testing
-    const result = await client.appleSignIn({
+    const result = await client.authApple({
         code: "1",
         id_token: "1",
         state: "1"
