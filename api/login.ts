@@ -33,3 +33,16 @@ export const loginNostr = (urlArg: URL) => async (signer: Signer, metadata?: Kin
         account: Account;
     }>(response);
 };
+
+export const appleSignIn = (urlArg: URL) => async (args: { code: string, id_token: string, state: string }) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/auth/apple`;
+    const response = await safeFetch(url, {
+        method: "POST",
+        body: JSON.stringify(args),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{ token: string; account: Account; isNewAccount: boolean }>(response);
+};

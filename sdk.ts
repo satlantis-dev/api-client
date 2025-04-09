@@ -42,7 +42,7 @@ import {
     suggestLocation,
     updateLocation,
 } from "./api/location.ts";
-import { loginNostr } from "./api/login.ts";
+import { appleSignIn, loginNostr } from "./api/login.ts";
 import {
     buildGlobalFeed,
     getNote,
@@ -222,6 +222,7 @@ export class Client {
     verifyEmail: ReturnType<typeof verifyEmail>;
     sendOTP: ReturnType<typeof sendOTP>;
     verifyOTP: ReturnType<typeof verifyOTP>;
+    appleSignIn: ReturnType<typeof appleSignIn>;
     /////////////////
     // authed APIs //
     /////////////////
@@ -390,6 +391,7 @@ export class Client {
         this.getInterests = getInterests(this.rest_api_url);
         this.sendOTP = sendOTP(this.rest_api_url);
         this.verifyOTP = verifyOTP(this.rest_api_url);
+        this.appleSignIn = appleSignIn(this.rest_api_url);
 
         //
         this.postAmbassadorInquiry = postAmbassadorInquiry(

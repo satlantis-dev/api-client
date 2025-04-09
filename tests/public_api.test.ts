@@ -629,3 +629,17 @@ Deno.test.ignore("sendOTP", async () => {
     assertEquals(result.success, true);
     assertEquals(result.is_new_account, false);
 });
+
+Deno.test.ignore("apple sign in", async () => {
+    // Can be used for manual testing
+    const result = await client.appleSignIn({
+        code: "1",
+        id_token: "1",
+        state: "1"
+    });
+    console.log('result', result);
+    if (result instanceof Error) {
+        fail(result.message);
+    }
+    assertEquals(result.isNewAccount, true);
+});
