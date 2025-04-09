@@ -10,20 +10,20 @@ interface CreateInterestsPost {
 }
 
 export const getInterests = (urlArg: URL) =>
-async (args: {
+async (args?: {
     name?: string;
     use?: string;
     category?: string;
 }) => {
     const url = copyURL(urlArg);
     url.pathname = `/interests`;
-    if (args.name) {
+    if (args?.name) {
         url.searchParams.append("name", args.name);
     }
-    if (args.use) {
+    if (args?.use) {
         url.searchParams.append("use", args.use);
     }
-    if (args.category) {
+    if (args?.category) {
         url.searchParams.append("category", args.category);
     }
 
