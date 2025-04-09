@@ -158,7 +158,7 @@ export const sendOTP = (urlArg: URL) => async (args: { email: string }) => {
     }>(response);
 };
 
-export const verifyOTP = (urlArg: URL) => async (args: { token: string; otp: number }) => {
+export const verifyOTP = (urlArg: URL) => async (args: { token: string; otp: string }) => {
     const url = copyURL(urlArg);
     url.pathname = `/auth/otp/verify`;
     const response = await safeFetch(url, {
