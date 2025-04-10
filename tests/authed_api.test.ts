@@ -136,7 +136,7 @@ Deno.test("post notes", async () => {
     }) as Client;
     {
         const root_event = (await prepareNostrEvent(signer, {
-            content: "test reaction",
+            content: "test reaction 234",
             kind: NostrKind.REACTION,
         })) as NostrEvent;
         const rootNote = await client._postNote({
@@ -151,7 +151,7 @@ Deno.test("post notes", async () => {
         assertEquals(rootNote.nostrId, root_event.id);
 
         const reaction_event = (await prepareNostrEvent(signer, {
-            content: "test reaction",
+            content: "test reaction 567",
             kind: NostrKind.REACTION,
         })) as NostrEvent;
         const result = await client.postReaction({
