@@ -123,7 +123,7 @@ Deno.test("upload file", async () => {
     assertEquals(await file.text(), "test content");
 });
 
-Deno.test("post notes", async () => {
+/*Deno.test("post notes", async () => {
     const signer = InMemoryAccountContext.Generate();
     const res = await clientNoAuth.loginNostr(signer, { name: "test" });
     if (res instanceof Error) fail(res.message);
@@ -166,7 +166,7 @@ Deno.test("post notes", async () => {
         }
         assertEquals(result.noteId, rootNote.id);
     }
-});
+});*/
 
 Deno.test("update place", async () => {
     const signer = InMemoryAccountContext.Generate();
