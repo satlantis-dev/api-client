@@ -57,7 +57,7 @@ export type CalendarEvent = {
     summary: string;
     tags: string;
     title: string;
-    type: { id: number; name: string; description: string };
+    type: CalendarEventType;
     url: string;
     website: string;
 };
@@ -68,4 +68,10 @@ export type PlaceCalendarEvent = {
     placeId: number;
     calendarEventId: number;
     calendarEvent: CalendarEvent;
+};
+
+export type CalendarEventType = {
+    id: number;
+    name: string;
+    description: string;
 };
