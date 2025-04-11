@@ -635,9 +635,9 @@ Deno.test.ignore("auth apple", async () => {
     const result = await client.authApple({
         code: "1",
         id_token: "1",
-        state: "1"
+        state: "1",
     });
-    console.log('result', result);
+    console.log("result", result);
     if (result instanceof Error) {
         fail(result.message);
     }
@@ -647,11 +647,19 @@ Deno.test.ignore("auth apple", async () => {
 Deno.test.ignore("auth google", async () => {
     // Can be used for manual testing
     const result = await client.authGoogle({
-        id_token: "1"
+        id_token: "1",
     });
-    console.log('result', result);
+    console.log("result", result);
     if (result instanceof Error) {
         fail(result.message);
     }
     assertEquals(result.isNewAccount, true);
+});
+
+Deno.test("getCalendarEventTypes", async () => {
+    const result = await client.getCalendarEventTypes();
+    if (result instanceof Error) {
+        fail(result.message);
+    }
+    assertEquals(result.length > 0, true);
 });

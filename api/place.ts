@@ -1,4 +1,4 @@
-import type { FeedNote, PlaceCalendarEvent } from "@satlantis/api-client";
+import type { CalendarEventType, FeedNote, PlaceCalendarEvent } from "@satlantis/api-client";
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type {
@@ -151,6 +151,19 @@ export const getPlaceCalendarEvents = (urlArg: URL) => async (args: { placeID: s
         return response;
     }
     return handleResponse<PlaceCalendarEvent[]>(response);
+};
+
+/**
+ * GET /getCalendarEventTypes
+ */
+export const getCalendarEventTypes = (urlArg: URL) => async () => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getCalendarEventTypes`;
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CalendarEventType[]>(response);
 };
 
 /**

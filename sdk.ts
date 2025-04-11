@@ -56,6 +56,7 @@ import {
 import { getAccountPlaceRoles } from "./api/people.ts";
 import {
     getAllPlaceRegionCountryNames,
+    getCalendarEventTypes,
     getPlaceById,
     getPlaceByOsmRef,
     getPlaceCalendarEvents,
@@ -159,6 +160,7 @@ export class Client {
     postCalendarEventNote: ReturnType<typeof postCalendarEventNote>;
     putUpdateCalendarEvent: ReturnType<typeof putUpdateCalendarEvent>;
     getAccountCalendarEvents: ReturnType<typeof getAccountCalendarEvents>;
+    getCalendarEventTypes: ReturnType<typeof getCalendarEventTypes>;
 
     // Account
     /**
@@ -308,6 +310,7 @@ export class Client {
         this.postCalendarEventNote = postCalendarEventNote(rest_api_url, getJwt);
         this.putUpdateCalendarEvent = putUpdateCalendarEvent(rest_api_url, getJwt);
         this.getAccountCalendarEvents = getAccountCalendarEvents(rest_api_url);
+        this.getCalendarEventTypes = getCalendarEventTypes(rest_api_url);
 
         // account
         this._getAccount = getAccount(rest_api_url);
