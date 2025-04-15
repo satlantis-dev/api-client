@@ -77,9 +77,9 @@ import {
     deleteAccount,
     getAccountsBySearch,
     removeAccountRole,
-    resendEmailVerification,
+    resendEmailVerification, saveDeviceInfo,
     updateAccount,
-    updateAccountFollowingList,
+    updateAccountFollowingList
 } from "./api/secure/account.ts";
 import { deletePlaceGalleryImage, postPlaceGalleryImage, updatePlace } from "./api/secure/place.ts";
 import { deleteNote, postNote, postReaction } from "./api/secure/note.ts";
@@ -232,6 +232,7 @@ export class Client {
     // acount role
     removeAccountRole: ReturnType<typeof removeAccountRole>;
     addAccountRole: ReturnType<typeof addAccountRole>;
+    saveDeviceInfo: ReturnType<typeof saveDeviceInfo>;
     /**
      * @unstable
      */
@@ -370,6 +371,10 @@ export class Client {
             rest_api_url,
             this.getJwt,
             this.getNostrSigner,
+        );
+        this.saveDeviceInfo = saveDeviceInfo(
+            rest_api_url,
+            this.getJwt,
         );
         this.updateAccountFollowingList = updateAccountFollowingList(
             rest_api_url,

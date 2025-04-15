@@ -5,6 +5,36 @@ import { safeFetch } from "../../helpers/safe-fetch.ts";
 import type { AccountPlaceRole, AccountPlaceRoleTypeEnum } from "../../models/account.ts";
 import type { Account, AccountSearchDTO, func_GetJwt, func_GetNostrSigner } from "../../sdk.ts";
 
+export const saveDeviceInfo =
+  (urlArg: URL, getJwt: func_GetJwt) =>
+    async (args: {
+        deviceId: string;
+        token: string;
+        platform: string;
+        appVersion: string;
+    }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/saveDeviceInfo`;
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const response = await safeFetch(url, {
+            method: "POST",
+            body: JSON.stringify({
+                ...args,
+            }),
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<{ success: boolean }>(response);
+    };
+
 export const addAccountRole =
     (urlArg: URL, getJwt: func_GetJwt, getSigner: func_GetNostrSigner) =>
     async (args: {
