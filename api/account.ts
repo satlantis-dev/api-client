@@ -15,7 +15,7 @@ export const getAccount =
             return handleResponse<Account>(response);
         } else if (args.username) {
             const url = copyURL(urlArg);
-            url.pathname = `/getAccountByUsername/${args.username}`;
+            url.pathname = `/getAccount/${args.username}`;
             const response = await safeFetch(url);
             if (response instanceof Error) {
                 return response;
