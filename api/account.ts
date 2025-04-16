@@ -3,15 +3,28 @@ import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { Account, AccountDTO } from "../models/account.ts";
 import type { CalendarEvent } from "../sdk.ts";
 
-export const getAccount = (urlArg: URL) => async (args: { npub: string }) => {
-    const url = copyURL(urlArg);
-    url.pathname = `/getAccount/${args.npub}`;
-    const response = await safeFetch(url);
-    if (response instanceof Error) {
-        return response;
-    }
-    return handleResponse<Account>(response);
-};
+export const getAccount =
+    (urlArg: URL) => async (args: { npub?: string; username?: string }) => {
+        if (args.npub) {
+            const url = copyURL(urlArg);
+            url.pathname = `/getAccount/${args.npub}`;
+            const response = await safeFetch(url);
+            if (response instanceof Error) {
+                return response;
+            }
+            return handleResponse<Account>(response);
+        } else if (args.username) {
+            const url = copyURL(urlArg);
+            url.pathname = `/getAccount/${args.username}`;
+            const response = await safeFetch(url);
+            if (response instanceof Error) {
+                return response;
+            }
+            return handleResponse<Account>(response);
+        } else {
+            return new Error("no npub or username provided");
+        }
+    };
 
 export const getAccountFollowings =
     (urlArg: URL) => async (args: { npub: string; page: number; limit: number }) => {

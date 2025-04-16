@@ -1504,6 +1504,14 @@ export class Client {
         return data(stream);
     };
 
+    getAccountByUsername = async (args: { username: string }) => {
+        const account = await this._getAccount(args)
+        if (account instanceof Error) {
+            return account;
+        }
+        return account
+    }
+
     getAccount = async (
         args: { npub: string },
         options?: { useCache: boolean },
@@ -1647,6 +1655,18 @@ export class Client {
             );
             this.users.set(user.pubkey.hex, user);
             return user;
+        },
+
+        getUserByUsername: async (username: string): Promise<UserResolver | Error> => {
+            const account = await this.getAccountByUsername({ username});
+            if (account instanceof Error) {
+                return account;
+            }
+            const pubkey = PublicKey.FromString(account.pubKey);
+            if (pubkey instanceof Error) {
+                return pubkey;
+            }
+            return new UserResolver(this, pubkey, account.isAdmin || false, account.isBusiness, account.nip05, account);
         },
 
         getFollowers: async (args: {
