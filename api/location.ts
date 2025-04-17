@@ -32,6 +32,17 @@ export const getLocation = (urlArg: URL) => async (args: { id: number }) => {
     return handleResponse<Location>(response);
 };
 
+export const getLocationByGoogleId = (urlArg: URL) => async (args: { googleId: string }) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getLocationByGoogleId/${args.googleId}`;
+
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<Location>(response);
+};
+
 // https://github.com/satlantis-dev/api/blob/main/rest/location.go#L67
 export const getLocationsByPlaceID = (urlArg: URL) =>
 async (args: {

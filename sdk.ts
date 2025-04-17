@@ -30,6 +30,7 @@ import {
     claimLocation,
     getAccountsForLocation,
     getLocation,
+    getLocationByGoogleId,
     getLocationGalleryImages,
     getLocationLinks,
     getLocationReviews,
@@ -198,6 +199,7 @@ export class Client {
     getLocationReviews: ReturnType<typeof getLocationReviews>;
     suggestLocation: ReturnType<typeof suggestLocation>;
     private getLocationByID: ReturnType<typeof getLocation>;
+    private getLocationByGoogleId: ReturnType<typeof getLocationByGoogleId>;
     private getLocationsByPlaceID: ReturnType<typeof getLocationsByPlaceID>;
     private _claimLocation: ReturnType<typeof claimLocation>;
     proveLocationClaim: ReturnType<typeof proveLocationClaim>;
@@ -340,6 +342,7 @@ export class Client {
         this.getLocationReviews = getLocationReviews(rest_api_url);
         this.suggestLocation = suggestLocation(rest_api_url, getJwt);
         this.getLocationByID = getLocation(rest_api_url);
+        this.getLocationByGoogleId = getLocationByGoogleId(rest_api_url)
         this.getLocationsByPlaceID = getLocationsByPlaceID(rest_api_url);
         this._claimLocation = claimLocation(rest_api_url, getJwt);
         this.proveLocationClaim = proveLocationClaim(
@@ -1778,6 +1781,13 @@ export class Client {
         },
         getLocationByID: async (id: number) => {
             const data = await this.getLocationByID({ id });
+            if (data instanceof Error) {
+                return data;
+            }
+            return new LocationResolver(this, data);
+        },
+        getLocationByGoogleId: async (googleId: string) => {
+            const data = await this.getLocationByGoogleId({ googleId });
             if (data instanceof Error) {
                 return data;
             }
