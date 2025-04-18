@@ -199,7 +199,7 @@ export class Client {
     getLocationReviews: ReturnType<typeof getLocationReviews>;
     suggestLocation: ReturnType<typeof suggestLocation>;
     private getLocationByID: ReturnType<typeof getLocation>;
-    private getLocationByGoogleId: ReturnType<typeof getLocationByGoogleId>;
+    getLocationByGoogleId: ReturnType<typeof getLocationByGoogleId>;
     private getLocationsByPlaceID: ReturnType<typeof getLocationsByPlaceID>;
     private _claimLocation: ReturnType<typeof claimLocation>;
     proveLocationClaim: ReturnType<typeof proveLocationClaim>;
