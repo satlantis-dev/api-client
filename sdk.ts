@@ -97,7 +97,7 @@ import {
     postCalendarEventNote,
     postCalendarEventRSVP,
     postPlaceCalendarEvent,
-    putUpdateCalendarEvent,
+    putUpdateCalendarEvent, respondCalendarEventCohostInvitation
 } from "./api/secure/calendar.ts";
 import { followPubkeys, getFollowingPubkeys, getInterestsOf } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
@@ -160,6 +160,7 @@ export class Client {
     >;
     postCalendarEventNote: ReturnType<typeof postCalendarEventNote>;
     putUpdateCalendarEvent: ReturnType<typeof putUpdateCalendarEvent>;
+    respondCalendarEventCohostInvitation: ReturnType<typeof respondCalendarEventCohostInvitation>;
     getAccountCalendarEvents: ReturnType<typeof getAccountCalendarEvents>;
     getCalendarEventTypes: ReturnType<typeof getCalendarEventTypes>;
 
@@ -312,6 +313,7 @@ export class Client {
         );
         this.postCalendarEventNote = postCalendarEventNote(rest_api_url, getJwt);
         this.putUpdateCalendarEvent = putUpdateCalendarEvent(rest_api_url, getJwt);
+        this.respondCalendarEventCohostInvitation = respondCalendarEventCohostInvitation(rest_api_url, getJwt);
         this.getAccountCalendarEvents = getAccountCalendarEvents(rest_api_url);
         this.getCalendarEventTypes = getCalendarEventTypes(rest_api_url);
 

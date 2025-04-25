@@ -20,6 +20,11 @@ export interface PlaceCalendarEventPut {
     calendarEventId: number;
 }
 
+export interface RespondCalendarEventCohostInvitationPut {
+    calendarEventId: number;
+    action: 'accept' | 'decline';
+}
+
 export interface PlaceCalendarEventDelete {
     event: NostrEvent;
     placeCalendarEventId: number;
@@ -80,6 +85,32 @@ export const putUpdateCalendarEvent =
         headers.set("Authorization", `Bearer ${jwtToken}`);
 
         const body = JSON.stringify(args);
+
+        const response = await safeFetch(url, {
+            method: "PUT",
+            body,
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<PlaceCalendarEvent>(response);
+    };
+
+export const respondCalendarEventCohostInvitation =
+    (urlArg: URL, getJwt: () => string) => async (args: RespondCalendarEventCohostInvitationPut) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/respondCalendarEventCohostInvitation/${args.calendarEventId}`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const body = JSON.stringify({ action: args.action });
 
         const response = await safeFetch(url, {
             method: "PUT",
