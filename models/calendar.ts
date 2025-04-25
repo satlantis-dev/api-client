@@ -1,4 +1,4 @@
-import type { Note } from "../sdk.ts";
+import { Location, LocationResolver, Note, Place } from "../sdk.ts";
 
 import type { AccountDTO } from "./account.ts";
 
@@ -36,6 +36,16 @@ export type CalendarEvent = {
     atag: string;
     accountId: number;
     account: AccountDTO;
+    cohosts: {
+        account: AccountDTO;
+        accountId: number;
+        calendarEventId: number;
+        createdAt: string;
+        id: number;
+        invitationAcceptedAt: string | null;
+        invitationDeclinedAt: string | null;
+        updatedAt: string;
+    }[]
     announcements: CalendarEventAnnouncement[];
     calendarEventRsvps: CalendarEventRSVP[];
     content: string;
@@ -57,6 +67,7 @@ export type CalendarEvent = {
     summary: string;
     tags: string;
     title: string;
+    venue?: Location;
     type: CalendarEventType;
     url: string;
     website: string;
