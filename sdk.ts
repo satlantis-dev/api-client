@@ -1087,13 +1087,17 @@ export class Client {
         useCache: boolean;
     }): Promise<UserResolver | Error> => {
         if (options?.useCache && this.me) {
+            console.log("~ sdk - getMyProfile from cache");
             return this.me;
         }
+        console.log("~ sdk - getNostrSigner()");
         const signer = await this.getNostrSigner();
         if (signer instanceof Error) {
             return signer;
         }
 
+        console.log("~ sdk - getUser(): signer.publicKey.bech32()", signer.publicKey.bech32());
+        console.log("~ sdk - getUser(): signer.publicKey.hex", signer.publicKey.hex);
         const me = await this.resolver.getUser(signer.publicKey, options);
         if (me instanceof Error) {
             return me;
