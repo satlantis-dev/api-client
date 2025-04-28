@@ -106,6 +106,7 @@ export const respondCalendarEventCohostInvitation =
 
         const url = copyURL(urlArg);
         url.pathname = `/secure/respondCalendarEventCohostInvitation/${args.calendarEventId}`;
+        url.searchParams.append("action", args.action);
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
