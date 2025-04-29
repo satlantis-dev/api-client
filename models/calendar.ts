@@ -1,4 +1,4 @@
-import { Location, LocationResolver, Note, Place } from "../sdk.ts";
+import type { Location, LocationResolver, Note, Place } from "../sdk.ts";
 
 import type { AccountDTO } from "./account.ts";
 
@@ -36,21 +36,41 @@ export type EventInterest = {
   name: string;
 }
 
+export type Interest = {
+  autofollowsById: null | string;
+  autofollowsByNpub: null | string;
+  category: number;
+  contentUse: boolean;
+  description: string;
+  eventUse: boolean;
+  hashtags: null | string;
+  id: number;
+  locationTags: null | string;
+  locationUse: boolean;
+  name: string;
+  peopleUse: boolean;
+  recommendationsById: null | string;
+  recommendationsByNpub: null | string;
+  section: string;
+}
+export type Cohost = {
+  account: AccountDTO;
+  accountId: number;
+
+  calendarEventId: number;
+  createdAt: string;
+  id: number;
+  invitationAcceptedAt: string | null;
+  invitationDeclinedAt: string | null;
+  updatedAt: string;
+}
 export type CalendarEvent = {
   id: number;
   atag: string;
+  interests: Interest[];
   accountId: number;
   account: AccountDTO;
-  cohosts: {
-    account: AccountDTO;
-    accountId: number;
-    calendarEventId: number;
-    createdAt: string;
-    id: number;
-    invitationAcceptedAt: string | null;
-    invitationDeclinedAt: string | null;
-    updatedAt: string;
-  }[]
+  cohosts: Cohost[]
   announcements: CalendarEventAnnouncement[];
   calendarEventRsvps: CalendarEventRSVP[];
   content: string;

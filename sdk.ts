@@ -579,9 +579,11 @@ export class Client {
     timezone: string;
     geoHash: string;
     location: string;
+    cohosts: string,
+    venue: string;
+    interests: string;
     placeId: number;
     summary: string;
-    interests: number[];
     website: string;
   }) => {
     const jwtToken = this.getJwt();
@@ -593,27 +595,41 @@ export class Client {
     if (signer instanceof Error) {
       return signer;
     }
+    let tags: Tag[] = [
+      ["a", args.placeATag],
+      ["d", crypto.randomUUID()],
+      ["t", args.calendarEventType],
+      ["r", args.url],
+      ["title", args.title],
+      ["image", args.imageURL],
+      ["start", Math.floor(args.startDate.getTime() / 1000).toString()],
+      ["end", Math.floor(args.endDate.getTime() / 1000).toString()],
+      ["start_tzid", args.timezone],
+      ["g", args.geoHash],
+      ["summary", args.summary],
+      ["url", args.url],
+      ["cohosts", args.cohosts],
+      ["interests", args.interests],
+
+
+
+      ["website", args.website],
+    ]
+
+    if (args.venue) {
+      tags.push(["venue", args.venue]);
+    }
+    if (args.location) {
+      tags.push(["location", args.location]);
+    }
 
     const event = await prepareNostrEvent(signer, {
       kind: NostrKind.Calendar_Time,
       content: args.description,
-      tags: [
-        ["a", args.placeATag],
-        ["d", crypto.randomUUID()],
-        ["t", args.calendarEventType],
-        ["r", args.url],
-        ["title", args.title],
-        ["image", args.imageURL],
-        ["start", Math.floor(args.startDate.getTime() / 1000).toString()],
-        ["end", Math.floor(args.endDate.getTime() / 1000).toString()],
-        ["start_tzid", args.timezone],
-        ["g", args.geoHash],
-        ["location", args.location],
-        ["summary", args.summary],
-        ["url", args.url],
-        ["website", args.website],
-      ],
+      tags,
     });
+
+
     if (event instanceof Error) {
       return event;
     }
@@ -646,6 +662,10 @@ export class Client {
     placeId: number;
     summary: string;
     website: string;
+    // todo: use RFC3339 / ISO8601 format
+    cohosts: string,
+    venue: string;
+    interests: string;
   }) => {
     const jwtToken = this.getJwt();
     if (jwtToken == "") {
@@ -657,26 +677,45 @@ export class Client {
       return signer;
     }
 
+    console.log('args in edit event', args)
+
+    let tags: Tag[] = [
+      ["a", args.placeATag],
+      ["d", crypto.randomUUID()],
+      ["t", args.calendarEventType],
+      ["r", args.url],
+      ["title", args.title],
+      ["image", args.imageURL],
+      ["start", Math.floor(args.startDate.getTime() / 1000).toString()],
+      ["end", Math.floor(args.endDate.getTime() / 1000).toString()],
+      ["start_tzid", args.timezone],
+      ["g", args.geoHash],
+      ["summary", args.summary],
+      ["url", args.url],
+      ["cohosts", args.cohosts],
+      ["interests", args.interests],
+
+
+
+      ["website", args.website],
+    ]
+
+
+    if (args.venue) {
+      tags.push(["venue", args.venue]);
+    }
+    if (args.location) {
+      tags.push(["location", args.location]);
+    }
+
+
     const event = await prepareNostrEvent(signer, {
       kind: NostrKind.Calendar_Time,
       content: args.description,
-      tags: [
-        ["a", args.placeATag],
-        ["d", args.dTag],
-        ["t", args.calendarEventType],
-        ["r", args.url],
-        ["title", args.title],
-        ["image", args.imageURL],
-        ["start", Math.floor(args.startDate.getTime() / 1000).toString()],
-        ["end", Math.floor(args.endDate.getTime() / 1000).toString()],
-        ["start_tzid", args.timezone],
-        ["g", args.geoHash],
-        ["location", args.location],
-        ["summary", args.summary],
-        ["url", args.url],
-        ["website", args.website],
-      ],
+      tags,
     });
+
+
     if (event instanceof Error) {
       return event;
     }
@@ -1964,7 +2003,6 @@ export * from "./models/metric.ts";
 export * from "./models/notification.ts";
 export * from "./models/place.ts";
 export * from "./models/region.ts";
-export * from "./models/interest.ts";
 export * from "./models/reaction.ts";
 // data resolvers
 export * from "./resolvers/location.ts";
