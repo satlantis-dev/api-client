@@ -78,9 +78,10 @@ import {
     deleteAccount,
     getAccountsBySearch,
     removeAccountRole,
-    resendEmailVerification, saveDeviceInfo,
+    resendEmailVerification,
+    saveDeviceInfo,
     updateAccount,
-    updateAccountFollowingList
+    updateAccountFollowingList,
 } from "./api/secure/account.ts";
 import { deletePlaceGalleryImage, postPlaceGalleryImage, updatePlace } from "./api/secure/place.ts";
 import { deleteNote, postNote, postReaction } from "./api/secure/note.ts";
@@ -97,7 +98,8 @@ import {
     postCalendarEventNote,
     postCalendarEventRSVP,
     postPlaceCalendarEvent,
-    putUpdateCalendarEvent, respondCalendarEventCohostInvitation
+    putUpdateCalendarEvent,
+    respondCalendarEventCohostInvitation,
 } from "./api/secure/calendar.ts";
 import { followPubkeys, getFollowingPubkeys, getInterestsOf } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
@@ -313,7 +315,10 @@ export class Client {
         );
         this.postCalendarEventNote = postCalendarEventNote(rest_api_url, getJwt);
         this.putUpdateCalendarEvent = putUpdateCalendarEvent(rest_api_url, getJwt);
-        this.respondCalendarEventCohostInvitation = respondCalendarEventCohostInvitation(rest_api_url, getJwt);
+        this.respondCalendarEventCohostInvitation = respondCalendarEventCohostInvitation(
+            rest_api_url,
+            getJwt,
+        );
         this.getAccountCalendarEvents = getAccountCalendarEvents(rest_api_url);
         this.getCalendarEventTypes = getCalendarEventTypes(rest_api_url);
 
@@ -344,7 +349,7 @@ export class Client {
         this.getLocationReviews = getLocationReviews(rest_api_url);
         this.suggestLocation = suggestLocation(rest_api_url, getJwt);
         this.getLocationByID = getLocation(rest_api_url);
-        this.getLocationByGoogleId = getLocationByGoogleId(rest_api_url)
+        this.getLocationByGoogleId = getLocationByGoogleId(rest_api_url);
         this.getLocationsByPlaceID = getLocationsByPlaceID(rest_api_url);
         this._claimLocation = claimLocation(rest_api_url, getJwt);
         this.proveLocationClaim = proveLocationClaim(
@@ -540,10 +545,6 @@ export class Client {
     };
 
     // Location
-    /**
-     * @deprecated prefer to .resolver.getLocationByID
-     * remove after: 2024/10/10
-     */
     getLocation = async (id: number) => {
         return this.resolver.getLocationByID(id);
     };
@@ -1510,12 +1511,12 @@ export class Client {
     };
 
     getAccountByUsername = async (args: { username: string }) => {
-        const account = await this._getAccount(args)
+        const account = await this._getAccount(args);
         if (account instanceof Error) {
             return account;
         }
-        return account
-    }
+        return account;
+    };
 
     getAccount = async (
         args: { npub: string },
@@ -1663,7 +1664,7 @@ export class Client {
         },
 
         getUserByUsername: async (username: string): Promise<UserResolver | Error> => {
-            const account = await this.getAccountByUsername({ username});
+            const account = await this.getAccountByUsername({ username });
             if (account instanceof Error) {
                 return account;
             }
@@ -1671,7 +1672,14 @@ export class Client {
             if (pubkey instanceof Error) {
                 return pubkey;
             }
-            return new UserResolver(this, pubkey, account.isAdmin || false, account.isBusiness, account.nip05, account);
+            return new UserResolver(
+                this,
+                pubkey,
+                account.isAdmin || false,
+                account.isBusiness,
+                account.nip05,
+                account,
+            );
         },
 
         getFollowers: async (args: {

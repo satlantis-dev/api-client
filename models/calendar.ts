@@ -1,6 +1,5 @@
-import { Location, LocationResolver, Note, Place } from "../sdk.ts";
-
 import type { AccountDTO } from "./account.ts";
+import type { Note } from "../api/note.ts";
 
 export interface CalendarEventRSVP {
     id: number;
@@ -45,7 +44,7 @@ export type CalendarEvent = {
         invitationAcceptedAt: string | null;
         invitationDeclinedAt: string | null;
         updatedAt: string;
-    }[]
+    }[];
     announcements: CalendarEventAnnouncement[];
     calendarEventRsvps: CalendarEventRSVP[];
     content: string;
