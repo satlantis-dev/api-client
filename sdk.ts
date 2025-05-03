@@ -201,7 +201,7 @@ export class Client {
     suggestLocation: ReturnType<typeof suggestLocation>;
     private getLocationByID: ReturnType<typeof getLocation>;
     getLocationByGoogleId: ReturnType<typeof getLocationByGoogleId>;
-    private getLocationsByPlaceID: ReturnType<typeof getLocationsByPlaceID>;
+    getLocationsByPlaceID: ReturnType<typeof getLocationsByPlaceID>;
     private _claimLocation: ReturnType<typeof claimLocation>;
     proveLocationClaim: ReturnType<typeof proveLocationClaim>;
     updateLocation: ReturnType<typeof updateLocation>;
@@ -345,7 +345,7 @@ export class Client {
         this.suggestLocation = suggestLocation(rest_api_url, getJwt);
         this.getLocationByID = getLocation(rest_api_url);
         this.getLocationByGoogleId = getLocationByGoogleId(rest_api_url)
-        this.getLocationsByPlaceID = getLocationsByPlaceID(rest_api_url);
+        this.getLocationsByPlaceID = getLocationsByPlaceID(rest_api_url, getJwt);
         this._claimLocation = claimLocation(rest_api_url, getJwt);
         this.proveLocationClaim = proveLocationClaim(
             rest_api_url,
@@ -1794,23 +1794,6 @@ export class Client {
                 return data;
             }
             return new LocationResolver(this, data);
-        },
-        getLocationsByPlaceID: async (args: {
-            placeID: number;
-            search?: string;
-            google_rating?: number;
-        }) => {
-            const locations = await this.getLocationsByPlaceID({
-                placeID: args.placeID,
-                google_rating: args.google_rating || 0,
-                search: args.search,
-            });
-            if (locations instanceof Error) {
-                return locations;
-            }
-            return locations.map(
-                (l) => new LocationResolver(this, l),
-            );
         },
         /**
          * @unstable

@@ -202,6 +202,7 @@ export interface LocationTag {
     value: string;
     osmPull: boolean;
     eligible: boolean;
+    section: string | null;
     locations: Location[];
 }
 

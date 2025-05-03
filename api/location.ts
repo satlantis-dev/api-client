@@ -44,27 +44,61 @@ export const getLocationByGoogleId = (urlArg: URL) => async (args: { googleId: s
 };
 
 // https://github.com/satlantis-dev/api/blob/main/rest/location.go#L67
-export const getLocationsByPlaceID = (urlArg: URL) =>
+export const getLocationsByPlaceID = (urlArg: URL, getJwt: func_GetJwt) =>
 async (args: {
-    placeID: number;
+    placeID: number | null;
     search?: string;
-    // https://github.com/satlantis-dev/api/blob/2582005a5fe23c6d4d10c71c68cc72c4088f3ed1/database/location.go#L157
-    // sortDirection?: 'desc' | 'asc';
-    // todo: having this field mandatory is not a good design, should change the backend
-    google_rating: number;
+    tag_category?: string;
+    tags?: { key: string; value: string }[];
+    page?: number;
+    limit?: number;
+    isSecure?: boolean;
 }) => {
+    if (args.placeID === null) return [];
+
     const url = copyURL(urlArg);
-    url.pathname = `/getLocationsByPlaceID/${args.placeID}`;
-    url.searchParams.set("google_rating", String(args.google_rating));
-    if (args.search) {
-        url.searchParams.set("search", String(args.search));
+    const headers = new Headers();
+
+    if (args.isSecure) {
+      const jwt = getJwt();
+      if (jwt == "") {
+        return new Error("jwt token is empty");
+      }
+      headers.set("Authorization", `Bearer ${jwt}`);
+      url.pathname = `/secure/getLocationsByPlaceID/${args.placeID}`;
+    } else {
+      url.pathname = `/getLocationsByPlaceID/${args.placeID}`;
     }
 
-    const response = await safeFetch(url);
+    if (args.search) {
+      url.searchParams.set("search", String(args.search));
+    }
+    if (args.tag_category) {
+      url.searchParams.set("tag_category", String(args.tag_category));
+    }
+    if (args.tags && args.tags.length > 0) {
+      let tags = "";
+        const tagsArray: string[] = [];
+
+        for (const tag of args.tags) {
+          tagsArray.push(`${tag.key}=${tag.value}`);
+        }
+
+        tags = tagsArray.join(",");
+        url.searchParams.set("tags", tags);
+    }
+    if (args.page) {
+      url.searchParams.set("page", String(args.page));
+    }
+    if (args.limit) {
+      url.searchParams.set("limit", String(args.limit));
+    }
+
+    const response = await safeFetch(url, { headers });
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<LocationDTO[]>(response);
+    return handleResponse<Location[]>(response);
 };
 
 /**
