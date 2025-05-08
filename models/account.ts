@@ -69,6 +69,7 @@ export type AccountSearchDTO = {
     npub: string;
     picture: string;
     username: string;
+    name: string;
 };
 
 export type AccountPlaceRole = {

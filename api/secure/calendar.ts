@@ -22,7 +22,7 @@ export interface PlaceCalendarEventPut {
 
 export interface RespondCalendarEventCohostInvitationPut {
     calendarEventId: number;
-    action: 'accept' | 'decline';
+    action: "accept" | "decline";
 }
 
 export interface PlaceCalendarEventDelete {
