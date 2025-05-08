@@ -1,6 +1,6 @@
 import { copyURL, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
-import type { ImageCategory } from "../../models/location.ts";
+import type { ImageCategory, LocationDTO } from "../../models/location.ts";
 
 /**
  * POST /secure/postLocationGalleryImage
@@ -103,4 +103,31 @@ export const deleteLocationGalleryImage =
             return response;
         }
         return handleResponse<string>(response);
+    };
+
+/**
+ * GET /secure//getRecommendedLocations/{placeId}
+ * @returns Has been shuffled in BE.
+ * https://github.com/satlantis-dev/api/blob/prod/rest/location.go#L163
+ */
+export const getRecommendedLocations =
+    (urlArg: URL, getJwt: () => string) => async (args: { placeId: number }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/getRecommendedLocations/${args.placeId}`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const response = await safeFetch(url, {
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<LocationDTO[]>(response);
     };

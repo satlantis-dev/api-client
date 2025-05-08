@@ -116,6 +116,7 @@ import type { Interest } from "./models/interest.ts";
 import { getBrands, getExchangeRate } from "./api/metric.ts";
 import {
     deleteLocationGalleryImage,
+    getRecommendedLocations,
     postLocationGalleryImage,
     updateLocationGalleryImage,
 } from "./api/secure/location.ts";
@@ -214,9 +215,10 @@ export class Client {
     updateLocationGalleryImage: ReturnType<typeof updateLocationGalleryImage>;
     deleteLocationGalleryImage: ReturnType<typeof deleteLocationGalleryImage>;
     getLocationsBySearch: ReturnType<typeof getLocationsBySearch>;
-    getLocationsByPlaceIDRandomized: ReturnType<typeof getLocationsByPlaceIDRandomized>;
+    private getLocationsByPlaceIDRandomized: ReturnType<typeof getLocationsByPlaceIDRandomized>; // Use getSuggestedLocations instead
     getLocationLinks: ReturnType<typeof getLocationLinks>;
     getAccountRolesForLocation: ReturnType<typeof getAccountRolesForLocation>;
+    private getRecommendedLocations: ReturnType<typeof getRecommendedLocations>; // Use getSuggestedLocations instead
 
     // address
     addressLookup: ReturnType<typeof addressLookup>;
@@ -369,6 +371,7 @@ export class Client {
         this.getLocationsByPlaceIDRandomized = getLocationsByPlaceIDRandomized(rest_api_url);
         this.getLocationLinks = getLocationLinks(rest_api_url);
         this.getAccountRolesForLocation = getAccountRolesForLocation(rest_api_url);
+        this.getRecommendedLocations = getRecommendedLocations(rest_api_url, getJwt);
 
         // address
         this.addressLookup = addressLookup(rest_api_url);
@@ -1610,6 +1613,21 @@ export class Client {
         await relay.close();
 
         return metadataList;
+    };
+
+    getSuggestedLocations = async (args: {
+        placeId: number;
+        isSecure: boolean;
+    }) => {
+        if (args.isSecure) {
+            return await this.getRecommendedLocations({
+                placeId: args.placeId,
+            });
+        } else {
+            return await this.getLocationsByPlaceIDRandomized({
+                placeId: args.placeId,
+            });
+        }
     };
 
     /**
