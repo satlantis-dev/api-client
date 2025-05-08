@@ -349,7 +349,7 @@ export class Client {
         this.getNotifications = getNotifications(rest_api_url, getJwt);
 
         // location
-        this.getLocationsWithinBoundingBox = getLocationsWithinBoundingBox(rest_api_url);
+        this.getLocationsWithinBoundingBox = getLocationsWithinBoundingBox(rest_api_url, getJwt);
         this.getLocationReviews = getLocationReviews(rest_api_url);
         this.suggestLocation = suggestLocation(rest_api_url, getJwt);
         this.getLocationByID = getLocation(rest_api_url);
