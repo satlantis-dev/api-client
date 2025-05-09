@@ -107,7 +107,7 @@ async (args: {
  * @unstable
  * https://github.com/satlantis-dev/api/blob/main/rest/location.go#L144
  */
-export const getLocationsWithinBoundingBox = (urlArg: URL) =>
+export const getLocationsWithinBoundingBox = (urlArg: URL, getJwt: func_GetJwt) =>
 async (args: {
     sw_lat: number;
     sw_lng: number;
@@ -118,9 +118,20 @@ async (args: {
     tags?: { key: string; value: string }[];
     page?: number;
     limit?: number;
+    isSecure?: boolean;
 }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getLocationsWithinBoundingBox`;
+    const headers = new Headers();
+    if (args.isSecure) {
+        const jwt = getJwt();
+        if (jwt == "") {
+            return new Error("jwt token is empty");
+        }
+        headers.set("Authorization", `Bearer ${jwt}`);
+        url.pathname = `/secure/getLocationsWithinBoundingBox`;
+    } else {
+        url.pathname = `/getLocationsWithinBoundingBox`;
+    }
 
     let tags = "";
     if (args.tags !== undefined) {
@@ -153,7 +164,7 @@ async (args: {
         url.searchParams.set("page", String(args.page));
     }
 
-    const response = await safeFetch(url);
+    const response = await safeFetch(url, { headers });
     if (response instanceof Error) {
         return response;
     }
