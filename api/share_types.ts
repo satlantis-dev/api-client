@@ -44,6 +44,7 @@ export interface Category {
     id: number;
     description: string;
     name: string;
+    weight: number;
 }
 
 // https://github.com/satlantis-dev/models/blob/main/topic.go#L3
