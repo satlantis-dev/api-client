@@ -635,6 +635,8 @@ export class Client {
     placeId: number;
     summary: string;
     website: string;
+    googleMapsUri: string;
+    venueName: string;
   }) => {
     const jwtToken = this.getJwt();
     if (jwtToken == "") {
@@ -670,6 +672,16 @@ export class Client {
     if (args.location) {
       tags.push(["location", args.location]);
     }
+
+    if (args.googleMapsUri) {
+      tags.push(["googleMapsUri", args.googleMapsUri]);
+    }
+
+    if (args.venueName) {
+      tags.push(["venue_name", args.venueName]);
+    }
+
+
 
     const event = await prepareNostrEvent(signer, {
       kind: NostrKind.Calendar_Time,
@@ -713,6 +725,8 @@ export class Client {
     cohosts: string;
     venue: string;
     interests: string;
+    googleMapsUri: string;
+    venueName: string;
   }) => {
     const jwtToken = this.getJwt();
     if (jwtToken == "") {
@@ -724,7 +738,6 @@ export class Client {
       return signer;
     }
 
-    console.log("args in edit event", args);
 
     let tags: Tag[] = [
       ["a", args.placeATag],
@@ -741,7 +754,6 @@ export class Client {
       ["url", args.url],
       ["cohosts", args.cohosts],
       ["interests", args.interests],
-
       ["website", args.website],
     ];
 
@@ -751,6 +763,16 @@ export class Client {
     if (args.location) {
       tags.push(["location", args.location]);
     }
+
+    if (args.googleMapsUri) {
+      tags.push(["googleMapsUri", args.googleMapsUri]);
+    }
+
+    if (args.venueName) {
+      tags.push(["venue_name", args.venueName]);
+    }
+
+
 
     const event = await prepareNostrEvent(signer, {
       kind: NostrKind.Calendar_Time,
