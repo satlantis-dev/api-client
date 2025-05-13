@@ -637,6 +637,7 @@ export class Client {
     website: string;
     googleMapsUri: string;
     venueName: string;
+    googlePlaceId: string;
   }) => {
     const jwtToken = this.getJwt();
     if (jwtToken == "") {
@@ -679,6 +680,10 @@ export class Client {
 
     if (args.venueName) {
       tags.push(["venue_name", args.venueName]);
+    }
+
+    if (args.googlePlaceId) {
+      tags.push(["google_place_id", args.googlePlaceId]);
     }
 
 
@@ -727,6 +732,7 @@ export class Client {
     interests: string;
     googleMapsUri: string;
     venueName: string;
+    googlePlaceId: string;
   }) => {
     const jwtToken = this.getJwt();
     if (jwtToken == "") {
@@ -770,6 +776,10 @@ export class Client {
 
     if (args.venueName) {
       tags.push(["venue_name", args.venueName]);
+    }
+
+    if (args.googlePlaceId) {
+      tags.push(["google_place_id", args.googlePlaceId]);
     }
 
 
