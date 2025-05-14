@@ -27,22 +27,23 @@ import {
 } from "./api/account.ts";
 import { getIpInfo } from "./api/ip.ts";
 import {
-  claimLocation,
-  getAccountRolesForLocation,
-  getAccountsForLocation,
-  getLocation,
-  getLocationByGoogleId,
-  getLocationGalleryImages,
-  getLocationLinks,
-  getLocationReviews,
-  getLocationsByPlaceID,
-  getLocationsByPlaceIDRandomized,
-  getLocationsBySearch,
-  getLocationsWithinBoundingBox,
-  getLocationTags,
-  proveLocationClaim,
-  suggestLocation,
-  updateLocation,
+    claimLocation,
+    getAccountRolesForLocation,
+    getAccountsForLocation,
+    getLocation,
+    getLocationByGoogleId,
+    getLocationGalleryImages,
+    getLocationLinks,
+    getLocationReviews,
+    getLocationsByPlaceID,
+    getLocationsByPlaceIDRandomized,
+    getLocationsBySearch,
+    getLocationsWithinBoundingBox,
+    getLocationTags,
+    getLocationTagsByPlaceID,
+    proveLocationClaim,
+    suggestLocation,
+    updateLocation,
 } from "./api/location.ts";
 import { authApple, authGoogle, loginNostr } from "./api/login.ts";
 import {
@@ -239,6 +240,7 @@ export class Client {
   getLocationLinks: ReturnType<typeof getLocationLinks>;
   getAccountRolesForLocation: ReturnType<typeof getAccountRolesForLocation>;
   private getRecommendedLocations: ReturnType<typeof getRecommendedLocations>; // Use getSuggestedLocations instead
+    getLocationTagsByPlaceID: ReturnType<typeof getLocationTagsByPlaceID>;
 
   // address
   addressLookup: ReturnType<typeof addressLookup>;
@@ -370,46 +372,31 @@ export class Client {
     // notifications
     this.getNotifications = getNotifications(rest_api_url, getJwt);
 
-    // location
-    this.getLocationsWithinBoundingBox = getLocationsWithinBoundingBox(
-      rest_api_url,
-      getJwt,
-    );
-    this.getLocationReviews = getLocationReviews(rest_api_url);
-    this.suggestLocation = suggestLocation(rest_api_url, getJwt);
-    this.getLocationByID = getLocation(rest_api_url);
-    this.getLocationByGoogleId = getLocationByGoogleId(rest_api_url);
-    this.getLocationsByPlaceID = getLocationsByPlaceID(rest_api_url, getJwt);
-    this._claimLocation = claimLocation(rest_api_url, getJwt);
-    this.proveLocationClaim = proveLocationClaim(
-      rest_api_url,
-      getJwt,
-      getNostrSigner,
-    );
-    this.updateLocation = updateLocation(rest_api_url, getJwt);
-    this.getAccountsForLocation = getAccountsForLocation(rest_api_url);
-    this.getLocationGalleryImages = getLocationGalleryImages(rest_api_url);
-    this.postLocationGalleryImage = postLocationGalleryImage(
-      rest_api_url,
-      getJwt,
-    );
-    this.updateLocationGalleryImage = updateLocationGalleryImage(
-      rest_api_url,
-      getJwt,
-    );
-    this.deleteLocationGalleryImage = deleteLocationGalleryImage(
-      rest_api_url,
-      getJwt,
-    );
-    this.getLocationsBySearch = getLocationsBySearch(rest_api_url);
-    this.getLocationsByPlaceIDRandomized =
-      getLocationsByPlaceIDRandomized(rest_api_url);
-    this.getLocationLinks = getLocationLinks(rest_api_url);
-    this.getAccountRolesForLocation = getAccountRolesForLocation(rest_api_url);
-    this.getRecommendedLocations = getRecommendedLocations(
-      rest_api_url,
-      getJwt,
-    );
+        // location
+        this.getLocationsWithinBoundingBox = getLocationsWithinBoundingBox(rest_api_url, getJwt);
+        this.getLocationReviews = getLocationReviews(rest_api_url);
+        this.suggestLocation = suggestLocation(rest_api_url, getJwt);
+        this.getLocationByID = getLocation(rest_api_url);
+        this.getLocationByGoogleId = getLocationByGoogleId(rest_api_url);
+        this.getLocationsByPlaceID = getLocationsByPlaceID(rest_api_url, getJwt);
+        this._claimLocation = claimLocation(rest_api_url, getJwt);
+        this.proveLocationClaim = proveLocationClaim(
+            rest_api_url,
+            getJwt,
+            getNostrSigner,
+        );
+        this.updateLocation = updateLocation(rest_api_url, getJwt);
+        this.getAccountsForLocation = getAccountsForLocation(rest_api_url);
+        this.getLocationGalleryImages = getLocationGalleryImages(rest_api_url);
+        this.postLocationGalleryImage = postLocationGalleryImage(rest_api_url, getJwt);
+        this.updateLocationGalleryImage = updateLocationGalleryImage(rest_api_url, getJwt);
+        this.deleteLocationGalleryImage = deleteLocationGalleryImage(rest_api_url, getJwt);
+        this.getLocationsBySearch = getLocationsBySearch(rest_api_url);
+        this.getLocationsByPlaceIDRandomized = getLocationsByPlaceIDRandomized(rest_api_url);
+        this.getLocationLinks = getLocationLinks(rest_api_url);
+        this.getAccountRolesForLocation = getAccountRolesForLocation(rest_api_url);
+        this.getRecommendedLocations = getRecommendedLocations(rest_api_url, getJwt);
+        this.getLocationTagsByPlaceID = getLocationTagsByPlaceID(rest_api_url);
 
     // address
     this.addressLookup = addressLookup(rest_api_url);
