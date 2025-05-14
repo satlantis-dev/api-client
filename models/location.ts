@@ -204,6 +204,7 @@ export interface LocationTag {
     eligible: boolean;
     section: string | null;
     locations: Location[];
+    hashtags: string[];
 }
 
 // https://github.com/satlantis-dev/models/blob/main/location_tag.go#L3

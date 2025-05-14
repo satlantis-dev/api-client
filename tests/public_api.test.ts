@@ -663,3 +663,13 @@ Deno.test("getCalendarEventTypes", async () => {
     }
     assertEquals(result.length > 0, true);
 });
+
+Deno.test("getLocationTagsByPlaceID", async () => {
+    const result = await client.getLocationTagsByPlaceID({
+        placeId: 23751,
+    });
+    if (result instanceof Error) {
+        fail(result.message);
+    }
+    assertEquals(result.Attractions.length > 0, true);
+});

@@ -477,3 +477,30 @@ async (args: {
     }
     return handleResponse<AccountLocationRole[]>(response);
 };
+
+export const getLocationTagsByPlaceID = (urlArg: URL) =>
+async (args: {
+    placeId: number;
+}) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getLocationTagsByPlaceID/${args.placeId}`;
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{
+        Attractions: LocationTag[];
+        "Coworking & Event Spaces": LocationTag[];
+        Cuisine: LocationTag[];
+        "Diet": LocationTag[];
+        "Grocery & Specialty Foods": LocationTag[];
+        "Healthcare": LocationTag[];
+        "Nightlife": LocationTag[];
+        "Others": LocationTag[];
+        "Restaurants & Cafes": LocationTag[];
+        Sport: LocationTag[];
+        Transverse: LocationTag[];
+        Vibe: LocationTag[];
+        "Wellness & Fitness": LocationTag[];
+    }>(response);
+};
