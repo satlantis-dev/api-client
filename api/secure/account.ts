@@ -205,6 +205,7 @@ async (args: {
         lud06?: string;
         lud16?: string;
         name?: string;
+        userName?: string;
         picture?: string;
         phone?: string;
         website?: string;
