@@ -31,6 +31,7 @@ export type Account = {
     lud16?: string;
     name?: string;
     nip05?: string;
+    userName?: string;
     picture?: string;
     phone?: string;
     placeRatings?: AccountPlaceRating[];
@@ -113,6 +114,7 @@ export type Kind0MetaData = {
     banner?: string;
     name?: string;
     displayName?: string;
+    userName?:string
     lud06?: string;
     lud16?: string;
     picture?: string;
