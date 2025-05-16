@@ -202,7 +202,7 @@ async (args: {
         about?: string;
         banner?: string;
         name?: string;
-        userName?: string;
+        username?: string;
         displayName?: string;
         lud06?: string;
         lud16?: string;

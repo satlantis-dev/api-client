@@ -114,7 +114,7 @@ export type Kind0MetaData = {
     banner?: string;
     name?: string;
     displayName?: string;
-    userName?:string
+    username?:string
     lud06?: string;
     lud16?: string;
     picture?: string;
