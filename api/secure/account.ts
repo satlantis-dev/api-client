@@ -201,11 +201,11 @@ async (args: {
         event: NostrEvent<NostrKind.META_DATA>;
         about?: string;
         banner?: string;
+        name?: string;
+        userName?: string;
         displayName?: string;
         lud06?: string;
         lud16?: string;
-        name?: string;
-        userName?: string;
         picture?: string;
         phone?: string;
         website?: string;
