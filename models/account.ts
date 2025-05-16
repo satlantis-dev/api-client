@@ -31,7 +31,7 @@ export type Account = {
     lud16?: string;
     name?: string;
     nip05?: string;
-    userName?: string;
+    username?: string;
     picture?: string;
     phone?: string;
     placeRatings?: AccountPlaceRating[];
