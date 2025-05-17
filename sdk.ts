@@ -75,15 +75,16 @@ import {
     getRegion,
 } from "./api/place.ts";
 import {
-    addAccountRole,
-    blacklistAccount,
-    deleteAccount,
-    getAccountsBySearch,
-    removeAccountRole,
-    resendEmailVerification,
-    saveDeviceInfo,
-    updateAccount,
-    updateAccountFollowingList,
+  addAccountRole,
+  blacklistAccount,
+  deleteAccount,
+  getAccountsBySearch, getBlockedAccounts,
+  blockAccount, unblockAccount, checkBlockStatus,
+  removeAccountRole, reportContent,
+  resendEmailVerification,
+  saveDeviceInfo,
+  updateAccount,
+  updateAccountFollowingList
 } from "./api/secure/account.ts";
 import { deletePlaceGalleryImage, postPlaceGalleryImage, updatePlace } from "./api/secure/place.ts";
 import { deleteNote, postNote, postReaction } from "./api/secure/note.ts";
@@ -248,6 +249,11 @@ export class Client {
     removeAccountRole: ReturnType<typeof removeAccountRole>;
     addAccountRole: ReturnType<typeof addAccountRole>;
     saveDeviceInfo: ReturnType<typeof saveDeviceInfo>;
+    reportContent: ReturnType<typeof reportContent>;
+    blockAccount: ReturnType<typeof blockAccount>;
+    unblockAccount: ReturnType<typeof unblockAccount>;
+    checkBlockStatus: ReturnType<typeof checkBlockStatus>;
+    getBlockedAccounts: ReturnType<typeof getBlockedAccounts>;
     /**
      * @unstable
      */
@@ -399,6 +405,11 @@ export class Client {
             this.getNostrSigner,
         );
         this.saveDeviceInfo = saveDeviceInfo(rest_api_url, this.getJwt);
+        this.reportContent = reportContent(rest_api_url, this.getJwt);
+        this.blockAccount = blockAccount(rest_api_url, this.getJwt);
+        this.unblockAccount = unblockAccount(rest_api_url, this.getJwt);
+        this.checkBlockStatus = checkBlockStatus(rest_api_url, this.getJwt);
+        this.getBlockedAccounts = getBlockedAccounts(rest_api_url, this.getJwt);
         this.updateAccountFollowingList = updateAccountFollowingList(
             rest_api_url,
             this.getJwt,

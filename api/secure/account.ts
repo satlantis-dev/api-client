@@ -34,6 +34,109 @@ async (args: {
     return handleResponse<{ success: boolean }>(response);
 };
 
+export const reportContent = (urlArg: URL, getJwt: func_GetJwt) =>
+async (args: {
+    reportedUserId: number;
+    reportedItemId: number;
+    type: "profile" | "post" | "event" | "image";
+    reason: string;
+    link?: string;
+    payload?: any;
+    location?: string;
+    device?: string;
+    appVersion?: string;
+}) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/createContentReport`;
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        body: JSON.stringify({
+            ...args,
+        }),
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{ success: boolean }>(response);
+};
+
+export const blockAccount = (urlArg: URL, getJwt: func_GetJwt) =>
+async (args: {
+    npub: string;
+}) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/blockAccount/${args.npub}`;
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{ success: boolean }>(response);
+};
+
+export const unblockAccount = (urlArg: URL, getJwt: func_GetJwt) =>
+async (args: {
+    npub: string;
+}) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/unblockAccount/${args.npub}`;
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{ success: boolean }>(response);
+};
+
+export const checkBlockStatus = (urlArg: URL, getJwt: func_GetJwt) =>
+async (args: {
+    npub: string;
+}) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/checkBlockStatus/${args.npub}`;
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{ success: boolean }>(response);
+};
+
 export const addAccountRole =
     (urlArg: URL, getJwt: func_GetJwt, getSigner: func_GetNostrSigner) =>
     async (args: {
@@ -267,6 +370,27 @@ async (args: {
         return response;
     }
     return handleResponse<AccountSearchDTO[]>(response);
+};
+
+export const getBlockedAccounts = (urlArg: URL, getJwt: func_GetJwt) =>
+async () => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/getBlockedAccounts`;
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<Account[]>(response);
 };
 
 export const deleteAccount =
