@@ -36,9 +36,9 @@ async (args: {
 
 export const reportContent = (urlArg: URL, getJwt: func_GetJwt) =>
 async (args: {
-    reportedUserId: number;
+    reportedUserId?: number | null;
     reportedItemId: number;
-    type: "profile" | "post" | "event" | "image";
+    type: "profile" | "post" | "event" | "image" | "place" | "comment";
     reason: string;
     link?: string;
     payload?: any;
