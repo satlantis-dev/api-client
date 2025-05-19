@@ -25,5 +25,4 @@ export enum InterestCategory {
   LocationInterest,
   ActivityInterest,
   FoodInterest,
-  NicheInterest,
 }
