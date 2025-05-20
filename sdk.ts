@@ -75,16 +75,20 @@ import {
     getRegion,
 } from "./api/place.ts";
 import {
-  addAccountRole,
-  blacklistAccount,
-  deleteAccount,
-  getAccountsBySearch, getBlockedAccounts,
-  blockAccount, unblockAccount, checkBlockStatus,
-  removeAccountRole, reportContent,
-  resendEmailVerification,
-  saveDeviceInfo,
-  updateAccount,
-  updateAccountFollowingList
+    addAccountRole,
+    blacklistAccount,
+    blockAccount,
+    checkBlockStatus,
+    deleteAccount,
+    getAccountsBySearch,
+    getBlockedAccounts,
+    removeAccountRole,
+    reportContent,
+    resendEmailVerification,
+    saveDeviceInfo,
+    unblockAccount,
+    updateAccount,
+    updateAccountFollowingList,
 } from "./api/secure/account.ts";
 import { deletePlaceGalleryImage, postPlaceGalleryImage, updatePlace } from "./api/secure/place.ts";
 import { deleteNote, postNote, postReaction } from "./api/secure/note.ts";

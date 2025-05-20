@@ -372,8 +372,7 @@ async (args: {
     return handleResponse<AccountSearchDTO[]>(response);
 };
 
-export const getBlockedAccounts = (urlArg: URL, getJwt: func_GetJwt) =>
-async () => {
+export const getBlockedAccounts = (urlArg: URL, getJwt: func_GetJwt) => async () => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
         return new Error("jwt token is empty");

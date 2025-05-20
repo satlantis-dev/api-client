@@ -60,6 +60,11 @@ export type AccountDTO = {
     picture: string;
     pubKey: string;
     username: string;
+    banner: string;
+    followersCount: number | null;
+    followingCount: number | null;
+    isBlacklisted: boolean;
+    website: string;
 };
 
 export type AccountSearchDTO = {
@@ -115,7 +120,7 @@ export type Kind0MetaData = {
     banner?: string;
     name?: string;
     displayName?: string;
-    username?:string
+    username?: string;
     lud06?: string;
     lud16?: string;
     picture?: string;
