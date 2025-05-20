@@ -21,6 +21,7 @@ import {
     initiatePasswordReset,
     login,
     resetPassword,
+    sendEventSignup,
     sendOTP,
     verifyEmail,
     verifyOTP,
@@ -246,6 +247,8 @@ export class Client {
     verifyOTP: ReturnType<typeof verifyOTP>;
     authApple: ReturnType<typeof authApple>;
     authGoogle: ReturnType<typeof authGoogle>;
+    sendEventSignup: ReturnType<typeof sendEventSignup>;
+
     /////////////////
     // authed APIs //
     /////////////////
@@ -443,6 +446,7 @@ export class Client {
         this.verifyOTP = verifyOTP(this.rest_api_url);
         this.authApple = authApple(this.rest_api_url);
         this.authGoogle = authGoogle(this.rest_api_url);
+        this.sendEventSignup = sendEventSignup(this.rest_api_url);
 
         //
         this.postAmbassadorInquiry = postAmbassadorInquiry(

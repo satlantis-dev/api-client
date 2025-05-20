@@ -170,6 +170,32 @@ export const sendOTP = (urlArg: URL) => async (args: { email: string }) => {
     }>(response);
 };
 
+export const sendEventSignup =
+    (urlArg: URL) =>
+    async (args: { email: string; calendarEventId: number; name: string; rsvpType: string }) => {
+        const url = copyURL(urlArg);
+        url.pathname = `/auth/otp`;
+
+        const response = await safeFetch(
+            url,
+            {
+                method: "POST",
+                body: JSON.stringify({
+                    ...args,
+                }),
+            },
+        );
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<{
+            is_new_account: boolean; // Account was existing or new created
+            message: string; // e.g. confirm link sent to your email
+            success: boolean;
+            token: string; // Token to use later for `/auth/otp/verify` endpoint
+        }>(response);
+    };
+
 export const verifyOTP = (urlArg: URL) => async (args: { token: string; otp: string }) => {
     const url = copyURL(urlArg);
     url.pathname = `/auth/otp/verify`;
