@@ -41,6 +41,7 @@ async (args: {
     type: "profile" | "post" | "event" | "image" | "place" | "comment";
     reason: string;
     link?: string;
+    // deno-lint-ignore no-explicit-any
     payload?: any;
     location?: string;
     device?: string;

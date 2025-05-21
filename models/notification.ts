@@ -9,6 +9,7 @@ export interface Notification {
     imageUrl: string;
     link: string;
     message: string;
+    // deno-lint-ignore no-explicit-any
     payload?: any;
     isRead: boolean;
     createdAt: Date;

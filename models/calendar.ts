@@ -1,4 +1,4 @@
-import type { Interest, Location, LocationResolver, Note, Place } from "../sdk.ts";
+import type { Interest, Location, Note } from "../sdk.ts";
 import type { AccountDTO } from "./account.ts";
 
 export interface CalendarEventRSVP {

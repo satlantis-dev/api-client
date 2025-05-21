@@ -212,7 +212,16 @@ async (args: {
     return handleResponse<{ code: string }>(response);
 };
 
-export const suggestLocation = (urlArg: URL, getJwt: func_GetJwt) => async (args: { data: any }) => {
+export const suggestLocation = (urlArg: URL, getJwt: func_GetJwt) =>
+async (args: {
+    data: {
+        placeId: number | string;
+        googleId: number | string;
+        comment: string;
+        // deno-lint-ignore no-explicit-any
+        googleDetails: any;
+    };
+}) => {
     const jwt = getJwt();
     if (jwt == "") {
         return new Error("jwt token is empty");
