@@ -31,7 +31,7 @@ export class LocationResolver {
     reviewHighlights: { [key: string]: string };
     osmRef: string;
     score?: number;
-    accountRoles?: AccountLocationRole;
+    accountRoles?: AccountLocationRole[];
     bio?: string;
     businessStatus?: BusinessStatus;
     claim?: LocationClaim;

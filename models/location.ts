@@ -51,7 +51,7 @@ export enum ImageCategory {
 // https://github.com/satlantis-dev/models/blob/main/location.go#L117
 export type Location = {
     id: number;
-    accountRoles: AccountLocationRole;
+    accountRoles: AccountLocationRole[];
     address: Address;
     bio: string;
     businessStatus: BusinessStatus;
