@@ -638,7 +638,7 @@ export class Client {
         if (signer instanceof Error) {
             return signer;
         }
-        const tags: Tag[] = [
+        let tags: Tag[] = [
             ["a", args.placeATag],
             ["d", crypto.randomUUID()],
             ["t", args.calendarEventType],
@@ -732,7 +732,7 @@ export class Client {
             return signer;
         }
 
-        const tags: Tag[] = [
+        let tags: Tag[] = [
             ["a", args.placeATag],
             ["d", crypto.randomUUID()],
             ["t", args.calendarEventType],
@@ -1429,10 +1429,10 @@ export class Client {
     postNote = async (args: {
         content: string;
         image?: File | File[];
-        iTag?: Tag[];
-        eTag?: Tag[];
-        pTag?: Tag[];
-        qTag?: Tag[];
+        iTag?: any[];
+        eTag?: any[];
+        pTag?: any[];
+        qTag?: any[];
         placeID?: number;
         isRepost?: boolean;
     }) => {
@@ -1464,8 +1464,6 @@ export class Client {
             fullContent = `${args.content}\n${imageUrlsString}`;
         }
 
-        // This is a workaround because NostrKind does not include 6, so the type check fails and any needs to be used.
-        // deno-lint-ignore no-explicit-any
         const nostrProps: any = {
             kind: args.isRepost ? 6 : NostrKind.TEXT_NOTE,
             content: fullContent,
