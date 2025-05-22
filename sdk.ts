@@ -90,6 +90,7 @@ import {
     unblockAccount,
     updateAccount,
     updateAccountFollowingList,
+    followTierZeroPlaces,
 } from "./api/secure/account.ts";
 import { deletePlaceGalleryImage, postPlaceGalleryImage, updatePlace } from "./api/secure/place.ts";
 import { deleteNote, postNote, postReaction } from "./api/secure/note.ts";
@@ -257,6 +258,7 @@ export class Client {
     addAccountRole: ReturnType<typeof addAccountRole>;
     saveDeviceInfo: ReturnType<typeof saveDeviceInfo>;
     reportContent: ReturnType<typeof reportContent>;
+    followTierZeroPlaces: ReturnType<typeof followTierZeroPlaces>;
     blockAccount: ReturnType<typeof blockAccount>;
     unblockAccount: ReturnType<typeof unblockAccount>;
     checkBlockStatus: ReturnType<typeof checkBlockStatus>;
@@ -413,6 +415,7 @@ export class Client {
         );
         this.saveDeviceInfo = saveDeviceInfo(rest_api_url, this.getJwt);
         this.reportContent = reportContent(rest_api_url, this.getJwt);
+        this.followTierZeroPlaces = followTierZeroPlaces(rest_api_url, this.getJwt);
         this.blockAccount = blockAccount(rest_api_url, this.getJwt);
         this.unblockAccount = unblockAccount(rest_api_url, this.getJwt);
         this.checkBlockStatus = checkBlockStatus(rest_api_url, this.getJwt);

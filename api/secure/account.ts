@@ -68,6 +68,27 @@ async (args: {
     return handleResponse<{ success: boolean }>(response);
 };
 
+export const followTierZeroPlaces =
+  (urlArg: URL, getJwt: func_GetJwt) => async () => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+      return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/followTierZeroPlaces`;
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+      method: "POST",
+      headers,
+    });
+    if (response instanceof Error) {
+      return response;
+    }
+    return handleResponse<{ success: boolean }>(response);
+  };
+
 export const blockAccount = (urlArg: URL, getJwt: func_GetJwt) =>
 async (args: {
     npub: string;
