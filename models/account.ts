@@ -65,6 +65,7 @@ export type AccountDTO = {
     followingCount: number | null;
     isBlacklisted: boolean;
     website: string;
+    vertexRank: string;
 };
 
 export type AccountSearchDTO = {
