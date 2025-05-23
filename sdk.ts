@@ -81,6 +81,7 @@ import {
     blockAccount,
     checkBlockStatus,
     deleteAccount,
+    followTierZeroPlaces,
     getAccountsBySearch,
     getBlockedAccounts,
     removeAccountRole,
@@ -90,7 +91,6 @@ import {
     unblockAccount,
     updateAccount,
     updateAccountFollowingList,
-    followTierZeroPlaces,
 } from "./api/secure/account.ts";
 import { deletePlaceGalleryImage, postPlaceGalleryImage, updatePlace } from "./api/secure/place.ts";
 import { deleteNote, postNote, postReaction } from "./api/secure/note.ts";
@@ -102,6 +102,7 @@ import { signEvent } from "./api/nostr_event.ts";
 import { createInterests, getAccountInterests, getInterests } from "./api/secure/interests.ts";
 import {
     deletePlaceCalendarEvent,
+    downloadCalendarEventAttendees,
     getEventById,
     postCalendarEventAnnouncement,
     postCalendarEventNote,
@@ -177,6 +178,7 @@ export class Client {
     >;
     getAccountCalendarEvents: ReturnType<typeof getAccountCalendarEvents>;
     getCalendarEventTypes: ReturnType<typeof getCalendarEventTypes>;
+    downloadCalendarEventAttendees: ReturnType<typeof downloadCalendarEventAttendees>;
 
     // Account
     /**
@@ -349,6 +351,7 @@ export class Client {
         );
         this.getAccountCalendarEvents = getAccountCalendarEvents(rest_api_url);
         this.getCalendarEventTypes = getCalendarEventTypes(rest_api_url);
+        this.downloadCalendarEventAttendees = downloadCalendarEventAttendees(rest_api_url, getJwt);
 
         // account
         this._getAccount = getAccount(rest_api_url);
