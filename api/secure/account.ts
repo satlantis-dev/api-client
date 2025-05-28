@@ -68,11 +68,10 @@ async (args: {
     return handleResponse<{ success: boolean }>(response);
 };
 
-export const followTierZeroPlaces =
-  (urlArg: URL, getJwt: func_GetJwt) => async () => {
+export const followTierZeroPlaces = (urlArg: URL, getJwt: func_GetJwt) => async () => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
-      return new Error("jwt token is empty");
+        return new Error("jwt token is empty");
     }
     const url = copyURL(urlArg);
     url.pathname = `/secure/followTierZeroPlaces`;
@@ -80,14 +79,14 @@ export const followTierZeroPlaces =
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
     const response = await safeFetch(url, {
-      method: "POST",
-      headers,
+        method: "POST",
+        headers,
     });
     if (response instanceof Error) {
-      return response;
+        return response;
     }
     return handleResponse<{ success: boolean }>(response);
-  };
+};
 
 export const blockAccount = (urlArg: URL, getJwt: func_GetJwt) =>
 async (args: {

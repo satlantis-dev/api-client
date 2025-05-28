@@ -295,7 +295,7 @@ export const proveLocationClaim =
 export const updateLocation = (urlArg: URL, getJwt: func_GetJwt) =>
 async (args: {
     locationId: number;
-    location: LocationInfo;
+    location: Partial<Location> | LocationInfo; // TODO: remove LocationInfo when the API is updated
 }) => {
     const jwt = getJwt();
     if (jwt == "") {

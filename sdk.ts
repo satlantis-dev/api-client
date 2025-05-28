@@ -81,6 +81,7 @@ import {
     blockAccount,
     checkBlockStatus,
     deleteAccount,
+    followTierZeroPlaces,
     getAccountsBySearch,
     getBlockedAccounts,
     removeAccountRole,
@@ -90,7 +91,6 @@ import {
     unblockAccount,
     updateAccount,
     updateAccountFollowingList,
-    followTierZeroPlaces,
 } from "./api/secure/account.ts";
 import { deletePlaceGalleryImage, postPlaceGalleryImage, updatePlace } from "./api/secure/place.ts";
 import { deleteNote, postNote, postReaction } from "./api/secure/note.ts";
