@@ -50,7 +50,7 @@ export const getLocationsByPlaceID = (urlArg: URL, getJwt: func_GetJwt) =>
 async (args: {
     placeID: number | null;
     search?: string;
-    tag_category?: string;
+    category?: string;
     tags?: { key: string; value: string }[];
     page?: number;
     limit?: number;
@@ -75,8 +75,8 @@ async (args: {
     if (args.search) {
         url.searchParams.set("search", String(args.search));
     }
-    if (args.tag_category) {
-        url.searchParams.set("tag_category", String(args.tag_category));
+    if (args.category) {
+        url.searchParams.set("category", String(args.category));
     }
     if (args.tags && args.tags.length > 0) {
         let tags = "";
@@ -113,7 +113,7 @@ async (args: {
     sw_lng: number;
     ne_lat: number;
     ne_lng: number;
-    tag_category?: string;
+    category?: string;
     search?: string;
     tags?: { key: string; value: string }[];
     page?: number;
@@ -148,8 +148,8 @@ async (args: {
     url.searchParams.set("sw_lng", String(args.sw_lng));
     url.searchParams.set("ne_lat", String(args.ne_lat));
     url.searchParams.set("ne_lng", String(args.ne_lng));
-    if (args.tag_category) {
-        url.searchParams.set("tag_category", args.tag_category);
+    if (args.category) {
+        url.searchParams.set("category", args.category);
     }
     if (tags) {
         url.searchParams.set("tags", tags);
@@ -378,7 +378,7 @@ export const getLocationsBySearch = (urlArg: URL) =>
 async (args: {
     rating: number;
     search?: string;
-    tag_category?: string;
+    category?: string;
     place_id?: number;
     limit?: number;
     page?: number;
@@ -391,8 +391,8 @@ async (args: {
     if (args.search) {
         url.searchParams.set("search", args.search);
     }
-    if (args.tag_category) {
-        url.searchParams.set("tag_category", args.tag_category);
+    if (args.category) {
+        url.searchParams.set("category", args.category);
     }
     if (args.place_id) {
         url.searchParams.set("place_id", String(args.place_id));

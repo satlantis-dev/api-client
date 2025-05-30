@@ -302,7 +302,7 @@ Deno.test("getPlacesMinimal", async () => {
 Deno.test("getLocationsBySearch", async () => {
     const result = await client.resolver.getLocationsBySearch({
         rating: 0,
-        tag_category: "Restaurants & Cafes",
+        category: "Restaurants & Cafes",
         search: "Dragon",
     });
     if (result instanceof Error) {

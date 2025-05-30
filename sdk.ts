@@ -2019,7 +2019,7 @@ export class Client {
         getLocationsBySearch: async (args: {
             rating: number;
             search?: string;
-            tag_category?: string;
+            category?: string;
             place_id?: number;
             limit?: number;
             page?: number;
