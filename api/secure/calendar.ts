@@ -1,5 +1,5 @@
 import { type NostrEvent, NostrKind, prepareNostrEvent } from "@blowater/nostr-sdk";
-import { copyURL, generateUUID, handleResponse } from "../../helpers/_helper.ts";
+import { copyURL, generateUUID, handleCSVResponse, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
 import {
     type Account,
@@ -263,14 +263,14 @@ export const postCalendarEventRSVP =
     };
 
 export const downloadCalendarEventAttendees =
-    (urlArg: URL, getJwt: () => string) => async (args: { calendarEventId: number }) => {
+    (urlArg: URL, getJwt: () => string) => async (args: { placeCalendarEventId: number }) => {
         const jwtToken = getJwt();
         if (jwtToken == "") {
             return new Error("jwt token is empty");
         }
 
         const url = copyURL(urlArg);
-        url.pathname = `/secure/downloadCalendarEventAttendees/${args.calendarEventId}`;
+        url.pathname = `/secure/downloadCalendarEventAttendees/${args.placeCalendarEventId}`;
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
@@ -282,5 +282,5 @@ export const downloadCalendarEventAttendees =
         if (response instanceof Error) {
             return response;
         }
-        return handleResponse<Blob>(response);
+        return handleCSVResponse(response);
     };

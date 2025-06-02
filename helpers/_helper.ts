@@ -47,6 +47,22 @@ export async function handleResponse<T extends {}>(response: FetchResult) {
     return result as T;
 }
 
+export async function handleCSVResponse(
+    response: FetchResult,
+): Promise<string | Aborted | ApiError> {
+    const body = await response.text();
+    if (body instanceof Aborted) {
+        return body;
+    }
+    if (response.status != 200) {
+        return new ApiError(response.status, body);
+    }
+    if (!body) {
+        return "";
+    }
+    return body;
+}
+
 function parseJSON<T extends {}>(text: string) {
     try {
         return JSON.parse(text) as T;
