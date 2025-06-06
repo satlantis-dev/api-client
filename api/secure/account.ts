@@ -328,6 +328,7 @@ async (args: {
         displayName?: string;
         lud06?: string;
         lud16?: string;
+        nip05?: string;
         picture?: string;
         phone?: string;
         website?: string;

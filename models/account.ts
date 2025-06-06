@@ -124,6 +124,7 @@ export type Kind0MetaData = {
     username?: string;
     lud06?: string;
     lud16?: string;
+    nip05?: string;
     picture?: string;
     website?: string;
     /**
