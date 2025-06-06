@@ -1441,6 +1441,7 @@ export class Client {
         qTag?: any[];
         placeID?: number;
         isRepost?: boolean;
+        hasVideo?: boolean;
     }) => {
         const signer = await this.getNostrSigner();
         if (signer instanceof Error) {
@@ -1495,7 +1496,12 @@ export class Client {
 
         const res = await this._postNote({
             event,
-            noteType: args.image ? NoteType.MEDIA : args.qTag ? NoteType.REPLY_NOTE : NoteType.BASIC,
+            noteType:
+              args.image || args.hasVideo
+                ? NoteType.MEDIA
+                : args.qTag
+                  ? NoteType.REPLY_NOTE
+                  : NoteType.BASIC,
             placeId: args.placeID,
         });
         return res;
