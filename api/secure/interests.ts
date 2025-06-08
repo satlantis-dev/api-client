@@ -5,7 +5,6 @@ import type { Interest } from "../../models/interest.ts";
 
 // CreateInterestsPost
 interface CreateInterestsPost {
-    event: NostrEvent;
     interestIds: number[];
 }
 
@@ -54,7 +53,7 @@ export const getAccountInterests = (urlArg: URL) => async (pubkey: PublicKey) =>
 };
 
 export const createInterests =
-    (urlArg: URL, getJwt: () => string) => async (event: NostrEvent, interests: Interest[]) => {
+    (urlArg: URL, getJwt: () => string) => async (interests: Interest[]) => {
         const jwtToken = getJwt();
         if (jwtToken == "") {
             return new Error("jwt token is empty");
@@ -67,7 +66,6 @@ export const createInterests =
         headers.set("Authorization", `Bearer ${jwtToken}`);
 
         const createInterestsPost: CreateInterestsPost = {
-            event,
             interestIds: interests.map((i) => i.id),
         };
 
