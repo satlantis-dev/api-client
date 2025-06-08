@@ -1902,7 +1902,7 @@ export class Client {
                 return me;
             }
             if (args.shouldBuildFeed) {
-                await this.buildGlobalFeed({
+                this.buildGlobalFeed({
                     accountId: args.accountId,
                     secure: true,
                     lastNoteId: args.lastNoteId,
