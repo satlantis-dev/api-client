@@ -942,20 +942,7 @@ export class Client {
         if (signer instanceof Error) {
             return signer;
         }
-        const interest_tags: Tag[] = [];
-        for (const interest of interests) {
-            interest_tags.push(["t", interest.name]);
-        }
-        const event = await prepareNostrEvent(signer, {
-            kind: 10015 as NostrKind, // TODO: add to blowater: NostrKind.Interests
-            content: "",
-            tags: interest_tags,
-        });
-        if (event instanceof Error) {
-            return event;
-        }
-
-        return createInterests(this.rest_api_url, this.getJwt)(event, interests);
+        return createInterests(this.rest_api_url, this.getJwt)(interests);
     }
 
     /**
@@ -1496,12 +1483,11 @@ export class Client {
 
         const res = await this._postNote({
             event,
-            noteType:
-              args.image || args.hasVideo
+            noteType: args.image || args.hasVideo
                 ? NoteType.MEDIA
                 : args.qTag
-                  ? NoteType.REPLY_NOTE
-                  : NoteType.BASIC,
+                ? NoteType.REPLY_NOTE
+                : NoteType.BASIC,
             placeId: args.placeID,
         });
         return res;
