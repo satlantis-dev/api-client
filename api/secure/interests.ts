@@ -36,7 +36,7 @@ async (args?: {
     if (results instanceof Error) {
         return results;
     }
-    return results.filter((i) => i.name != "Default");
+    return results;
 };
 
 export const getAccountInterests = (urlArg: URL) => async (pubkey: PublicKey) => {
