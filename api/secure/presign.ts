@@ -1,7 +1,6 @@
 import { copyURL, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
 import type { func_GetJwt, func_GetNostrSigner } from "../../sdk.ts";
-import { v4 as uuidv4 } from "uuid";
 
 export const presign = (urlArg: URL, getJwt: func_GetJwt, getSigner: func_GetNostrSigner) =>
 async (args: {
@@ -23,7 +22,7 @@ async (args: {
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
-    const newFileName = `${uuidv4()}-${args.filename}`;
+    const newFileName = `${signer.publicKey.bech32().replace("npub", "")}-${Date.now()}-${args.filename}`;
     const response = await safeFetch(url, {
         method: "POST",
         body: JSON.stringify({
