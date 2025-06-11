@@ -1477,6 +1477,11 @@ export class Client {
         if (args.qTag) {
             nostrProps.tags.push(args.qTag);
         }
+        if (!args.hasVideo) {
+            for (const image of uploadedImageUrls) {
+                nostrProps.tags.push(["image", image]);
+            }
+        }
 
         const event = await prepareNostrEvent(signer, nostrProps);
         if (event instanceof Error) {
@@ -1891,19 +1896,19 @@ export class Client {
                 return me;
             }
             if (args.shouldBuildFeed) {
-              if (args.shouldWait) {
-                await this.buildGlobalFeed({
-                    accountId: args.accountId,
-                    secure: true,
-                    lastNoteId: args.lastNoteId,
-                  });
-              } else {
-                this.buildGlobalFeed({
-                  accountId: args.accountId,
-                  secure: true,
-                  lastNoteId: args.lastNoteId,
-                });
-              }
+                if (args.shouldWait) {
+                    await this.buildGlobalFeed({
+                        accountId: args.accountId,
+                        secure: true,
+                        lastNoteId: args.lastNoteId,
+                    });
+                } else {
+                    this.buildGlobalFeed({
+                        accountId: args.accountId,
+                        secure: true,
+                        lastNoteId: args.lastNoteId,
+                    });
+                }
             }
             const notes = await this.getNotes({
                 page: args.page,
