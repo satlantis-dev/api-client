@@ -93,7 +93,7 @@ import {
     updateAccountFollowingList,
 } from "./api/secure/account.ts";
 import { deletePlaceGalleryImage, postPlaceGalleryImage, updatePlace } from "./api/secure/place.ts";
-import { deleteNote, postNote, postReaction } from "./api/secure/note.ts";
+import { deleteNote, postNote, postReaction, recordNotesAsSeen } from "./api/secure/note.ts";
 import { getNotifications } from "./api/secure/notification.ts";
 import { presign } from "./api/secure/presign.ts";
 import { newURL } from "./helpers/_helper.ts";
@@ -286,6 +286,7 @@ export class Client {
     _postNote: ReturnType<typeof postNote>;
     deleteNote: ReturnType<typeof deleteNote>;
     postReaction: ReturnType<typeof postReaction>;
+    recordNotesAsSeen: ReturnType<typeof recordNotesAsSeen>;
     signEvent: ReturnType<typeof signEvent>;
 
     // s3
@@ -430,6 +431,7 @@ export class Client {
         );
         this.presign = presign(rest_api_url, getJwt, getNostrSigner);
         this.postReaction = postReaction(rest_api_url, this.getJwt);
+        this.recordNotesAsSeen = recordNotesAsSeen(rest_api_url, this.getJwt);
         this._postNote = postNote(rest_api_url, this.getJwt);
         this.deleteNote = deleteNote(rest_api_url, this.getJwt);
         this.signEvent = signEvent(rest_api_url, getJwt);
@@ -1882,17 +1884,26 @@ export class Client {
             accountId?: number;
             shouldBuildFeed?: boolean;
             lastNoteId?: number;
+            shouldWait?: boolean;
         }) => {
             const me = await this.getNostrSigner();
             if (me instanceof Error) {
                 return me;
             }
             if (args.shouldBuildFeed) {
-                this.buildGlobalFeed({
+              if (args.shouldWait) {
+                await this.buildGlobalFeed({
                     accountId: args.accountId,
                     secure: true,
                     lastNoteId: args.lastNoteId,
+                  });
+              } else {
+                this.buildGlobalFeed({
+                  accountId: args.accountId,
+                  secure: true,
+                  lastNoteId: args.lastNoteId,
                 });
+              }
             }
             const notes = await this.getNotes({
                 page: args.page,

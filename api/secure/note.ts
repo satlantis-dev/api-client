@@ -14,6 +14,10 @@ export type ReactionPost = {
     noteId: number;
 };
 
+export type RecordNotesAsSeenPost = {
+  noteIds: number[];
+};
+
 export interface NotePost {
     event: NostrEvent;
     noteType: NoteType;
@@ -116,4 +120,27 @@ export const postReaction = (urlArg: URL, getJwt: () => string) => async (args: 
         eventId: number;
         noteId: number; // the id of the note that it is reacting to
     }>(response);
+};
+
+export const recordNotesAsSeen = (urlArg: URL, getJwt: () => string) => async (args: RecordNotesAsSeenPost) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/recordNotesAsSeen`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        body: JSON.stringify(args),
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{ status: string }>(response);
 };
