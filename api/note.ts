@@ -62,6 +62,10 @@ export interface FeedNote extends Note {
     readonly commentCount: number; // next level comments
     readonly allCommentCount: number; // all level comments
     readonly reactionCount: number;
+    readonly notableReactionCount: number;
+    readonly reactedByAccounts: AccountDTO[];
+    readonly repostCount: number;
+    readonly repostedByAccounts: AccountDTO[];
     readonly commentedByUser: boolean;
     readonly reactedByUser: boolean;
     readonly place: Place;
