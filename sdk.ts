@@ -1480,14 +1480,16 @@ export class Client {
         }
 
         // This image tag is used to display a thumbnail when notifying
-        if (args.hasVideo && args.thumbnail) {
-            const uploadedThumbnailUrl = await this.uploadFile({
-                file: args.thumbnail,
-            });
-            if (uploadedThumbnailUrl instanceof Error) {
-                return uploadedThumbnailUrl;
+        if (args.hasVideo) {
+            if (args.thumbnail) {
+                const uploadedThumbnailUrl = await this.uploadFile({
+                    file: args.thumbnail,
+                });
+                if (uploadedThumbnailUrl instanceof Error) {
+                    return uploadedThumbnailUrl;
+                }
+                nostrProps.tags.push(["image", uploadedThumbnailUrl.toString()]);
             }
-            nostrProps.tags.push(["image", uploadedThumbnailUrl.toString()]);
         } else {
             for (const image of uploadedImageUrls) {
                 nostrProps.tags.push(["image", image]);
