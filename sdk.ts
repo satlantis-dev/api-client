@@ -1431,6 +1431,7 @@ export class Client {
         placeID?: number;
         isRepost?: boolean;
         hasVideo?: boolean;
+        thumbnail?: File;
     }) => {
         const signer = await this.getNostrSigner();
         if (signer instanceof Error) {
@@ -1477,7 +1478,17 @@ export class Client {
         if (args.qTag) {
             nostrProps.tags.push(args.qTag);
         }
-        if (!args.hasVideo) {
+
+        // This image tag is used to display a thumbnail when notifying
+        if (args.hasVideo && args.thumbnail) {
+            const uploadedThumbnailUrl = await this.uploadFile({
+                file: args.thumbnail,
+            });
+            if (uploadedThumbnailUrl instanceof Error) {
+                return uploadedThumbnailUrl;
+            }
+            nostrProps.tags.push(["image", uploadedThumbnailUrl.toString()]);
+        } else {
             for (const image of uploadedImageUrls) {
                 nostrProps.tags.push(["image", image]);
             }
