@@ -79,6 +79,7 @@ export type CalendarEvent = {
     type: CalendarEventType;
     url: string;
     website: string;
+    googleId?: string;
 };
 
 export type PlaceCalendarEvent = {
