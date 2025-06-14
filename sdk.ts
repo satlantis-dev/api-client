@@ -1506,7 +1506,7 @@ export class Client {
             noteType: args.image || args.hasVideo
                 ? NoteType.MEDIA
                 : args.qTag
-                ? NoteType.REPLY_NOTE
+                ? NoteType.BASIC
                 : NoteType.BASIC,
             placeId: args.placeID,
         });
