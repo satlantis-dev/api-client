@@ -15,7 +15,7 @@ export type ReactionPost = {
 };
 
 export type RecordNotesAsSeenPost = {
-  noteIds: number[];
+    noteIds: number[];
 };
 
 export interface NotePost {
@@ -122,25 +122,26 @@ export const postReaction = (urlArg: URL, getJwt: () => string) => async (args: 
     }>(response);
 };
 
-export const recordNotesAsSeen = (urlArg: URL, getJwt: () => string) => async (args: RecordNotesAsSeenPost) => {
-    const jwtToken = getJwt();
-    if (jwtToken == "") {
-        return new Error("jwt token is empty");
-    }
+export const recordNotesAsSeen =
+    (urlArg: URL, getJwt: () => string) => async (args: RecordNotesAsSeenPost) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
 
-    const url = copyURL(urlArg);
-    url.pathname = `/secure/recordNotesAsSeen`;
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/recordNotesAsSeen`;
 
-    const headers = new Headers();
-    headers.set("Authorization", `Bearer ${jwtToken}`);
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
 
-    const response = await safeFetch(url, {
-        method: "POST",
-        body: JSON.stringify(args),
-        headers,
-    });
-    if (response instanceof Error) {
-        return response;
-    }
-    return handleResponse<{ status: string }>(response);
-};
+        const response = await safeFetch(url, {
+            method: "POST",
+            body: JSON.stringify(args),
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<{ status: string }>(response);
+    };

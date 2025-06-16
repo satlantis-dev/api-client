@@ -1,7 +1,8 @@
-import type { NostrEvent, PublicKey } from "@blowater/nostr-sdk";
+import type { PublicKey } from "@blowater/nostr-sdk";
 import { copyURL, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
 import type { Interest } from "../../models/interest.ts";
+import type { AccountDTO } from "@satlantis/api-client";
 
 // CreateInterestsPost
 interface CreateInterestsPost {
@@ -52,30 +53,57 @@ export const getAccountInterests = (urlArg: URL) => async (pubkey: PublicKey) =>
     return handleResponse<Interest[]>(response);
 };
 
-export const createInterests =
-    (urlArg: URL, getJwt: () => string) => async (interests: Interest[]) => {
-        const jwtToken = getJwt();
-        if (jwtToken == "") {
-            return new Error("jwt token is empty");
-        }
+export const createInterests = (urlArg: URL, getJwt: () => string) => async (interests: Interest[]) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
 
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/createInterests`;
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/createInterests`;
 
-        const headers = new Headers();
-        headers.set("Authorization", `Bearer ${jwtToken}`);
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
 
-        const createInterestsPost: CreateInterestsPost = {
-            interestIds: interests.map((i) => i.id),
-        };
-
-        const response = await safeFetch(url, {
-            method: "POST",
-            headers,
-            body: JSON.stringify(createInterestsPost),
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<Interest[]>(response);
+    const createInterestsPost: CreateInterestsPost = {
+        interestIds: interests.map((i) => i.id),
     };
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(createInterestsPost),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<Interest[]>(response);
+};
+
+export const getRecommendedFollows = (urlArg: URL, getJwt: () => string) =>
+async (args?: {
+    max: number;
+}) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/getRecommendedFollows`;
+    if (args?.max) {
+        url.searchParams.append("max", args.max.toString());
+    }
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<AccountDTO[]>(response);
+};

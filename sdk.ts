@@ -99,7 +99,12 @@ import { presign } from "./api/secure/presign.ts";
 import { newURL } from "./helpers/_helper.ts";
 import { addressLookup, getCoordinatesByAddress } from "./api/address.ts";
 import { signEvent } from "./api/nostr_event.ts";
-import { createInterests, getAccountInterests, getInterests } from "./api/secure/interests.ts";
+import {
+    createInterests,
+    getAccountInterests,
+    getInterests,
+    getRecommendedFollows,
+} from "./api/secure/interests.ts";
 import {
     deletePlaceCalendarEvent,
     downloadCalendarEventAttendees,
@@ -277,6 +282,7 @@ export class Client {
     createInterests: ReturnType<typeof createInterests>;
     getAccountInterests: ReturnType<typeof getAccountInterests>;
     getInterests: ReturnType<typeof getInterests>;
+    getRecommendedFollows: ReturnType<typeof getRecommendedFollows>;
 
     // nostr note
     /**
@@ -449,6 +455,7 @@ export class Client {
         this.verifyEmail = verifyEmail(this.rest_api_url);
         this.createInterests = createInterests(this.rest_api_url, this.getJwt);
         this.getAccountInterests = getAccountInterests(this.rest_api_url);
+        this.getRecommendedFollows = getRecommendedFollows(this.rest_api_url, this.getJwt);
         this.getInterests = getInterests(this.rest_api_url);
         this.sendOTP = sendOTP(this.rest_api_url);
         this.verifyOTP = verifyOTP(this.rest_api_url);
