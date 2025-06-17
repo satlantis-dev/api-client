@@ -130,14 +130,21 @@ export const getPlaceNotes =
 /**
  * GET /getPlaceMetrics/{placeID}
  */
-export const getPlaceMetrics = (urlArg: URL) => async (args: { placeID: string | number }) => {
+export const getPlaceMetrics = (urlArg: URL) => async (args: { placeID: string | number; name?: string }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getPlaceMetrics/${args.placeID}`;
+    if (args.name) {
+        url.searchParams.set("name", args.name);
+    }
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<PlaceMetric[]>(response);
+    if (args.name) {
+        return handleResponse<PlaceMetric>(response);
+    } else {
+        return handleResponse<PlaceMetric[]>(response);
+    }
 };
 
 /**

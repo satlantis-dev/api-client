@@ -220,7 +220,7 @@ export class Client {
     >;
     getLocationReviews: ReturnType<typeof getLocationReviews>;
     suggestLocation: ReturnType<typeof suggestLocation>;
-    private getLocationByID: ReturnType<typeof getLocation>;
+    getLocationByID: ReturnType<typeof getLocation>;
     getLocationByGoogleId: ReturnType<typeof getLocationByGoogleId>;
     getLocationsByPlaceID: ReturnType<typeof getLocationsByPlaceID>;
     private _claimLocation: ReturnType<typeof claimLocation>;
