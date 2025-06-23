@@ -1,5 +1,5 @@
 import { type NostrEvent, NostrKind, prepareNostrEvent } from "@blowater/nostr-sdk";
-import { copyURL, generateUUID, handleCSVResponse, handleResponse } from "../../helpers/_helper.ts";
+import { copyURL, generateUUID, handleResponse, handleStringResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
 import {
     type Account,
@@ -282,5 +282,5 @@ export const downloadCalendarEventAttendees =
         if (response instanceof Error) {
             return response;
         }
-        return handleCSVResponse(response);
+        return handleStringResponse(response);
     };

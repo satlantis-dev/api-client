@@ -47,9 +47,7 @@ export async function handleResponse<T extends {}>(response: FetchResult) {
     return result as T;
 }
 
-export async function handleCSVResponse(
-    response: FetchResult,
-): Promise<string | Aborted | ApiError> {
+export async function handleStringResponse(response: FetchResult): Promise<string | Aborted | ApiError> {
     const body = await response.text();
     if (body instanceof Aborted) {
         return body;

@@ -1,6 +1,6 @@
 import { type NostrEvent, NostrKind, prepareNostrEvent } from "@blowater/nostr-sdk";
 
-import { copyURL, handleResponse } from "../../helpers/_helper.ts";
+import { copyURL, handleResponse, handleStringResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
 import type { AccountPlaceRole, AccountPlaceRoleTypeEnum } from "../../models/account.ts";
 import type { Account, AccountSearchDTO, func_GetJwt, func_GetNostrSigner } from "../../sdk.ts";
@@ -108,7 +108,7 @@ async (args: {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{ success: boolean }>(response);
+    return handleStringResponse(response);
 };
 
 export const unblockAccount = (urlArg: URL, getJwt: func_GetJwt) =>
@@ -131,7 +131,7 @@ async (args: {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{ success: boolean }>(response);
+    return handleStringResponse(response);
 };
 
 export const checkBlockStatus = (urlArg: URL, getJwt: func_GetJwt) =>
@@ -154,7 +154,10 @@ async (args: {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{ success: boolean }>(response);
+    return handleResponse<{
+        blocked: boolean;
+        blocking: boolean;
+    }>(response);
 };
 
 export const addAccountRole =
