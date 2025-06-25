@@ -124,7 +124,12 @@ import { UserResolver } from "./resolvers/user.ts";
 import { LocationResolver } from "./resolvers/location.ts";
 import { NoteResolver } from "./resolvers/note.ts";
 import type { Place } from "./models/place.ts";
-import type { LocationCategory, LocationCategoryName, LocationTag } from "./models/location.ts";
+import type {
+    ImageCategory,
+    LocationCategory,
+    LocationCategoryName,
+    LocationTag,
+} from "./models/location.ts";
 import { postAmbassadorInquiry } from "./api/secure/ambassador.ts";
 import type { Interest } from "./models/interest.ts";
 import { getBrands, getExchangeRate } from "./api/metric.ts";
@@ -228,7 +233,7 @@ export class Client {
     updateLocation: ReturnType<typeof updateLocation>;
     private getAccountsForLocation: ReturnType<typeof getAccountsForLocation>;
     getLocationGalleryImages: ReturnType<typeof getLocationGalleryImages>;
-    postLocationGalleryImage: ReturnType<typeof postLocationGalleryImage>;
+    private _postLocationGalleryImage: ReturnType<typeof postLocationGalleryImage>;
     updateLocationGalleryImage: ReturnType<typeof updateLocationGalleryImage>;
     deleteLocationGalleryImage: ReturnType<typeof deleteLocationGalleryImage>;
     getLocationsBySearch: ReturnType<typeof getLocationsBySearch>;
@@ -398,7 +403,7 @@ export class Client {
         this.updateLocation = updateLocation(rest_api_url, getJwt);
         this.getAccountsForLocation = getAccountsForLocation(rest_api_url);
         this.getLocationGalleryImages = getLocationGalleryImages(rest_api_url);
-        this.postLocationGalleryImage = postLocationGalleryImage(rest_api_url, getJwt);
+        this._postLocationGalleryImage = postLocationGalleryImage(rest_api_url, getJwt);
         this.updateLocationGalleryImage = updateLocationGalleryImage(rest_api_url, getJwt);
         this.deleteLocationGalleryImage = deleteLocationGalleryImage(rest_api_url, getJwt);
         this.getLocationsBySearch = getLocationsBySearch(rest_api_url);
@@ -1134,8 +1139,8 @@ export class Client {
         return signedEvent;
     };
 
-    uploadFile = async (args: { file: File }) => {
-        const res = await this.presign({ filename: args.file.name });
+    uploadFile = async (args: { file: File; directory?: string }) => {
+        const res = await this.presign({ filename: args.file.name, directory: args.directory });
         if (res instanceof Error) {
             return res;
         }
@@ -1740,6 +1745,43 @@ export class Client {
                 placeId: args.placeId,
             });
         }
+    };
+
+    postLocationGalleryImage = async (
+        args: {
+            image: File | URL;
+            locationID: number;
+            category: ImageCategory;
+            accountId: number;
+            highlight: boolean;
+        },
+    ) => {
+        let imageUrl: string;
+
+        if (args.image instanceof URL) {
+            imageUrl = args.image.toString();
+        } else {
+            const uploadedImageUrl = await this.uploadFile({
+                file: args.image,
+                directory: "location_photos",
+            });
+            if (uploadedImageUrl instanceof Error) {
+                return uploadedImageUrl;
+            }
+            imageUrl = uploadedImageUrl.toString();
+        }
+
+        const res = await this._postLocationGalleryImage({
+            locationID: args.locationID,
+            url: imageUrl,
+            source: `user_${args.accountId}`,
+            category: args.category,
+            highlight: args.highlight,
+        });
+        if (res instanceof Error) {
+            return res;
+        }
+        return res;
     };
 
     /**

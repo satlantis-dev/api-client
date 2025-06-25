@@ -1,6 +1,6 @@
 import { copyURL, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
-import type { ImageCategory, LocationDTO } from "../../models/location.ts";
+import type { ImageCategory, LocationDTO, LocationGalleryImage } from "../../models/location.ts";
 
 /**
  * POST /secure/postLocationGalleryImage
@@ -12,9 +12,9 @@ export const postLocationGalleryImage = (urlArg: URL, getJwt: () => string) =>
 async (args: {
     locationID: number;
     url: string;
-    caption: string;
     source: string;
     category: ImageCategory;
+    highlight: boolean;
 }) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
@@ -22,7 +22,7 @@ async (args: {
     }
 
     const url = copyURL(urlArg);
-    url.pathname = `/secure/postPlaceGalleryImage`;
+    url.pathname = `/secure/postLocationGalleryImage`;
 
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
@@ -46,13 +46,10 @@ async (args: {
  */
 export const updateLocationGalleryImage = (urlArg: URL, getJwt: () => string) =>
 async (
-    args: Partial<{
-        locationID: number;
-        url: string;
-        caption: string;
-        source: string;
-        category: ImageCategory;
-    }>,
+    args: {
+        imageId: number;
+        image: Partial<LocationGalleryImage>;
+    },
 ) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
@@ -60,14 +57,14 @@ async (
     }
 
     const url = copyURL(urlArg);
-    url.pathname = `/secure/updateLocationGalleryImage/${args.locationID}`;
+    url.pathname = `/secure/updateLocationGalleryImage/${args.imageId}`;
 
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
     const response = await safeFetch(url, {
-        method: "POST",
-        body: JSON.stringify(args),
+        method: "PUT",
+        body: JSON.stringify(args.image),
         headers,
     });
     if (response instanceof Error) {

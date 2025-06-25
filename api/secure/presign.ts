@@ -5,6 +5,7 @@ import type { func_GetJwt, func_GetNostrSigner } from "../../sdk.ts";
 export const presign = (urlArg: URL, getJwt: func_GetJwt, getSigner: func_GetNostrSigner) =>
 async (args: {
     filename: string;
+    directory?: string;
 }) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
@@ -22,7 +23,9 @@ async (args: {
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
-    const newFileName = `${signer.publicKey.bech32().replace("npub", "")}-${Date.now()}-${args.filename}`;
+    const newFileName = `${args.directory ? args.directory + "/" : ""}${
+        signer.publicKey.bech32().replace("npub", "")
+    }-${Date.now()}-${args.filename}`;
     const response = await safeFetch(url, {
         method: "POST",
         body: JSON.stringify({
