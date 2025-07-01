@@ -116,7 +116,7 @@ import {
     putUpdateCalendarEvent,
     respondCalendarEventCohostInvitation,
 } from "./api/secure/calendar.ts";
-import { followPubkeys, getFollowingPubkeys, getInterestsOf } from "./nostr-helpers.ts";
+import { followPubkeys, getFollowingPubkeys, getInterestsOf, unfollowPubkeys } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
 import { safeFetch } from "./helpers/safe-fetch.ts";
 import type { Account, Kind0MetaData } from "./models/account.ts";
@@ -1039,6 +1039,10 @@ export class Client {
 
     followPubkeys = async (toFollow: PublicKey[]) => {
         return followPubkeys(this.relay_url, toFollow, this);
+    };
+
+    unfollowPubkeys = async (toUnfollow: PublicKey[]) => {
+        return unfollowPubkeys(this.relay_url, toUnfollow, this);
     };
 
     unfollowPubkey = async (pubkeyToUnfollow: PublicKey) => {

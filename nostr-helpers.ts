@@ -83,6 +83,56 @@ export async function followPubkeys(
     return ok;
 }
 
+export async function unfollowPubkeys(
+    satlantis_relay_url: string,
+    toUnfollow: PublicKey[],
+    apiClient: Client,
+) {
+    const me = await apiClient.getNostrSigner();
+    if (me instanceof Error) {
+        return me;
+    }
+
+    const followEvent = await getContactList(satlantis_relay_url, me.publicKey);
+    if (followEvent instanceof Error) {
+        return followEvent;
+    }
+
+    const follows = new Set<string>();
+    if (followEvent) {
+        for (const p of getTags(followEvent).p) {
+            follows.add(p);
+        }
+    }
+
+    // Remove all pubkeys that need to be unfollowed
+    for (const pub of toUnfollow) {
+        follows.delete(pub.hex);
+    }
+
+    const tags: Tag[] = [];
+    for (const p of follows) {
+        tags.push(["p", p]);
+    }
+
+    const new_event = await prepareNostrEvent(me, {
+        kind: NostrKind.CONTACTS,
+        content: "",
+        tags,
+    });
+    if (new_event instanceof Error) {
+        return new_event;
+    }
+
+    // @ts-ignore: use private
+    const ok = await apiClient.updateAccountFollowingList({ event: new_event });
+    if (ok instanceof Error) {
+        return ok;
+    }
+
+    return ok;
+}
+
 export async function isUserAFollowingUserB(satlantis_relay_url: string, a: string, b: string) {
     const event = await getContactList(satlantis_relay_url, a);
     if (event instanceof Error) {
