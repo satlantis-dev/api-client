@@ -2,18 +2,19 @@ import type { Category, Topic } from "../api/share_types.ts";
 
 // https://github.com/satlantis-dev/models/blob/main/metric.go#L41
 export interface Metric {
-    readonly id: number;
-    readonly categoryId: number;
-    readonly category: Category;
-    readonly description: string;
-    readonly name: string;
-    readonly order: number;
-    readonly prompt: string;
-    readonly slug: string;
-    readonly suffix: string;
-    readonly tags: Tags;
-    readonly topicId: number;
-    readonly topic: Topic;
+    id: number;
+    categoryId: number;
+    category: Category;
+    description: string;
+    name: string;
+    order: number;
+    prompt: string;
+    slug: string;
+    suffix: string;
+    tags: Tags;
+    topicId: number;
+    topic: Topic;
+    format: MetricFormat;
 }
 
 export enum Tags {
@@ -34,6 +35,7 @@ export enum MetricFormat {
     NUMERIC_HIGH_BETTER,
     NUMERIC_LOW_BETTER,
     YES_NO,
+    NON_NUMERIC,
 }
 
 export interface MetricSource {
