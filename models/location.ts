@@ -20,7 +20,7 @@ export enum LocationCategoryName {
     Nightlife = "Nightlife",
     Others = "Others",
     Lodging = "Lodging",
-    WellnessFitness = "Wellness & Fitness",
+    WellnessFitness = "Health & Wellness",
     GrocerySpecialtyFoods = "Grocery & Specialty Foods",
     SouvenirsGifts = "Souvenirs & Gifts",
     Satlantis = "satlantis",

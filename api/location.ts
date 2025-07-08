@@ -501,6 +501,6 @@ async (args: {
         Sport: LocationTag[];
         Transverse: LocationTag[];
         Vibe: LocationTag[];
-        "Wellness & Fitness": LocationTag[];
+        "Health & Wellness": LocationTag[];
     }>(response);
 };
