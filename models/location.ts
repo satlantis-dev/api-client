@@ -21,7 +21,7 @@ export enum LocationCategoryName {
     Others = "Others",
     Lodging = "Lodging",
     WellnessFitness = "Health & Wellness",
-    GrocerySpecialtyFoods = "Grocery & Specialty Foods",
+    GrocerySpecialtyFoods = "Markets & Specialty Foods",
     SouvenirsGifts = "Souvenirs & Gifts",
     Satlantis = "satlantis",
 }

@@ -493,7 +493,7 @@ async (args: {
         "Coworking & Event Spaces": LocationTag[];
         Cuisine: LocationTag[];
         "Diet": LocationTag[];
-        "Grocery & Specialty Foods": LocationTag[];
+        "Markets & Specialty Foods": LocationTag[];
         "Healthcare": LocationTag[];
         "Nightlife": LocationTag[];
         "Others": LocationTag[];
