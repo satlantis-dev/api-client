@@ -418,7 +418,7 @@ async (args: {
 
 /**
  * GET /getLocationsByPlaceIDRandomized/{placeId}
- * https://github.com/satlantis-dev/api/blob/dev/rest/location.go#L105
+ * https://github.com/satlantis-dev/api/blob/dev/rest/location.go#L154
  */
 export const getLocationsByPlaceIDRandomized = (urlArg: URL) =>
 async (args: {

@@ -238,12 +238,12 @@ export class Client {
     updateLocationGalleryImage: ReturnType<typeof updateLocationGalleryImage>;
     deleteLocationGalleryImage: ReturnType<typeof deleteLocationGalleryImage>;
     getLocationsBySearch: ReturnType<typeof getLocationsBySearch>;
-    private getLocationsByPlaceIDRandomized: ReturnType<
+    getLocationsByPlaceIDRandomized: ReturnType<
         typeof getLocationsByPlaceIDRandomized
-    >; // Use getSuggestedLocations instead
+    >;
     getLocationLinks: ReturnType<typeof getLocationLinks>;
     getAccountRolesForLocation: ReturnType<typeof getAccountRolesForLocation>;
-    private getRecommendedLocations: ReturnType<typeof getRecommendedLocations>; // Use getSuggestedLocations instead
+    getRecommendedLocations: ReturnType<typeof getRecommendedLocations>; // Use getSuggestedLocations instead
     getLocationTagsByPlaceID: ReturnType<typeof getLocationTagsByPlaceID>;
     getSimilarLocations: ReturnType<typeof getSimilarLocations>;
 
@@ -1737,21 +1737,6 @@ export class Client {
         await relay.close();
 
         return metadataList;
-    };
-
-    getSuggestedLocations = async (args: {
-        placeId: number;
-        isSecure: boolean;
-    }) => {
-        if (args.isSecure) {
-            return await this.getRecommendedLocations({
-                placeId: args.placeId,
-            });
-        } else {
-            return await this.getLocationsByPlaceIDRandomized({
-                placeId: args.placeId,
-            });
-        }
     };
 
     postLocationGalleryImage = async (
