@@ -504,3 +504,20 @@ async (args: {
         "Health & Wellness": LocationTag[];
     }>(response);
 };
+
+/**
+ * GET /getSimilarLocations/{locationId}
+ * https://github.com/satlantis-dev/api/blob/prod/rest/location.go#L1129
+ */
+export const getSimilarLocations = (urlArg: URL) =>
+async (args: {
+    locationId: number;
+}) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getSimilarLocations/${args.locationId}`;
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<Location[]>(response);
+};

@@ -42,6 +42,7 @@ import {
     getLocationsWithinBoundingBox,
     getLocationTags,
     getLocationTagsByPlaceID,
+    getSimilarLocations,
     proveLocationClaim,
     suggestLocation,
     updateLocation,
@@ -244,6 +245,7 @@ export class Client {
     getAccountRolesForLocation: ReturnType<typeof getAccountRolesForLocation>;
     private getRecommendedLocations: ReturnType<typeof getRecommendedLocations>; // Use getSuggestedLocations instead
     getLocationTagsByPlaceID: ReturnType<typeof getLocationTagsByPlaceID>;
+    getSimilarLocations: ReturnType<typeof getSimilarLocations>;
 
     // address
     addressLookup: ReturnType<typeof addressLookup>;
@@ -412,6 +414,7 @@ export class Client {
         this.getAccountRolesForLocation = getAccountRolesForLocation(rest_api_url);
         this.getRecommendedLocations = getRecommendedLocations(rest_api_url, getJwt);
         this.getLocationTagsByPlaceID = getLocationTagsByPlaceID(rest_api_url);
+        this.getSimilarLocations = getSimilarLocations(rest_api_url);
 
         // address
         this.addressLookup = addressLookup(rest_api_url);
