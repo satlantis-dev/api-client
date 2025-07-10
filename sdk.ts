@@ -651,6 +651,7 @@ export class Client {
         googleMapsUri: string;
         venueName: string;
         googlePlaceId: string;
+        autofollowHostAndCohosts?: boolean;
     }) => {
         const jwtToken = this.getJwt();
         if (jwtToken == "") {
@@ -676,6 +677,10 @@ export class Client {
             ["url", args.url],
             ["cohosts", args.cohosts],
             ["interests", args.interests],
+            [
+                "autoFollowHosts",
+                args.autofollowHostAndCohosts ? args.autofollowHostAndCohosts.toString() : "false",
+            ],
 
             ["website", args.website],
         ];
@@ -744,6 +749,7 @@ export class Client {
         googleMapsUri: string;
         venueName: string;
         googlePlaceId: string;
+        autofollowHostAndCohosts?: boolean;
     }) => {
         const jwtToken = this.getJwt();
         if (jwtToken == "") {
@@ -771,6 +777,10 @@ export class Client {
             ["cohosts", args.cohosts],
             ["interests", args.interests],
             ["website", args.website],
+            [
+                "autoFollowHosts",
+                args.autofollowHostAndCohosts ? args.autofollowHostAndCohosts.toString() : "false",
+            ],
         ];
 
         if (args.venue) {
