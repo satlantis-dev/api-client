@@ -1,6 +1,6 @@
 import { PublicKey } from "@blowater/nostr-sdk";
 import type { Kind0MetaData } from "../models/account.ts";
-import { AccountPlaceRoleTypeEnum, type Client } from "../sdk.ts";
+import { AccountPlaceRoleTypeEnum, CalendarEventPeriod, type Client } from "../sdk.ts";
 import { NoteResolver } from "./note.ts";
 import { LocationResolver } from "./location.ts";
 
@@ -230,9 +230,10 @@ export class UserResolver {
         );
     };
 
-    getCalendarEvents = async () => {
+    getCalendarEvents = async (period: CalendarEventPeriod = CalendarEventPeriod.Upcoming) => {
         const events = await this.client.getAccountCalendarEvents({
             npub: this.pubkey.bech32(),
+            period,
         });
         if (events instanceof Error) {
             return events;

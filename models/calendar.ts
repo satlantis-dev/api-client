@@ -96,3 +96,7 @@ export type CalendarEventType = {
     name: string;
     description: string;
 };
+export enum CalendarEventPeriod {
+    Upcoming = "upcoming",
+    Past = "past",
+}
