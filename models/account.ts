@@ -127,6 +127,7 @@ export type Kind0MetaData = {
     nip05?: string;
     picture?: string;
     website?: string;
+    npub?: string;
     /**
      * @deprecated remove after Oct 25
      */
