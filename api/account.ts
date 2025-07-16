@@ -1,13 +1,21 @@
 import { ApiError, copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { Account, AccountDTO } from "../models/account.ts";
-import { type CalendarEvent, CalendarEventPeriod } from "../sdk.ts";
+import { type CalendarEvent, CalendarEventPeriod, type func_GetJwt } from "../sdk.ts";
 
-export const getAccount = (urlArg: URL) => async (args: { npub?: string; username?: string }) => {
+export const getAccount = (urlArg: URL, getJwt: func_GetJwt) => async (args: { npub?: string; username?: string }) => {
     if (args.npub) {
         const url = copyURL(urlArg);
         url.pathname = `/getAccount/${args.npub}`;
-        const response = await safeFetch(url);
+        const jwtToken = getJwt();
+        let headers;
+        if (jwtToken !== "") {
+          headers = new Headers();
+          headers.set("Authorization", `Bearer ${jwtToken}`);
+        }
+        const response = await safeFetch(url, {
+          headers
+        });
         if (response instanceof Error) {
             return response;
         }

@@ -370,7 +370,7 @@ export class Client {
         this.downloadCalendarEventAttendees = downloadCalendarEventAttendees(rest_api_url, getJwt);
 
         // account
-        this._getAccount = getAccount(rest_api_url);
+        this._getAccount = getAccount(rest_api_url, getJwt);
         this._getAccountFollowings = getAccountFollowings(rest_api_url);
         this._getAccountFollowers = getAccountFollowers(rest_api_url);
         this.getAccountsBySearch = getAccountsBySearch(rest_api_url, getJwt);
