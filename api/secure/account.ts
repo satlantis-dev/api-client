@@ -2,7 +2,7 @@ import { type NostrEvent, NostrKind, prepareNostrEvent } from "@blowater/nostr-s
 
 import { copyURL, handleResponse, handleStringResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
-import type { AccountPlaceRole, AccountPlaceRoleTypeEnum } from "../../models/account.ts";
+import type { AccountDTO, AccountPlaceRole, AccountPlaceRoleTypeEnum } from "../../models/account.ts";
 import type { Account, AccountSearchDTO, func_GetJwt, func_GetNostrSigner } from "../../sdk.ts";
 
 export const saveDeviceInfo = (urlArg: URL, getJwt: func_GetJwt) =>
@@ -32,6 +32,29 @@ async (args: {
         return response;
     }
     return handleResponse<{ success: boolean }>(response);
+};
+
+export const getFollowedByAccounts = (urlArg: URL, getJwt: func_GetJwt) =>
+async (args: {
+  npub: string
+}) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/getFollowedByAccounts/${args.npub}`;
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{ totalCount: number; accounts: AccountDTO[] }>(response);
 };
 
 export const reportContent = (urlArg: URL, getJwt: func_GetJwt) =>

@@ -89,6 +89,7 @@ import {
     reportContent,
     resendEmailVerification,
     saveDeviceInfo,
+    getFollowedByAccounts,
     unblockAccount,
     updateAccount,
     updateAccountFollowingList,
@@ -271,6 +272,7 @@ export class Client {
     removeAccountRole: ReturnType<typeof removeAccountRole>;
     addAccountRole: ReturnType<typeof addAccountRole>;
     saveDeviceInfo: ReturnType<typeof saveDeviceInfo>;
+    getFollowedByAccounts: ReturnType<typeof getFollowedByAccounts>;
     reportContent: ReturnType<typeof reportContent>;
     followTierZeroPlaces: ReturnType<typeof followTierZeroPlaces>;
     blockAccount: ReturnType<typeof blockAccount>;
@@ -432,6 +434,7 @@ export class Client {
             this.getNostrSigner,
         );
         this.saveDeviceInfo = saveDeviceInfo(rest_api_url, this.getJwt);
+        this.getFollowedByAccounts = getFollowedByAccounts(rest_api_url, this.getJwt);
         this.reportContent = reportContent(rest_api_url, this.getJwt);
         this.followTierZeroPlaces = followTierZeroPlaces(rest_api_url, this.getJwt);
         this.blockAccount = blockAccount(rest_api_url, this.getJwt);
