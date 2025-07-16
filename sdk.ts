@@ -140,6 +140,7 @@ import {
     postLocationGalleryImage,
     updateLocationGalleryImage,
 } from "./api/secure/location.ts";
+import { createCollection, getUserCollections } from './api/secure/collections.ts'
 
 export type func_GetNostrSigner = () => Promise<(Signer & Encrypter) | Error>;
 export type func_GetJwt = () => string;
@@ -311,6 +312,10 @@ export class Client {
     // Ambassador
     postAmbassadorInquiry: ReturnType<typeof postAmbassadorInquiry>;
 
+    // Collections
+    createCollection: ReturnType<typeof createCollection>;
+    getUserCollections: ReturnType<typeof getUserCollections>;
+
     private constructor(
         public readonly rest_api_url: URL,
         public readonly relay_url: string,
@@ -477,6 +482,10 @@ export class Client {
             getJwt,
             getNostrSigner,
         );
+
+        // Collections.
+        this.createCollection = createCollection(rest_api_url, getJwt);
+        this.getUserCollections = getUserCollections(rest_api_url, getJwt); 
     }
 
     static New(args: {
