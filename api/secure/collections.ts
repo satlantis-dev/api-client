@@ -42,7 +42,7 @@ export function createCollection(urlArg: URL, getJwt: func_GetJwt) {
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
-        
+
         const url = copyURL(urlArg);
         url.pathname = "/secure/createCollection";
 
@@ -68,24 +68,24 @@ export function getUserCollections(urlArg: URL, getJwt: func_GetJwt) {
         const jwtToken = getJwt();
 
         if (jwtToken == "") {
-            return new Error('JWT token is empty.');
+            return new Error("JWT token is empty.");
         }
 
         const headers = new Headers();
-        headers.set('Authorization', `Bearer ${jwtToken}`);
+        headers.set("Authorization", `Bearer ${jwtToken}`);
 
         const url = copyURL(urlArg);
-        url.pathname = '/secure/getUserCollections';
+        url.pathname = "/secure/getUserCollections";
 
         const response = await safeFetch(url, {
-            method: 'GET',
-            headers
-        })
+            method: "GET",
+            headers,
+        });
 
         if (response instanceof Error) {
             return response;
         }
 
         return handleResponse<Collection[]>(response);
-    }
+    };
 }

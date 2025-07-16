@@ -140,7 +140,7 @@ import {
     postLocationGalleryImage,
     updateLocationGalleryImage,
 } from "./api/secure/location.ts";
-import { createCollection, getUserCollections } from './api/secure/collections.ts'
+import { createCollection, getUserCollections } from "./api/secure/collections.ts";
 
 export type func_GetNostrSigner = () => Promise<(Signer & Encrypter) | Error>;
 export type func_GetJwt = () => string;
@@ -485,7 +485,7 @@ export class Client {
 
         // Collections.
         this.createCollection = createCollection(rest_api_url, getJwt);
-        this.getUserCollections = getUserCollections(rest_api_url, getJwt); 
+        this.getUserCollections = getUserCollections(rest_api_url, getJwt);
     }
 
     static New(args: {
