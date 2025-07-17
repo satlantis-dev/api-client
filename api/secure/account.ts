@@ -36,7 +36,7 @@ async (args: {
 
 export const getFollowedByAccounts = (urlArg: URL, getJwt: func_GetJwt) =>
 async (args: {
-  npub: string
+    npub: string;
 }) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
@@ -158,12 +158,12 @@ async (args: {
 };
 
 export const muteAccount = (urlArg: URL, getJwt: func_GetJwt) =>
-  async (args: {
+async (args: {
     npub: string;
-  }) => {
+}) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
-      return new Error("jwt token is empty");
+        return new Error("jwt token is empty");
     }
     const url = copyURL(urlArg);
     url.pathname = `/secure/muteAccount/${args.npub}`;
@@ -171,22 +171,22 @@ export const muteAccount = (urlArg: URL, getJwt: func_GetJwt) =>
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
     const response = await safeFetch(url, {
-      method: "PUT",
-      headers,
+        method: "PUT",
+        headers,
     });
     if (response instanceof Error) {
-      return response;
+        return response;
     }
     return handleStringResponse(response);
-  };
+};
 
 export const unmuteAccount = (urlArg: URL, getJwt: func_GetJwt) =>
-  async (args: {
+async (args: {
     npub: string;
-  }) => {
+}) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
-      return new Error("jwt token is empty");
+        return new Error("jwt token is empty");
     }
     const url = copyURL(urlArg);
     url.pathname = `/secure/unmuteAccount/${args.npub}`;
@@ -194,14 +194,14 @@ export const unmuteAccount = (urlArg: URL, getJwt: func_GetJwt) =>
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
     const response = await safeFetch(url, {
-      method: "PUT",
-      headers,
+        method: "PUT",
+        headers,
     });
     if (response instanceof Error) {
-      return response;
+        return response;
     }
     return handleStringResponse(response);
-  };
+};
 
 export const checkBlockStatus = (urlArg: URL, getJwt: func_GetJwt) =>
 async (args: {
@@ -226,6 +226,8 @@ async (args: {
     return handleResponse<{
         blocked: boolean;
         blocking: boolean;
+        muted: boolean;
+        muting: boolean;
     }>(response);
 };
 
