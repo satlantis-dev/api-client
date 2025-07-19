@@ -25,7 +25,6 @@ import type { Collection } from "../../models/collection.ts";
  * Create Collection.
  */
 export type CreateCollectionArgs = {
-    accountId: number;
     name: string;
     description?: string;
     coverImage?: string;
