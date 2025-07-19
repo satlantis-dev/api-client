@@ -80,16 +80,20 @@ import {
     addAccountRole,
     blacklistAccount,
     blockAccount,
+    muteAccount,
     checkBlockStatus,
     deleteAccount,
     followTierZeroPlaces,
     getAccountsBySearch,
     getBlockedAccounts,
+    getMutedAccounts,
     removeAccountRole,
     reportContent,
     resendEmailVerification,
     saveDeviceInfo,
+    getFollowedByAccounts,
     unblockAccount,
+    unmuteAccount,
     updateAccount,
     updateAccountFollowingList,
 } from "./api/secure/account.ts";
@@ -272,12 +276,16 @@ export class Client {
     removeAccountRole: ReturnType<typeof removeAccountRole>;
     addAccountRole: ReturnType<typeof addAccountRole>;
     saveDeviceInfo: ReturnType<typeof saveDeviceInfo>;
+    getFollowedByAccounts: ReturnType<typeof getFollowedByAccounts>;
     reportContent: ReturnType<typeof reportContent>;
     followTierZeroPlaces: ReturnType<typeof followTierZeroPlaces>;
     blockAccount: ReturnType<typeof blockAccount>;
     unblockAccount: ReturnType<typeof unblockAccount>;
+    muteAccount: ReturnType<typeof muteAccount>;
+    unmuteAccount: ReturnType<typeof unmuteAccount>;
     checkBlockStatus: ReturnType<typeof checkBlockStatus>;
     getBlockedAccounts: ReturnType<typeof getBlockedAccounts>;
+    getMutedAccounts: ReturnType<typeof getMutedAccounts>;
     /**
      * @unstable
      */
@@ -373,7 +381,7 @@ export class Client {
         this.downloadCalendarEventAttendees = downloadCalendarEventAttendees(rest_api_url, getJwt);
 
         // account
-        this._getAccount = getAccount(rest_api_url);
+        this._getAccount = getAccount(rest_api_url, getJwt);
         this._getAccountFollowings = getAccountFollowings(rest_api_url);
         this._getAccountFollowers = getAccountFollowers(rest_api_url);
         this.getAccountsBySearch = getAccountsBySearch(rest_api_url, getJwt);
@@ -437,12 +445,16 @@ export class Client {
             this.getNostrSigner,
         );
         this.saveDeviceInfo = saveDeviceInfo(rest_api_url, this.getJwt);
+        this.getFollowedByAccounts = getFollowedByAccounts(rest_api_url, this.getJwt);
         this.reportContent = reportContent(rest_api_url, this.getJwt);
         this.followTierZeroPlaces = followTierZeroPlaces(rest_api_url, this.getJwt);
         this.blockAccount = blockAccount(rest_api_url, this.getJwt);
         this.unblockAccount = unblockAccount(rest_api_url, this.getJwt);
+        this.muteAccount = muteAccount(rest_api_url, this.getJwt);
+        this.unmuteAccount = unmuteAccount(rest_api_url, this.getJwt);
         this.checkBlockStatus = checkBlockStatus(rest_api_url, this.getJwt);
         this.getBlockedAccounts = getBlockedAccounts(rest_api_url, this.getJwt);
+        this.getMutedAccounts = getMutedAccounts(rest_api_url, this.getJwt);
         this.updateAccountFollowingList = updateAccountFollowingList(
             rest_api_url,
             this.getJwt,

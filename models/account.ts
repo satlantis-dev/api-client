@@ -10,6 +10,7 @@ export type Account = {
     followedBy: AccountDTO[];
     followingCount?: number;
     followersCount?: number;
+    followsCurrentAccount?: boolean;
     npub: string;
     pubKey: string;
     accountPlaceRoles?: AccountPlaceRole[];
@@ -63,6 +64,7 @@ export type AccountDTO = {
     banner: string;
     followersCount: number | null;
     followingCount: number | null;
+    followsCurrentAccount?: boolean;
     isBlacklisted: boolean;
     website: string;
     vertexRank: string;

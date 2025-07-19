@@ -2,7 +2,7 @@ import { type NostrEvent, NostrKind, prepareNostrEvent } from "@blowater/nostr-s
 
 import { copyURL, handleResponse, handleStringResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
-import type { AccountPlaceRole, AccountPlaceRoleTypeEnum } from "../../models/account.ts";
+import type { AccountDTO, AccountPlaceRole, AccountPlaceRoleTypeEnum } from "../../models/account.ts";
 import type { Account, AccountSearchDTO, func_GetJwt, func_GetNostrSigner } from "../../sdk.ts";
 
 export const saveDeviceInfo = (urlArg: URL, getJwt: func_GetJwt) =>
@@ -32,6 +32,29 @@ async (args: {
         return response;
     }
     return handleResponse<{ success: boolean }>(response);
+};
+
+export const getFollowedByAccounts = (urlArg: URL, getJwt: func_GetJwt) =>
+async (args: {
+    npub: string;
+}) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/getFollowedByAccounts/${args.npub}`;
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{ totalCount: number; accounts: AccountDTO[] }>(response);
 };
 
 export const reportContent = (urlArg: URL, getJwt: func_GetJwt) =>
@@ -134,6 +157,52 @@ async (args: {
     return handleStringResponse(response);
 };
 
+export const muteAccount = (urlArg: URL, getJwt: func_GetJwt) =>
+async (args: {
+    npub: string;
+}) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/muteAccount/${args.npub}`;
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleStringResponse(response);
+};
+
+export const unmuteAccount = (urlArg: URL, getJwt: func_GetJwt) =>
+async (args: {
+    npub: string;
+}) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/unmuteAccount/${args.npub}`;
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleStringResponse(response);
+};
+
 export const checkBlockStatus = (urlArg: URL, getJwt: func_GetJwt) =>
 async (args: {
     npub: string;
@@ -157,6 +226,8 @@ async (args: {
     return handleResponse<{
         blocked: boolean;
         blocking: boolean;
+        muted: boolean;
+        muting: boolean;
     }>(response);
 };
 
@@ -404,6 +475,26 @@ export const getBlockedAccounts = (urlArg: URL, getJwt: func_GetJwt) => async ()
 
     const url = copyURL(urlArg);
     url.pathname = `/secure/getBlockedAccounts`;
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<Account[]>(response);
+};
+
+export const getMutedAccounts = (urlArg: URL, getJwt: func_GetJwt) => async () => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/getMutedAccounts`;
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
