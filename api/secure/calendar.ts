@@ -284,3 +284,26 @@ export const downloadCalendarEventAttendees =
         }
         return handleStringResponse(response);
     };
+
+export const downloadCalendarEventIcsFile =
+    (urlArg: URL, getJwt: () => string) => async (args: { calendarEventId: number }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/downloadCalendarEventIcsFile/${args.calendarEventId}`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleStringResponse(response);
+    };

@@ -80,18 +80,18 @@ import {
     addAccountRole,
     blacklistAccount,
     blockAccount,
-    muteAccount,
     checkBlockStatus,
     deleteAccount,
     followTierZeroPlaces,
     getAccountsBySearch,
     getBlockedAccounts,
+    getFollowedByAccounts,
     getMutedAccounts,
+    muteAccount,
     removeAccountRole,
     reportContent,
     resendEmailVerification,
     saveDeviceInfo,
-    getFollowedByAccounts,
     unblockAccount,
     unmuteAccount,
     updateAccount,
@@ -113,6 +113,7 @@ import {
 import {
     deletePlaceCalendarEvent,
     downloadCalendarEventAttendees,
+    downloadCalendarEventIcsFile,
     getEventById,
     postCalendarEventAnnouncement,
     postCalendarEventNote,
@@ -194,6 +195,7 @@ export class Client {
     getAccountCalendarEvents: ReturnType<typeof getAccountCalendarEvents>;
     getCalendarEventTypes: ReturnType<typeof getCalendarEventTypes>;
     downloadCalendarEventAttendees: ReturnType<typeof downloadCalendarEventAttendees>;
+    downloadCalendarEventIcsFile: ReturnType<typeof downloadCalendarEventIcsFile>;
 
     // Account
     /**
@@ -374,6 +376,7 @@ export class Client {
         this.getAccountCalendarEvents = getAccountCalendarEvents(rest_api_url);
         this.getCalendarEventTypes = getCalendarEventTypes(rest_api_url);
         this.downloadCalendarEventAttendees = downloadCalendarEventAttendees(rest_api_url, getJwt);
+        this.downloadCalendarEventIcsFile = downloadCalendarEventIcsFile(rest_api_url, getJwt);
 
         // account
         this._getAccount = getAccount(rest_api_url, getJwt);
