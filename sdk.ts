@@ -147,7 +147,7 @@ import {
 } from "./api/secure/location.ts";
 import {
     addContributorToCollection,
-    addLocationToCollection,
+    addLocationToCollections,
     addViewerToCollection,
     canEditCollection,
     createCollection,
@@ -350,7 +350,7 @@ export class Client {
     editCollection: ReturnType<typeof editCollection>;
     canEditCollection: ReturnType<typeof canEditCollection>;
     deleteCollection: ReturnType<typeof deleteCollection>;
-    addLocationToCollection: ReturnType<typeof addLocationToCollection>;
+    addLocationToCollections: ReturnType<typeof addLocationToCollections>;
     removeLocationFromCollection: ReturnType<typeof removeLocationFromCollection>;
     updateLocationCollections: ReturnType<typeof updateLocationCollections>;
     updateCollectionLocation: ReturnType<typeof updateCollectionLocation>;
@@ -542,7 +542,7 @@ export class Client {
         this.editCollection = editCollection(rest_api_url, getJwt);
         this.canEditCollection = canEditCollection(rest_api_url, getJwt);
         this.deleteCollection = deleteCollection(rest_api_url, getJwt);
-        this.addLocationToCollection = addLocationToCollection(rest_api_url, getJwt);
+        this.addLocationToCollections = addLocationToCollections(rest_api_url, getJwt);
         this.removeLocationFromCollection = removeLocationFromCollection(rest_api_url, getJwt);
         this.updateLocationCollections = updateLocationCollections(rest_api_url, getJwt);
         this.updateCollectionLocation = updateCollectionLocation(rest_api_url, getJwt);
