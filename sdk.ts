@@ -345,7 +345,7 @@ export class Client {
     getCollectionById: ReturnType<typeof getCollectionById>;
     getUserCollections: ReturnType<typeof getUserCollections>;
     getUserCollectionsForLocation: ReturnType<typeof getUserCollectionsForLocation>;
-    getAccountCollection: ReturnType<typeof getAccountCollections>;
+    getAccountCollections: ReturnType<typeof getAccountCollections>;
     createCollection: ReturnType<typeof createCollection>;
     editCollection: ReturnType<typeof editCollection>;
     canEditCollection: ReturnType<typeof canEditCollection>;
@@ -537,7 +537,7 @@ export class Client {
         this.getCollectionById = getCollectionById(rest_api_url, getJwt);
         this.getUserCollections = getUserCollections(rest_api_url, getJwt);
         this.getUserCollectionsForLocation = getUserCollectionsForLocation(rest_api_url, getJwt);
-        this.getAccountCollection = getAccountCollections(rest_api_url, getJwt);
+        this.getAccountCollections = getAccountCollections(rest_api_url, getJwt);
         this.createCollection = createCollection(rest_api_url, getJwt);
         this.editCollection = editCollection(rest_api_url, getJwt);
         this.canEditCollection = canEditCollection(rest_api_url, getJwt);
