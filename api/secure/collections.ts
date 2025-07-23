@@ -238,18 +238,18 @@ export function deleteCollection(urlArg: URL, getJwt: func_GetJwt) {
     };
 }
 
-export type AddLocationToCollectionArgs = {
+export type AddLocationToCollectionsArgs = {
     collectionIds: string[];
     googleId: string;
 };
-export type AddLocationToCollectionResponse = {
+export type AddLocationToCollectionsResponse = {
     message: string;
 };
 /**
  * Add Location to Collection.
  */
-export function addLocationToCollection(urlArg: URL, getJwt: func_GetJwt) {
-    return async (args: AddLocationToCollectionArgs) => {
+export function addLocationToCollections(urlArg: URL, getJwt: func_GetJwt) {
+    return async (args: AddLocationToCollectionsArgs) => {
         const jwtToken = getJwt();
         if (!jwtToken) return new Error("JWT token is empty.");
 
@@ -265,22 +265,22 @@ export function addLocationToCollection(urlArg: URL, getJwt: func_GetJwt) {
         });
 
         if (response instanceof Error) return response;
-        return handleResponse<AddLocationToCollectionResponse>(response);
+        return handleResponse<AddLocationToCollectionsResponse>(response);
     };
 }
 
-export type RemoveLocationFromCollectionArgs = {
+export type RemoveLocationFromCollectionsArgs = {
     collectionIds: string[];
     googleId: string;
 };
-export type RemoveLocationFromCollectionResponse = {
+export type RemoveLocationFromCollectionsResponse = {
     message: string;
 };
 /**
  * Remove Location from Collection.
  */
-export function removeLocationFromCollection(urlArg: URL, getJwt: func_GetJwt) {
-    return async (args: RemoveLocationFromCollectionArgs) => {
+export function removeLocationFromCollections(urlArg: URL, getJwt: func_GetJwt) {
+    return async (args: RemoveLocationFromCollectionsArgs) => {
         const jwtToken = getJwt();
         if (!jwtToken) return new Error("JWT token is empty.");
 
@@ -296,7 +296,7 @@ export function removeLocationFromCollection(urlArg: URL, getJwt: func_GetJwt) {
         });
 
         if (response instanceof Error) return response;
-        return handleResponse<RemoveLocationFromCollectionResponse>(response);
+        return handleResponse<RemoveLocationFromCollectionsResponse>(response);
     };
 }
 

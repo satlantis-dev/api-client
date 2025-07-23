@@ -147,7 +147,7 @@ import {
 } from "./api/secure/location.ts";
 import {
     addContributorToCollection,
-    addLocationToCollection,
+    addLocationToCollections,
     addViewerToCollection,
     canEditCollection,
     createCollection,
@@ -158,7 +158,7 @@ import {
     getUserCollections,
     getUserCollectionsForLocation,
     removeContributorFromCollection,
-    removeLocationFromCollection,
+    removeLocationFromCollections,
     removeViewerFromCollection,
     saveCollection,
     unsaveCollection,
@@ -345,13 +345,13 @@ export class Client {
     getCollectionById: ReturnType<typeof getCollectionById>;
     getUserCollections: ReturnType<typeof getUserCollections>;
     getUserCollectionsForLocation: ReturnType<typeof getUserCollectionsForLocation>;
-    getAccountCollection: ReturnType<typeof getAccountCollections>;
+    getAccountCollections: ReturnType<typeof getAccountCollections>;
     createCollection: ReturnType<typeof createCollection>;
     editCollection: ReturnType<typeof editCollection>;
     canEditCollection: ReturnType<typeof canEditCollection>;
     deleteCollection: ReturnType<typeof deleteCollection>;
-    addLocationToCollection: ReturnType<typeof addLocationToCollection>;
-    removeLocationFromCollection: ReturnType<typeof removeLocationFromCollection>;
+    addLocationToCollections: ReturnType<typeof addLocationToCollections>;
+    removeLocationFromCollections: ReturnType<typeof removeLocationFromCollections>;
     updateLocationCollections: ReturnType<typeof updateLocationCollections>;
     updateCollectionLocation: ReturnType<typeof updateCollectionLocation>;
     saveCollection: ReturnType<typeof saveCollection>;
@@ -537,13 +537,13 @@ export class Client {
         this.getCollectionById = getCollectionById(rest_api_url, getJwt);
         this.getUserCollections = getUserCollections(rest_api_url, getJwt);
         this.getUserCollectionsForLocation = getUserCollectionsForLocation(rest_api_url, getJwt);
-        this.getAccountCollection = getAccountCollections(rest_api_url, getJwt);
+        this.getAccountCollections = getAccountCollections(rest_api_url, getJwt);
         this.createCollection = createCollection(rest_api_url, getJwt);
         this.editCollection = editCollection(rest_api_url, getJwt);
         this.canEditCollection = canEditCollection(rest_api_url, getJwt);
         this.deleteCollection = deleteCollection(rest_api_url, getJwt);
-        this.addLocationToCollection = addLocationToCollection(rest_api_url, getJwt);
-        this.removeLocationFromCollection = removeLocationFromCollection(rest_api_url, getJwt);
+        this.addLocationToCollections = addLocationToCollections(rest_api_url, getJwt);
+        this.removeLocationFromCollections = removeLocationFromCollections(rest_api_url, getJwt);
         this.updateLocationCollections = updateLocationCollections(rest_api_url, getJwt);
         this.updateCollectionLocation = updateCollectionLocation(rest_api_url, getJwt);
         this.saveCollection = saveCollection(rest_api_url, getJwt);
