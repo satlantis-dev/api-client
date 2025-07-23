@@ -9,12 +9,12 @@ const createUrl = (urlArg: URL, path: string) => {
     return url;
 };
 
-/**
- * Get Collection given a collectionId.
- */
 export type GetCollectionByIdArgs = {
     collectionId: string;
 };
+/**
+ * Get Collection given a collectionId.
+ */
 export function getCollectionById(urlArg: URL, getJwt: func_GetJwt) {
     return async (args: GetCollectionByIdArgs) => {
         const jwtToken = getJwt();
@@ -58,9 +58,6 @@ export function getUserCollections(urlArg: URL, getJwt: func_GetJwt) {
     };
 }
 
-/**
- * Get User Collections for Location.
- */
 export type GetUserCollectionsForLocationArgs = {
     googleId: string;
 };
@@ -68,6 +65,9 @@ export type GetUserCollectionsForLocationResponse = {
     withLocation: (Omit<Collection, "locations"> & { locations: null })[];
     withoutLocation: (Omit<Collection, "locations"> & { locations: null })[];
 };
+/**
+ * Get User Collections for Location.
+ */
 export function getUserCollectionsForLocation(urlArg: URL, getJwt: func_GetJwt) {
     return async (args: GetUserCollectionsForLocationArgs) => {
         const jwtToken = getJwt();
@@ -88,12 +88,15 @@ export function getUserCollectionsForLocation(urlArg: URL, getJwt: func_GetJwt) 
     };
 }
 
+export type GetAccountCollectionsArgs = {
+    npub: string;
+};
 /**
  * Get Account Collections.
  * This will only return public collections.
  */
 export function getAccountCollections(urlArg: URL, getJwt: func_GetJwt) {
-    return async (args: { npub: string }) => {
+    return async (args: GetAccountCollectionsArgs) => {
         const jwtToken = getJwt();
         if (!jwtToken) return new Error("JWT token is empty.");
 
@@ -112,9 +115,6 @@ export function getAccountCollections(urlArg: URL, getJwt: func_GetJwt) {
     };
 }
 
-/**
- * Create Collection.
- */
 export type CreateCollectionArgs = {
     name: string;
     description?: string;
@@ -124,6 +124,9 @@ export type CreateCollectionArgs = {
 export type CreateCollectionResponse = Omit<Collection, "locations"> & {
     locations: null;
 };
+/**
+ * Create Collection.
+ */
 export function createCollection(urlArg: URL, getJwt: func_GetJwt) {
     return async (args: CreateCollectionArgs) => {
         const jwtToken = getJwt();
@@ -148,9 +151,6 @@ export function createCollection(urlArg: URL, getJwt: func_GetJwt) {
     };
 }
 
-/**
- * Edit Collection.
- */
 export type EditCollectionArgs = {
     collectionId: string;
     name: string;
@@ -158,6 +158,9 @@ export type EditCollectionArgs = {
     coverImage?: string;
     isPublic: boolean;
 };
+/**
+ * Edit Collection.
+ */
 export function editCollection(urlArg: URL, getJwt: func_GetJwt) {
     return async (args: EditCollectionArgs) => {
         const jwtToken = getJwt();
@@ -179,16 +182,16 @@ export function editCollection(urlArg: URL, getJwt: func_GetJwt) {
     };
 }
 
-/**
- * Can Edit Collection.
- * This will return true ONLY if the user is allowed to edit the collection.
- */
 export type CanEditCollectionArgs = {
     collectionId: string;
 };
 export type CanEditCollectionResponse = {
     canEdit: boolean;
 };
+/**
+ * Can Edit Collection.
+ * This will return true ONLY if the user is allowed to edit the collection.
+ */
 export function canEditCollection(urlArg: URL, getJwt: func_GetJwt) {
     return async (args: CanEditCollectionArgs) => {
         const jwtToken = getJwt();
@@ -209,12 +212,12 @@ export function canEditCollection(urlArg: URL, getJwt: func_GetJwt) {
     };
 }
 
-/**
- * Delete Collection.
- */
 export type DeleteCollectionArgs = {
     collectionId: string;
 };
+/**
+ * Delete Collection.
+ */
 export function deleteCollection(urlArg: URL, getJwt: func_GetJwt) {
     return async (args: DeleteCollectionArgs) => {
         const jwtToken = getJwt();
@@ -235,9 +238,6 @@ export function deleteCollection(urlArg: URL, getJwt: func_GetJwt) {
     };
 }
 
-/**
- * Add Location to Collection.
- */
 export type AddLocationToCollectionArgs = {
     collectionIds: string[];
     googleId: string;
@@ -245,6 +245,9 @@ export type AddLocationToCollectionArgs = {
 export type AddLocationToCollectionResponse = {
     message: string;
 };
+/**
+ * Add Location to Collection.
+ */
 export function addLocationToCollection(urlArg: URL, getJwt: func_GetJwt) {
     return async (args: AddLocationToCollectionArgs) => {
         const jwtToken = getJwt();
@@ -266,9 +269,6 @@ export function addLocationToCollection(urlArg: URL, getJwt: func_GetJwt) {
     };
 }
 
-/**
- * Remove Location from Collection.
- */
 export type RemoveLocationFromCollectionArgs = {
     collectionIds: string[];
     googleId: string;
@@ -276,6 +276,9 @@ export type RemoveLocationFromCollectionArgs = {
 export type RemoveLocationFromCollectionResponse = {
     message: string;
 };
+/**
+ * Remove Location from Collection.
+ */
 export function removeLocationFromCollection(urlArg: URL, getJwt: func_GetJwt) {
     return async (args: RemoveLocationFromCollectionArgs) => {
         const jwtToken = getJwt();
@@ -297,13 +300,6 @@ export function removeLocationFromCollection(urlArg: URL, getJwt: func_GetJwt) {
     };
 }
 
-/**
- * Update Location Collections.
- * This will either add or remove the location from the collections.
- *
- * For example, if the location is currently in `collectionIds: [1, 2]`
- * calling this API with `collectionIds: [2, 3]`, it will remove the location from collection 1 and add it to collection 3.
- */
 export type UpdateLocationCollectionsArgs = {
     collectionIds: string[];
     googleId: string;
@@ -311,6 +307,13 @@ export type UpdateLocationCollectionsArgs = {
 export type UpdateLocationCollectionsResponse = {
     message: string;
 };
+/**
+ * Update Location Collections.
+ * This will either add or remove the location from the collections.
+ *
+ * For example, if the location is currently in `collectionIds: [1, 2]`
+ * calling this API with `collectionIds: [2, 3]`, it will remove the location from collection 1 and add it to collection 3.
+ */
 export function updateLocationCollections(urlArg: URL, getJwt: func_GetJwt) {
     return async (args: UpdateLocationCollectionsArgs) => {
         const jwtToken = getJwt();
@@ -332,10 +335,6 @@ export function updateLocationCollections(urlArg: URL, getJwt: func_GetJwt) {
     };
 }
 
-/**
- * Update Collection Location.
- * This will update the location details in a given collection
- */
 export type UpdateCollectionLocationArgs = {
     collectionId: string;
     googleId: string;
@@ -346,6 +345,10 @@ export type UpdateCollectionLocationArgs = {
 export type UpdateCollectionLocationResponse = {
     message: string;
 };
+/**
+ * Update Collection Location.
+ * This will update the location details in a given collection
+ */
 export function updateCollectionLocation(urlArg: URL, getJwt: func_GetJwt) {
     return async (args: UpdateCollectionLocationArgs) => {
         const jwtToken = getJwt();
@@ -367,15 +370,15 @@ export function updateCollectionLocation(urlArg: URL, getJwt: func_GetJwt) {
     };
 }
 
-/**
- * Save Collection.
- */
 export type SaveCollectionArgs = {
     collectionId: string;
 };
 export type SaveCollectionResponse = {
     message: string;
 };
+/**
+ * Save Collection.
+ */
 export function saveCollection(urlArg: URL, getJwt: func_GetJwt) {
     return async (args: SaveCollectionArgs) => {
         const jwtToken = getJwt();
@@ -396,15 +399,15 @@ export function saveCollection(urlArg: URL, getJwt: func_GetJwt) {
     };
 }
 
-/**
- * Unsave Collection.
- */
 export type UnsaveCollectionArgs = {
     collectionId: string;
 };
 export type UnsaveCollectionResponse = {
     message: string;
 };
+/**
+ * Unsave Collection.
+ */
 export function unsaveCollection(urlArg: URL, getJwt: func_GetJwt) {
     return async (args: UnsaveCollectionArgs) => {
         const jwtToken = getJwt();
@@ -425,9 +428,6 @@ export function unsaveCollection(urlArg: URL, getJwt: func_GetJwt) {
     };
 }
 
-/**
- * Add Contributor to Collection.
- */
 export type AddContributorToCollectionArgs = {
     collectionId: string;
     contributorId: string;
@@ -435,6 +435,9 @@ export type AddContributorToCollectionArgs = {
 export type AddContributorToCollectionResponse = {
     message: string;
 };
+/**
+ * Add Contributor to Collection.
+ */
 export function addContributorToCollection(urlArg: URL, getJwt: func_GetJwt) {
     return async (args: AddContributorToCollectionArgs) => {
         const jwtToken = getJwt();
@@ -456,9 +459,6 @@ export function addContributorToCollection(urlArg: URL, getJwt: func_GetJwt) {
     };
 }
 
-/**
- * Remove Contributor from Collection.
- */
 export type RemoveContributorFromCollectionArgs = {
     collectionId: string;
     contributorId: string;
@@ -466,6 +466,9 @@ export type RemoveContributorFromCollectionArgs = {
 export type RemoveContributorFromCollectionResponse = {
     message: string;
 };
+/**
+ * Remove Contributor from Collection.
+ */
 export function removeContributorFromCollection(urlArg: URL, getJwt: func_GetJwt) {
     return async (args: RemoveContributorFromCollectionArgs) => {
         const jwtToken = getJwt();
@@ -487,9 +490,6 @@ export function removeContributorFromCollection(urlArg: URL, getJwt: func_GetJwt
     };
 }
 
-/**
- * Add Viewer to Collection.
- */
 export type AddViewerToCollectionArgs = {
     collectionId: string;
     viewerId: string;
@@ -497,6 +497,9 @@ export type AddViewerToCollectionArgs = {
 export type AddViewerToCollectionResponse = {
     message: string;
 };
+/**
+ * Add Viewer to Collection.
+ */
 export function addViewerToCollection(urlArg: URL, getJwt: func_GetJwt) {
     return async (args: AddViewerToCollectionArgs) => {
         const jwtToken = getJwt();
@@ -518,9 +521,6 @@ export function addViewerToCollection(urlArg: URL, getJwt: func_GetJwt) {
     };
 }
 
-/**
- * Remove Viewer from Collection.
- */
 export type RemoveViewerFromCollectionArgs = {
     collectionId: string;
     viewerId: string;
@@ -528,6 +528,9 @@ export type RemoveViewerFromCollectionArgs = {
 export type RemoveViewerFromCollectionResponse = {
     message: string;
 };
+/**
+ * Remove Viewer from Collection.
+ */
 export function removeViewerFromCollection(urlArg: URL, getJwt: func_GetJwt) {
     return async (args: RemoveViewerFromCollectionArgs) => {
         const jwtToken = getJwt();
