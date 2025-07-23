@@ -1,15 +1,18 @@
-import type { Location } from './location.ts'
+export type CollectionLocation = {
+    collectionId: number;
+    googleId: string;
+    seqNum: number;
+};
 
 export type Collection = {
-	"id": number,
-	"accountId": number,
-	"name": string,
-	"description": string,
-	"createdAt": string,
-	"updatedAt": string,
-	"isPublic": boolean,
-	"locations": Location[],
-	"numLocations": number,
-	"numSaves": number
-}
-
+    "id": number;
+    "accountId": number;
+    "name": string;
+    "description": string;
+    "createdAt": string;
+    "updatedAt": string;
+    "isPublic": boolean;
+    "locations": CollectionLocation[];
+    "numLocations": number;
+    "numSaves": number;
+};
