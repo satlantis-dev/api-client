@@ -158,7 +158,7 @@ import {
     getUserCollections,
     getUserCollectionsForLocation,
     removeContributorFromCollection,
-    removeLocationFromCollection,
+    removeLocationFromCollections,
     removeViewerFromCollection,
     saveCollection,
     unsaveCollection,
@@ -351,7 +351,7 @@ export class Client {
     canEditCollection: ReturnType<typeof canEditCollection>;
     deleteCollection: ReturnType<typeof deleteCollection>;
     addLocationToCollections: ReturnType<typeof addLocationToCollections>;
-    removeLocationFromCollection: ReturnType<typeof removeLocationFromCollection>;
+    removeLocationFromCollections: ReturnType<typeof removeLocationFromCollections>;
     updateLocationCollections: ReturnType<typeof updateLocationCollections>;
     updateCollectionLocation: ReturnType<typeof updateCollectionLocation>;
     saveCollection: ReturnType<typeof saveCollection>;
@@ -543,7 +543,7 @@ export class Client {
         this.canEditCollection = canEditCollection(rest_api_url, getJwt);
         this.deleteCollection = deleteCollection(rest_api_url, getJwt);
         this.addLocationToCollections = addLocationToCollections(rest_api_url, getJwt);
-        this.removeLocationFromCollection = removeLocationFromCollection(rest_api_url, getJwt);
+        this.removeLocationFromCollections = removeLocationFromCollections(rest_api_url, getJwt);
         this.updateLocationCollections = updateLocationCollections(rest_api_url, getJwt);
         this.updateCollectionLocation = updateCollectionLocation(rest_api_url, getJwt);
         this.saveCollection = saveCollection(rest_api_url, getJwt);

@@ -269,18 +269,18 @@ export function addLocationToCollections(urlArg: URL, getJwt: func_GetJwt) {
     };
 }
 
-export type RemoveLocationFromCollectionArgs = {
+export type RemoveLocationFromCollectionsArgs = {
     collectionIds: string[];
     googleId: string;
 };
-export type RemoveLocationFromCollectionResponse = {
+export type RemoveLocationFromCollectionsResponse = {
     message: string;
 };
 /**
  * Remove Location from Collection.
  */
-export function removeLocationFromCollection(urlArg: URL, getJwt: func_GetJwt) {
-    return async (args: RemoveLocationFromCollectionArgs) => {
+export function removeLocationFromCollections(urlArg: URL, getJwt: func_GetJwt) {
+    return async (args: RemoveLocationFromCollectionsArgs) => {
         const jwtToken = getJwt();
         if (!jwtToken) return new Error("JWT token is empty.");
 
@@ -296,7 +296,7 @@ export function removeLocationFromCollection(urlArg: URL, getJwt: func_GetJwt) {
         });
 
         if (response instanceof Error) return response;
-        return handleResponse<RemoveLocationFromCollectionResponse>(response);
+        return handleResponse<RemoveLocationFromCollectionsResponse>(response);
     };
 }
 
