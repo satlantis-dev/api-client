@@ -64,6 +64,7 @@ async (args: {
     page: number;
     sortColumn: "score" | "id" | "price" | "trending" | "topPicks";
     sortDirection: "desc" | "asc";
+    active_only?: boolean;
 }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getPlaces`;
@@ -72,6 +73,13 @@ async (args: {
     url.searchParams.append("page", JSON.stringify(args.page));
     url.searchParams.append("sortColumn", args.sortColumn);
     url.searchParams.append("sortDirection", args.sortDirection);
+
+    if (args.active_only) {
+        url.searchParams.append("active_only", String(args.active_only));
+    } else {
+        // Default to false if not provided
+        url.searchParams.append("active_only", "false");
+    }
 
     const response = await safeFetch(url);
     if (response instanceof Error) {
@@ -89,6 +97,7 @@ async (args: {
     page: number;
     sortColumn: "score" | "id" | "price";
     sortDirection: "desc" | "asc";
+    active_only?: boolean;
 }) => {
     const url = copyURL(urlArg);
     url.pathname = `/getPlacesMinimal`;
@@ -97,6 +106,13 @@ async (args: {
     url.searchParams.append("page", JSON.stringify(args.page));
     url.searchParams.append("sortColumn", args.sortColumn);
     url.searchParams.append("sortDirection", args.sortDirection);
+
+    if (args.active_only) {
+        url.searchParams.append("active_only", String(args.active_only));
+    } else {
+        // Default to false if not provided
+        url.searchParams.append("active_only", "false");
+    }
 
     const response = await safeFetch(url);
     if (response instanceof Error) {
