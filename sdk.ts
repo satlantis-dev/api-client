@@ -340,7 +340,6 @@ export class Client {
     postAmbassadorInquiry: ReturnType<typeof postAmbassadorInquiry>;
 
     // Collections
-
     getCollectionById: ReturnType<typeof getCollectionById>;
     getUserCollections: ReturnType<typeof getUserCollections>;
     getUserCollectionsForLocation: ReturnType<typeof getUserCollectionsForLocation>;
