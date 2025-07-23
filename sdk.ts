@@ -145,6 +145,26 @@ import {
     postLocationGalleryImage,
     updateLocationGalleryImage,
 } from "./api/secure/location.ts";
+import {
+    addContributorToCollection,
+    addLocationToCollection,
+    addViewerToCollection,
+    canEditCollection,
+    createCollection,
+    deleteCollection,
+    editCollection,
+    getAccountCollections,
+    getCollectionById,
+    getUserCollections,
+    getUserCollectionsForLocation,
+    removeContributorFromCollection,
+    removeLocationFromCollection,
+    removeViewerFromCollection,
+    saveCollection,
+    unsaveCollection,
+    updateCollectionLocation,
+    updateLocationCollections,
+} from "./api/secure/collections.ts";
 
 export type func_GetNostrSigner = () => Promise<(Signer & Encrypter) | Error>;
 export type func_GetJwt = () => string;
@@ -321,6 +341,26 @@ export class Client {
     // Ambassador
     postAmbassadorInquiry: ReturnType<typeof postAmbassadorInquiry>;
 
+    // Collections
+    getCollectionById: ReturnType<typeof getCollectionById>;
+    getUserCollections: ReturnType<typeof getUserCollections>;
+    getUserCollectionsForLocation: ReturnType<typeof getUserCollectionsForLocation>;
+    getAccountCollection: ReturnType<typeof getAccountCollections>;
+    createCollection: ReturnType<typeof createCollection>;
+    editCollection: ReturnType<typeof editCollection>;
+    canEditCollection: ReturnType<typeof canEditCollection>;
+    deleteCollection: ReturnType<typeof deleteCollection>;
+    addLocationToCollection: ReturnType<typeof addLocationToCollection>;
+    removeLocationFromCollection: ReturnType<typeof removeLocationFromCollection>;
+    updateLocationCollections: ReturnType<typeof updateLocationCollections>;
+    updateCollectionLocation: ReturnType<typeof updateCollectionLocation>;
+    saveCollection: ReturnType<typeof saveCollection>;
+    unsaveCollection: ReturnType<typeof unsaveCollection>;
+    addContributorToCollection: ReturnType<typeof addContributorToCollection>;
+    removeContributorFromCollection: ReturnType<typeof removeContributorFromCollection>;
+    addViewerToCollection: ReturnType<typeof addViewerToCollection>;
+    removeViewerFromCollection: ReturnType<typeof removeViewerFromCollection>;
+
     private constructor(
         public readonly rest_api_url: URL,
         public readonly relay_url: string,
@@ -492,6 +532,26 @@ export class Client {
             getJwt,
             getNostrSigner,
         );
+
+        // Collections.
+        this.getCollectionById = getCollectionById(rest_api_url, getJwt);
+        this.getUserCollections = getUserCollections(rest_api_url, getJwt);
+        this.getUserCollectionsForLocation = getUserCollectionsForLocation(rest_api_url, getJwt);
+        this.getAccountCollection = getAccountCollections(rest_api_url, getJwt);
+        this.createCollection = createCollection(rest_api_url, getJwt);
+        this.editCollection = editCollection(rest_api_url, getJwt);
+        this.canEditCollection = canEditCollection(rest_api_url, getJwt);
+        this.deleteCollection = deleteCollection(rest_api_url, getJwt);
+        this.addLocationToCollection = addLocationToCollection(rest_api_url, getJwt);
+        this.removeLocationFromCollection = removeLocationFromCollection(rest_api_url, getJwt);
+        this.updateLocationCollections = updateLocationCollections(rest_api_url, getJwt);
+        this.updateCollectionLocation = updateCollectionLocation(rest_api_url, getJwt);
+        this.saveCollection = saveCollection(rest_api_url, getJwt);
+        this.unsaveCollection = unsaveCollection(rest_api_url, getJwt);
+        this.addContributorToCollection = addContributorToCollection(rest_api_url, getJwt);
+        this.removeContributorFromCollection = removeContributorFromCollection(rest_api_url, getJwt);
+        this.addViewerToCollection = addViewerToCollection(rest_api_url, getJwt);
+        this.removeViewerFromCollection = removeViewerFromCollection(rest_api_url, getJwt);
     }
 
     static New(args: {
