@@ -730,6 +730,7 @@ export class Client {
         venueName: string;
         googlePlaceId: string;
         autofollowHostAndCohosts?: boolean;
+        allowCohostsToDownloadAttendeeList?: boolean;
     }) => {
         const jwtToken = this.getJwt();
         if (jwtToken == "") {
@@ -758,6 +759,13 @@ export class Client {
             [
                 "autoFollowHosts",
                 args.autofollowHostAndCohosts ? args.autofollowHostAndCohosts.toString() : "false",
+            ],
+
+            [
+                "allowCohostsToDownloadAttendeeList",
+                args.allowCohostsToDownloadAttendeeList
+                    ? args.allowCohostsToDownloadAttendeeList.toString()
+                    : "false",
             ],
 
             ["website", args.website],
@@ -828,6 +836,7 @@ export class Client {
         venueName: string;
         googlePlaceId: string;
         autofollowHostAndCohosts?: boolean;
+        allowCohostsToDownloadAttendeeList?: boolean;
     }) => {
         const jwtToken = this.getJwt();
         if (jwtToken == "") {
@@ -858,6 +867,13 @@ export class Client {
             [
                 "autoFollowHosts",
                 args.autofollowHostAndCohosts ? args.autofollowHostAndCohosts.toString() : "false",
+            ],
+
+            [
+                "allowCohostsToDownloadAttendeeList",
+                args.allowCohostsToDownloadAttendeeList
+                    ? args.allowCohostsToDownloadAttendeeList.toString()
+                    : "false",
             ],
         ];
 
