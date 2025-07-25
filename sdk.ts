@@ -143,6 +143,7 @@ import {
     deleteLocationGalleryImage,
     getRecommendedLocations,
     postLocationGalleryImage,
+    promoteLocationGalleryImageToBanner,
     updateLocationGalleryImage,
 } from "./api/secure/location.ts";
 import {
@@ -263,6 +264,7 @@ export class Client {
     private _postLocationGalleryImage: ReturnType<typeof postLocationGalleryImage>;
     updateLocationGalleryImage: ReturnType<typeof updateLocationGalleryImage>;
     deleteLocationGalleryImage: ReturnType<typeof deleteLocationGalleryImage>;
+    promoteLocationGalleryImageToBanner: ReturnType<typeof promoteLocationGalleryImageToBanner>;
     getLocationsBySearch: ReturnType<typeof getLocationsBySearch>;
     getLocationsByPlaceIDRandomized: ReturnType<
         typeof getLocationsByPlaceIDRandomized
@@ -459,6 +461,7 @@ export class Client {
         this._postLocationGalleryImage = postLocationGalleryImage(rest_api_url, getJwt);
         this.updateLocationGalleryImage = updateLocationGalleryImage(rest_api_url, getJwt);
         this.deleteLocationGalleryImage = deleteLocationGalleryImage(rest_api_url, getJwt);
+        this.promoteLocationGalleryImageToBanner = promoteLocationGalleryImageToBanner(rest_api_url, getJwt);
         this.getLocationsBySearch = getLocationsBySearch(rest_api_url);
         this.getLocationsByPlaceIDRandomized = getLocationsByPlaceIDRandomized(rest_api_url);
         this.getLocationLinks = getLocationLinks(rest_api_url);

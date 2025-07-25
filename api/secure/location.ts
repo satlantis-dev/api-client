@@ -70,7 +70,7 @@ async (
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<string>(response);
+    return handleResponse<null>(response);
 };
 
 /**
@@ -100,6 +100,32 @@ export const deleteLocationGalleryImage =
             return response;
         }
         return handleResponse<string>(response);
+    };
+
+/**
+ * DELETE /secure/promoteLocationGalleryImageToBanner/{id}
+ * Roles with permission: Admin and some other roles(see the backend)
+ * @returns nothing
+ * https://github.com/satlantis-dev/api/blob/dev/rest/location_gallery.go
+ */
+export const promoteLocationGalleryImageToBanner =
+    (urlArg: URL, getJwt: () => string) => async (args: { imageId: number }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/promoteLocationGalleryImageToBanner/${args.imageId}`;
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        const response = await safeFetch(url, {
+            method: "PUT",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<null>(response);
     };
 
 /**
