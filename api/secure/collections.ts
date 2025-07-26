@@ -178,7 +178,7 @@ export type EditCollectionArgs = {
     collectionId: string;
     name: string;
     description?: string;
-    coverImage?: string;
+    cover?: string;
     isPublic: boolean;
 };
 /**
