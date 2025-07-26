@@ -61,7 +61,7 @@ export async function handleStringResponse(response: FetchResult): Promise<strin
     return body;
 }
 
-function parseJSON<T extends {}>(text: string) {
+export function parseJSON<T extends {}>(text: string) {
     try {
         return JSON.parse(text) as T;
     } catch (e) {
