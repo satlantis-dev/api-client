@@ -1,6 +1,6 @@
 import type { func_GetJwt } from "../../sdk.ts";
-import { copyURL, ApiError, parseJSON, InvalidJSON } from "../../helpers/_helper.ts";
-import { Aborted, safeFetch, type FetchResult } from "../../helpers/safe-fetch.ts";
+import { ApiError, copyURL, InvalidJSON, parseJSON } from "../../helpers/_helper.ts";
+import { Aborted, type FetchResult, safeFetch } from "../../helpers/safe-fetch.ts";
 import type { Collection } from "../../models/collection.ts";
 
 /**
@@ -24,7 +24,7 @@ const handleResponse = async <T extends {}>(response: FetchResult) => {
         return result;
     }
     return result as T;
-}
+};
 
 const createUrl = (urlArg: URL, path: string) => {
     const url = copyURL(urlArg);
@@ -141,7 +141,7 @@ export function getAccountCollections(urlArg: URL, getJwt: func_GetJwt) {
 export type CreateCollectionArgs = {
     name: string;
     description?: string;
-    coverImage?: string;
+    cover?: string;
     isPublic: boolean;
 };
 export type CreateCollectionResponse = Omit<Collection, "locations"> & {
