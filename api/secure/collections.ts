@@ -1,7 +1,30 @@
 import type { func_GetJwt } from "../../sdk.ts";
-import { copyURL, handleResponse } from "../../helpers/_helper.ts";
-import { safeFetch } from "../../helpers/safe-fetch.ts";
+import { copyURL, ApiError, parseJSON, InvalidJSON } from "../../helpers/_helper.ts";
+import { Aborted, safeFetch, type FetchResult } from "../../helpers/safe-fetch.ts";
 import type { Collection } from "../../models/collection.ts";
+
+/**
+ * Re-creating handleResponse because the success status code should be between 200 and 299, not just 200.
+ */
+const handleResponse = async <T extends {}>(response: FetchResult) => {
+    const body = await response.text();
+    if (body instanceof Aborted) {
+        return body;
+    }
+
+    // 200-299 is success.
+    if (response.status < 200 || response.status >= 300) {
+        return new ApiError(response.status, body);
+    }
+    if (!body) {
+        return {} as T;
+    }
+    const result = parseJSON<T>(body);
+    if (result instanceof InvalidJSON) {
+        return result;
+    }
+    return result as T;
+}
 
 const createUrl = (urlArg: URL, path: string) => {
     const url = copyURL(urlArg);
