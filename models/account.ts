@@ -139,3 +139,16 @@ export type Kind0MetaData = {
      */
     email?: string;
 };
+
+export type SearchAccountDTO = {
+    id: number;
+    username?: string;
+    display_name?: string;
+    followers_count: number;
+    following_count: number;
+    name?: string;
+    nip05?: string;
+    about?: string;
+    picture?: string;
+    npub: string;
+};

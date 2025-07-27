@@ -1,7 +1,7 @@
 import { ApiError, copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { Account, AccountDTO } from "../models/account.ts";
-import { type CalendarEvent, CalendarEventPeriod, type func_GetJwt } from "../sdk.ts";
+import { type CalendarEvent, CalendarEventPeriod, type func_GetJwt, type SearchAccountDTO } from "../sdk.ts";
 
 export const getAccount =
     (urlArg: URL, getJwt: func_GetJwt) => async (args: { npub?: string; username?: string }) => {
@@ -228,4 +228,17 @@ export const verifyOTP = (urlArg: URL) => async (args: { token: string; otp: str
         success: boolean;
         token: string; // JWT token that can be used as auth token
     }>(response);
+};
+
+export const getAccountById = (urlArg: URL) => async (args: { id: number }) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getAccountById/${args.id}`;
+
+    const response = await safeFetch(url, { method: "GET" });
+
+    if (response instanceof Error) {
+        return response;
+    }
+
+    return handleResponse<SearchAccountDTO>(response);
 };
