@@ -15,6 +15,7 @@ import {
 import {
     createAccount,
     getAccount,
+    getAccountById,
     getAccountCalendarEvents,
     getAccountFollowers,
     getAccountFollowings,
@@ -363,6 +364,9 @@ export class Client {
     addViewerToCollection: ReturnType<typeof addViewerToCollection>;
     removeViewerFromCollection: ReturnType<typeof removeViewerFromCollection>;
 
+    // Account Search.
+    getAccountById: ReturnType<typeof getAccountById>;
+
     private constructor(
         public readonly rest_api_url: URL,
         public readonly relay_url: string,
@@ -555,6 +559,9 @@ export class Client {
         this.removeContributorFromCollection = removeContributorFromCollection(rest_api_url, getJwt);
         this.addViewerToCollection = addViewerToCollection(rest_api_url, getJwt);
         this.removeViewerFromCollection = removeViewerFromCollection(rest_api_url, getJwt);
+
+        // Account Search.
+        this.getAccountById = getAccountById(rest_api_url);
     }
 
     static New(args: {
