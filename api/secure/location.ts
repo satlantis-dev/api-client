@@ -70,6 +70,7 @@ async (
     if (response instanceof Error) {
         return response;
     }
+    // @ts-ignore TODO: handleResponse gotta be re-typed at some point.
     return handleResponse<null>(response);
 };
 
@@ -125,6 +126,7 @@ export const promoteLocationGalleryImageToBanner =
         if (response instanceof Error) {
             return response;
         }
+        // @ts-ignore TODO: handleResponse gotta be re-typed at some point.
         return handleResponse<null>(response);
     };
 
