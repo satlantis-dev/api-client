@@ -68,6 +68,7 @@ export type AccountDTO = {
     isBlacklisted: boolean;
     website: string;
     vertexRank: string;
+    email: string;
 };
 
 export type AccountSearchDTO = {
