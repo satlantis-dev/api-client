@@ -126,7 +126,7 @@ export function getAccountCollections(urlArg: URL, getJwt: func_GetJwt) {
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
 
-        const url = createUrl(urlArg, `/secure/getAccountCollections/${args.npub}`);
+        const url = createUrl(urlArg, `/getAccountCollections/${args.npub}`);
 
         const response = await safeFetch(url, {
             method: "GET",
