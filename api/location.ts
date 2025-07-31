@@ -55,6 +55,7 @@ async (args: {
     page?: number;
     limit?: number;
     isSecure?: boolean;
+    openOnly?: boolean;
 }) => {
     if (args.placeID === null) return [];
 
@@ -95,6 +96,9 @@ async (args: {
     if (args.limit) {
         url.searchParams.set("limit", String(args.limit));
     }
+    if (!!args.openOnly) {
+        url.searchParams.set("open_only", "true");
+    }
 
     const response = await safeFetch(url, { headers });
     if (response instanceof Error) {
@@ -115,6 +119,7 @@ export const getNearbyLocations = (urlArg: URL, getJwt: func_GetJwt) =>
     page?: number;
     limit?: number;
     isSecure?: boolean;
+    openOnly?: boolean;
   }) => {
     if (args.lat === null || args.lng === null) return [];
 
@@ -164,6 +169,9 @@ export const getNearbyLocations = (urlArg: URL, getJwt: func_GetJwt) =>
     if (args.order) {
       url.searchParams.set("order", String(args.order));
     }
+    if (!!args.openOnly) {
+      url.searchParams.set("open_only", "true");
+    }
 
     const response = await safeFetch(url, { headers });
     if (response instanceof Error) {
@@ -188,6 +196,7 @@ async (args: {
     page?: number;
     limit?: number;
     isSecure?: boolean;
+    openOnly?: boolean;
 }) => {
     const url = copyURL(urlArg);
     const headers = new Headers();
@@ -231,6 +240,9 @@ async (args: {
     }
     if (args.page) {
         url.searchParams.set("page", String(args.page));
+    }
+    if (!!args.openOnly) {
+        url.searchParams.set("open_only", "true");
     }
 
     const response = await safeFetch(url, { headers });
