@@ -8,11 +8,23 @@ import {
     type func_GetJwt,
     type func_GetNostrSigner,
     type PlaceCalendarEvent,
+    type SearchAccountDTO,
 } from "../../sdk.ts";
 
 export interface PlaceCalendarEventPost {
     event: NostrEvent;
     placeId: number;
+}
+
+interface EmailEventCohost {
+    email: string;
+    displayName: string;
+    picture: string;
+}
+
+export interface PlaceCalendarEventInviteCohostViaEmail {
+    calendarEventId: number;
+    cohosts: EmailEventCohost[];
 }
 
 export interface PlaceCalendarEventPut {
@@ -44,6 +56,57 @@ export const getEventById = (urlArg: URL) => async (args: { id: number }) => {
     }
     return handleResponse<CalendarEvent>(response);
 };
+
+export const searchAccountViaEmail =
+    (urlArg: URL, getJwt: () => string) =>
+    async (args: { email: string }): Promise<SearchAccountDTO | Error> => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/cohosts`;
+        url.searchParams.set("search", args.email);
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<SearchAccountDTO>(response);
+    };
+
+export const sendCohostEmailInviteToCalendarEvent =
+    (urlArg: URL, getJwt: () => string) => async (args: PlaceCalendarEventInviteCohostViaEmail) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/${args.calendarEventId}/cohosts`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const body = JSON.stringify(args.cohosts);
+
+        const response = await safeFetch(url, {
+            method: "POST",
+            body,
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<PlaceCalendarEvent>(response);
+    };
 
 export const postPlaceCalendarEvent =
     (urlArg: URL, getJwt: () => string) => async (args: PlaceCalendarEventPost) => {

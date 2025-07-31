@@ -122,6 +122,8 @@ import {
     postPlaceCalendarEvent,
     putUpdateCalendarEvent,
     respondCalendarEventCohostInvitation,
+    searchAccountViaEmail,
+    sendCohostEmailInviteToCalendarEvent,
 } from "./api/secure/calendar.ts";
 import { followPubkeys, getFollowingPubkeys, getInterestsOf, unfollowPubkeys } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
@@ -227,6 +229,8 @@ export class Client {
     private _getAccountFollowings: ReturnType<typeof getAccountFollowings>;
     private _getAccountFollowers: ReturnType<typeof getAccountFollowers>;
     getAccountsBySearch: ReturnType<typeof getAccountsBySearch>;
+    searchAccountViaEmail: ReturnType<typeof searchAccountViaEmail>;
+    sendCohostEmailInviteToCalendarEvent: ReturnType<typeof sendCohostEmailInviteToCalendarEvent>;
     createAccount: ReturnType<typeof createAccount>;
     /**
      * @unstable
@@ -429,6 +433,11 @@ export class Client {
         this._getAccountFollowings = getAccountFollowings(rest_api_url);
         this._getAccountFollowers = getAccountFollowers(rest_api_url);
         this.getAccountsBySearch = getAccountsBySearch(rest_api_url, getJwt);
+        this.searchAccountViaEmail = searchAccountViaEmail(rest_api_url, getJwt);
+        this.sendCohostEmailInviteToCalendarEvent = sendCohostEmailInviteToCalendarEvent(
+            rest_api_url,
+            getJwt,
+        );
         this.createAccount = createAccount(rest_api_url);
         this.updateAccount = updateAccount(rest_api_url, getJwt);
         this.deleteAccount = deleteAccount(rest_api_url, getJwt, getNostrSigner);
