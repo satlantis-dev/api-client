@@ -29,24 +29,25 @@ import {
 } from "./api/account.ts";
 import { getIpInfo } from "./api/ip.ts";
 import {
-    claimLocation,
-    getAccountRolesForLocation,
-    getAccountsForLocation,
-    getLocation,
-    getLocationByGoogleId,
-    getLocationGalleryImages,
-    getLocationLinks,
-    getLocationReviews,
-    getLocationsByPlaceID,
-    getLocationsByPlaceIDRandomized,
-    getLocationsBySearch,
-    getLocationsWithinBoundingBox,
-    getLocationTags,
-    getLocationTagsByPlaceID,
-    getSimilarLocations,
-    proveLocationClaim,
-    suggestLocation,
-    updateLocation,
+  claimLocation,
+  getAccountRolesForLocation,
+  getAccountsForLocation,
+  getLocation,
+  getLocationByGoogleId,
+  getLocationGalleryImages,
+  getLocationLinks,
+  getLocationReviews,
+  getLocationsByPlaceID,
+  getLocationsByPlaceIDRandomized,
+  getLocationsBySearch,
+  getLocationsWithinBoundingBox,
+  getLocationTags,
+  getLocationTagsByPlaceID,
+  getNearbyLocations,
+  getSimilarLocations,
+  proveLocationClaim,
+  suggestLocation,
+  updateLocation,
 } from "./api/location.ts";
 import { authApple, authGoogle, loginNostr } from "./api/login.ts";
 import {
@@ -261,6 +262,7 @@ export class Client {
     getLocationByID: ReturnType<typeof getLocation>;
     getLocationByGoogleId: ReturnType<typeof getLocationByGoogleId>;
     getLocationsByPlaceID: ReturnType<typeof getLocationsByPlaceID>;
+    getNearbyLocations: ReturnType<typeof getNearbyLocations>;
     private _claimLocation: ReturnType<typeof claimLocation>;
     proveLocationClaim: ReturnType<typeof proveLocationClaim>;
     updateLocation: ReturnType<typeof updateLocation>;
@@ -462,6 +464,7 @@ export class Client {
         this.getLocationByID = getLocation(rest_api_url);
         this.getLocationByGoogleId = getLocationByGoogleId(rest_api_url);
         this.getLocationsByPlaceID = getLocationsByPlaceID(rest_api_url, getJwt);
+        this.getNearbyLocations = getNearbyLocations(rest_api_url, getJwt);
         this._claimLocation = claimLocation(rest_api_url, getJwt);
         this.proveLocationClaim = proveLocationClaim(
             rest_api_url,

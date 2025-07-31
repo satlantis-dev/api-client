@@ -103,6 +103,75 @@ async (args: {
     return handleResponse<Location[]>(response);
 };
 
+export const getNearbyLocations = (urlArg: URL, getJwt: func_GetJwt) =>
+  async (args: {
+    lat: number;
+    lng: number;
+    radius?: number | null;
+    order?: "distance" | "relevance";
+    search?: string;
+    category?: string;
+    tags?: { key: string; value: string }[];
+    page?: number;
+    limit?: number;
+    isSecure?: boolean;
+  }) => {
+    if (args.lat === null || args.lng === null) return [];
+
+    const url = copyURL(urlArg);
+    const headers = new Headers();
+
+    if (args.isSecure) {
+      const jwt = getJwt();
+      if (jwt == "") {
+        return new Error("jwt token is empty");
+      }
+      headers.set("Authorization", `Bearer ${jwt}`);
+      url.pathname = `/secure/getNearbyLocations`;
+    } else {
+      url.pathname = `/getNearbyLocations`;
+    }
+
+    url.searchParams.set("lat", String(args.lat));
+    url.searchParams.set("lng", String(args.lng));
+    url.searchParams.set("radius", String(args.radius || '20000'));
+    if (args.search) {
+      url.searchParams.set("search", String(args.search));
+    }
+    if (args.category) {
+      url.searchParams.set("category", String(args.category));
+    }
+    if (args.tags && args.tags.length > 0) {
+      let tags = "";
+      const tagsArray: string[] = [];
+
+      for (const tag of args.tags) {
+        tagsArray.push(`${tag.key}=${tag.value}`);
+      }
+
+      tags = tagsArray.join(",");
+      url.searchParams.set("tags", tags);
+    }
+    if (args.page) {
+      url.searchParams.set("page", String(args.page));
+    }
+    if (args.limit) {
+      url.searchParams.set("limit", String(args.limit));
+    }
+    if (args.order) {
+      url.searchParams.set("order", String(args.order));
+    }
+    if (args.order) {
+      url.searchParams.set("order", String(args.order));
+    }
+
+    const response = await safeFetch(url, { headers });
+    if (response instanceof Error) {
+      return response;
+    }
+    return handleResponse<Location[]>(response);
+  };
+
 /**
  * @unstable
  * https://github.com/satlantis-dev/api/blob/main/rest/location.go#L144

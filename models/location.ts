@@ -56,6 +56,7 @@ export type Location = {
     bio: string;
     businessStatus: BusinessStatus;
     claim: LocationClaim;
+    distance?: number;
     googleId: string;
     googleMapsUrl: string;
     rating: number;
