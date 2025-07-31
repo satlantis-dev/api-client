@@ -262,7 +262,7 @@ export function deleteCollection(urlArg: URL, getJwt: func_GetJwt) {
 }
 
 export type AddLocationToCollectionsArgs = {
-    collectionIds: string[];
+    collectionIds: number[];
     googleId: string;
 };
 export type AddLocationToCollectionsResponse = {
@@ -293,7 +293,7 @@ export function addLocationToCollections(urlArg: URL, getJwt: func_GetJwt) {
 }
 
 export type RemoveLocationFromCollectionsArgs = {
-    collectionIds: string[];
+    collectionIds: number[];
     googleId: string;
 };
 export type RemoveLocationFromCollectionsResponse = {
@@ -324,7 +324,7 @@ export function removeLocationFromCollections(urlArg: URL, getJwt: func_GetJwt) 
 }
 
 export type UpdateLocationCollectionsArgs = {
-    collectionIds: string[];
+    collectionIds: number[];
     googleId: string;
 };
 export type UpdateLocationCollectionsResponse = {
