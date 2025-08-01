@@ -185,14 +185,14 @@ export type EditCollectionArgs = {
  * Edit Collection.
  */
 export function editCollection(urlArg: URL, getJwt: func_GetJwt) {
-    return async (args: EditCollectionArgs) => {
+    return async ({ collectionId, ...args }: EditCollectionArgs) => {
         const jwtToken = getJwt();
         if (!jwtToken) return new Error("JWT token is empty.");
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
 
-        const url = createUrl(urlArg, `/secure/editCollection/${args.collectionId}`);
+        const url = createUrl(urlArg, `/secure/editCollection/${collectionId}`);
 
         const response = await safeFetch(url, {
             method: "PUT",
@@ -272,14 +272,14 @@ export type AddLocationToCollectionsResponse = {
  * Add Location to Collection.
  */
 export function addLocationToCollections(urlArg: URL, getJwt: func_GetJwt) {
-    return async (args: AddLocationToCollectionsArgs) => {
+    return async ({ googleId, ...args }: AddLocationToCollectionsArgs) => {
         const jwtToken = getJwt();
         if (!jwtToken) return new Error("JWT token is empty.");
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
 
-        const url = createUrl(urlArg, `/secure/addToCollections/${args.googleId}`);
+        const url = createUrl(urlArg, `/secure/addToCollections/${googleId}`);
 
         const response = await safeFetch(url, {
             method: "POST",
@@ -303,14 +303,14 @@ export type RemoveLocationFromCollectionsResponse = {
  * Remove Location from Collection.
  */
 export function removeLocationFromCollections(urlArg: URL, getJwt: func_GetJwt) {
-    return async (args: RemoveLocationFromCollectionsArgs) => {
+    return async ({ googleId, ...args }: RemoveLocationFromCollectionsArgs) => {
         const jwtToken = getJwt();
         if (!jwtToken) return new Error("JWT token is empty.");
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
 
-        const url = createUrl(urlArg, `/secure/removeFromCollections/${args.googleId}`);
+        const url = createUrl(urlArg, `/secure/removeFromCollections/${googleId}`);
 
         const response = await safeFetch(url, {
             method: "DELETE",
@@ -338,14 +338,14 @@ export type UpdateLocationCollectionsResponse = {
  * calling this API with `collectionIds: [2, 3]`, it will remove the location from collection 1 and add it to collection 3.
  */
 export function updateLocationCollections(urlArg: URL, getJwt: func_GetJwt) {
-    return async (args: UpdateLocationCollectionsArgs) => {
+    return async ({ googleId, ...args }: UpdateLocationCollectionsArgs) => {
         const jwtToken = getJwt();
         if (!jwtToken) return new Error("JWT token is empty.");
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
 
-        const url = createUrl(urlArg, `/secure/updateCollections/${args.googleId}`);
+        const url = createUrl(urlArg, `/secure/updateCollections/${googleId}`);
 
         const response = await safeFetch(url, {
             method: "PUT",
@@ -373,14 +373,14 @@ export type UpdateCollectionLocationResponse = {
  * This will update the location details in a given collection
  */
 export function updateCollectionLocation(urlArg: URL, getJwt: func_GetJwt) {
-    return async (args: UpdateCollectionLocationArgs) => {
+    return async ({ collectionId, googleId, ...args }: UpdateCollectionLocationArgs) => {
         const jwtToken = getJwt();
         if (!jwtToken) return new Error("JWT token is empty.");
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
 
-        const url = createUrl(urlArg, `/secure/collection/${args.collectionId}/location/${args.googleId}`);
+        const url = createUrl(urlArg, `/secure/collection/${collectionId}/location/${googleId}`);
 
         const response = await safeFetch(url, {
             method: "PUT",
@@ -462,14 +462,14 @@ export type AddContributorToCollectionResponse = {
  * Add Contributor to Collection.
  */
 export function addContributorToCollection(urlArg: URL, getJwt: func_GetJwt) {
-    return async (args: AddContributorToCollectionArgs) => {
+    return async ({ collectionId, ...args }: AddContributorToCollectionArgs) => {
         const jwtToken = getJwt();
         if (!jwtToken) return new Error("JWT token is empty.");
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
 
-        const url = createUrl(urlArg, `/secure/addContributorToCollection/${args.collectionId}`);
+        const url = createUrl(urlArg, `/secure/addContributorToCollection/${collectionId}`);
 
         const response = await safeFetch(url, {
             method: "POST",
@@ -493,14 +493,14 @@ export type RemoveContributorFromCollectionResponse = {
  * Remove Contributor from Collection.
  */
 export function removeContributorFromCollection(urlArg: URL, getJwt: func_GetJwt) {
-    return async (args: RemoveContributorFromCollectionArgs) => {
+    return async ({ collectionId, ...args }: RemoveContributorFromCollectionArgs) => {
         const jwtToken = getJwt();
         if (!jwtToken) return new Error("JWT token is empty.");
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
 
-        const url = createUrl(urlArg, `/secure/removeContributorFromCollection/${args.collectionId}`);
+        const url = createUrl(urlArg, `/secure/removeContributorFromCollection/${collectionId}`);
 
         const response = await safeFetch(url, {
             method: "DELETE",
@@ -524,14 +524,14 @@ export type AddViewerToCollectionResponse = {
  * Add Viewer to Collection.
  */
 export function addViewerToCollection(urlArg: URL, getJwt: func_GetJwt) {
-    return async (args: AddViewerToCollectionArgs) => {
+    return async ({ collectionId, ...args }: AddViewerToCollectionArgs) => {
         const jwtToken = getJwt();
         if (!jwtToken) return new Error("JWT token is empty.");
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
 
-        const url = createUrl(urlArg, `/secure/addViewerToCollection/${args.collectionId}`);
+        const url = createUrl(urlArg, `/secure/addViewerToCollection/${collectionId}`);
 
         const response = await safeFetch(url, {
             method: "POST",
@@ -555,14 +555,14 @@ export type RemoveViewerFromCollectionResponse = {
  * Remove Viewer from Collection.
  */
 export function removeViewerFromCollection(urlArg: URL, getJwt: func_GetJwt) {
-    return async (args: RemoveViewerFromCollectionArgs) => {
+    return async ({ collectionId, ...args }: RemoveViewerFromCollectionArgs) => {
         const jwtToken = getJwt();
         if (!jwtToken) return new Error("JWT token is empty.");
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
 
-        const url = createUrl(urlArg, `/secure/removeViewerFromCollection/${args.collectionId}`);
+        const url = createUrl(urlArg, `/secure/removeViewerFromCollection/${collectionId}`);
 
         const response = await safeFetch(url, {
             method: "DELETE",
