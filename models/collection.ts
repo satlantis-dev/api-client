@@ -2,6 +2,7 @@ export type CollectionLocation = {
     collectionId: number;
     googleId: string;
     seqNum: number;
+    blurb?: string;
 };
 
 export type Collection = {
