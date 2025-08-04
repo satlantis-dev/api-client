@@ -443,7 +443,8 @@ async (args: {
     }
 
     const url = copyURL(urlArg);
-    url.pathname = `/secure/getAccountsBySearch`;
+    // https://linear.app/sat-lantis/issue/SAT-2947/be-support-for-user-search-without-being-signed-in#comment-ae0e0a82
+    url.pathname = `/getAccountsBySearch`;
     if (args.username) {
         url.searchParams.set("username", args.username);
     }
