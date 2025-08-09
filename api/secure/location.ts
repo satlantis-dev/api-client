@@ -156,3 +156,46 @@ export const getRecommendedLocations =
         }
         return handleResponse<LocationDTO[]>(response);
     };
+
+export type GetGlobalLocationsArgs = {
+    lat?: number;
+    lng?: number;
+    search: string;
+    page?: number;
+    limit?: number;
+    category?: string;
+    tags?: string[];
+};
+
+export const getGlobalLocations = (urlArg: URL, getJwt: () => string) => {
+    return async (args: GetGlobalLocationsArgs) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/getGlobalLocations`;
+
+        const { lat, lng, search, page, limit, category, tags } = args;
+
+        if (lat) url.searchParams.set("lat", String(lat));
+        if (lng) url.searchParams.set("lng", String(lng));
+        if (search) url.searchParams.set("search", search);
+        if (page) url.searchParams.set("page", String(page));
+        if (limit) url.searchParams.set("limit", String(limit));
+        if (category) url.searchParams.set("category", category);
+        if (tags?.length) url.searchParams.set("tags", tags.join(","));
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const response = await safeFetch(url, { headers });
+
+        if (response instanceof Error) {
+            return response;
+        }
+
+        return handleResponse<LocationDTO[]>(response);
+    };
+};

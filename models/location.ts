@@ -107,6 +107,7 @@ export interface LocationClaim {
 // https://github.com/satlantis-dev/models/blob/main/location.go#L157
 export interface LocationDTO {
     id: number;
+    googleId: string;
     address: Address;
     bio?: string;
     email: string;

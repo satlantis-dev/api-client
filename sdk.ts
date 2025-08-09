@@ -29,25 +29,25 @@ import {
 } from "./api/account.ts";
 import { getIpInfo } from "./api/ip.ts";
 import {
-  claimLocation,
-  getAccountRolesForLocation,
-  getAccountsForLocation,
-  getLocation,
-  getLocationByGoogleId,
-  getLocationGalleryImages,
-  getLocationLinks,
-  getLocationReviews,
-  getLocationsByPlaceID,
-  getLocationsByPlaceIDRandomized,
-  getLocationsBySearch,
-  getLocationsWithinBoundingBox,
-  getLocationTags,
-  getLocationTagsByPlaceID,
-  getNearbyLocations,
-  getSimilarLocations,
-  proveLocationClaim,
-  suggestLocation,
-  updateLocation,
+    claimLocation,
+    getAccountRolesForLocation,
+    getAccountsForLocation,
+    getLocation,
+    getLocationByGoogleId,
+    getLocationGalleryImages,
+    getLocationLinks,
+    getLocationReviews,
+    getLocationsByPlaceID,
+    getLocationsByPlaceIDRandomized,
+    getLocationsBySearch,
+    getLocationsWithinBoundingBox,
+    getLocationTags,
+    getLocationTagsByPlaceID,
+    getNearbyLocations,
+    getSimilarLocations,
+    proveLocationClaim,
+    suggestLocation,
+    updateLocation,
 } from "./api/location.ts";
 import { authApple, authGoogle, loginNostr } from "./api/login.ts";
 import {
@@ -145,6 +145,7 @@ import type { Interest } from "./models/interest.ts";
 import { getBrands, getExchangeRate } from "./api/metric.ts";
 import {
     deleteLocationGalleryImage,
+    getGlobalLocations,
     getRecommendedLocations,
     postLocationGalleryImage,
     promoteLocationGalleryImageToBanner,
@@ -270,6 +271,7 @@ export class Client {
     getLocationGalleryImages: ReturnType<typeof getLocationGalleryImages>;
     private _postLocationGalleryImage: ReturnType<typeof postLocationGalleryImage>;
     updateLocationGalleryImage: ReturnType<typeof updateLocationGalleryImage>;
+    getGlobalLocations: ReturnType<typeof getGlobalLocations>;
     deleteLocationGalleryImage: ReturnType<typeof deleteLocationGalleryImage>;
     promoteLocationGalleryImageToBanner: ReturnType<typeof promoteLocationGalleryImageToBanner>;
     getLocationsBySearch: ReturnType<typeof getLocationsBySearch>;
@@ -476,6 +478,7 @@ export class Client {
         this.getLocationGalleryImages = getLocationGalleryImages(rest_api_url);
         this._postLocationGalleryImage = postLocationGalleryImage(rest_api_url, getJwt);
         this.updateLocationGalleryImage = updateLocationGalleryImage(rest_api_url, getJwt);
+        this.getGlobalLocations = getGlobalLocations(rest_api_url, getJwt);
         this.deleteLocationGalleryImage = deleteLocationGalleryImage(rest_api_url, getJwt);
         this.promoteLocationGalleryImageToBanner = promoteLocationGalleryImageToBanner(rest_api_url, getJwt);
         this.getLocationsBySearch = getLocationsBySearch(rest_api_url);
