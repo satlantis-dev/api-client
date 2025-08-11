@@ -172,6 +172,8 @@ import {
     updateLocationCollections,
 } from "./api/secure/collections.ts";
 
+import { getEventDetails } from "./api/events.ts";
+
 export type func_GetNostrSigner = () => Promise<(Signer & Encrypter) | Error>;
 export type func_GetJwt = () => string;
 
@@ -204,6 +206,8 @@ export class Client {
     getBrands: ReturnType<typeof getBrands>;
     getExchangeRate: ReturnType<typeof getExchangeRate>;
 
+    // Event Details getEventDetails
+    getEventDetails: ReturnType<typeof getEventDetails>;
     // Calendar Events
     getEventById: ReturnType<typeof getEventById>;
     getPlaceCalendarEvents: ReturnType<typeof getPlaceCalendarEvents>;
@@ -403,6 +407,8 @@ export class Client {
         this.getRegion = getRegion(rest_api_url);
         this.getBrands = getBrands(rest_api_url);
         this.getExchangeRate = getExchangeRate(rest_api_url);
+        // Event details
+        this.getEventDetails = getEventDetails(rest_api_url);
 
         // Calendar Events
         this.getEventById = getEventById(rest_api_url);
