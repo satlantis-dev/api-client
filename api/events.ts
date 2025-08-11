@@ -1,5 +1,4 @@
 import type { Country } from "$lib/types/models/country.ts";
-import type { func_GetJwt } from "../sdk.ts";
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { AccountDTO } from "../models/account.ts";
