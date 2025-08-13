@@ -108,7 +108,7 @@ async (args: {
 };
 
 export const getNearbyLocations = (urlArg: URL, getJwt: func_GetJwt) =>
-  async (args: {
+async (args: {
     lat: number;
     lng: number;
     radius?: number | null;
@@ -120,65 +120,65 @@ export const getNearbyLocations = (urlArg: URL, getJwt: func_GetJwt) =>
     limit?: number;
     isSecure?: boolean;
     openOnly?: boolean;
-  }) => {
+}) => {
     if (args.lat === null || args.lng === null) return [];
 
     const url = copyURL(urlArg);
     const headers = new Headers();
 
     if (args.isSecure) {
-      const jwt = getJwt();
-      if (jwt == "") {
-        return new Error("jwt token is empty");
-      }
-      headers.set("Authorization", `Bearer ${jwt}`);
-      url.pathname = `/secure/getNearbyLocations`;
+        const jwt = getJwt();
+        if (jwt == "") {
+            return new Error("jwt token is empty");
+        }
+        headers.set("Authorization", `Bearer ${jwt}`);
+        url.pathname = `/secure/getNearbyLocations`;
     } else {
-      url.pathname = `/getNearbyLocations`;
+        url.pathname = `/getNearbyLocations`;
     }
 
     url.searchParams.set("lat", String(args.lat));
     url.searchParams.set("lng", String(args.lng));
-    url.searchParams.set("radius", String(args.radius || '20000'));
+    url.searchParams.set("radius", String(args.radius || "20000"));
     if (args.search) {
-      url.searchParams.set("search", String(args.search));
+        url.searchParams.set("search", String(args.search));
     }
     if (args.category) {
-      url.searchParams.set("category", String(args.category));
+        url.searchParams.set("category", String(args.category));
     }
     if (args.tags && args.tags.length > 0) {
-      let tags = "";
-      const tagsArray: string[] = [];
+        let tags = "";
+        const tagsArray: string[] = [];
 
-      for (const tag of args.tags) {
-        tagsArray.push(`${tag.key}=${tag.value}`);
-      }
+        for (const tag of args.tags) {
+            tagsArray.push(`${tag.key}=${tag.value}`);
+        }
 
-      tags = tagsArray.join(",");
-      url.searchParams.set("tags", tags);
+        tags = tagsArray.join(",");
+        url.searchParams.set("tags", tags);
     }
     if (args.page) {
-      url.searchParams.set("page", String(args.page));
+        url.searchParams.set("page", String(args.page));
     }
     if (args.limit) {
-      url.searchParams.set("limit", String(args.limit));
+        url.searchParams.set("limit", String(args.limit));
     }
     if (args.order) {
-      url.searchParams.set("order", String(args.order));
+        url.searchParams.set("order", String(args.order));
     }
     if (args.order) {
-      url.searchParams.set("order", String(args.order));
+        url.searchParams.set("order", String(args.order));
     }
     if (!!args.openOnly) {
-      url.searchParams.set("open_only", "true");
+        url.searchParams.set("open_only", "true");
     }
 
     const response = await safeFetch(url, { headers });
     if (response instanceof Error) {
-      return response;
+        return response;
     }
     return handleResponse<Location[]>(response);
-  };
+};
 
 /**
  * @unstable
