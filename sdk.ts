@@ -13,6 +13,7 @@ import {
 } from "@blowater/nostr-sdk";
 
 import {
+    checkUsernameAvailabilityInSatlantis,
     createAccount,
     getAccount,
     getAccountById,
@@ -205,6 +206,9 @@ export class Client {
     getRegion: ReturnType<typeof getRegion>;
     getBrands: ReturnType<typeof getBrands>;
     getExchangeRate: ReturnType<typeof getExchangeRate>;
+
+    // Check username availability in Satlantis
+    checkUsernameAvailabilityInSatlantis: ReturnType<typeof checkUsernameAvailabilityInSatlantis>;
 
     // Event Details getEventDetails
     getEventDetails: ReturnType<typeof getEventDetails>;
@@ -409,6 +413,10 @@ export class Client {
         this.getExchangeRate = getExchangeRate(rest_api_url);
         // Event details
         this.getEventDetails = getEventDetails(rest_api_url);
+
+        // Check username availability in satlantis
+
+        this.checkUsernameAvailabilityInSatlantis = checkUsernameAvailabilityInSatlantis(rest_api_url);
 
         // Calendar Events
         this.getEventById = getEventById(rest_api_url);
@@ -759,6 +767,9 @@ export class Client {
         googlePlaceId: string;
         autofollowHostAndCohosts?: boolean;
         allowCohostsToDownloadAttendeeList?: boolean;
+        enableWaitlist?: boolean;
+        capacity?: number;
+        isLimitedEvent?: boolean;
     }) => {
         const jwtToken = this.getJwt();
         if (jwtToken == "") {
@@ -816,6 +827,16 @@ export class Client {
 
         if (args.googlePlaceId) {
             tags.push(["google_place_id", args.googlePlaceId]);
+        }
+
+        if (args.isLimitedEvent && args.capacity) {
+            tags.push(["rsvp_limit", args.capacity.toString()]);
+        }
+
+        if (args.enableWaitlist && args.isLimitedEvent && args.capacity) {
+            tags.push(["rsvp_waitlist_enabled", "true"]);
+        } else {
+            tags.push(["rsvp_waitlist_enabled", "false"]);
         }
 
         const event = await prepareNostrEvent(signer, {
@@ -865,6 +886,9 @@ export class Client {
         googlePlaceId: string;
         autofollowHostAndCohosts?: boolean;
         allowCohostsToDownloadAttendeeList?: boolean;
+        enableWaitlist?: boolean;
+        capacity?: number;
+        isLimitedEvent?: boolean;
     }) => {
         const jwtToken = this.getJwt();
         if (jwtToken == "") {
@@ -922,6 +946,16 @@ export class Client {
 
         if (args.googlePlaceId) {
             tags.push(["google_place_id", args.googlePlaceId]);
+        }
+
+        if (args.isLimitedEvent && args.capacity) {
+            tags.push(["rsvp_limit", args.capacity.toString()]);
+        }
+
+        if (args.enableWaitlist && args.isLimitedEvent && args.capacity) {
+            tags.push(["rsvp_waitlist_enabled", "true"]);
+        } else {
+            tags.push(["rsvp_waitlist_enabled", "false"]);
         }
 
         const event = await prepareNostrEvent(signer, {

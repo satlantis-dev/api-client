@@ -119,6 +119,21 @@ export const initiatePasswordReset = (urlArg: URL) => async (args: { username: s
     return handleResponse<{ success: boolean }>(response);
 };
 
+export const checkUsernameAvailabilityInSatlantis = (urlArg: URL) => async (args: { name: string }) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/isUserNameAvailable`;
+    url.searchParams.set("name", args.name);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+    });
+
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<string>(response);
+};
+
 export const resetPassword = (urlArg: URL) => async (args: { token: string; password: string }) => {
     const url = copyURL(urlArg);
     url.pathname = `/resetPassword`;

@@ -10,8 +10,8 @@ import type {
     EventInterest,
 } from "../models/calendar.ts";
 import type { LocationDTO } from "../models/location.ts";
-import type { BoundingBox } from "../models/place.ts";
-
+import type { BoundingBox, Place } from "../models/place.ts";
+import type { PlaceEvent } from "../models/place.ts";
 export interface EventDetails {
     id: number;
     accountId: number;
@@ -25,18 +25,7 @@ export interface EventDetails {
     end: string;
     endTzId: string;
     eventId: number;
-    event: {
-        id: number;
-        nostrId: string;
-        createdAt: number;
-        content: string;
-        kind: number;
-        pubkey: string;
-        sig: string;
-        tags: string | null;
-        tagsData: any | null;
-        reconciled: boolean;
-    };
+    event: PlaceEvent;
     geohash: string;
     image: string;
     interests: EventInterest[];
@@ -58,6 +47,10 @@ export interface EventDetails {
     googleId: string;
     venueId: number | null;
     venue: LocationDTO;
+    rsvpWaitlistedCount: number;
+    rsvpWaitlistEnabledAt: string | null;
+    rsvpAcceptedCount: number;
+
     cohosts: Cohost[];
     ownershipChangedAt: string | null;
     rsvpLimit: number | null;
