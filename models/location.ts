@@ -119,7 +119,7 @@ export interface LocationDTO {
     isClaimed: boolean;
     lat: number;
     lng: number;
-    locationTags: LocationTag[];
+    locationTags: LocationTag[] | null;
     name: string;
     openingHours: OpeningHours;
     osmRef: string;
