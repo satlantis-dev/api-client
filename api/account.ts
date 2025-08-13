@@ -145,9 +145,14 @@ export const verifyEmail = (urlArg: URL) => async (args: { token: string }) => {
     return handleResponse<{ success: boolean; account: Account; token: string }>(response);
 };
 
+export type GetAccountCalendarEventsArgs = {
+    npub: string;
+    period?: CalendarEventPeriod;
+};
+
 export const getAccountCalendarEvents = (urlArg: URL) =>
 async (
-    args: { npub: string; period?: CalendarEventPeriod },
+    args: GetAccountCalendarEventsArgs,
 ) => {
     const url = copyURL(urlArg);
     url.pathname = `/getAccountCalendarEvents/${args.npub}`;
