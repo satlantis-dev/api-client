@@ -1,4 +1,3 @@
-import type { Country } from "$lib/types/models/country.ts";
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { AccountDTO } from "../models/account.ts";
@@ -69,7 +68,10 @@ export interface EventDetails {
         name: string;
         osmRef: string;
     };
-    country: Country;
+    country: {
+        code: string;
+        name: string;
+    };
 }
 
 /**

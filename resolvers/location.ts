@@ -60,7 +60,7 @@ export class LocationResolver {
         this.isClaimed = data.isClaimed;
         this.lat = data.lat;
         this.lng = data.lng;
-        this.locationTags = data.locationTags;
+        this.locationTags = data.locationTags || [];
         this.name = data.name;
         this.placeId = data.placeId;
         this.openingHours = data.openingHours;
