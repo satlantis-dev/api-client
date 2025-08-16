@@ -148,6 +148,7 @@ import {
     deleteLocationGalleryImage,
     getGlobalLocations,
     getRecommendedLocations,
+    getRecommendedLocationsGlobal,
     postLocationGalleryImage,
     promoteLocationGalleryImageToBanner,
     updateLocationGalleryImage,
@@ -289,6 +290,7 @@ export class Client {
     getLocationLinks: ReturnType<typeof getLocationLinks>;
     getAccountRolesForLocation: ReturnType<typeof getAccountRolesForLocation>;
     getRecommendedLocations: ReturnType<typeof getRecommendedLocations>; // Use getSuggestedLocations instead
+    getRecommendedLocationsGlobal: ReturnType<typeof getRecommendedLocationsGlobal>;
     getLocationTagsByPlaceID: ReturnType<typeof getLocationTagsByPlaceID>;
     getSimilarLocations: ReturnType<typeof getSimilarLocations>;
 
@@ -500,6 +502,7 @@ export class Client {
         this.getLocationLinks = getLocationLinks(rest_api_url);
         this.getAccountRolesForLocation = getAccountRolesForLocation(rest_api_url);
         this.getRecommendedLocations = getRecommendedLocations(rest_api_url, getJwt);
+        this.getRecommendedLocationsGlobal = getRecommendedLocationsGlobal(rest_api_url, getJwt);
         this.getLocationTagsByPlaceID = getLocationTagsByPlaceID(rest_api_url);
         this.getSimilarLocations = getSimilarLocations(rest_api_url);
 
