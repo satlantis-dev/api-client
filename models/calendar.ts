@@ -49,7 +49,12 @@ export type Cohost = {
 export type CalendarEvent = {
     id: number;
     atag: string;
-    placeId: number;
+    placeId?: number;
+    place: {
+        id: number;
+        name: string;
+        osmRef: string;
+    };
     interests: Interest[];
     accountId: number;
     account: AccountDTO;
