@@ -300,8 +300,8 @@ export type SuggestLocationArgs = {
         comment?: string;
         tags?: LocationTag[];
         googleDetails: Record<string, any>;
-    }
-}
+    };
+};
 export const suggestLocation = (urlArg: URL, getJwt: func_GetJwt) => async (args: SuggestLocationArgs) => {
     const jwt = getJwt();
     if (jwt == "") {
