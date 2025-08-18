@@ -834,6 +834,8 @@ export class Client {
 
         if (args.isLimitedEvent && args.capacity) {
             tags.push(["rsvp_limit", args.capacity.toString()]);
+        } else {
+            tags.push(["rsvp_limit", "null"]);
         }
 
         if (args.enableWaitlist && args.isLimitedEvent && args.capacity) {
@@ -953,6 +955,8 @@ export class Client {
 
         if (args.isLimitedEvent && args.capacity) {
             tags.push(["rsvp_limit", args.capacity.toString()]);
+        } else {
+            tags.push(["rsvp_limit", "null"]);
         }
 
         if (args.enableWaitlist && args.isLimitedEvent && args.capacity) {
