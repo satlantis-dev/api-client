@@ -175,6 +175,7 @@ import {
 } from "./api/secure/collections.ts";
 
 import { getEventDetails } from "./api/events.ts";
+import { getTimezoneInfo } from "./api/base.ts";
 
 export type func_GetNostrSigner = () => Promise<(Signer & Encrypter) | Error>;
 export type func_GetJwt = () => string;
@@ -185,6 +186,9 @@ export class Client {
     private users = new Map<string, UserResolver>();
     private accounts = new Map<string, Account>();
     private places = new Map<number | string, Place>();
+
+    // Base
+    getTimezoneInfo: ReturnType<typeof getTimezoneInfo>;
 
     // Place
     private _getPlaceNames: ReturnType<typeof getPlaceNames>;
@@ -392,6 +396,8 @@ export class Client {
         public readonly getJwt: func_GetJwt,
         public readonly getNostrSigner: func_GetNostrSigner,
     ) {
+        this.getTimezoneInfo = getTimezoneInfo(rest_api_url);
+
         this._getPlaceNames = getPlaceNames(rest_api_url);
         this._getAllPlaceRegionCountryNames = getAllPlaceRegionCountryNames(rest_api_url);
         this._getPlaceByOsmRef = getPlaceByOsmRef(rest_api_url);
@@ -2308,6 +2314,7 @@ export * from "./models/place.ts";
 export * from "./models/region.ts";
 export * from "./models/interest.ts";
 export * from "./models/reaction.ts";
+export * from "./models/geo.ts";
 // data resolvers
 export * from "./resolvers/location.ts";
 export * from "./resolvers/user.ts";
