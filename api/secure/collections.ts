@@ -41,18 +41,25 @@ export type GetCollectionByIdArgs = {
 export function getCollectionById(urlArg: URL, getJwt: func_GetJwt) {
     return async (args: GetCollectionByIdArgs) => {
         const jwtToken = getJwt();
-        if (!jwtToken) return new Error("JWT token is empty.");
+        const hasJwt = Boolean(jwtToken);
 
         const headers = new Headers();
-        headers.set("Authorization", `Bearer ${jwtToken}`);
+        if (hasJwt) {
+            headers.set("Authorization", `Bearer ${jwtToken}`);
+        }
 
-        const url = createUrl(urlArg, `/secure/getCollection/${args.collectionId}`);
+        // If no JWT token, fall back to public endpoint
+        const path = hasJwt
+            ? `/secure/getCollection/${args.collectionId}`
+            : `/getCollection/${args.collectionId}`;
+        const url = createUrl(urlArg, path);
 
-        const response = await safeFetch(url, {
+        const fetchOptions: Parameters<typeof safeFetch>[1] = {
             method: "GET",
-            headers,
-        });
+            headers: hasJwt ? headers : undefined,
+        };
 
+        const response = await safeFetch(url, fetchOptions);
         if (response instanceof Error) return response;
         return handleResponse<Collection>(response);
     };
