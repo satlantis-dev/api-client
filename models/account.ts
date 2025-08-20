@@ -71,6 +71,17 @@ export type AccountDTO = {
     email: string;
 };
 
+export type AccountMiniDTO = {
+    id: number;
+    username: string;
+    displayName: string;
+    name: string;
+    nip05: string;
+    picture: string;
+    npub: string;
+    pubKey: string;
+}
+
 export type AccountSearchDTO = {
     about: string;
     display_name: string;
