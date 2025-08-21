@@ -165,6 +165,7 @@ import {
     getCollectionById,
     getUserCollections,
     getUserCollectionsForLocation,
+    importGoogleMapsCollection,
     removeContributorFromCollection,
     removeLocationFromCollections,
     removeViewerFromCollection,
@@ -385,6 +386,7 @@ export class Client {
     removeContributorFromCollection: ReturnType<typeof removeContributorFromCollection>;
     addViewerToCollection: ReturnType<typeof addViewerToCollection>;
     removeViewerFromCollection: ReturnType<typeof removeViewerFromCollection>;
+    importGoogleMapsCollection: ReturnType<typeof importGoogleMapsCollection>;
 
     // Account Search.
     getAccountById: ReturnType<typeof getAccountById>;
@@ -598,6 +600,7 @@ export class Client {
         this.removeContributorFromCollection = removeContributorFromCollection(rest_api_url, getJwt);
         this.addViewerToCollection = addViewerToCollection(rest_api_url, getJwt);
         this.removeViewerFromCollection = removeViewerFromCollection(rest_api_url, getJwt);
+        this.importGoogleMapsCollection = importGoogleMapsCollection(rest_api_url, getJwt);
 
         // Account Search.
         this.getAccountById = getAccountById(rest_api_url);
