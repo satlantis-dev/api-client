@@ -105,7 +105,7 @@ import { deleteNote, postNote, postReaction, recordNotesAsSeen } from "./api/sec
 import { getNotifications } from "./api/secure/notification.ts";
 import { presign } from "./api/secure/presign.ts";
 import { newURL } from "./helpers/_helper.ts";
-import { addressLookup, getCoordinatesByAddress } from "./api/address.ts";
+import { addressLookup, getCoordinatesByAddress, getCoordinatesByGoogleId } from "./api/address.ts";
 import { signEvent } from "./api/nostr_event.ts";
 import {
     createInterests,
@@ -297,6 +297,7 @@ export class Client {
     // address
     addressLookup: ReturnType<typeof addressLookup>;
     getCoordinatesByAddress: ReturnType<typeof getCoordinatesByAddress>;
+    getCoordinatesByGoogleId: ReturnType<typeof getCoordinatesByGoogleId>;
 
     // auth
     loginNostr: ReturnType<typeof loginNostr>;
@@ -509,6 +510,7 @@ export class Client {
         // address
         this.addressLookup = addressLookup(rest_api_url);
         this.getCoordinatesByAddress = getCoordinatesByAddress(rest_api_url);
+        this.getCoordinatesByGoogleId = getCoordinatesByGoogleId(rest_api_url);
 
         // authed APIs
         this.removeAccountRole = removeAccountRole(

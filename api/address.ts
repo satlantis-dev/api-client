@@ -131,3 +131,22 @@ async (args: {
         return null;
     }
 };
+
+export const getCoordinatesByGoogleId = (urlArg: URL) =>
+async (args: {
+    googleId: string;
+}) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/getCoordinatesByGoogleId`;
+
+    url.searchParams.set("googleId", args.googleId);
+
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{
+        lat: number;
+        lng: number;
+    }>(response);
+};
