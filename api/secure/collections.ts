@@ -581,3 +581,29 @@ export function removeViewerFromCollection(urlArg: URL, getJwt: func_GetJwt) {
         return handleResponse<RemoveViewerFromCollectionResponse>(response);
     };
 }
+
+export type ImportGoogleMapsCollectionArgs = {
+    name: string;
+    url: string;
+};
+
+export function importGoogleMapsCollection(urlArg: URL, getJwt: func_GetJwt) {
+    return async (args: ImportGoogleMapsCollectionArgs) => {
+        const jwtToken = getJwt();
+        if (!jwtToken) return new Error("JWT token is empty.");
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const url = createUrl(urlArg, "/secure/importGoogleMapsCollection");
+
+        const response = await safeFetch(url, {
+            method: "POST",
+            headers,
+            body: JSON.stringify(args),
+        });
+
+        if (response instanceof Error) return response;
+        return handleResponse(response);
+    };
+}
