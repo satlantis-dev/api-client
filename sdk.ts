@@ -173,6 +173,8 @@ import {
     unsaveCollection,
     updateCollectionLocation,
     updateLocationCollections,
+    markCollectionAsFeatured,
+    unmarkCollectionAsFeatured,
 } from "./api/secure/collections.ts";
 
 import { getEventDetails, getEvents } from "./api/events.ts";
@@ -388,6 +390,8 @@ export class Client {
     addViewerToCollection: ReturnType<typeof addViewerToCollection>;
     removeViewerFromCollection: ReturnType<typeof removeViewerFromCollection>;
     importGoogleMapsCollection: ReturnType<typeof importGoogleMapsCollection>;
+    markCollectionAsFeatured: ReturnType<typeof markCollectionAsFeatured>;
+    unmarkCollectionAsFeatured: ReturnType<typeof unmarkCollectionAsFeatured>;
 
     // Account Search.
     getAccountById: ReturnType<typeof getAccountById>;
@@ -603,6 +607,8 @@ export class Client {
         this.addViewerToCollection = addViewerToCollection(rest_api_url, getJwt);
         this.removeViewerFromCollection = removeViewerFromCollection(rest_api_url, getJwt);
         this.importGoogleMapsCollection = importGoogleMapsCollection(rest_api_url, getJwt);
+        this.markCollectionAsFeatured = markCollectionAsFeatured(rest_api_url, getJwt);
+        this.unmarkCollectionAsFeatured = unmarkCollectionAsFeatured(rest_api_url, getJwt);
 
         // Account Search.
         this.getAccountById = getAccountById(rest_api_url);
