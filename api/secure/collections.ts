@@ -632,12 +632,12 @@ export function markCollectionAsFeatured(urlArg: URL, getJwt: func_GetJwt) {
     };
 }
 
-export type unmarkCollectionAsFeaturedArgs = {
+export type UnmarkCollectionAsFeaturedArgs = {
     collectionId: number;
 };
 
 export function unmarkCollectionAsFeatured(urlArg: URL, getJwt: func_GetJwt) {
-    return async (args: unmarkCollectionAsFeaturedArgs) => {
+    return async (args: UnmarkCollectionAsFeaturedArgs) => {
         const jwtToken = getJwt();
         if (!jwtToken) return new Error("JWT token is empty.");
 
