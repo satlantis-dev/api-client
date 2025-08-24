@@ -94,3 +94,37 @@ export const getEventDetails =
         }
         return handleResponse<EventDetails>(response);
     };
+
+
+export interface GetEventsArgs {
+    destination?: string; // Filter by country or place name (partial match)
+    place_id?: number; // Filter by place id
+    type?: string; // Filter by event type (e.g., "concert", "meetup")
+    period?: string; // Time filter: "upcoming" (default) or "past"
+    search?: string; // Keyword search across title, description, venue, location
+    start_date?: string; // Events starting from date (YYYY-MM-DD, inclusive)
+    end_date?: string; // Events ending by date (YYYY-MM-DD, inclusive)
+    my_events?: string; // Show only user's events if it's true(requires auth token)
+    page: number;
+    limit: number;
+}
+
+export const getEvents =
+    (urlArg: URL) => async (args: GetEventsArgs): Promise<EventDetails[] | Error> => {
+        const url = copyURL(urlArg);
+        url.pathname = `/events`;
+        Object.keys(args).forEach((key) => {
+          url.searchParams.set(key, (args as any)[key]);
+        })
+
+        const headers = new Headers();
+
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<EventDetails[]>(response);
+    };

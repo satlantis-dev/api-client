@@ -173,11 +173,9 @@ import {
     unsaveCollection,
     updateCollectionLocation,
     updateLocationCollections,
-    markCollectionAsFeatured,
-    unmarkCollectionAsFeatured,
 } from "./api/secure/collections.ts";
 
-import { getEventDetails } from "./api/events.ts";
+import { getEventDetails, getEvents } from "./api/events.ts";
 import { getTimezoneInfo } from "./api/base.ts";
 
 export type func_GetNostrSigner = () => Promise<(Signer & Encrypter) | Error>;
@@ -220,6 +218,7 @@ export class Client {
     // Event Details getEventDetails
     getEventDetails: ReturnType<typeof getEventDetails>;
     // Calendar Events
+    getEvents: ReturnType<typeof getEvents>;
     getEventById: ReturnType<typeof getEventById>;
     getPlaceCalendarEvents: ReturnType<typeof getPlaceCalendarEvents>;
     deletePlaceCalendarEvent: ReturnType<typeof deletePlaceCalendarEvent>;
@@ -389,8 +388,6 @@ export class Client {
     addViewerToCollection: ReturnType<typeof addViewerToCollection>;
     removeViewerFromCollection: ReturnType<typeof removeViewerFromCollection>;
     importGoogleMapsCollection: ReturnType<typeof importGoogleMapsCollection>;
-    markCollectionAsFeatured: ReturnType<typeof markCollectionAsFeatured>;
-    unmarkCollectionAsFeatured: ReturnType<typeof unmarkCollectionAsFeatured>;
 
     // Account Search.
     getAccountById: ReturnType<typeof getAccountById>;
@@ -426,6 +423,7 @@ export class Client {
         this.getBrands = getBrands(rest_api_url);
         this.getExchangeRate = getExchangeRate(rest_api_url);
         // Event details
+        this.getEvents = getEvents(rest_api_url);
         this.getEventDetails = getEventDetails(rest_api_url);
 
         // Check username availability in satlantis
@@ -605,8 +603,6 @@ export class Client {
         this.addViewerToCollection = addViewerToCollection(rest_api_url, getJwt);
         this.removeViewerFromCollection = removeViewerFromCollection(rest_api_url, getJwt);
         this.importGoogleMapsCollection = importGoogleMapsCollection(rest_api_url, getJwt);
-        this.markCollectionAsFeatured = markCollectionAsFeatured(rest_api_url, getJwt);
-        this.unmarkCollectionAsFeatured = unmarkCollectionAsFeatured(rest_api_url, getJwt);
 
         // Account Search.
         this.getAccountById = getAccountById(rest_api_url);
