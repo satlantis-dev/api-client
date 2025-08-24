@@ -607,3 +607,51 @@ export function importGoogleMapsCollection(urlArg: URL, getJwt: func_GetJwt) {
         return handleResponse(response);
     };
 }
+
+export type MarkCollectionAsFeaturedArgs = {
+    collectionId: number;
+};
+
+export function markCollectionAsFeatured(urlArg: URL, getJwt: func_GetJwt) {
+    return async (args: MarkCollectionAsFeaturedArgs) => {
+        const jwtToken = getJwt();
+        if (!jwtToken) return new Error("JWT token is empty.");
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const url = createUrl(urlArg, `/secure/markCollectionAsFeatured/${args.collectionId}`);
+
+        const response = await safeFetch(url, {
+            method: "POST",
+            headers,
+        });
+
+        if (response instanceof Error) return response;
+        return handleResponse(response);
+    };
+}
+
+export type unmarkCollectionAsFeaturedArgs = {
+    collectionId: number;
+};
+
+export function unmarkCollectionAsFeatured(urlArg: URL, getJwt: func_GetJwt) {
+    return async (args: unmarkCollectionAsFeaturedArgs) => {
+        const jwtToken = getJwt();
+        if (!jwtToken) return new Error("JWT token is empty.");
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const url = createUrl(urlArg, `/secure/unmarkCollectionAsFeatured/${args.collectionId}`);
+
+        const response = await safeFetch(url, {
+            method: "POST",
+            headers,
+        });
+
+        if (response instanceof Error) return response;
+        return handleResponse(response);
+    };
+}
