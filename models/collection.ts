@@ -22,4 +22,6 @@ export type Collection = {
     numSaves: number;
     contributors: AccountMiniDTO[];
     cover?: string;
+    placesById: number[] | null;
+    featured: boolean;
 };
