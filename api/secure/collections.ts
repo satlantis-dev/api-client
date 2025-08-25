@@ -623,7 +623,7 @@ export function markCollectionAsFeatured(urlArg: URL, getJwt: func_GetJwt) {
         const url = createUrl(urlArg, `/secure/markCollectionAsFeatured/${args.collectionId}`);
 
         const response = await safeFetch(url, {
-            method: "POST",
+            method: "PUT",
             headers,
         });
 
@@ -647,7 +647,7 @@ export function unmarkCollectionAsFeatured(urlArg: URL, getJwt: func_GetJwt) {
         const url = createUrl(urlArg, `/secure/unmarkCollectionAsFeatured/${args.collectionId}`);
 
         const response = await safeFetch(url, {
-            method: "POST",
+            method: "PUT",
             headers,
         });
 
