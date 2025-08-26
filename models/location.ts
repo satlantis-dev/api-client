@@ -239,3 +239,11 @@ export interface LocationLink {
     app: string;
     link: string;
 }
+
+export type PlaceMinimal = {
+    id: number;
+    name: string;
+    country_name: string;
+    region: string;
+    osm_ref: string;
+};

@@ -11,6 +11,7 @@ import type {
 import { type Region } from "../models/region.ts";
 
 import { type PlaceNote } from "./note.ts";
+import type { PlaceMinimal } from "../models/location.ts";
 
 export const getPlaceNames = (urlArg: URL) => async () => {
     const url = copyURL(urlArg);
@@ -88,8 +89,7 @@ async (args: {
     return handleResponse<Place[]>(response);
 };
 
-export const getPlacesMinimal = (urlArg: URL) =>
-async (args: {
+export type GetPlacesMinimalArgs = {
     filters: {
         name: string;
     };
@@ -98,7 +98,9 @@ async (args: {
     sortColumn: "score" | "id" | "price";
     sortDirection: "desc" | "asc";
     active_only?: boolean;
-}) => {
+}
+
+export const getPlacesMinimal = (urlArg: URL) => async (args: GetPlacesMinimalArgs) => {
     const url = copyURL(urlArg);
     url.pathname = `/getPlacesMinimal`;
     url.searchParams.append("filters", JSON.stringify(args.filters));
@@ -118,7 +120,8 @@ async (args: {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{ id: number; name: string; country_name: string }[]>(response);
+
+    return handleResponse<PlaceMinimal[]>(response);
 };
 
 /**
