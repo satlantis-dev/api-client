@@ -231,49 +231,52 @@ async (args: {
     }>(response);
 };
 
-export const addAccountRole =
-    (urlArg: URL, getJwt: func_GetJwt, getSigner: func_GetNostrSigner) =>
-    async (args: {
-        placeId: number;
-        type: AccountPlaceRoleTypeEnum;
-    }) => {
-        const jwtToken = getJwt();
-        if (jwtToken == "") {
-            return new Error("jwt token is empty");
-        }
-        const signer = await getSigner();
-        if (signer instanceof Error) {
-            return signer;
-        }
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/addAccountRole`;
-        const headers = new Headers();
-        headers.set("Authorization", `Bearer ${jwtToken}`);
+export type AddAccountRoleArgs = {
+    placeId: number;
+    type: AccountPlaceRoleTypeEnum;
+};
 
-        const event = await prepareNostrEvent(signer, {
-            kind: 10016 as NostrKind,
-            content: "",
-        });
-        if (event instanceof Error) {
-            return event;
-        }
+export const addAccountRole = (urlArg: URL, getJwt: func_GetJwt, getSigner: func_GetNostrSigner) =>
+async (
+    args: AddAccountRoleArgs,
+) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const signer = await getSigner();
+    if (signer instanceof Error) {
+        return signer;
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/addAccountRole`;
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
 
-        const response = await safeFetch(
-            url,
-            {
-                method: "POST",
-                body: JSON.stringify({
-                    ...args,
-                    event,
-                }),
-                headers,
-            },
-        );
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<AccountPlaceRole>(response);
-    };
+    const event = await prepareNostrEvent(signer, {
+        kind: 10016 as NostrKind,
+        content: "",
+    });
+    if (event instanceof Error) {
+        return event;
+    }
+
+    const response = await safeFetch(
+        url,
+        {
+            method: "POST",
+            body: JSON.stringify({
+                ...args,
+                event,
+            }),
+            headers,
+        },
+    );
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<AccountPlaceRole>(response);
+};
 
 export const blacklistAccount = (urlArg: URL, getJwt: () => string) => async (args: { npub: string }) => {
     const jwtToken = getJwt();
@@ -302,12 +305,14 @@ export const blacklistAccount = (urlArg: URL, getJwt: () => string) => async (ar
     return new Error("unexpected result", { cause: res });
 };
 
+export type RemoveAccountRoleArgs = {
+    placeId: number;
+    type: AccountPlaceRoleTypeEnum;
+};
+
 export const removeAccountRole =
     (urlArg: URL, getJwt: () => string, getSigner: func_GetNostrSigner) =>
-    async (args: {
-        placeId: number;
-        type: AccountPlaceRoleTypeEnum;
-    }) => {
+    async (args: RemoveAccountRoleArgs) => {
         const jwtToken = getJwt();
         if (jwtToken == "") {
             return new Error("jwt token is empty");

@@ -10,6 +10,7 @@ import {
     type LocationLink,
     type LocationTag,
 } from "../models/location.ts";
+import type { Place } from "../models/place.ts";
 import { prepareLocationSetEvent, preparePlaceEvent } from "../nostr-helpers.ts";
 import { type func_GetJwt, type func_GetNostrSigner } from "../sdk.ts";
 
@@ -610,4 +611,24 @@ async (args: {
         return response;
     }
     return handleResponse<Location[]>(response);
+};
+
+export type MapUserToDestinationArgs = {
+    lat: number;
+    lng: number;
+};
+
+export const mapUserToDestination = (urlArg: URL) => async (args: MapUserToDestinationArgs) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/mapUserToDestination`;
+
+    url.searchParams.set("lat", String(args.lat));
+    url.searchParams.set("lng", String(args.lng));
+
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+
+    return handleResponse<Place>(response);
 };
