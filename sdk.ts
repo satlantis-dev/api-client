@@ -166,16 +166,17 @@ import {
     getUserCollections,
     getUserCollectionsForLocation,
     importGoogleMapsCollection,
+    markCollectionAsFeatured,
     removeContributorFromCollection,
     removeLocationFromCollections,
     removeViewerFromCollection,
     saveCollection,
+    unmarkCollectionAsFeatured,
     unsaveCollection,
     updateCollectionLocation,
     updateLocationCollections,
-    markCollectionAsFeatured,
-    unmarkCollectionAsFeatured,
 } from "./api/secure/collections.ts";
+import { mapUserToDestination } from "./api/location.ts";
 
 import { getEventDetails, getEvents } from "./api/events.ts";
 import { getTimezoneInfo } from "./api/base.ts";
@@ -300,6 +301,7 @@ export class Client {
     getRecommendedLocationsGlobal: ReturnType<typeof getRecommendedLocationsGlobal>;
     getLocationTagsByPlaceID: ReturnType<typeof getLocationTagsByPlaceID>;
     getSimilarLocations: ReturnType<typeof getSimilarLocations>;
+    mapUserToDestination: ReturnType<typeof mapUserToDestination>;
 
     // address
     addressLookup: ReturnType<typeof addressLookup>;
@@ -519,6 +521,7 @@ export class Client {
         this.getRecommendedLocationsGlobal = getRecommendedLocationsGlobal(rest_api_url, getJwt);
         this.getLocationTagsByPlaceID = getLocationTagsByPlaceID(rest_api_url);
         this.getSimilarLocations = getSimilarLocations(rest_api_url);
+        this.mapUserToDestination = mapUserToDestination(rest_api_url);
 
         // address
         this.addressLookup = addressLookup(rest_api_url);

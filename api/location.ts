@@ -625,7 +625,10 @@ export const mapUserToDestination = (urlArg: URL) => async (args: MapUserToDesti
     url.searchParams.set("lat", String(args.lat));
     url.searchParams.set("lng", String(args.lng));
 
-    const response = await safeFetch(url);
+    const response = await safeFetch(url, {
+        method: "GET",
+    });
+
     if (response instanceof Error) {
         return response;
     }
