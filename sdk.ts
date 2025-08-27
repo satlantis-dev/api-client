@@ -187,7 +187,15 @@ import {
 } from "./api/secure/collections.ts";
 import { mapUserToDestination } from "./api/location.ts";
 
-import { getEventDetails, getEvents } from "./api/events.ts";
+import {
+  getEventDetails,
+  getEvents,
+  getRandomizedEvents,
+  getFeaturedEvents,
+  getNewestEvents,
+  getPopularEvents,
+  getRecommendedEvents,
+} from "./api/events.ts";
 import { getTimezoneInfo } from "./api/base.ts";
 
 export type func_GetNostrSigner = () => Promise<(Signer & Encrypter) | Error>;
@@ -231,6 +239,11 @@ export class Client {
     getEventDetails: ReturnType<typeof getEventDetails>;
     // Calendar Events
     getEvents: ReturnType<typeof getEvents>;
+    getRandomizedEvents: ReturnType<typeof getRandomizedEvents>;
+    getPopularEvents: ReturnType<typeof getPopularEvents>;
+    getNewestEvents: ReturnType<typeof getNewestEvents>;
+    getFeaturedEvents: ReturnType<typeof getFeaturedEvents>;
+    getRecommendedEvents: ReturnType<typeof getRecommendedEvents>;
     getEventById: ReturnType<typeof getEventById>;
     getPlaceCalendarEvents: ReturnType<typeof getPlaceCalendarEvents>;
     deletePlaceCalendarEvent: ReturnType<typeof deletePlaceCalendarEvent>;
@@ -465,6 +478,11 @@ export class Client {
         this.getExchangeRate = getExchangeRate(rest_api_url);
         // Event details
         this.getEvents = getEvents(rest_api_url);
+        this.getRandomizedEvents = getRandomizedEvents(rest_api_url);
+        this.getPopularEvents = getPopularEvents(rest_api_url);
+        this.getNewestEvents = getNewestEvents(rest_api_url);
+        this.getFeaturedEvents = getFeaturedEvents(rest_api_url);
+        this.getRecommendedEvents = getRecommendedEvents(rest_api_url, getJwt);
         this.getEventDetails = getEventDetails(rest_api_url);
 
         // Check username availability in satlantis
