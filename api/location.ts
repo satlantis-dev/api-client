@@ -620,7 +620,7 @@ export type MapUserToDestinationArgs = {
 
 export const mapUserToDestination = (urlArg: URL) => async (args: MapUserToDestinationArgs) => {
     const url = copyURL(urlArg);
-    url.pathname = `/mapUserToDestination`;
+    url.pathname = `/user/destination`;
 
     url.searchParams.set("lat", String(args.lat));
     url.searchParams.set("lng", String(args.lng));
