@@ -82,7 +82,8 @@ export const createInterests = (urlArg: URL, getJwt: () => string) => async (int
 
 export const getRecommendedFollows = (urlArg: URL, getJwt: () => string) =>
 async (args?: {
-    max: number;
+    max?: number;
+    shuffle?: boolean;
 }) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
@@ -93,6 +94,9 @@ async (args?: {
     url.pathname = `/secure/getRecommendedFollows`;
     if (args?.max) {
         url.searchParams.append("max", args.max.toString());
+    }
+    if (args?.shuffle) {
+        url.searchParams.append("shuffle", 'true');
     }
 
     const headers = new Headers();
