@@ -1,5 +1,6 @@
 import type { AccountMiniDTO } from "@satlantis/api-client";
 import type { LocationDTO } from "./location.ts";
+import type { Account } from "./account.ts";
 
 export type CollectionLocation = {
     collectionId: number;
@@ -12,6 +13,7 @@ export type CollectionLocation = {
 export type Collection = {
     id: number;
     accountId: number;
+    account?: Account;
     name: string;
     description: string;
     createdAt: string;

@@ -154,23 +154,32 @@ import {
     updateLocationGalleryImage,
 } from "./api/secure/location.ts";
 import {
-    addContributorToCollection,
+    acceptInvitationToCollection,
     addLocationToCollections,
     addViewerToCollection,
     canEditCollection,
     createCollection,
+    declineInvitationToCollection,
     deleteCollection,
     editCollection,
     getAccountCollections,
     getCollectionById,
+    getCollectionSaves,
+    getCollectors,
+    getFeaturedCollections,
+    getNewestCollections,
+    getPopularCollections,
+    getRecommendedCollections,
     getUserCollections,
     getUserCollectionsForLocation,
     importGoogleMapsCollection,
+    inviteContributorToCollection,
     markCollectionAsFeatured,
     removeContributorFromCollection,
     removeLocationFromCollections,
     removeViewerFromCollection,
     saveCollection,
+    searchCollections,
     unmarkCollectionAsFeatured,
     unsaveCollection,
     updateCollectionLocation,
@@ -372,28 +381,54 @@ export class Client {
     // Ambassador
     postAmbassadorInquiry: ReturnType<typeof postAmbassadorInquiry>;
 
-    // Collections
+    /**
+     * COLLECTIONS.
+     */
+    // GET COLLECTION.
     getCollectionById: ReturnType<typeof getCollectionById>;
-    getUserCollections: ReturnType<typeof getUserCollections>;
-    getUserCollectionsForLocation: ReturnType<typeof getUserCollectionsForLocation>;
-    getAccountCollections: ReturnType<typeof getAccountCollections>;
+
+    // COLLECTION CRUD.
     createCollection: ReturnType<typeof createCollection>;
     editCollection: ReturnType<typeof editCollection>;
-    canEditCollection: ReturnType<typeof canEditCollection>;
+    markCollectionAsFeatured: ReturnType<typeof markCollectionAsFeatured>;
+    unmarkCollectionAsFeatured: ReturnType<typeof unmarkCollectionAsFeatured>;
     deleteCollection: ReturnType<typeof deleteCollection>;
+
+    // MANAGE COLLECTION LOCATIONS.
     addLocationToCollections: ReturnType<typeof addLocationToCollections>;
     removeLocationFromCollections: ReturnType<typeof removeLocationFromCollections>;
     updateLocationCollections: ReturnType<typeof updateLocationCollections>;
     updateCollectionLocation: ReturnType<typeof updateCollectionLocation>;
+
+    // SEARCH & DISCOVERY.
+    searchCollections: ReturnType<typeof searchCollections>;
+    getNewestCollections: ReturnType<typeof getNewestCollections>;
+    getPopularCollections: ReturnType<typeof getPopularCollections>;
+    getRecommendedCollections: ReturnType<typeof getRecommendedCollections>;
+    getCollectors: ReturnType<typeof getCollectors>;
+    getFeaturedCollections: ReturnType<typeof getFeaturedCollections>;
+
+    // ACCOUNT COLLECTIONS.
+    getUserCollections: ReturnType<typeof getUserCollections>;
+    getUserCollectionsForLocation: ReturnType<typeof getUserCollectionsForLocation>;
+    getAccountCollections: ReturnType<typeof getAccountCollections>;
+
+    // SAVE COLLECTIONS.
     saveCollection: ReturnType<typeof saveCollection>;
     unsaveCollection: ReturnType<typeof unsaveCollection>;
-    addContributorToCollection: ReturnType<typeof addContributorToCollection>;
-    removeContributorFromCollection: ReturnType<typeof removeContributorFromCollection>;
+    getCollectionSaves: ReturnType<typeof getCollectionSaves>;
+
+    // SHARING & COLLABORATION.
     addViewerToCollection: ReturnType<typeof addViewerToCollection>;
     removeViewerFromCollection: ReturnType<typeof removeViewerFromCollection>;
+    inviteContributorToCollection: ReturnType<typeof inviteContributorToCollection>;
+    acceptInvitationToCollection: ReturnType<typeof acceptInvitationToCollection>;
+    declineInvitationToCollection: ReturnType<typeof declineInvitationToCollection>;
+    removeContributorFromCollection: ReturnType<typeof removeContributorFromCollection>;
+    canEditCollection: ReturnType<typeof canEditCollection>;
+
+    // IMPORT GOOGLE MAPS COLLECTION.
     importGoogleMapsCollection: ReturnType<typeof importGoogleMapsCollection>;
-    markCollectionAsFeatured: ReturnType<typeof markCollectionAsFeatured>;
-    unmarkCollectionAsFeatured: ReturnType<typeof unmarkCollectionAsFeatured>;
 
     // Account Search.
     getAccountById: ReturnType<typeof getAccountById>;
@@ -590,29 +625,56 @@ export class Client {
             getNostrSigner,
         );
 
-        // Collections.
-        this.getCollectionById = getCollectionById(rest_api_url, getJwt);
-        this.getUserCollections = getUserCollections(rest_api_url, getJwt);
-        this.getUserCollectionsForLocation = getUserCollectionsForLocation(rest_api_url, getJwt);
-        this.getAccountCollections = getAccountCollections(rest_api_url, getJwt);
+        /**
+         * COLLECTIONS.
+         */
+        // GET COLLECTION.
+        this.getCollectionById = getCollectionById(rest_api_url);
+
+        // COLLECTION CRUD.
         this.createCollection = createCollection(rest_api_url, getJwt);
         this.editCollection = editCollection(rest_api_url, getJwt);
-        this.canEditCollection = canEditCollection(rest_api_url, getJwt);
+        this.markCollectionAsFeatured = markCollectionAsFeatured(rest_api_url, getJwt);
+        this.unmarkCollectionAsFeatured = unmarkCollectionAsFeatured(rest_api_url, getJwt);
         this.deleteCollection = deleteCollection(rest_api_url, getJwt);
+
+        // MANAGE COLLECTION LOCATIONS.
         this.addLocationToCollections = addLocationToCollections(rest_api_url, getJwt);
         this.removeLocationFromCollections = removeLocationFromCollections(rest_api_url, getJwt);
         this.updateLocationCollections = updateLocationCollections(rest_api_url, getJwt);
         this.updateCollectionLocation = updateCollectionLocation(rest_api_url, getJwt);
+
+        // SEARCH & DISCOVERY.
+        this.searchCollections = searchCollections(rest_api_url);
+        this.getNewestCollections = getNewestCollections(rest_api_url);
+        this.getPopularCollections = getPopularCollections(rest_api_url);
+        this.getRecommendedCollections = getRecommendedCollections(rest_api_url);
+        this.getCollectors = getCollectors(rest_api_url);
+        this.getFeaturedCollections = getFeaturedCollections(rest_api_url);
+
+        // ACCOUNT COLLECTIONS.
+        this.getUserCollections = getUserCollections(rest_api_url, getJwt);
+        this.getUserCollectionsForLocation = getUserCollectionsForLocation(rest_api_url, getJwt);
+        this.getAccountCollections = getAccountCollections(rest_api_url);
+
+        // SAVE COLLECTIONS.
         this.saveCollection = saveCollection(rest_api_url, getJwt);
         this.unsaveCollection = unsaveCollection(rest_api_url, getJwt);
-        this.addContributorToCollection = addContributorToCollection(rest_api_url, getJwt);
-        this.removeContributorFromCollection = removeContributorFromCollection(rest_api_url, getJwt);
+        this.getCollectionSaves = getCollectionSaves(rest_api_url, getJwt);
+
+        // SHARING & COLLABORATION.
         this.addViewerToCollection = addViewerToCollection(rest_api_url, getJwt);
         this.removeViewerFromCollection = removeViewerFromCollection(rest_api_url, getJwt);
-        this.importGoogleMapsCollection = importGoogleMapsCollection(rest_api_url, getJwt);
-        this.markCollectionAsFeatured = markCollectionAsFeatured(rest_api_url, getJwt);
-        this.unmarkCollectionAsFeatured = unmarkCollectionAsFeatured(rest_api_url, getJwt);
+        this.inviteContributorToCollection = inviteContributorToCollection(rest_api_url, getJwt);
+        this.acceptInvitationToCollection = acceptInvitationToCollection(rest_api_url, getJwt);
+        this.declineInvitationToCollection = declineInvitationToCollection(rest_api_url, getJwt);
+        this.removeContributorFromCollection = removeContributorFromCollection(rest_api_url, getJwt);
+        this.canEditCollection = canEditCollection(rest_api_url, getJwt);
 
+        // IMPORT GOOGLE MAPS COLLECTION.
+        this.importGoogleMapsCollection = importGoogleMapsCollection(rest_api_url, getJwt);
+
+        // ACCOUNT SEARCH.
         // Account Search.
         this.getAccountById = getAccountById(rest_api_url);
     }
