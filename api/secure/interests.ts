@@ -96,7 +96,7 @@ async (args?: {
         url.searchParams.append("max", args.max.toString());
     }
     if (args?.shuffle) {
-        url.searchParams.append("shuffle", 'true');
+        url.searchParams.append("shuffle", "true");
     }
 
     const headers = new Headers();

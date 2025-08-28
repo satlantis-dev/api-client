@@ -96,7 +96,6 @@ export const getEventDetails =
         return handleResponse<EventDetails>(response);
     };
 
-
 export interface GetEventsArgs {
     destination?: string; // Filter by country or place name (partial match)
     place_id?: number; // Filter by place id
@@ -110,25 +109,24 @@ export interface GetEventsArgs {
     limit: number;
 }
 
-export const getEvents =
-    (urlArg: URL) => async (args: GetEventsArgs): Promise<EventDetails[] | Error> => {
-        const url = copyURL(urlArg);
-        url.pathname = `/events`;
-        Object.keys(args).forEach((key) => {
-          url.searchParams.set(key, (args as any)[key]);
-        })
+export const getEvents = (urlArg: URL) => async (args: GetEventsArgs): Promise<EventDetails[] | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/events`;
+    Object.keys(args).forEach((key) => {
+        url.searchParams.set(key, (args as any)[key]);
+    });
 
-        const headers = new Headers();
+    const headers = new Headers();
 
-        const response = await safeFetch(url, {
-            method: "GET",
-            headers,
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<EventDetails[]>(response);
-    };
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<EventDetails[]>(response);
+};
 
 export interface GetRandomizedEventsArgs {
     placeId?: number; // Filter by place id
@@ -142,10 +140,10 @@ export const getRandomizedEvents =
         const url = copyURL(urlArg);
         url.pathname = `/getEventsRandomized`;
         Object.keys(args).forEach((key) => {
-          if (!!(args as any)[key]) {
-            url.searchParams.set(key, (args as any)[key]);
-          }
-        })
+            if (!!(args as any)[key]) {
+                url.searchParams.set(key, (args as any)[key]);
+            }
+        });
 
         const headers = new Headers();
 
@@ -159,7 +157,6 @@ export const getRandomizedEvents =
         return handleResponse<EventDetails[]>(response);
     };
 
-
 export interface GetPopularEventsArgs {
     placeId?: number; // Filter by place id
 }
@@ -169,10 +166,10 @@ export const getPopularEvents =
         const url = copyURL(urlArg);
         url.pathname = `/getPopularEvents`;
         Object.keys(args).forEach((key) => {
-          if (!!(args as any)[key]) {
-            url.searchParams.set(key, (args as any)[key]);
-          }
-        })
+            if (!!(args as any)[key]) {
+                url.searchParams.set(key, (args as any)[key]);
+            }
+        });
 
         const headers = new Headers();
 
@@ -195,10 +192,10 @@ export const getNewestEvents =
         const url = copyURL(urlArg);
         url.pathname = `/getNewestEvents`;
         Object.keys(args).forEach((key) => {
-          if (!!(args as any)[key]) {
-            url.searchParams.set(key, (args as any)[key]);
-          }
-        })
+            if (!!(args as any)[key]) {
+                url.searchParams.set(key, (args as any)[key]);
+            }
+        });
 
         const headers = new Headers();
 
@@ -211,7 +208,6 @@ export const getNewestEvents =
         }
         return handleResponse<EventDetails[]>(response);
     };
-
 
 export interface GetFeaturedEventsArgs {
     placeId?: number; // Filter by place id
@@ -222,10 +218,10 @@ export const getFeaturedEvents =
         const url = copyURL(urlArg);
         url.pathname = `/getFeaturedEvents`;
         Object.keys(args).forEach((key) => {
-          if (!!(args as any)[key]) {
-            url.searchParams.set(key, (args as any)[key]);
-          }
-        })
+            if (!!(args as any)[key]) {
+                url.searchParams.set(key, (args as any)[key]);
+            }
+        });
 
         const headers = new Headers();
 
@@ -239,26 +235,26 @@ export const getFeaturedEvents =
         return handleResponse<EventDetails[]>(response);
     };
 
-
 export interface GetRecommendedEventsArgs {
     placeId?: number; // Filter by place id
 }
 
 export const getRecommendedEvents =
-    (urlArg: URL, getJwt: func_GetJwt) => async (args: GetRecommendedEventsArgs): Promise<EventDetails[] | Error> => {
+    (urlArg: URL, getJwt: func_GetJwt) =>
+    async (args: GetRecommendedEventsArgs): Promise<EventDetails[] | Error> => {
         const url = copyURL(urlArg);
         const jwtToken = getJwt();
         let headers;
         if (jwtToken !== "") {
-          headers = new Headers();
-          headers.set("Authorization", `Bearer ${jwtToken}`);
+            headers = new Headers();
+            headers.set("Authorization", `Bearer ${jwtToken}`);
         }
         url.pathname = `/secure/getRecommendedEvents`;
         Object.keys(args).forEach((key) => {
-          if (!!(args as any)[key]) {
-            url.searchParams.set(key, (args as any)[key]);
-          }
-        })
+            if (!!(args as any)[key]) {
+                url.searchParams.set(key, (args as any)[key]);
+            }
+        });
 
         const response = await safeFetch(url, {
             method: "GET",

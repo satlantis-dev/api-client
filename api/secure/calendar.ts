@@ -268,7 +268,7 @@ export const deletePlaceCalendarEvent =
 export const postCalendarEventRSVP =
     (urlArg: URL, getJwt: func_GetJwt, getSigner: func_GetNostrSigner) =>
     async (args: {
-        response: "accepted" | "maybe" | "declined" | "tentative";
+        response: "accepted" | "maybe" | "declined" | "tentative" | "waitlisted";
         calendarEvent: {
             accountId: number;
             calendarEventId: number;
