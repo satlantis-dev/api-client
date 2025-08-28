@@ -188,13 +188,13 @@ import {
 import { mapUserToDestination } from "./api/location.ts";
 
 import {
-  getEventDetails,
-  getEvents,
-  getRandomizedEvents,
-  getFeaturedEvents,
-  getNewestEvents,
-  getPopularEvents,
-  getRecommendedEvents,
+    getEventDetails,
+    getEvents,
+    getFeaturedEvents,
+    getNewestEvents,
+    getPopularEvents,
+    getRandomizedEvents,
+    getRecommendedEvents,
 } from "./api/events.ts";
 import { getTimezoneInfo } from "./api/base.ts";
 

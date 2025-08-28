@@ -98,7 +98,7 @@ export type GetPlacesMinimalArgs = {
     sortColumn: "score" | "id" | "price";
     sortDirection: "desc" | "asc";
     active_only?: boolean;
-}
+};
 
 export const getPlacesMinimal = (urlArg: URL) => async (args: GetPlacesMinimalArgs) => {
     const url = copyURL(urlArg);

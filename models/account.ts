@@ -80,7 +80,7 @@ export type AccountMiniDTO = {
     picture: string;
     npub: string;
     pubKey: string;
-}
+};
 
 export type AccountSearchDTO = {
     about: string;

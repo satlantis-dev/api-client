@@ -163,7 +163,7 @@ export const verifyEmail = (urlArg: URL) => async (args: { token: string }) => {
 export type GetAccountCalendarEventsArgs = {
     npub: string;
     period?: CalendarEventPeriod;
-    rsvp?: 'waitlisted' | 'accepted';
+    rsvp?: "waitlisted" | "accepted";
 };
 
 export const getAccountCalendarEvents = (urlArg: URL) =>
@@ -175,7 +175,7 @@ async (
     const period = args.period ?? CalendarEventPeriod.Upcoming;
     url.searchParams.set("period", period.toString());
     if (args.rsvp) {
-      url.searchParams.set("rsvp", args.rsvp);
+        url.searchParams.set("rsvp", args.rsvp);
     }
     const response = await safeFetch(url);
     if (response instanceof Error) {
