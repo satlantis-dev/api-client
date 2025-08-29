@@ -195,6 +195,7 @@ import {
     getPopularEvents,
     getRandomizedEvents,
     getRecommendedEvents,
+    saveRegistrationQuestions,
 } from "./api/events.ts";
 import { getTimezoneInfo } from "./api/base.ts";
 
@@ -261,6 +262,7 @@ export class Client {
     getCalendarEventTypes: ReturnType<typeof getCalendarEventTypes>;
     downloadCalendarEventAttendees: ReturnType<typeof downloadCalendarEventAttendees>;
     downloadCalendarEventIcsFile: ReturnType<typeof downloadCalendarEventIcsFile>;
+    saveRegistrationQuestions: ReturnType<typeof saveRegistrationQuestions>;
 
     // Account
     /**
@@ -516,6 +518,7 @@ export class Client {
         this.getCalendarEventTypes = getCalendarEventTypes(rest_api_url);
         this.downloadCalendarEventAttendees = downloadCalendarEventAttendees(rest_api_url, getJwt);
         this.downloadCalendarEventIcsFile = downloadCalendarEventIcsFile(rest_api_url, getJwt);
+        this.saveRegistrationQuestions = saveRegistrationQuestions(rest_api_url, getJwt);
 
         // account
         this._getAccount = getAccount(rest_api_url, getJwt);

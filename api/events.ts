@@ -265,3 +265,54 @@ export const getRecommendedEvents =
         }
         return handleResponse<EventDetails[]>(response);
     };
+
+export const saveRegistrationQuestions = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    eventId: number,
+    questions: RegistrationQuestion[],
+): Promise<{ success: boolean; message: string } | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/${eventId}/questions`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const payload = { questions };
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{
+        success: boolean;
+        message: string;
+    }>(response);
+};
+
+type RegistrationQuestion = {
+    label: string;
+    required: boolean;
+    question_type: QuestionType;
+    options?: string[];
+};
+
+export enum QuestionType {
+    AgreeCheck = "agree-check",
+    Text = "text",
+    LongText = "long-text",
+    Url = "url",
+    Email = "email",
+    Phone = "phone",
+    Npub = "npub",
+    Insta = "insta",
+    X = "x",
+    Facebook = "facebook",
+}
