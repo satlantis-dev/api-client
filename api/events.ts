@@ -66,6 +66,10 @@ export interface EventDetails {
         code: string;
         name: string;
     };
+
+    registrationQuestions: {
+        questions: RegistrationQuestion[];
+    };
 }
 
 /**
@@ -297,7 +301,7 @@ async (
     }>(response);
 };
 
-type RegistrationQuestion = {
+export type RegistrationQuestion = {
     label: string;
     required: boolean;
     question_type: QuestionType;
