@@ -304,11 +304,11 @@ async (
 export type RegistrationQuestion = {
     label: string;
     required: boolean;
-    question_type: QuestionType;
+    answerType: AnswerType;
     options?: string[];
 };
 
-export enum QuestionType {
+export enum AnswerType {
     AgreeCheck = "agree-check",
     Text = "text",
     LongText = "long-text",
