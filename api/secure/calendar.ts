@@ -10,6 +10,7 @@ import {
     type PlaceCalendarEvent,
     type SearchAccountDTO,
 } from "../../sdk.ts";
+import type { AnswerType } from "../events.ts";
 
 export interface PlaceCalendarEventPost {
     event: NostrEvent;
@@ -275,6 +276,11 @@ export const postCalendarEventRSVP =
             dtag: string;
             pubkey: string;
         };
+        registrationAnswers?: {
+            label: string;
+            answerType: AnswerType;
+            answer: string;
+        }[];
     }) => {
         const jwtToken = getJwt();
         if (jwtToken == "") {
@@ -316,6 +322,9 @@ export const postCalendarEventRSVP =
                 calendarEventId: args.calendarEvent.calendarEventId,
                 event,
                 status: args.response,
+                registrationAnswers: {
+                    answers: args.registrationAnswers,
+                },
             }),
             headers,
         });
