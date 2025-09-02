@@ -30,6 +30,7 @@ export interface EventDetails {
     geohash: string;
     image: string;
     interests: EventInterest[];
+    location?: string;
     kind: number;
     nostrId: string;
     notes: CalendarEventNote[];
