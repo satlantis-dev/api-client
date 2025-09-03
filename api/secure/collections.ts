@@ -50,12 +50,20 @@ export type GetCollectionByIdArgs = {
 /**
  * Get Collection given a collectionId.
  */
-export function getCollectionById(urlArg: URL) {
+export function getCollectionById(urlArg: URL, getJwt: func_GetJwt) {
     return async (args: GetCollectionByIdArgs) => {
         const url = createPublicUrl(urlArg, `/collection/${args.collectionId}`);
 
+        const jwtToken = getJwt();
+        const headers = new Headers();
+
+        if (jwtToken) {
+            headers.set("Authorization", `Bearer ${jwtToken}`);
+        }
+
         const response = await safeFetch(url, {
             method: "GET",
+            headers,
         });
 
         if (response instanceof Error) return response;

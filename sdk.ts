@@ -650,7 +650,7 @@ export class Client {
          * COLLECTIONS.
          */
         // GET COLLECTION.
-        this.getCollectionById = getCollectionById(rest_api_url);
+        this.getCollectionById = getCollectionById(rest_api_url, getJwt);
 
         // COLLECTION CRUD.
         this.createCollection = createCollection(rest_api_url, getJwt);
