@@ -425,7 +425,7 @@ export type GetRecommendedCollectionsArgs = {
 
 export function getRecommendedCollections(urlArg: URL) {
     return async (args?: GetRecommendedCollectionsArgs) => {
-        const url = createPublicUrl(urlArg, "/collections/recommended");
+        const url = createSecureUrl(urlArg, "/collections/recommended");
 
         if (args?.placeId) url.searchParams.set("placeId", args.placeId.toString());
 
