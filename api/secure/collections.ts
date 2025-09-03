@@ -423,14 +423,21 @@ export type GetRecommendedCollectionsArgs = {
     placeId?: number;
 };
 
-export function getRecommendedCollections(urlArg: URL) {
+export function getRecommendedCollections(urlArg: URL, getJwt: func_GetJwt) {
     return async (args?: GetRecommendedCollectionsArgs) => {
+        const jwtToken = getJwt();
+        if (!jwtToken) return new Error("JWT token is empty.");
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
         const url = createSecureUrl(urlArg, "/collections/recommended");
 
         if (args?.placeId) url.searchParams.set("placeId", args.placeId.toString());
 
         const response = await safeFetch(url, {
             method: "GET",
+            headers,
         });
 
         if (response instanceof Error) return response;

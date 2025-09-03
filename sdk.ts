@@ -669,7 +669,7 @@ export class Client {
         this.searchCollections = searchCollections(rest_api_url);
         this.getNewestCollections = getNewestCollections(rest_api_url);
         this.getPopularCollections = getPopularCollections(rest_api_url);
-        this.getRecommendedCollections = getRecommendedCollections(rest_api_url);
+        this.getRecommendedCollections = getRecommendedCollections(rest_api_url, getJwt);
         this.getCollectors = getCollectors(rest_api_url);
         this.getFeaturedCollections = getFeaturedCollections(rest_api_url);
 
