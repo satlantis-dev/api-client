@@ -279,7 +279,7 @@ export const postCalendarEventRSVP =
         registrationAnswers?: {
             label: string;
             answerType: AnswerType;
-            answer: string;
+            answer: string | boolean;
         }[];
     }) => {
         const jwtToken = getJwt();
