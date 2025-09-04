@@ -2,6 +2,7 @@ import { ApiError, copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { Account, AccountDTO } from "../models/account.ts";
 import { type CalendarEvent, CalendarEventPeriod, type func_GetJwt, type SearchAccountDTO } from "../sdk.ts";
+import type { AnswerType } from "./events.ts";
 
 export const getAccount =
     (urlArg: URL, getJwt: func_GetJwt) => async (args: { npub?: string; username?: string }) => {
@@ -208,31 +209,44 @@ export const sendOTP = (urlArg: URL) => async (args: { email: string }) => {
     }>(response);
 };
 
-export const sendEventSignup =
-    (urlArg: URL) =>
-    async (args: { email: string; calendarEventId: number; name: string; rsvpType: string }) => {
-        const url = copyURL(urlArg);
-        url.pathname = `/auth/otp`;
+export const sendEventSignup = (urlArg: URL) =>
+async (
+    args: {
+        email: string;
+        calendarEventId: number;
+        name: string;
+        rsvpType: string;
+        rsvpAnswers?: {
+            answers: {
+                label: string;
+                answerType: AnswerType;
+                answer: string | boolean;
+            }[];
+        };
+    },
+) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/auth/otp`;
 
-        const response = await safeFetch(
-            url,
-            {
-                method: "POST",
-                body: JSON.stringify({
-                    ...args,
-                }),
-            },
-        );
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<{
-            is_new_account: boolean; // Account was existing or new created
-            message: string; // e.g. confirm link sent to your email
-            success: boolean;
-            token: string; // Token to use later for `/auth/otp/verify` endpoint
-        }>(response);
-    };
+    const response = await safeFetch(
+        url,
+        {
+            method: "POST",
+            body: JSON.stringify({
+                ...args,
+            }),
+        },
+    );
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{
+        is_new_account: boolean; // Account was existing or new created
+        message: string; // e.g. confirm link sent to your email
+        success: boolean;
+        token: string; // Token to use later for `/auth/otp/verify` endpoint
+    }>(response);
+};
 
 export const verifyOTP = (urlArg: URL) => async (args: { token: string; otp: string }) => {
     const url = copyURL(urlArg);
@@ -251,6 +265,13 @@ export const verifyOTP = (urlArg: URL) => async (args: { token: string; otp: str
         message: string; // e.g. OTP verification successful
         success: boolean;
         token: string; // JWT token that can be used as auth token
+        accountRsvpAnswers?: {
+            answers: {
+                label: string;
+                answerType: AnswerType;
+                answer?: string | boolean;
+            }[];
+        };
     }>(response);
 };
 
