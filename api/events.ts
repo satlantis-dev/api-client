@@ -107,12 +107,12 @@ export interface EventRsvpsResponse {
 }
 
 export interface GetEventRsvpsArgs {
-    eventId?: string; // The event ID (optional for delete operator)
-    status?: string; // RSVP status filter
-    page: number; // Page number for pagination
-    limit: number; // Number of results per page
-    sort_by?: string; // Field to sort by
-    sort_order?: string; // Sort order: "asc" or "desc"
+    eventId?: string;
+    status?: string;
+    page: number;
+    limit: number;
+    sort_by?: string;
+    sort_order?: string;
 }
 
 /**
@@ -187,10 +187,8 @@ async (
         headers.set("Authorization", `Bearer ${jwtToken}`);
     }
 
-    // Assuming the endpoint includes the event ID in the path
     url.pathname = `/secure/events/${args.eventId}/rsvps`;
 
-    // Add query parameters (excluding eventId since it's in the path)
     const queryParams = { ...args };
     delete queryParams.eventId;
 
@@ -211,8 +209,6 @@ async (
 
     return handleResponse<EventRsvpsResponse>(response);
 };
-
-// Add these interfaces to your existing file
 
 export interface UpdateRsvpStatusItem {
     id: number;
