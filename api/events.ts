@@ -13,6 +13,17 @@ import type { LocationDTO } from "../models/location.ts";
 import type { BoundingBox, Place } from "../models/place.ts";
 import type { PlaceEvent } from "../models/place.ts";
 import type { func_GetJwt } from "@satlantis/api-client";
+
+export enum RsvpStatus {
+    Accepted = "accepted",
+    Waitlisted = "waitlisted",
+    Tentative = "tentative",
+    Declined = "declined",
+    Rejected = "rejected",
+    Requested = "requested",
+}
+
+export type RsvpStatusType = `${RsvpStatus}`;
 export interface EventDetails {
     id: number;
     accountId: number;
@@ -52,6 +63,7 @@ export interface EventDetails {
     rsvpWaitlistedCount: number;
     rsvpWaitlistEnabledAt: string | null;
     rsvpAcceptedCount: number;
+    rsvpGatedEnabledAt: string | null;
 
     cohosts: Cohost[];
     ownershipChangedAt: string | null;
@@ -71,6 +83,36 @@ export interface EventDetails {
     registrationQuestions: {
         questions: RegistrationQuestion[];
     };
+}
+// Event RSVP Interfaces
+export interface EventRsvpItem {
+    accountId: number;
+    rsvpId: number;
+    picture: string;
+    displayName: string;
+    username: string;
+    followersCount: number;
+    email?: string;
+    npub: string;
+    rsvpStatus: "accepted" | "tentative" | "declined" | "waitlisted" | "requested" | "rejected";
+    profileUrl: string;
+    registrationTime: string;
+    about: string;
+    nip05: string;
+}
+
+export interface EventRsvpsResponse {
+    items: EventRsvpItem[];
+    total: number;
+}
+
+export interface GetEventRsvpsArgs {
+    eventId?: string;
+    status?: string;
+    page: number;
+    limit: number;
+    sort_by?: string;
+    sort_order?: string;
 }
 
 /**
@@ -102,14 +144,14 @@ export const getEventDetails =
     };
 
 export interface GetEventsArgs {
-    destination?: string; // Filter by country or place name (partial match)
-    place_id?: number; // Filter by place id
-    type?: string; // Filter by event type (e.g., "concert", "meetup")
-    period?: string; // Time filter: "upcoming" (default) or "past"
-    search?: string; // Keyword search across title, description, venue, location
-    start_date?: string; // Events starting from date (YYYY-MM-DD, inclusive)
-    end_date?: string; // Events ending by date (YYYY-MM-DD, inclusive)
-    my_events?: string; // Show only user's events if it's true(requires auth token)
+    destination?: string;
+    place_id?: number;
+    type?: string;
+    period?: string;
+    search?: string;
+    start_date?: string;
+    end_date?: string;
+    my_events?: string;
     page: number;
     limit: number;
 }
@@ -133,11 +175,94 @@ export const getEvents = (urlArg: URL) => async (args: GetEventsArgs): Promise<E
     return handleResponse<EventDetails[]>(response);
 };
 
+export const getEventRsvps = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    args: GetEventRsvpsArgs,
+): Promise<EventRsvpsResponse | Error> => {
+    const url = copyURL(urlArg);
+    const jwtToken = getJwt();
+    let headers;
+    if (jwtToken !== "") {
+        headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    url.pathname = `/secure/events/${args.eventId}/rsvps`;
+
+    const queryParams = { ...args };
+    delete queryParams.eventId;
+
+    Object.keys(queryParams).forEach((key) => {
+        if (!!(queryParams as any)[key]) {
+            url.searchParams.set(key, (queryParams as any)[key]);
+        }
+    });
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+
+    if (response instanceof Error) {
+        return response;
+    }
+
+    return handleResponse<EventRsvpsResponse>(response);
+};
+
+export interface UpdateRsvpStatusItem {
+    id: number;
+    status: "accepted" | "tentative" | "declined" | "waitlisted" | "requested" | "rejected";
+}
+
+export interface UpdateRsvpStatusRequest {
+    items: UpdateRsvpStatusItem[];
+}
+
+export interface UpdateRsvpStatusResultItem {
+    id: number;
+    success: boolean;
+    error?: string;
+}
+
+export interface UpdateRsvpStatusResponse {
+    results: UpdateRsvpStatusResultItem[];
+}
+
+export const updateRsvpStatus = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    items: UpdateRsvpStatusItem[],
+): Promise<UpdateRsvpStatusResponse | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/rsvps/status`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+
+    if (jwtToken !== "") {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const payload: UpdateRsvpStatusRequest = { items };
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+    });
+
+    if (response instanceof Error) {
+        return response;
+    }
+
+    return handleResponse<UpdateRsvpStatusResponse>(response);
+};
 export interface GetRandomizedEventsArgs {
-    placeId?: number; // Filter by place id
-    type?: number; // Filter by event type id
-    interests?: string; // filter by interests id (comma separated)
-    search?: string; // Keyword search across title, description, venue, location
+    placeId?: number;
+    type?: number;
+    interests?: string;
+    search?: string;
 }
 
 export const getRandomizedEvents =
@@ -163,7 +288,7 @@ export const getRandomizedEvents =
     };
 
 export interface GetPopularEventsArgs {
-    placeId?: number; // Filter by place id
+    placeId?: number;
 }
 
 export const getPopularEvents =
@@ -189,7 +314,7 @@ export const getPopularEvents =
     };
 
 export interface GetNewestEventsArgs {
-    placeId?: number; // Filter by place id
+    placeId?: number;
 }
 
 export const getNewestEvents =
@@ -215,7 +340,7 @@ export const getNewestEvents =
     };
 
 export interface GetFeaturedEventsArgs {
-    placeId?: number; // Filter by place id
+    placeId?: number;
 }
 
 export const getFeaturedEvents =
@@ -241,7 +366,7 @@ export const getFeaturedEvents =
     };
 
 export interface GetRecommendedEventsArgs {
-    placeId?: number; // Filter by place id
+    placeId?: number;
 }
 
 export const getRecommendedEvents =

@@ -195,6 +195,7 @@ import { mapUserToDestination } from "./api/location.ts";
 
 import {
     getEventDetails,
+    getEventRsvps,
     getEvents,
     getFeaturedEvents,
     getNewestEvents,
@@ -202,6 +203,7 @@ import {
     getRandomizedEvents,
     getRecommendedEvents,
     saveRegistrationQuestions,
+    updateRsvpStatus,
 } from "./api/events.ts";
 import { getTimezoneInfo } from "./api/base.ts";
 
@@ -246,6 +248,8 @@ export class Client {
     getEventDetails: ReturnType<typeof getEventDetails>;
     // Calendar Events
     getEvents: ReturnType<typeof getEvents>;
+    getEventRsvps: ReturnType<typeof getEventRsvps>;
+    updateRsvpStatus: ReturnType<typeof updateRsvpStatus>;
     getRandomizedEvents: ReturnType<typeof getRandomizedEvents>;
     getPopularEvents: ReturnType<typeof getPopularEvents>;
     getNewestEvents: ReturnType<typeof getNewestEvents>;
@@ -269,14 +273,12 @@ export class Client {
     downloadCalendarEventAttendees: ReturnType<typeof downloadCalendarEventAttendees>;
     downloadCalendarEventIcsFile: ReturnType<typeof downloadCalendarEventIcsFile>;
     saveRegistrationQuestions: ReturnType<typeof saveRegistrationQuestions>;
-
-    // Calendars
-    getCalendarByID: ReturnType<typeof getCalendarByID>;
     createCalendar: ReturnType<typeof createCalendar>;
     editCalendar: ReturnType<typeof editCalendar>;
     deleteCalendar: ReturnType<typeof deleteCalendar>;
     addEventToCalendar: ReturnType<typeof addEventToCalendar>;
     removeEventFromCalendar: ReturnType<typeof removeEventFromCalendar>;
+    getCalendarByID: ReturnType<typeof getCalendarByID>;
 
     // Account
     /**
@@ -494,6 +496,8 @@ export class Client {
         this.getExchangeRate = getExchangeRate(rest_api_url);
         // Event details
         this.getEvents = getEvents(rest_api_url);
+        this.getEventRsvps = getEventRsvps(rest_api_url, getJwt);
+        this.updateRsvpStatus = updateRsvpStatus(rest_api_url, getJwt);
         this.getRandomizedEvents = getRandomizedEvents(rest_api_url);
         this.getPopularEvents = getPopularEvents(rest_api_url);
         this.getNewestEvents = getNewestEvents(rest_api_url);
