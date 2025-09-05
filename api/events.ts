@@ -2,12 +2,12 @@ import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { AccountDTO } from "../models/account.ts";
 import type {
-  CalendarEventAnnouncement,
-  CalendarEventNote,
-  CalendarEventRSVP,
-  CalendarEventType,
-  Cohost,
-  EventInterest,
+    CalendarEventAnnouncement,
+    CalendarEventNote,
+    CalendarEventRSVP,
+    CalendarEventType,
+    Cohost,
+    EventInterest,
 } from "../models/calendar.ts";
 import type { LocationDTO } from "../models/location.ts";
 import type { BoundingBox, Place } from "../models/place.ts";
@@ -15,176 +15,176 @@ import type { PlaceEvent } from "../models/place.ts";
 import type { func_GetJwt } from "@satlantis/api-client";
 
 export enum RsvpStatus {
-  Accepted = "accepted",
-  Waitlisted = "waitlisted",
-  Tentative = "tentative",
-  Declined = "declined",
-  Rejected = "rejected",
-  Requested = "requested",
+    Accepted = "accepted",
+    Waitlisted = "waitlisted",
+    Tentative = "tentative",
+    Declined = "declined",
+    Rejected = "rejected",
+    Requested = "requested",
 }
 
 export type RsvpStatusType = `${RsvpStatus}`;
 export interface EventDetails {
-  id: number;
-  accountId: number;
-  account: AccountDTO;
-  announcements: CalendarEventAnnouncement[];
-  atag: string;
-  createdAt: string;
-  calendarEventRsvps: CalendarEventRSVPExtended[];
-  content: string;
-  dtag: string;
-  end: string;
-  endTzId: string;
-  eventId: number;
-  event: PlaceEvent;
-  geohash: string;
-  image: string;
-  interests: EventInterest[];
-  location?: string;
-  kind: number;
-  nostrId: string;
-  notes: CalendarEventNote[];
-  pubkey: string;
-  sig: string;
-  start: string;
-  startTzId: string;
-  summary: string;
-  tags: string;
-  title: string;
-  typeId: number;
-  type: CalendarEventType;
-  url: string;
-  website: string;
-  isSatlantisCreated: boolean;
-  googleId: string;
-  venueId: number | null;
-  venue: LocationDTO;
-  rsvpWaitlistedCount: number;
-  rsvpWaitlistEnabledAt: string | null;
-  rsvpAcceptedCount: number;
-  rsvpGatedEnabledAt: string | null;
-
-  cohosts: Cohost[];
-  ownershipChangedAt: string | null;
-  rsvpLimit: number | null;
-  place: {
-    banner: string;
-    boundingBox: BoundingBox;
     id: number;
-    name: string;
-    osmRef: string;
-  };
-  country: {
-    code: string;
-    name: string;
-  };
+    accountId: number;
+    account: AccountDTO;
+    announcements: CalendarEventAnnouncement[];
+    atag: string;
+    createdAt: string;
+    calendarEventRsvps: CalendarEventRSVPExtended[];
+    content: string;
+    dtag: string;
+    end: string;
+    endTzId: string;
+    eventId: number;
+    event: PlaceEvent;
+    geohash: string;
+    image: string;
+    interests: EventInterest[];
+    location?: string;
+    kind: number;
+    nostrId: string;
+    notes: CalendarEventNote[];
+    pubkey: string;
+    sig: string;
+    start: string;
+    startTzId: string;
+    summary: string;
+    tags: string;
+    title: string;
+    typeId: number;
+    type: CalendarEventType;
+    url: string;
+    website: string;
+    isSatlantisCreated: boolean;
+    googleId: string;
+    venueId: number | null;
+    venue: LocationDTO;
+    rsvpWaitlistedCount: number;
+    rsvpWaitlistEnabledAt: string | null;
+    rsvpAcceptedCount: number;
+    rsvpGatedEnabledAt: string | null;
 
-  registrationQuestions: {
-    questions: RegistrationQuestion[];
-  };
+    cohosts: Cohost[];
+    ownershipChangedAt: string | null;
+    rsvpLimit: number | null;
+    place: {
+        banner: string;
+        boundingBox: BoundingBox;
+        id: number;
+        name: string;
+        osmRef: string;
+    };
+    country: {
+        code: string;
+        name: string;
+    };
+
+    registrationQuestions: {
+        questions: RegistrationQuestion[];
+    };
 }
 // Event RSVP Interfaces
 export interface EventRsvpItem {
-  accountId: number;
-  rsvpId: number;
-  picture: string;
-  displayName: string;
-  username: string;
-  followersCount: number;
-  email?: string;
-  npub: string;
-  rsvpStatus: "accepted" | "tentative" | "declined" | "waitlisted" | "requested" | "rejected";
-  profileUrl: string;
-  registrationTime: string;
-  about: string;
-  nip05: string;
+    accountId: number;
+    rsvpId: number;
+    picture: string;
+    displayName: string;
+    username: string;
+    followersCount: number;
+    email?: string;
+    npub: string;
+    rsvpStatus: "accepted" | "tentative" | "declined" | "waitlisted" | "requested" | "rejected";
+    profileUrl: string;
+    registrationTime: string;
+    about: string;
+    nip05: string;
 }
 
 export interface EventRsvpsResponse {
-  items: EventRsvpItem[];
-  total: number;
+    items: EventRsvpItem[];
+    total: number;
 }
 
 export interface GetEventRsvpsArgs {
-  eventId?: string;
-  status?: string;
-  page: number;
-  limit: number;
-  sort_by?: string;
-  sort_order?: string;
+    eventId?: string;
+    status?: string;
+    page: number;
+    limit: number;
+    sort_by?: string;
+    sort_order?: string;
 }
 
 /**
  * Extended RSVP with notification tracking and Satlantis flags
  */
 export interface CalendarEventRSVPExtended extends CalendarEventRSVP {
-  kind: number;
-  NotificationWeekSent: boolean;
-  NotificationDaySent: boolean;
-  NotificationHourSent: boolean;
-  IsSatlantisCreated: boolean;
+    kind: number;
+    NotificationWeekSent: boolean;
+    NotificationDaySent: boolean;
+    NotificationHourSent: boolean;
+    IsSatlantisCreated: boolean;
 }
 
 export const getEventDetails =
-  (urlArg: URL) => async (args: { eventId: string }): Promise<EventDetails | Error> => {
+    (urlArg: URL) => async (args: { eventId: string }): Promise<EventDetails | Error> => {
+        const url = copyURL(urlArg);
+        url.pathname = `/events/${args.eventId}`;
+
+        const headers = new Headers();
+
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<EventDetails>(response);
+    };
+
+export interface GetEventsArgs {
+    destination?: string;
+    place_id?: number;
+    type?: string;
+    period?: string;
+    search?: string;
+    start_date?: string;
+    end_date?: string;
+    my_events?: string;
+    page: number;
+    limit: number;
+}
+
+export const getEvents = (urlArg: URL) => async (args: GetEventsArgs): Promise<EventDetails[] | Error> => {
     const url = copyURL(urlArg);
-    url.pathname = `/events/${args.eventId}`;
+    url.pathname = `/events`;
+    Object.keys(args).forEach((key) => {
+        url.searchParams.set(key, (args as any)[key]);
+    });
 
     const headers = new Headers();
 
     const response = await safeFetch(url, {
-      method: "GET",
-      headers,
+        method: "GET",
+        headers,
     });
     if (response instanceof Error) {
-      return response;
+        return response;
     }
-    return handleResponse<EventDetails>(response);
-  };
-
-export interface GetEventsArgs {
-  destination?: string; // Filter by country or place name (partial match)
-  place_id?: number; // Filter by place id
-  type?: string; // Filter by event type (e.g., "concert", "meetup")
-  period?: string; // Time filter: "upcoming" (default) or "past"
-  search?: string; // Keyword search across title, description, venue, location
-  start_date?: string; // Events starting from date (YYYY-MM-DD, inclusive)
-  end_date?: string; // Events ending by date (YYYY-MM-DD, inclusive)
-  my_events?: string; // Show only user's events if it's true(requires auth token)
-  page: number;
-  limit: number;
-}
-
-export const getEvents = (urlArg: URL) => async (args: GetEventsArgs): Promise<EventDetails[] | Error> => {
-  const url = copyURL(urlArg);
-  url.pathname = `/events`;
-  Object.keys(args).forEach((key) => {
-    url.searchParams.set(key, (args as any)[key]);
-  });
-
-  const headers = new Headers();
-
-  const response = await safeFetch(url, {
-    method: "GET",
-    headers,
-  });
-  if (response instanceof Error) {
-    return response;
-  }
-  return handleResponse<EventDetails[]>(response);
+    return handleResponse<EventDetails[]>(response);
 };
 
 export const getEventRsvps = (urlArg: URL, getJwt: func_GetJwt) =>
-  async (
+async (
     args: GetEventRsvpsArgs,
-  ): Promise<EventRsvpsResponse | Error> => {
+): Promise<EventRsvpsResponse | Error> => {
     const url = copyURL(urlArg);
     const jwtToken = getJwt();
     let headers;
     if (jwtToken !== "") {
-      headers = new Headers();
-      headers.set("Authorization", `Bearer ${jwtToken}`);
+        headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
     }
 
     url.pathname = `/secure/events/${args.eventId}/rsvps`;
@@ -193,47 +193,46 @@ export const getEventRsvps = (urlArg: URL, getJwt: func_GetJwt) =>
     delete queryParams.eventId;
 
     Object.keys(queryParams).forEach((key) => {
-      if (!!(queryParams as any)[key]) {
-        url.searchParams.set(key, (queryParams as any)[key]);
-      }
+        if (!!(queryParams as any)[key]) {
+            url.searchParams.set(key, (queryParams as any)[key]);
+        }
     });
 
     const response = await safeFetch(url, {
-      method: "GET",
-      headers,
+        method: "GET",
+        headers,
     });
 
     if (response instanceof Error) {
-      return response;
+        return response;
     }
 
     return handleResponse<EventRsvpsResponse>(response);
-  };
+};
 
 export interface UpdateRsvpStatusItem {
-  id: number;
-  status: "accepted" | "tentative" | "declined" | "waitlisted" | "requested" | "rejected";
+    id: number;
+    status: "accepted" | "tentative" | "declined" | "waitlisted" | "requested" | "rejected";
 }
 
 export interface UpdateRsvpStatusRequest {
-  items: UpdateRsvpStatusItem[];
+    items: UpdateRsvpStatusItem[];
 }
 
 export interface UpdateRsvpStatusResultItem {
-  id: number;
-  success: boolean;
-  error?: string;
+    id: number;
+    success: boolean;
+    error?: string;
 }
 
 export interface UpdateRsvpStatusResponse {
-  results: UpdateRsvpStatusResultItem[];
+    results: UpdateRsvpStatusResultItem[];
 }
 
-
 export const updateRsvpStatus = (urlArg: URL, getJwt: func_GetJwt) =>
-  async (
+async (
     items: UpdateRsvpStatusItem[],
-  ): Promise<UpdateRsvpStatusResponse | Error> => {
+): Promise<UpdateRsvpStatusResponse | Error> => {
     const url = copyURL(urlArg);
     url.pathname = `/secure/rsvps/status`;
 
@@ -242,166 +241,166 @@ export const updateRsvpStatus = (urlArg: URL, getJwt: func_GetJwt) =>
     headers.set("Content-Type", "application/json");
 
     if (jwtToken !== "") {
-      headers.set("Authorization", `Bearer ${jwtToken}`);
+        headers.set("Authorization", `Bearer ${jwtToken}`);
     }
 
     const payload: UpdateRsvpStatusRequest = { items };
 
     const response = await safeFetch(url, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(payload),
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
     });
 
     if (response instanceof Error) {
-      return response;
+        return response;
     }
 
     return handleResponse<UpdateRsvpStatusResponse>(response);
-  };
+};
 export interface GetRandomizedEventsArgs {
-  placeId?: number; // Filter by place id
-  type?: number; // Filter by event type id
-  interests?: string; // filter by interests id (comma separated)
-  search?: string; // Keyword search across title, description, venue, location
+    placeId?: number;
+    type?: number;
+    interests?: string;
+    search?: string;
 }
 
 export const getRandomizedEvents =
-  (urlArg: URL) => async (args: GetRandomizedEventsArgs): Promise<EventDetails[] | Error> => {
-    const url = copyURL(urlArg);
-    url.pathname = `/getEventsRandomized`;
-    Object.keys(args).forEach((key) => {
-      if (!!(args as any)[key]) {
-        url.searchParams.set(key, (args as any)[key]);
-      }
-    });
+    (urlArg: URL) => async (args: GetRandomizedEventsArgs): Promise<EventDetails[] | Error> => {
+        const url = copyURL(urlArg);
+        url.pathname = `/getEventsRandomized`;
+        Object.keys(args).forEach((key) => {
+            if (!!(args as any)[key]) {
+                url.searchParams.set(key, (args as any)[key]);
+            }
+        });
 
-    const headers = new Headers();
+        const headers = new Headers();
 
-    const response = await safeFetch(url, {
-      method: "GET",
-      headers,
-    });
-    if (response instanceof Error) {
-      return response;
-    }
-    return handleResponse<EventDetails[]>(response);
-  };
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<EventDetails[]>(response);
+    };
 
 export interface GetPopularEventsArgs {
-  placeId?: number; // Filter by place id
+    placeId?: number;
 }
 
 export const getPopularEvents =
-  (urlArg: URL) => async (args: GetPopularEventsArgs): Promise<EventDetails[] | Error> => {
-    const url = copyURL(urlArg);
-    url.pathname = `/getPopularEvents`;
-    Object.keys(args).forEach((key) => {
-      if (!!(args as any)[key]) {
-        url.searchParams.set(key, (args as any)[key]);
-      }
-    });
+    (urlArg: URL) => async (args: GetPopularEventsArgs): Promise<EventDetails[] | Error> => {
+        const url = copyURL(urlArg);
+        url.pathname = `/getPopularEvents`;
+        Object.keys(args).forEach((key) => {
+            if (!!(args as any)[key]) {
+                url.searchParams.set(key, (args as any)[key]);
+            }
+        });
 
-    const headers = new Headers();
+        const headers = new Headers();
 
-    const response = await safeFetch(url, {
-      method: "GET",
-      headers,
-    });
-    if (response instanceof Error) {
-      return response;
-    }
-    return handleResponse<EventDetails[]>(response);
-  };
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<EventDetails[]>(response);
+    };
 
 export interface GetNewestEventsArgs {
-  placeId?: number; // Filter by place id
+    placeId?: number;
 }
 
 export const getNewestEvents =
-  (urlArg: URL) => async (args: GetNewestEventsArgs): Promise<EventDetails[] | Error> => {
-    const url = copyURL(urlArg);
-    url.pathname = `/getNewestEvents`;
-    Object.keys(args).forEach((key) => {
-      if (!!(args as any)[key]) {
-        url.searchParams.set(key, (args as any)[key]);
-      }
-    });
+    (urlArg: URL) => async (args: GetNewestEventsArgs): Promise<EventDetails[] | Error> => {
+        const url = copyURL(urlArg);
+        url.pathname = `/getNewestEvents`;
+        Object.keys(args).forEach((key) => {
+            if (!!(args as any)[key]) {
+                url.searchParams.set(key, (args as any)[key]);
+            }
+        });
 
-    const headers = new Headers();
+        const headers = new Headers();
 
-    const response = await safeFetch(url, {
-      method: "GET",
-      headers,
-    });
-    if (response instanceof Error) {
-      return response;
-    }
-    return handleResponse<EventDetails[]>(response);
-  };
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<EventDetails[]>(response);
+    };
 
 export interface GetFeaturedEventsArgs {
-  placeId?: number; // Filter by place id
+    placeId?: number;
 }
 
 export const getFeaturedEvents =
-  (urlArg: URL) => async (args: GetFeaturedEventsArgs): Promise<EventDetails[] | Error> => {
-    const url = copyURL(urlArg);
-    url.pathname = `/getFeaturedEvents`;
-    Object.keys(args).forEach((key) => {
-      if (!!(args as any)[key]) {
-        url.searchParams.set(key, (args as any)[key]);
-      }
-    });
+    (urlArg: URL) => async (args: GetFeaturedEventsArgs): Promise<EventDetails[] | Error> => {
+        const url = copyURL(urlArg);
+        url.pathname = `/getFeaturedEvents`;
+        Object.keys(args).forEach((key) => {
+            if (!!(args as any)[key]) {
+                url.searchParams.set(key, (args as any)[key]);
+            }
+        });
 
-    const headers = new Headers();
+        const headers = new Headers();
 
-    const response = await safeFetch(url, {
-      method: "GET",
-      headers,
-    });
-    if (response instanceof Error) {
-      return response;
-    }
-    return handleResponse<EventDetails[]>(response);
-  };
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<EventDetails[]>(response);
+    };
 
 export interface GetRecommendedEventsArgs {
-  placeId?: number; // Filter by place id
+    placeId?: number;
 }
 
 export const getRecommendedEvents =
-  (urlArg: URL, getJwt: func_GetJwt) =>
+    (urlArg: URL, getJwt: func_GetJwt) =>
     async (args: GetRecommendedEventsArgs): Promise<EventDetails[] | Error> => {
-      const url = copyURL(urlArg);
-      const jwtToken = getJwt();
-      let headers;
-      if (jwtToken !== "") {
-        headers = new Headers();
-        headers.set("Authorization", `Bearer ${jwtToken}`);
-      }
-      url.pathname = `/secure/getRecommendedEvents`;
-      Object.keys(args).forEach((key) => {
-        if (!!(args as any)[key]) {
-          url.searchParams.set(key, (args as any)[key]);
+        const url = copyURL(urlArg);
+        const jwtToken = getJwt();
+        let headers;
+        if (jwtToken !== "") {
+            headers = new Headers();
+            headers.set("Authorization", `Bearer ${jwtToken}`);
         }
-      });
+        url.pathname = `/secure/getRecommendedEvents`;
+        Object.keys(args).forEach((key) => {
+            if (!!(args as any)[key]) {
+                url.searchParams.set(key, (args as any)[key]);
+            }
+        });
 
-      const response = await safeFetch(url, {
-        method: "GET",
-        headers,
-      });
-      if (response instanceof Error) {
-        return response;
-      }
-      return handleResponse<EventDetails[]>(response);
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<EventDetails[]>(response);
     };
 
 export const saveRegistrationQuestions = (urlArg: URL, getJwt: func_GetJwt) =>
-  async (
+async (
     eventId: number,
     questions: RegistrationQuestion[],
-  ): Promise<{ success: boolean; message: string } | Error> => {
+): Promise<{ success: boolean; message: string } | Error> => {
     const url = copyURL(urlArg);
     url.pathname = `/secure/events/${eventId}/questions`;
 
@@ -409,41 +408,41 @@ export const saveRegistrationQuestions = (urlArg: URL, getJwt: func_GetJwt) =>
     const headers = new Headers();
     headers.set("Content-Type", "application/json");
     if (jwtToken) {
-      headers.set("Authorization", `Bearer ${jwtToken}`);
+        headers.set("Authorization", `Bearer ${jwtToken}`);
     }
 
     const payload = { questions };
 
     const response = await safeFetch(url, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(payload),
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
     });
     if (response instanceof Error) {
-      return response;
+        return response;
     }
     return handleResponse<{
-      success: boolean;
-      message: string;
+        success: boolean;
+        message: string;
     }>(response);
-  };
+};
 
 export type RegistrationQuestion = {
-  label: string;
-  required: boolean;
-  answerType: AnswerType;
-  options?: string[];
+    label: string;
+    required: boolean;
+    answerType: AnswerType;
+    options?: string[];
 };
 
 export enum AnswerType {
-  AgreeCheck = "agree-check",
-  Text = "text",
-  LongText = "long-text",
-  Url = "url",
-  Email = "email",
-  Phone = "phone",
-  Npub = "npub",
-  Insta = "insta",
-  X = "x",
-  Facebook = "facebook",
+    AgreeCheck = "agree-check",
+    Text = "text",
+    LongText = "long-text",
+    Url = "url",
+    Email = "email",
+    Phone = "phone",
+    Npub = "npub",
+    Insta = "insta",
+    X = "x",
+    Facebook = "facebook",
 }
