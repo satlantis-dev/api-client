@@ -391,7 +391,7 @@ async (args: {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<Calendar[]>(response);
+    return handleResponse<Calendar>(response);
 };
 
 export type CreateCalendarRequest = {
