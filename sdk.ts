@@ -114,15 +114,21 @@ import {
     getRecommendedFollows,
 } from "./api/secure/interests.ts";
 import {
+    addEventToCalendar,
+    createCalendar,
+    deleteCalendar,
     deletePlaceCalendarEvent,
     downloadCalendarEventAttendees,
     downloadCalendarEventIcsFile,
+    editCalendar,
+    getCalendarByID,
     getEventById,
     postCalendarEventAnnouncement,
     postCalendarEventNote,
     postCalendarEventRSVP,
     postPlaceCalendarEvent,
     putUpdateCalendarEvent,
+    removeEventFromCalendar,
     respondCalendarEventCohostInvitation,
     searchAccountViaEmail,
     sendCohostEmailInviteToCalendarEvent,
@@ -263,6 +269,14 @@ export class Client {
     downloadCalendarEventAttendees: ReturnType<typeof downloadCalendarEventAttendees>;
     downloadCalendarEventIcsFile: ReturnType<typeof downloadCalendarEventIcsFile>;
     saveRegistrationQuestions: ReturnType<typeof saveRegistrationQuestions>;
+
+    // Calendars
+    getCalendarByID: ReturnType<typeof getCalendarByID>;
+    createCalendar: ReturnType<typeof createCalendar>;
+    editCalendar: ReturnType<typeof editCalendar>;
+    deleteCalendar: ReturnType<typeof deleteCalendar>;
+    addEventToCalendar: ReturnType<typeof addEventToCalendar>;
+    removeEventFromCalendar: ReturnType<typeof removeEventFromCalendar>;
 
     // Account
     /**
@@ -519,6 +533,14 @@ export class Client {
         this.downloadCalendarEventAttendees = downloadCalendarEventAttendees(rest_api_url, getJwt);
         this.downloadCalendarEventIcsFile = downloadCalendarEventIcsFile(rest_api_url, getJwt);
         this.saveRegistrationQuestions = saveRegistrationQuestions(rest_api_url, getJwt);
+
+        // Calendars
+        this.getCalendarByID = getCalendarByID(rest_api_url);
+        this.createCalendar = createCalendar(rest_api_url, getJwt);
+        this.editCalendar = editCalendar(rest_api_url, getJwt);
+        this.deleteCalendar = deleteCalendar(rest_api_url, getJwt);
+        this.addEventToCalendar = addEventToCalendar(rest_api_url, getJwt);
+        this.removeEventFromCalendar = removeEventFromCalendar(rest_api_url, getJwt);
 
         // account
         this._getAccount = getAccount(rest_api_url, getJwt);

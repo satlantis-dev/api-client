@@ -105,3 +105,20 @@ export enum CalendarEventPeriod {
     Upcoming = "upcoming",
     Past = "past",
 }
+
+/**
+ * https://github.com/satlantis-dev/models/blob/main/calendar.go#L9
+ */
+export type Calendar = {
+    id: number;
+    name: string;
+    description: string;
+    slug: string;
+    banner: string;
+    accountId: number;
+    account: AccountDTO;
+    events: CalendarEvent[];
+    isPublic: boolean;
+    createdAt: string;
+    updatedAt: string;
+};
