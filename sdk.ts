@@ -151,13 +151,13 @@ import { postAmbassadorInquiry } from "./api/secure/ambassador.ts";
 import type { Interest } from "./models/interest.ts";
 import { getBrands, getExchangeRate } from "./api/metric.ts";
 import {
-    deleteLocationGalleryImage,
-    getGlobalLocations,
-    getRecommendedLocations,
-    getRecommendedLocationsGlobal,
-    postLocationGalleryImage,
-    promoteLocationGalleryImageToBanner,
-    updateLocationGalleryImage,
+  deleteLocationGalleryImage,
+  getGlobalLocations, getNewestPlaces, getRandomizedPlaces,
+  getRecommendedLocations,
+  getRecommendedLocationsGlobal, getRecommendedPlaces,
+  postLocationGalleryImage,
+  promoteLocationGalleryImageToBanner,
+  updateLocationGalleryImage
 } from "./api/secure/location.ts";
 import {
     acceptInvitationToCollection,
@@ -339,6 +339,9 @@ export class Client {
     getAccountRolesForLocation: ReturnType<typeof getAccountRolesForLocation>;
     getRecommendedLocations: ReturnType<typeof getRecommendedLocations>; // Use getSuggestedLocations instead
     getRecommendedLocationsGlobal: ReturnType<typeof getRecommendedLocationsGlobal>;
+    getRecommendedPlaces: ReturnType<typeof getRecommendedPlaces>;
+    getRandomizedPlaces: ReturnType<typeof getRandomizedPlaces>;
+    getNewestPlaces: ReturnType<typeof getNewestPlaces>;
     getLocationTagsByPlaceID: ReturnType<typeof getLocationTagsByPlaceID>;
     getSimilarLocations: ReturnType<typeof getSimilarLocations>;
     mapUserToDestination: ReturnType<typeof mapUserToDestination>;
@@ -601,6 +604,9 @@ export class Client {
         this.getAccountRolesForLocation = getAccountRolesForLocation(rest_api_url);
         this.getRecommendedLocations = getRecommendedLocations(rest_api_url, getJwt);
         this.getRecommendedLocationsGlobal = getRecommendedLocationsGlobal(rest_api_url, getJwt);
+        this.getRecommendedPlaces = getRecommendedPlaces(rest_api_url, getJwt);
+        this.getRandomizedPlaces = getRandomizedPlaces(rest_api_url);
+        this.getNewestPlaces = getNewestPlaces(rest_api_url);
         this.getLocationTagsByPlaceID = getLocationTagsByPlaceID(rest_api_url);
         this.getSimilarLocations = getSimilarLocations(rest_api_url);
         this.mapUserToDestination = mapUserToDestination(rest_api_url);
