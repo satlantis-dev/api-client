@@ -179,7 +179,7 @@ export const getRecommendedLocationsGlobal = (urlArg: URL, getJwt: () => string)
 };
 
 export const getRecommendedPlaces =
-  (urlArg: URL, getJwt: () => string) => async (args: { placeId?: number } | undefined) => {
+  (urlArg: URL, getJwt: () => string) => async (args: { placeId?: number | null } | undefined) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
       return new Error("jwt token is empty");
@@ -203,7 +203,7 @@ export const getRecommendedPlaces =
   };
 
 export const getRandomizedPlaces =
-  (urlArg: URL) => async (args: { placeId?: number } | undefined) => {
+  (urlArg: URL) => async (args: { placeId?: number | null } | undefined) => {
 
     const url = copyURL(urlArg);
     url.pathname = args?.placeId
@@ -222,7 +222,7 @@ export const getRandomizedPlaces =
   };
 
 export const getNewestPlaces =
-  (urlArg: URL) => async (args: { placeId?: number } | undefined) => {
+  (urlArg: URL) => async (args: { placeId?: number | null } | undefined) => {
 
     const url = copyURL(urlArg);
     url.pathname = args?.placeId
