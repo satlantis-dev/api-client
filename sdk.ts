@@ -151,13 +151,16 @@ import { postAmbassadorInquiry } from "./api/secure/ambassador.ts";
 import type { Interest } from "./models/interest.ts";
 import { getBrands, getExchangeRate } from "./api/metric.ts";
 import {
-  deleteLocationGalleryImage,
-  getGlobalLocations, getNewestPlaces, getRandomizedPlaces,
-  getRecommendedLocations,
-  getRecommendedLocationsGlobal, getRecommendedPlaces,
-  postLocationGalleryImage,
-  promoteLocationGalleryImageToBanner,
-  updateLocationGalleryImage
+    deleteLocationGalleryImage,
+    getGlobalLocations,
+    getNewestPlaces,
+    getRandomizedPlaces,
+    getRecommendedLocations,
+    getRecommendedLocationsGlobal,
+    getRecommendedPlaces,
+    postLocationGalleryImage,
+    promoteLocationGalleryImageToBanner,
+    updateLocationGalleryImage,
 } from "./api/secure/location.ts";
 import {
     acceptInvitationToCollection,
@@ -909,6 +912,7 @@ export class Client {
         enableWaitlist?: boolean;
         capacity?: number;
         isLimitedEvent?: boolean;
+        gatedEvent?: boolean;
     }) => {
         const jwtToken = this.getJwt();
         if (jwtToken == "") {
@@ -937,6 +941,11 @@ export class Client {
             [
                 "autoFollowHosts",
                 args.autofollowHostAndCohosts ? args.autofollowHostAndCohosts.toString() : "false",
+            ],
+
+            [
+                "rsvp_gated_enabled",
+                args.gatedEvent ? args.gatedEvent.toString() : "false",
             ],
 
             [
@@ -1028,6 +1037,7 @@ export class Client {
         enableWaitlist?: boolean;
         capacity?: number;
         isLimitedEvent?: boolean;
+        gatedEvent?: boolean;
     }) => {
         const jwtToken = this.getJwt();
         if (jwtToken == "") {
@@ -1058,6 +1068,10 @@ export class Client {
             [
                 "autoFollowHosts",
                 args.autofollowHostAndCohosts ? args.autofollowHostAndCohosts.toString() : "false",
+            ],
+            [
+                "rsvp_gated_enabled",
+                args.gatedEvent ? args.gatedEvent.toString() : "false",
             ],
 
             [
