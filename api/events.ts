@@ -104,6 +104,13 @@ export interface EventRsvpItem {
 export interface EventRsvpsResponse {
     items: EventRsvpItem[];
     total: number;
+    rsvpDeclinedCount: number;
+    rsvpAcceptedCount: number;
+    rsvpWaitlistedCount: number;
+    rsvpInvitedCount: number;
+    rsvpTentativeCount: number;
+    rsvpRequestedCount: number;
+    rsvpRejectedCount: number;
 }
 
 export interface GetEventRsvpsArgs {
@@ -113,6 +120,7 @@ export interface GetEventRsvpsArgs {
     limit: number;
     sort_by?: string;
     sort_order?: string;
+    search?: string;
 }
 
 /**
