@@ -1,6 +1,6 @@
 import { copyURL, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
-import type { ImageCategory, Location, LocationDTO, LocationGalleryImage } from "../../models/location.ts";
+import type { ImageCategory, LocationDTO, Location, LocationGalleryImage } from "../../models/location.ts";
 
 /**
  * POST /secure/postLocationGalleryImage
@@ -179,58 +179,66 @@ export const getRecommendedLocationsGlobal = (urlArg: URL, getJwt: () => string)
 };
 
 export const getRecommendedPlaces =
-    (urlArg: URL, getJwt: () => string) => async (args: { placeId?: number | null } | undefined) => {
-        const jwtToken = getJwt();
-        if (jwtToken == "") {
-            return new Error("jwt token is empty");
-        }
+  (urlArg: URL, getJwt: () => string) => async (args: { placeId?: number | null } | undefined) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+      return new Error("jwt token is empty");
+    }
 
-        const url = copyURL(urlArg);
-        url.pathname = args?.placeId
-            ? `/secure/destination/${args.placeId}/places/recommended`
-            : `/secure/places/recommended`;
-
-        const headers = new Headers();
-        headers.set("Authorization", `Bearer ${jwtToken}`);
-
-        const response = await safeFetch(url, {
-            headers,
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<Location[]>(response);
-    };
-
-export const getRandomizedPlaces = (urlArg: URL) => async (args: { placeId?: number | null } | undefined) => {
     const url = copyURL(urlArg);
-    url.pathname = args?.placeId ? `/destination/${args.placeId}/places/randomized` : `/places/randomized`;
+    url.pathname = args?.placeId
+      ? `/secure/destination/${args.placeId}/places/recommended`
+      : `/secure/places/recommended`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+      headers,
+    });
+    if (response instanceof Error) {
+      return response;
+    }
+    return handleResponse<Location[]>(response);
+  };
+
+export const getRandomizedPlaces =
+  (urlArg: URL) => async (args: { placeId?: number | null } | undefined) => {
+
+    const url = copyURL(urlArg);
+    url.pathname = args?.placeId
+      ? `/destination/${args.placeId}/places/randomized`
+      : `/places/randomized`;
 
     const headers = new Headers();
 
     const response = await safeFetch(url, {
-        headers,
+      headers,
     });
     if (response instanceof Error) {
-        return response;
+      return response;
     }
     return handleResponse<Location[]>(response);
-};
+  };
 
-export const getNewestPlaces = (urlArg: URL) => async (args: { placeId?: number | null } | undefined) => {
+export const getNewestPlaces =
+  (urlArg: URL) => async (args: { placeId?: number | null } | undefined) => {
+
     const url = copyURL(urlArg);
-    url.pathname = args?.placeId ? `/destination/${args.placeId}/places/newest` : `/places/newest`;
+    url.pathname = args?.placeId
+      ? `/destination/${args.placeId}/places/newest`
+      : `/places/newest`;
 
     const headers = new Headers();
 
     const response = await safeFetch(url, {
-        headers,
+      headers,
     });
     if (response instanceof Error) {
-        return response;
+      return response;
     }
     return handleResponse<Location[]>(response);
-};
+  };
 
 export type GetGlobalLocationsArgs = {
     lat?: number;
