@@ -944,6 +944,11 @@ export class Client {
             ],
 
             [
+                "rsvp_gated_enabled",
+                args.gatedEvent ? args.gatedEvent.toString() : "false",
+            ],
+
+            [
                 "allowCohostsToDownloadAttendeeList",
                 args.allowCohostsToDownloadAttendeeList
                     ? args.allowCohostsToDownloadAttendeeList.toString()
@@ -958,10 +963,6 @@ export class Client {
         }
         if (args.location) {
             tags.push(["location", args.location]);
-        }
-
-        if (args.gatedEvent !== undefined) {
-            tags.push(["rsvp_gated_enabled", args.gatedEvent.toString()]);
         }
 
         if (args.googleMapsUri) {
