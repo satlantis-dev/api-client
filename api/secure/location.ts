@@ -202,9 +202,18 @@ export const getRecommendedPlaces =
         return handleResponse<LocationDTO[]>(response);
     };
 
-export const getRandomizedPlaces = (urlArg: URL) => async (args: { placeId?: number | null } | undefined) => {
+export type GetRandomizedPlacesArgs = {
+    placeId?: number;
+    category?: string;
+    tags?: string[];
+};
+
+export const getRandomizedPlaces = (urlArg: URL) => async (args?: GetRandomizedPlacesArgs) => {
     const url = copyURL(urlArg);
     url.pathname = args?.placeId ? `/destination/${args.placeId}/places/randomized` : `/places/randomized`;
+
+    if (args?.category) url.searchParams.set("category", args.category);
+    if (args?.tags?.length) url.searchParams.set("tags", args.tags.join(","));
 
     const headers = new Headers();
 
