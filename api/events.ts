@@ -408,6 +408,9 @@ export const saveRegistrationQuestions = (urlArg: URL, getJwt: func_GetJwt) =>
 async (
     eventId: number,
     questions: RegistrationQuestion[],
+    options?: {
+        signal: AbortSignal;
+    },
 ): Promise<{ success: boolean; message: string } | Error> => {
     const url = copyURL(urlArg);
     url.pathname = `/secure/events/${eventId}/questions`;
@@ -425,6 +428,7 @@ async (
         method: "POST",
         headers,
         body: JSON.stringify(payload),
+        signal: options?.signal,
     });
     if (response instanceof Error) {
         return response;
