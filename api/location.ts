@@ -14,6 +14,12 @@ import type { Place } from "../models/place.ts";
 import { prepareLocationSetEvent, preparePlaceEvent } from "../nostr-helpers.ts";
 import { type func_GetJwt, type func_GetNostrSigner } from "../sdk.ts";
 
+const createPublicUrl = (urlArg: URL, path: string) => {
+    const url = copyURL(urlArg);
+    url.pathname = path;
+    return url;
+};
+
 export const getLocationTags = (urlArg: URL) => async () => {
     const url = copyURL(urlArg);
     url.pathname = `/getLocationTags`;
@@ -22,6 +28,30 @@ export const getLocationTags = (urlArg: URL) => async () => {
         return response;
     }
     return handleResponse<LocationTag[]>(response);
+};
+
+export type GetLocationTagsV2Args = {
+    placeId?: number;
+};
+
+export type GetLocationTagsV2Response = LocationTag[] | { [key: string]: LocationTag[] };
+
+export const getLocationTagsV2 = (urlArg: URL) => {
+    return async (args?: GetLocationTagsV2Args) => {
+        const url = args?.placeId
+            ? createPublicUrl(urlArg, `/destination/${args.placeId}/location-tags`)
+            : createPublicUrl(urlArg, `/location-tags`);
+
+        const response = await safeFetch(url, {
+            method: "GET",
+        });
+
+        if (response instanceof Error) {
+            return response;
+        }
+
+        return handleResponse<GetLocationTagsV2Response>(response);
+    };
 };
 
 export const getLocation = (urlArg: URL) => async (args: { id: number }) => {

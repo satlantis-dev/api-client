@@ -209,6 +209,10 @@ export interface LocationTag {
     hashtags: string[];
 }
 
+export type GroupedLocationTags = {
+    [key: string]: LocationTag[];
+};
+
 // https://github.com/satlantis-dev/models/blob/main/location_tag.go#L3
 interface LocationTagCategory {
     name: string;

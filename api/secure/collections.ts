@@ -367,7 +367,7 @@ export type SearchCollectionsArgs = {
     search?: string;
     placeId?: number;
     category?: string;
-    tags?: string;
+    tags?: string[];
 };
 
 export function searchCollections(urlArg: URL) {

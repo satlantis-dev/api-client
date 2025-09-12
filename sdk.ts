@@ -44,6 +44,7 @@ import {
     getLocationsWithinBoundingBox,
     getLocationTags,
     getLocationTagsByPlaceID,
+    getLocationTagsV2,
     getNearbyLocations,
     getSimilarLocations,
     proveLocationClaim,
@@ -346,6 +347,7 @@ export class Client {
     getRandomizedPlaces: ReturnType<typeof getRandomizedPlaces>;
     getNewestPlaces: ReturnType<typeof getNewestPlaces>;
     getLocationTagsByPlaceID: ReturnType<typeof getLocationTagsByPlaceID>;
+    getLocationTagsV2: ReturnType<typeof getLocationTagsV2>;
     getSimilarLocations: ReturnType<typeof getSimilarLocations>;
     mapUserToDestination: ReturnType<typeof mapUserToDestination>;
 
@@ -611,6 +613,7 @@ export class Client {
         this.getRandomizedPlaces = getRandomizedPlaces(rest_api_url);
         this.getNewestPlaces = getNewestPlaces(rest_api_url);
         this.getLocationTagsByPlaceID = getLocationTagsByPlaceID(rest_api_url);
+        this.getLocationTagsV2 = getLocationTagsV2(rest_api_url)
         this.getSimilarLocations = getSimilarLocations(rest_api_url);
         this.mapUserToDestination = mapUserToDestination(rest_api_url);
 
