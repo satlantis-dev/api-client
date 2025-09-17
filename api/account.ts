@@ -38,7 +38,7 @@ export const getAccount =
 export const getAccountFollowings =
     (urlArg: URL) => async (args: { npub: string; page: number; limit: number }) => {
         const url = copyURL(urlArg);
-        url.pathname = `/getAccountFollowings/${args.npub}`;
+        url.pathname = `/account/${args.npub}/following`;
         url.searchParams.append("limit", JSON.stringify(args.limit));
         url.searchParams.append("page", JSON.stringify(args.page));
         const response = await safeFetch(url);
@@ -51,7 +51,7 @@ export const getAccountFollowings =
 export const getAccountFollowers =
     (urlArg: URL) => async (args: { npub: string; page: number; limit: number }) => {
         const url = copyURL(urlArg);
-        url.pathname = `/getAccountFollowers/${args.npub}`;
+        url.pathname = `/account/${args.npub}/followers`;
         url.searchParams.append("limit", JSON.stringify(args.limit));
         url.searchParams.append("page", JSON.stringify(args.page));
         const response = await safeFetch(url);

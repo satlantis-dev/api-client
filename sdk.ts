@@ -91,6 +91,7 @@ import {
     getBlockedAccounts,
     getFollowedByAccounts,
     getMutedAccounts,
+    getUserFollowers,
     muteAccount,
     removeAccountRole,
     reportContent,
@@ -301,6 +302,7 @@ export class Client {
     private updateAccount: ReturnType<typeof updateAccount>;
     deleteAccount: ReturnType<typeof deleteAccount>;
     _blackListAccount: ReturnType<typeof blacklistAccount>;
+    getUserFollowers: ReturnType<typeof getUserFollowers>;
 
     // note
     private getNotesOfPubkey: ReturnType<typeof getNotesOfPubkey>;
@@ -568,6 +570,7 @@ export class Client {
         this.updateAccount = updateAccount(rest_api_url, getJwt);
         this.deleteAccount = deleteAccount(rest_api_url, getJwt, getNostrSigner);
         this._blackListAccount = blacklistAccount(rest_api_url, getJwt);
+        this.getUserFollowers = getUserFollowers(rest_api_url, getJwt);
 
         this.getNotesOfPubkey = getNotesOfPubkey(rest_api_url);
         this.getNoteReactionsById = getNoteReactionsById(rest_api_url);
@@ -613,7 +616,7 @@ export class Client {
         this.getRandomizedPlaces = getRandomizedPlaces(rest_api_url);
         this.getNewestPlaces = getNewestPlaces(rest_api_url);
         this.getLocationTagsByPlaceID = getLocationTagsByPlaceID(rest_api_url);
-        this.getLocationTagsV2 = getLocationTagsV2(rest_api_url)
+        this.getLocationTagsV2 = getLocationTagsV2(rest_api_url);
         this.getSimilarLocations = getSimilarLocations(rest_api_url);
         this.mapUserToDestination = mapUserToDestination(rest_api_url);
 

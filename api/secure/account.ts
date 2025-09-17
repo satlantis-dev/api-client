@@ -375,7 +375,7 @@ export const updateAccountFollowingList =
             return signer;
         }
         const url = copyURL(urlArg);
-        url.pathname = `/secure/updateAccountFollowingList`;
+        url.pathname = `/secure/user/following-list`;
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
         const response = await safeFetch(
@@ -559,3 +559,32 @@ export const deleteAccount =
         }
         return false;
     };
+
+export type GetUserFollowersArgs = {
+    page?: number;
+    limit?: number;
+};
+
+export function getUserFollowers(urlArg: URL, getJwt: func_GetJwt) {
+    return async (args?: GetUserFollowersArgs) => {
+        const jwtToken = getJwt();
+        if (!jwtToken) return new Error("jwt token is empty");
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/user/followers`;
+
+        if (args?.limit) url.searchParams.set("limit", args.limit.toString());
+        if (args?.page) url.searchParams.set("page", args.page.toString());
+
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+
+        if (response instanceof Error) return response;
+        return handleResponse<AccountDTO[]>(response);
+    };
+}
