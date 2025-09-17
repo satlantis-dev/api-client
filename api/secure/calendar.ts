@@ -267,6 +267,32 @@ export const deletePlaceCalendarEvent =
         return handleResponse<PlaceCalendarEvent>(response);
     };
 
+export const deletePlaceCalendarEventById =
+    (urlArg: URL, getJwt: () => string) => async (args: PlaceCalendarEventDelete) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/${args.placeCalendarEventId}`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const body = JSON.stringify(args.event);
+
+        const response = await safeFetch(url, {
+            method: "DELETE",
+            body,
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<PlaceCalendarEvent>(response);
+    };
+
 export const postCalendarEventRSVP =
     (urlArg: URL, getJwt: func_GetJwt, getSigner: func_GetNostrSigner) =>
     async (args: {
