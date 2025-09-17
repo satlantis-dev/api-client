@@ -120,6 +120,7 @@ import {
     createCalendar,
     deleteCalendar,
     deletePlaceCalendarEvent,
+    deletePlaceCalendarEventById,
     downloadCalendarEventAttendees,
     downloadCalendarEventIcsFile,
     editCalendar,
@@ -263,6 +264,7 @@ export class Client {
     getEventById: ReturnType<typeof getEventById>;
     getPlaceCalendarEvents: ReturnType<typeof getPlaceCalendarEvents>;
     deletePlaceCalendarEvent: ReturnType<typeof deletePlaceCalendarEvent>;
+    deletePlaceCalendarEventById: ReturnType<typeof deletePlaceCalendarEventById>;
     postCalendarEventRSVP: ReturnType<typeof postCalendarEventRSVP>;
     postPlaceCalendarEvent: ReturnType<typeof postPlaceCalendarEvent>;
     postCalendarEventAnnouncement: ReturnType<
@@ -526,6 +528,11 @@ export class Client {
             rest_api_url,
             getJwt,
         );
+        this.deletePlaceCalendarEventById = deletePlaceCalendarEventById(
+            rest_api_url,
+            getJwt,
+        );
+
         this.postPlaceCalendarEvent = postPlaceCalendarEvent(rest_api_url, getJwt);
         this.postCalendarEventRSVP = postCalendarEventRSVP(
             rest_api_url,
@@ -1229,6 +1236,39 @@ export class Client {
         }
 
         const res = await this.deletePlaceCalendarEvent({
+            placeCalendarEventId: args.placeCalendarEventId,
+            event,
+        });
+        if (res instanceof Error) {
+            return res;
+        }
+        return { postResult: res, event };
+    };
+
+    deleteCalendarEventById = async (args: {
+        eventId: string;
+        placeCalendarEventId: number;
+    }) => {
+        const jwtToken = this.getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const signer = await this.getNostrSigner();
+        if (signer instanceof Error) {
+            return signer;
+        }
+
+        const event = await prepareNostrEvent(signer, {
+            kind: NostrKind.DELETE,
+            tags: [["e", args.eventId]],
+            content: "",
+        });
+        if (event instanceof Error) {
+            return event;
+        }
+
+        const res = await this.deletePlaceCalendarEventById({
             placeCalendarEventId: args.placeCalendarEventId,
             event,
         });
