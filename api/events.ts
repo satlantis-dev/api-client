@@ -94,7 +94,7 @@ export interface EventRsvpItem {
     followersCount: number;
     email?: string;
     npub: string;
-    rsvpStatus: "accepted" | "tentative" | "declined" | "waitlisted" | "requested" | "rejected";
+    rsvpStatus: "accepted" | "tentative" | "declined" | "waitlisted" | "requested" | "rejected" | "invited";
     profileUrl: string;
     registrationTime: string;
     about: string;
@@ -437,6 +437,43 @@ async (
         success: boolean;
         message: string;
     }>(response);
+};
+
+export interface InviteAttendeesResponse {
+    emails?: Record<string, string | true>;
+    npubs?: Record<string, string | true>;
+}
+
+export const inviteAttendees = (urlArg: URL, getJwt: func_GetJwt) =>
+async (args: {
+    eventId: number;
+    emails?: string[];
+    npubs?: string[];
+    options?: {
+        signal: AbortSignal;
+    };
+}): Promise<InviteAttendeesResponse | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/${args.eventId}/invite`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const payload = { emails: args.emails, npubs: args.npubs };
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+        signal: args.options?.signal,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<InviteAttendeesResponse>(response);
 };
 
 export type RegistrationQuestion = {
