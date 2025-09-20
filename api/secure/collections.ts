@@ -379,6 +379,7 @@ export function searchCollections(urlArg: URL) {
         if (args?.search) url.searchParams.set("search", args.search);
         if (args?.placeId) url.searchParams.set("placeId", args.placeId.toString());
         if (args?.category) url.searchParams.set("category", args.category);
+        if (args?.tags?.length) url.searchParams.set("tags", args.tags.join(","));
 
         const response = await safeFetch(url, {
             method: "GET",
