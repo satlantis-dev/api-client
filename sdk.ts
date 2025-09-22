@@ -903,7 +903,7 @@ export class Client {
     // Calendar Event
     createCalendarEvent = async (args: {
         description: string;
-        placeATag: string;
+        placeATag: string | undefined;
         calendarEventType: string;
         url: string;
         title: string;
@@ -917,7 +917,7 @@ export class Client {
         cohosts: string;
         venue: string;
         interests: string;
-        placeId: number;
+        placeId: number | undefined;
         summary: string;
         website: string;
         googleMapsUri: string;
@@ -940,7 +940,6 @@ export class Client {
             return signer;
         }
         let tags: Tag[] = [
-            ["a", args.placeATag],
             ["d", crypto.randomUUID()],
             ["t", args.calendarEventType],
             ["r", args.url],
@@ -973,6 +972,10 @@ export class Client {
 
             ["website", args.website],
         ];
+
+        if (args.placeATag) {
+            tags.push(["placeATag", args.placeATag]);
+        }
 
         if (args.venue) {
             tags.push(["venue", args.venue]);
@@ -1014,7 +1017,7 @@ export class Client {
         }
 
         const res = await this.postPlaceCalendarEvent({
-            placeId: args.placeId,
+            ...(args.placeId && { placeId: args.placeId }), // Only include if placeId exists
             event,
         });
         if (res instanceof Error) {
@@ -1027,7 +1030,7 @@ export class Client {
         calendarEventId: number;
         description: string;
         dTag: string;
-        placeATag: string;
+        placeATag: string | undefined;
         calendarEventType: string;
         url: string;
         title: string;
@@ -1038,7 +1041,7 @@ export class Client {
         timezone: string;
         geoHash: string;
         location: string;
-        placeId: number;
+        placeId: number | undefined;
         summary: string;
         website: string;
         // todo: use RFC3339 / ISO8601 format
@@ -1066,7 +1069,6 @@ export class Client {
         }
 
         let tags: Tag[] = [
-            ["a", args.placeATag],
             ["d", crypto.randomUUID()],
             ["t", args.calendarEventType],
             ["r", args.url],
@@ -1097,6 +1099,10 @@ export class Client {
                     : "false",
             ],
         ];
+
+        if (args.placeATag) {
+            tags.push(["placeATag", args.placeATag]);
+        }
 
         if (args.venue) {
             tags.push(["venue", args.venue]);
@@ -1139,6 +1145,7 @@ export class Client {
 
         const res = await this.putUpdateCalendarEvent({
             calendarEventId: args.calendarEventId,
+            ...(args.placeId && { placeId: args.placeId }), // Only include if placeId exists
             event,
         });
         if (res instanceof Error) {

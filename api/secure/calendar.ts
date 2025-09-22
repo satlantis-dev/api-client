@@ -15,7 +15,7 @@ import type { AnswerType } from "../events.ts";
 
 export interface PlaceCalendarEventPost {
     event: NostrEvent;
-    placeId: number;
+    placeId?: number;
 }
 
 interface EmailEventCohost {
@@ -118,7 +118,7 @@ export const postPlaceCalendarEvent =
         }
 
         const url = copyURL(urlArg);
-        url.pathname = `/secure/createPlaceCalendarEvent`;
+        url.pathname = `/secure/events`;
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
@@ -144,7 +144,7 @@ export const putUpdateCalendarEvent =
         }
 
         const url = copyURL(urlArg);
-        url.pathname = `/secure/updateCalendarEvent`;
+        url.pathname = `/secure/events`;
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
