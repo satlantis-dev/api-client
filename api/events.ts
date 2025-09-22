@@ -68,13 +68,7 @@ export interface EventDetails {
     cohosts: Cohost[];
     ownershipChangedAt: string | null;
     rsvpLimit: number | null;
-    place: {
-        banner: string;
-        boundingBox: BoundingBox;
-        id: number;
-        name: string;
-        osmRef: string;
-    };
+    place: EventDetailsPLace;
     country: {
         code: string;
         name: string;
@@ -83,6 +77,14 @@ export interface EventDetails {
     registrationQuestions: {
         questions: RegistrationQuestion[];
     };
+}
+
+export interface EventDetailsPLace {
+    banner: string;
+    boundingBox: BoundingBox;
+    id: number;
+    name: string;
+    osmRef: string;
 }
 // Event RSVP Interfaces
 export interface EventRsvpItem {
