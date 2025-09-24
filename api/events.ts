@@ -64,7 +64,7 @@ export interface EventDetails {
     rsvpWaitlistEnabledAt: string | null;
     rsvpAcceptedCount: number;
     rsvpGatedEnabledAt: string | null;
-
+    featured: boolean;
     cohosts: Cohost[];
     ownershipChangedAt: string | null;
     rsvpLimit: number | null;
@@ -431,6 +431,63 @@ async (
         headers,
         body: JSON.stringify(payload),
         signal: options?.signal,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{
+        success: boolean;
+        message: string;
+    }>(response);
+};
+
+export const markCalendarEventAsFeatured = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    eventId: number,
+): Promise<{ success: boolean; message: string } | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/markCalendarEventAsFeatured/${eventId}`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{
+        success: boolean;
+        message: string;
+    }>(response);
+};
+
+export const unmarkCalendarEventAsFeatured = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    eventId: number,
+): Promise<{ success: boolean; message: string } | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/unmarkCalendarEventAsFeatured/${eventId}`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const payload = { eventId };
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify(payload),
     });
     if (response instanceof Error) {
         return response;

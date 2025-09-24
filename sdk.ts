@@ -209,7 +209,9 @@ import {
     getRandomizedEvents,
     getRecommendedEvents,
     inviteAttendees,
+    markCalendarEventAsFeatured,
     saveRegistrationQuestions,
+    unmarkCalendarEventAsFeatured,
     updateRsvpStatus,
 } from "./api/events.ts";
 import { getTimezoneInfo } from "./api/base.ts";
@@ -281,6 +283,8 @@ export class Client {
     downloadCalendarEventAttendees: ReturnType<typeof downloadCalendarEventAttendees>;
     downloadCalendarEventIcsFile: ReturnType<typeof downloadCalendarEventIcsFile>;
     saveRegistrationQuestions: ReturnType<typeof saveRegistrationQuestions>;
+    unmarkCalendarEventAsFeatured: ReturnType<typeof unmarkCalendarEventAsFeatured>;
+    markCalendarEventAsFeatured: ReturnType<typeof markCalendarEventAsFeatured>;
     inviteAttendees: ReturnType<typeof inviteAttendees>;
     createCalendar: ReturnType<typeof createCalendar>;
     editCalendar: ReturnType<typeof editCalendar>;
@@ -556,6 +560,8 @@ export class Client {
         this.downloadCalendarEventAttendees = downloadCalendarEventAttendees(rest_api_url, getJwt);
         this.downloadCalendarEventIcsFile = downloadCalendarEventIcsFile(rest_api_url, getJwt);
         this.saveRegistrationQuestions = saveRegistrationQuestions(rest_api_url, getJwt);
+        this.unmarkCalendarEventAsFeatured = unmarkCalendarEventAsFeatured(rest_api_url, getJwt);
+        this.markCalendarEventAsFeatured = markCalendarEventAsFeatured(rest_api_url, getJwt);
         this.inviteAttendees = inviteAttendees(rest_api_url, getJwt);
 
         // Calendars
