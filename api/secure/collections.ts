@@ -658,6 +658,30 @@ export function getCollectionSaves(urlArg: URL, getJwt: func_GetJwt) {
  * ==========================================
  */
 
+export type GetCollectionViewersArgs = {
+    collectionId: number;
+};
+
+export function getCollectionViewers(urlArg: URL, getJwt: func_GetJwt) {
+    return async (args: GetCollectionViewersArgs) => {
+        const jwtToken = getJwt();
+        if (!jwtToken) return new Error("JWT token is empty.");
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const url = createSecureUrl(urlArg, `/collection/${args.collectionId}/viewers`);
+
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+
+        if (response instanceof Error) return response;
+        return handleResponse<Account[]>(response);
+    };
+}
+
 export type AddViewerToCollectionArgs = {
     collectionId: number;
     viewerId: string;

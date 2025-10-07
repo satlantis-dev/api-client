@@ -177,6 +177,7 @@ import {
     getAccountCollections,
     getCollectionById,
     getCollectionSaves,
+    getCollectionViewers,
     getCollectors,
     getFeaturedCollections,
     getNewestCollections,
@@ -468,6 +469,7 @@ export class Client {
     getCollectionSaves: ReturnType<typeof getCollectionSaves>;
 
     // SHARING & COLLABORATION.
+    getCollectionViewers: ReturnType<typeof getCollectionViewers>;
     addViewerToCollection: ReturnType<typeof addViewerToCollection>;
     removeViewerFromCollection: ReturnType<typeof removeViewerFromCollection>;
     inviteContributorToCollection: ReturnType<typeof inviteContributorToCollection>;
@@ -741,6 +743,7 @@ export class Client {
         this.getCollectionSaves = getCollectionSaves(rest_api_url, getJwt);
 
         // SHARING & COLLABORATION.
+        this.getCollectionViewers = getCollectionViewers(rest_api_url, getJwt);
         this.addViewerToCollection = addViewerToCollection(rest_api_url, getJwt);
         this.removeViewerFromCollection = removeViewerFromCollection(rest_api_url, getJwt);
         this.inviteContributorToCollection = inviteContributorToCollection(rest_api_url, getJwt);
