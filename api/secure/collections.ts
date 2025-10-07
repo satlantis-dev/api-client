@@ -684,7 +684,7 @@ export function getCollectionViewers(urlArg: URL, getJwt: func_GetJwt) {
 
 export type AddViewerToCollectionArgs = {
     collectionId: number;
-    viewerId: string;
+    viewerId: number;
 };
 export type AddViewerToCollectionResponse = {
     message: string;
@@ -715,7 +715,7 @@ export function addViewerToCollection(urlArg: URL, getJwt: func_GetJwt) {
 
 export type RemoveViewerFromCollectionArgs = {
     collectionId: number;
-    viewerId: string;
+    viewerId: number;
 };
 export type RemoveViewerFromCollectionResponse = {
     message: string;
