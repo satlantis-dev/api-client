@@ -434,12 +434,13 @@ async (args: {
     return handleResponse<Account>(response);
 };
 
-export const getAccountsBySearch = (urlArg: URL, getJwt: func_GetJwt) =>
-async (args: {
+export type GetAccountsBySearchArgs = {
     username?: string;
     limit?: number;
     page?: number;
-}, options?: {
+}
+export const getAccountsBySearch = (urlArg: URL, getJwt: func_GetJwt) =>
+async (args: GetAccountsBySearchArgs, options?: {
     signal: AbortSignal;
 }) => {
     const jwtToken = getJwt();
@@ -449,7 +450,7 @@ async (args: {
 
     const url = copyURL(urlArg);
     // https://linear.app/sat-lantis/issue/SAT-2947/be-support-for-user-search-without-being-signed-in#comment-ae0e0a82
-    url.pathname = `/getAccountsBySearch`;
+    url.pathname = `/accounts`;
     if (args.username) {
         url.searchParams.set("username", args.username);
     }
@@ -464,6 +465,7 @@ async (args: {
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
     const response = await safeFetch(url, {
+        method: "GET",
         headers,
         signal: options?.signal,
     });
