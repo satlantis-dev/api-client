@@ -83,14 +83,16 @@ export type AccountMiniDTO = {
 };
 
 export type AccountSearchDTO = {
-    about: string;
+    id: number;
+    username: string;
     display_name: string;
     followers_count: number;
-    id: number;
-    npub: string;
-    picture: string;
-    username: string;
+    following_count: number;
     name: string;
+    nip05: string;
+    about: string;
+    picture: string;
+    npub: string;
 };
 
 export type AccountPlaceRole = {
