@@ -554,3 +554,120 @@ export enum AnswerType {
     X = "x",
     Facebook = "facebook",
 }
+
+export interface EventTicketType {
+    name: string;
+    description: string;
+    priceSats: number | null;
+    priceFiat: number | null;
+    maxCapacity: number | null;
+    sellStartDate: string;
+    sellEndDate: string;
+}
+
+export interface GetEventTicketTypeResponse extends EventTicketType {
+    id: number;
+    soldQuantity: number;
+    totalFundsCollected: number;
+    requireApproval?: boolean;
+}
+
+export const createEventTicketType = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    eventId: number,
+    payload: EventTicketType,
+): Promise<EventTicketType | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/${eventId}/ticket-types`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<EventTicketType>(response);
+};
+
+export const updateEventTicketType = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    ticketTypeId: number,
+    payload: EventTicketType,
+): Promise<EventTicketType | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/ticket-types/${ticketTypeId}`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify(payload),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<EventTicketType>(response);
+};
+
+export const deleteEventTicketType = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    ticketTypeId: number,
+): Promise<{} | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/ticket-types/${ticketTypeId}`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+        method: "DELETE",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{}>(response);
+};
+
+export const getEventTicketTypes = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    eventId: number,
+): Promise<EventTicketType[] | null | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/${eventId}/ticket-types`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<GetEventTicketTypeResponse[]>(response);
+};
