@@ -106,7 +106,7 @@ import { deletePlaceGalleryImage, postPlaceGalleryImage, updatePlace } from "./a
 import { deleteNote, postNote, postReaction, recordNotesAsSeen } from "./api/secure/note.ts";
 import { getNotifications } from "./api/secure/notification.ts";
 import { presign } from "./api/secure/presign.ts";
-import { newURL } from "./helpers/_helper.ts";
+import { generateUUID, newURL } from "./helpers/_helper.ts";
 import { addressLookup, getCoordinatesByAddress, getCoordinatesByGoogleId } from "./api/address.ts";
 import { signEvent } from "./api/nostr_event.ts";
 import {
@@ -949,7 +949,7 @@ export class Client {
             return signer;
         }
         let tags: Tag[] = [
-            ["d", crypto.randomUUID()],
+            ["d", generateUUID()],
             ["t", args.calendarEventType],
             ["r", args.url],
             ["title", args.title],
@@ -1078,7 +1078,7 @@ export class Client {
         }
 
         let tags: Tag[] = [
-            ["d", crypto.randomUUID()],
+            ["d", generateUUID()],
             ["t", args.calendarEventType],
             ["r", args.url],
             ["title", args.title],
