@@ -201,9 +201,12 @@ import {
 import { mapUserToDestination } from "./api/location.ts";
 
 import {
+    createEventTicketType,
+    deleteEventTicketType,
     getEventDetails,
     getEventRsvps,
     getEvents,
+    getEventTicketTypes,
     getFeaturedEvents,
     getNewestEvents,
     getPopularEvents,
@@ -213,6 +216,7 @@ import {
     markCalendarEventAsFeatured,
     saveRegistrationQuestions,
     unmarkCalendarEventAsFeatured,
+    updateEventTicketType,
     updateRsvpStatus,
 } from "./api/events.ts";
 import { getTimezoneInfo } from "./api/base.ts";
@@ -287,6 +291,10 @@ export class Client {
     unmarkCalendarEventAsFeatured: ReturnType<typeof unmarkCalendarEventAsFeatured>;
     markCalendarEventAsFeatured: ReturnType<typeof markCalendarEventAsFeatured>;
     inviteAttendees: ReturnType<typeof inviteAttendees>;
+    createEventTicketType: ReturnType<typeof createEventTicketType>;
+    updateEventTicketType: ReturnType<typeof updateEventTicketType>;
+    deleteEventTicketType: ReturnType<typeof deleteEventTicketType>;
+    getEventTicketTypes: ReturnType<typeof getEventTicketTypes>;
     createCalendar: ReturnType<typeof createCalendar>;
     editCalendar: ReturnType<typeof editCalendar>;
     deleteCalendar: ReturnType<typeof deleteCalendar>;
@@ -565,6 +573,10 @@ export class Client {
         this.unmarkCalendarEventAsFeatured = unmarkCalendarEventAsFeatured(rest_api_url, getJwt);
         this.markCalendarEventAsFeatured = markCalendarEventAsFeatured(rest_api_url, getJwt);
         this.inviteAttendees = inviteAttendees(rest_api_url, getJwt);
+        this.createEventTicketType = createEventTicketType(rest_api_url, getJwt);
+        this.updateEventTicketType = updateEventTicketType(rest_api_url, getJwt);
+        this.deleteEventTicketType = deleteEventTicketType(rest_api_url, getJwt);
+        this.getEventTicketTypes = getEventTicketTypes(rest_api_url, getJwt);
 
         // Calendars
         this.getCalendarByID = getCalendarByID(rest_api_url);

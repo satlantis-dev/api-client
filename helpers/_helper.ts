@@ -34,7 +34,7 @@ export async function handleResponse<T extends {}>(response: FetchResult) {
     if (body instanceof Aborted) {
         return body;
     }
-    if (response.status != 200 && response.status != 204) {
+    if (response.status != 200 && response.status != 204 && response.status != 201) {
         return new ApiError(response.status, body);
     }
     if (!body) {
