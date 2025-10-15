@@ -325,7 +325,7 @@ export type UpdateCollectionLocationArgs = {
     collectionId: number;
     googleId: string;
 
-    blurb: string;
+    blurb?: string;
     seqNum?: number;
 };
 export type UpdateCollectionLocationResponse = {
