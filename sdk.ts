@@ -125,6 +125,7 @@ import {
     downloadCalendarEventIcsFile,
     editCalendar,
     getCalendarByID,
+    getCalendarsByAccount,
     getEventById,
     postCalendarEventAnnouncement,
     postCalendarEventNote,
@@ -312,6 +313,7 @@ export class Client {
     getAccountsBySearch: ReturnType<typeof getAccountsBySearch>;
     searchAccountViaEmail: ReturnType<typeof searchAccountViaEmail>;
     sendCohostEmailInviteToCalendarEvent: ReturnType<typeof sendCohostEmailInviteToCalendarEvent>;
+    getCalendarsByAccount: ReturnType<typeof getCalendarsByAccount>;
     createAccount: ReturnType<typeof createAccount>;
     /**
      * @unstable
@@ -596,6 +598,7 @@ export class Client {
             rest_api_url,
             getJwt,
         );
+        this.getCalendarsByAccount = getCalendarsByAccount(rest_api_url);
         this.createAccount = createAccount(rest_api_url);
         this.updateAccount = updateAccount(rest_api_url, getJwt);
         this.deleteAccount = deleteAccount(rest_api_url, getJwt, getNostrSigner);

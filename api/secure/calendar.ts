@@ -407,10 +407,11 @@ export const downloadCalendarEventIcsFile =
         return handleStringResponse(response);
     };
 
-export const getCalendarByID = (urlArg: URL) =>
-async (args: {
+export type GetCalendarByIdArgs = {
     id: number;
-}) => {
+};
+
+export const getCalendarByID = (urlArg: URL) => async (args: GetCalendarByIdArgs) => {
     const url = copyURL(urlArg);
     url.pathname = `/calendar/${args.id}`;
     const response = await safeFetch(url);
@@ -418,6 +419,23 @@ async (args: {
         return response;
     }
     return handleResponse<Calendar>(response);
+};
+
+export type GetCalendarsByAccountArgs = {
+    npub: string;
+};
+
+export const getCalendarsByAccount = (urlArg: URL) => async (args: GetCalendarsByAccountArgs) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/account/${args.npub}/calendars`;
+
+    const response = await safeFetch(url);
+
+    if (response instanceof Error) {
+        return response;
+    }
+
+    return handleResponse<Calendar[]>(response);
 };
 
 export type CreateCalendarRequest = {

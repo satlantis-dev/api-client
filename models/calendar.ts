@@ -115,9 +115,9 @@ export type Calendar = {
     description: string;
     slug: string;
     banner: string;
-    accountId: number;
-    account: AccountDTO;
-    events: CalendarEvent[];
+    account_id: number;
+    account?: AccountDTO;
+    events: CalendarEvent[] | null;
     isPublic: boolean;
     createdAt: string;
     updatedAt: string;
