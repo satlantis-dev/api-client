@@ -6,6 +6,7 @@ import type { UserResolver } from "../resolvers/user.ts";
 import { LocationCategoryName } from "../models/location.ts";
 import { NoteResolver } from "../resolvers/note.ts";
 import { aws_cdn_url, relay_url, rest_url } from "./urls.ts";
+import { VanityObjectType } from "../models/vanity.ts";
 
 const testSigner = InMemoryAccountContext.Generate();
 const client = Client.New({
@@ -672,4 +673,13 @@ Deno.test("getLocationTagsByPlaceID", async () => {
         fail(result.message);
     }
     assertEquals(result.Attractions.length > 0, true);
+});
+
+Deno.test("getVanityPathMapping", async () => {
+    const result = await client.getVanityPathMapping({ path: "svetski" });
+    if (result instanceof Error) {
+        fail(result.message);
+    }
+    assertEquals(result.path, "svetski");
+    assertEquals(result.objectType, VanityObjectType.Account);
 });
