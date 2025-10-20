@@ -221,6 +221,7 @@ import {
     updateRsvpStatus,
 } from "./api/events.ts";
 import { getTimezoneInfo } from "./api/base.ts";
+import { getVanityPathMapping } from "./api/vanity.ts";
 
 export type func_GetNostrSigner = () => Promise<(Signer & Encrypter) | Error>;
 export type func_GetJwt = () => string;
@@ -493,6 +494,8 @@ export class Client {
 
     // Account Search.
     getAccountById: ReturnType<typeof getAccountById>;
+
+    getVanityPathMapping: ReturnType<typeof getVanityPathMapping>;
 
     private constructor(
         public readonly rest_api_url: URL,
@@ -773,6 +776,8 @@ export class Client {
         // ACCOUNT SEARCH.
         // Account Search.
         this.getAccountById = getAccountById(rest_api_url);
+
+        this.getVanityPathMapping = getVanityPathMapping(rest_api_url);
     }
 
     static New(args: {
