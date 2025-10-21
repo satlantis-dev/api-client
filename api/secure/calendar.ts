@@ -477,11 +477,12 @@ export type EditCalendarRequest = {
     banner?: string;
 };
 
-export const editCalendar = (urlArg: URL, getJwt: () => string) =>
-async (args: {
+export type EditCalendarArgs = {
     id: number;
     calendar: EditCalendarRequest;
-}) => {
+};
+
+export const editCalendar = (urlArg: URL, getJwt: () => string) => async (args: EditCalendarArgs) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
         return new Error("jwt token is empty");
