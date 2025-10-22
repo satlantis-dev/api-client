@@ -21,6 +21,7 @@ export enum RsvpStatus {
     Declined = "declined",
     Rejected = "rejected",
     Requested = "requested",
+    Invited = "invited",
 }
 
 export type RsvpStatusType = `${RsvpStatus}`;
@@ -226,7 +227,7 @@ async (
 
 export interface UpdateRsvpStatusItem {
     id: number;
-    status: "accepted" | "tentative" | "declined" | "waitlisted" | "requested" | "rejected";
+    status: "accepted" | "tentative" | "declined" | "waitlisted" | "requested" | "rejected" | "invited";
 }
 
 export interface UpdateRsvpStatusRequest {
