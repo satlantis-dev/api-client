@@ -438,42 +438,43 @@ export type GetAccountsBySearchArgs = {
     username?: string;
     limit?: number;
     page?: number;
-}
-export const getAccountsBySearch = (urlArg: URL, getJwt: func_GetJwt) =>
-async (args: GetAccountsBySearchArgs, options?: {
-    signal: AbortSignal;
-}) => {
-    const jwtToken = getJwt();
-    if (jwtToken == "") {
-        return new Error("jwt token is empty");
-    }
-
-    const url = copyURL(urlArg);
-    // https://linear.app/sat-lantis/issue/SAT-2947/be-support-for-user-search-without-being-signed-in#comment-ae0e0a82
-    url.pathname = `/accounts`;
-    if (args.username) {
-        url.searchParams.set("username", args.username);
-    }
-    if (args.limit) {
-        url.searchParams.set("limit", args.limit.toString());
-    }
-    if (args.page) {
-        url.searchParams.set("page", args.page.toString());
-    }
-
-    const headers = new Headers();
-    headers.set("Authorization", `Bearer ${jwtToken}`);
-
-    const response = await safeFetch(url, {
-        method: "GET",
-        headers,
-        signal: options?.signal,
-    });
-    if (response instanceof Error) {
-        return response;
-    }
-    return handleResponse<AccountSearchDTO[]>(response);
 };
+export const getAccountsBySearch =
+    (urlArg: URL, getJwt: func_GetJwt) =>
+    async (args: GetAccountsBySearchArgs, options?: {
+        signal: AbortSignal;
+    }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        // https://linear.app/sat-lantis/issue/SAT-2947/be-support-for-user-search-without-being-signed-in#comment-ae0e0a82
+        url.pathname = `/accounts`;
+        if (args.username) {
+            url.searchParams.set("username", args.username);
+        }
+        if (args.limit) {
+            url.searchParams.set("limit", args.limit.toString());
+        }
+        if (args.page) {
+            url.searchParams.set("page", args.page.toString());
+        }
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+            signal: options?.signal,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<AccountSearchDTO[]>(response);
+    };
 
 export const getBlockedAccounts = (urlArg: URL, getJwt: func_GetJwt) => async () => {
     const jwtToken = getJwt();
