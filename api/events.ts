@@ -166,7 +166,10 @@ export interface GetEventsArgs {
     limit: number;
 }
 
-export const getEvents = (urlArg: URL) => async (args: GetEventsArgs): Promise<EventDetails[] | Error> => {
+export const getEvents = (urlArg: URL) =>
+async (args: GetEventsArgs, options?: {
+    signal: AbortSignal;
+}): Promise<EventDetails[] | Error> => {
     const url = copyURL(urlArg);
     url.pathname = `/events`;
     Object.keys(args).forEach((key) => {
@@ -178,6 +181,7 @@ export const getEvents = (urlArg: URL) => async (args: GetEventsArgs): Promise<E
     const response = await safeFetch(url, {
         method: "GET",
         headers,
+        signal: options?.signal,
     });
     if (response instanceof Error) {
         return response;
