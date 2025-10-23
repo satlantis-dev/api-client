@@ -525,8 +525,13 @@ export const deleteCalendar = (urlArg: URL, getJwt: () => string) => async (args
     return handleStringResponse(response);
 };
 
+export type AddEventToCalendarArgs = {
+    calendarId: number;
+    eventId: number;
+};
+
 export const addEventToCalendar =
-    (urlArg: URL, getJwt: () => string) => async (args: { calendarId: number; eventId: number }) => {
+    (urlArg: URL, getJwt: () => string) => async (args: AddEventToCalendarArgs) => {
         const jwtToken = getJwt();
         if (jwtToken == "") {
             return new Error("jwt token is empty");
@@ -546,8 +551,13 @@ export const addEventToCalendar =
         return handleStringResponse(response);
     };
 
+export type RemoveEventFromCalendarArgs = {
+    calendarId: number;
+    eventId: number;
+};
+
 export const removeEventFromCalendar =
-    (urlArg: URL, getJwt: () => string) => async (args: { calendarId: number; eventId: number }) => {
+    (urlArg: URL, getJwt: () => string) => async (args: RemoveEventFromCalendarArgs) => {
         const jwtToken = getJwt();
         if (jwtToken == "") {
             return new Error("jwt token is empty");
