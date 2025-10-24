@@ -118,6 +118,7 @@ export type Calendar = {
     account_id: number;
     account?: AccountDTO;
     events: CalendarEvent[] | null;
+    eventCount: number;
     isPublic: boolean;
     createdAt: string;
     updatedAt: string;
