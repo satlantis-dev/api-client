@@ -505,7 +505,11 @@ export const editCalendar = (urlArg: URL, getJwt: () => string) => async (args: 
     return handleResponse<Calendar>(response);
 };
 
-export const deleteCalendar = (urlArg: URL, getJwt: () => string) => async (args: { id: number }) => {
+export type DeleteCalendarArgs = {
+    id: number;
+};
+
+export const deleteCalendar = (urlArg: URL, getJwt: () => string) => async (args: DeleteCalendarArgs) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
         return new Error("jwt token is empty");
