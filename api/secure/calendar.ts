@@ -1,5 +1,5 @@
 import { type NostrEvent, NostrKind, prepareNostrEvent } from "@blowater/nostr-sdk";
-import { copyURL, generateUUID, handleResponse, handleStringResponse } from "../../helpers/_helper.ts";
+import { copyURL, generateUUID, handleResponse, handleStringResponse, handleSafeResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
 import {
     type Account,
@@ -480,7 +480,7 @@ export type EditCalendarRequest = {
 export type EditCalendarArgs = {
     id: number;
     calendar: EditCalendarRequest;
-};
+}; 
 
 export const editCalendar = (urlArg: URL, getJwt: () => string) => async (args: EditCalendarArgs) => {
     const jwtToken = getJwt();
@@ -526,7 +526,7 @@ export const deleteCalendar = (urlArg: URL, getJwt: () => string) => async (args
     if (response instanceof Error) {
         return response;
     }
-    return handleStringResponse(response);
+    return handleSafeResponse<string>(response);
 };
 
 export type AddEventToCalendarArgs = {

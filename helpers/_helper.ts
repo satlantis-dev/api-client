@@ -61,6 +61,29 @@ export async function handleStringResponse(response: FetchResult): Promise<strin
     return body;
 }
 
+/**
+ * Re-creating handleResponse because the success status code should be between 200 and 299, not just 200.
+ */
+export const handleSafeResponse = async <T extends {}>(response: FetchResult) => {
+    const body = await response.text();
+    if (body instanceof Aborted) {
+        return body;
+    }
+
+    // 200-299 is success.
+    if (response.status < 200 || response.status >= 300) {
+        return new ApiError(response.status, body);
+    }
+    if (!body) {
+        return {} as T;
+    }
+    const result = parseJSON<T>(body);
+    if (result instanceof InvalidJSON) {
+        return result;
+    }
+    return result as T;
+};
+
 export function parseJSON<T extends {}>(text: string) {
     try {
         return JSON.parse(text) as T;
