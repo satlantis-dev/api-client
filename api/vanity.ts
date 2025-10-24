@@ -2,7 +2,11 @@ import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { VanityPath } from "../models/vanity.ts";
 
-export const getVanityPathMapping = (urlArg: URL) => async (args: { path: string }) => {
+export type GetVanityPathMappingArgs = {
+    path: string;
+};
+
+export const getVanityPathMapping = (urlArg: URL) => async (args: GetVanityPathMappingArgs) => {
     const url = copyURL(urlArg);
     url.pathname = `/vanity/${args.path}`;
 
