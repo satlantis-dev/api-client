@@ -480,7 +480,7 @@ export type EditCalendarRequest = {
 export type EditCalendarArgs = {
     id: number;
     calendar: EditCalendarRequest;
-}; 
+};
 
 export const editCalendar = (urlArg: URL, getJwt: () => string) => async (args: EditCalendarArgs) => {
     const jwtToken = getJwt();
@@ -580,3 +580,56 @@ export const removeEventFromCalendar =
         }
         return handleStringResponse(response);
     };
+
+
+
+export type SetOfficialCalendarToEventArgs = {
+  calendarId: number;
+  eventId: number;
+};
+
+export const setOfficialCalendarToEvent =
+  (urlArg: URL, getJwt: () => string) => async (args: SetOfficialCalendarToEventArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+      return new Error("jwt token is empty");
+    }
+
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/${args.eventId}/official-calendar/${args.calendarId}`;
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    const response = await safeFetch(url, {
+      method: "PUT",
+      headers,
+    });
+    if (response instanceof Error) {
+      return response;
+    }
+    return handleStringResponse(response);
+  };
+
+export type UnsetOfficialCalendarFromEventArgs = {
+  eventId: number;
+};
+
+export const unsetOfficialCalendarFromEvent =
+  (urlArg: URL, getJwt: () => string) => async (args: UnsetOfficialCalendarFromEventArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+      return new Error("jwt token is empty");
+    }
+
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/${args.eventId}`;
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    const response = await safeFetch(url, {
+      method: "DELETE",
+      headers,
+    });
+    if (response instanceof Error) {
+      return response;
+    }
+    return handleStringResponse(response);
+  };

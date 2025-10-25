@@ -136,6 +136,8 @@ import {
     respondCalendarEventCohostInvitation,
     searchAccountViaEmail,
     sendCohostEmailInviteToCalendarEvent,
+    setOfficialCalendarToEvent,
+    unsetOfficialCalendarFromEvent,
 } from "./api/secure/calendar.ts";
 import { followPubkeys, getFollowingPubkeys, getInterestsOf, unfollowPubkeys } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
@@ -207,6 +209,7 @@ import {
     getEventDetails,
     getEventRsvps,
     getEvents,
+    getEventCalendars,
     getEventTicketTypes,
     getFeaturedEvents,
     getNewestEvents,
@@ -264,6 +267,7 @@ export class Client {
     getEventDetails: ReturnType<typeof getEventDetails>;
     // Calendar Events
     getEvents: ReturnType<typeof getEvents>;
+    getEventCalendars: ReturnType<typeof getEventCalendars>;
     getEventRsvps: ReturnType<typeof getEventRsvps>;
     updateRsvpStatus: ReturnType<typeof updateRsvpStatus>;
     getRandomizedEvents: ReturnType<typeof getRandomizedEvents>;
@@ -302,6 +306,8 @@ export class Client {
     deleteCalendar: ReturnType<typeof deleteCalendar>;
     addEventToCalendar: ReturnType<typeof addEventToCalendar>;
     removeEventFromCalendar: ReturnType<typeof removeEventFromCalendar>;
+    setOfficialCalendarToEvent: ReturnType<typeof setOfficialCalendarToEvent>;
+    unsetOfficialCalendarFromEvent: ReturnType<typeof unsetOfficialCalendarFromEvent>;
     getCalendarByID: ReturnType<typeof getCalendarByID>;
 
     // Account
@@ -529,6 +535,7 @@ export class Client {
         this.getExchangeRate = getExchangeRate(rest_api_url);
         // Event details
         this.getEvents = getEvents(rest_api_url);
+        this.getEventCalendars = getEventCalendars(rest_api_url);
         this.getEventRsvps = getEventRsvps(rest_api_url, getJwt);
         this.updateRsvpStatus = updateRsvpStatus(rest_api_url, getJwt);
         this.getRandomizedEvents = getRandomizedEvents(rest_api_url);
@@ -590,6 +597,8 @@ export class Client {
         this.deleteCalendar = deleteCalendar(rest_api_url, getJwt);
         this.addEventToCalendar = addEventToCalendar(rest_api_url, getJwt);
         this.removeEventFromCalendar = removeEventFromCalendar(rest_api_url, getJwt);
+        this.setOfficialCalendarToEvent = setOfficialCalendarToEvent(rest_api_url, getJwt);
+        this.unsetOfficialCalendarFromEvent = unsetOfficialCalendarFromEvent(rest_api_url, getJwt);
 
         // account
         this._getAccount = getAccount(rest_api_url, getJwt);

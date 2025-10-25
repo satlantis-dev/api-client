@@ -8,6 +8,7 @@ import type {
     CalendarEventType,
     Cohost,
     EventInterest,
+    Calendar,
 } from "../models/calendar.ts";
 import type { LocationDTO } from "../models/location.ts";
 import type { BoundingBox, Place } from "../models/place.ts";
@@ -126,6 +127,10 @@ export interface GetEventRsvpsArgs {
     search?: string;
 }
 
+export interface GetEventCalendarsArgs {
+    eventId?: string;
+}
+
 /**
  * Extended RSVP with notification tracking and Satlantis flags
  */
@@ -189,6 +194,34 @@ async (args: GetEventsArgs, options?: {
     }
     return handleResponse<EventDetails[]>(response);
 };
+
+export const getEventCalendars = (urlArg: URL) =>
+  async (
+    args: GetEventCalendarsArgs,
+  ): Promise<Calendar[] | Error> => {
+    const url = copyURL(urlArg);
+
+    url.pathname = `/events/${args.eventId}/calendars`;
+
+    const queryParams = { ...args };
+    delete queryParams.eventId;
+
+    Object.keys(queryParams).forEach((key) => {
+      if (!!(queryParams as any)[key]) {
+        url.searchParams.set(key, (queryParams as any)[key]);
+      }
+    });
+
+    const response = await safeFetch(url, {
+      method: "GET",
+    });
+
+    if (response instanceof Error) {
+      return response;
+    }
+
+    return handleResponse<Calendar[]>(response);
+  };
 
 export const getEventRsvps = (urlArg: URL, getJwt: func_GetJwt) =>
 async (
