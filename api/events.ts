@@ -47,6 +47,8 @@ export interface EventDetails {
     kind: number;
     nostrId: string;
     notes: CalendarEventNote[];
+    officialCalendar?: Calendar;
+    officialCalendarId?: number;
     pubkey: string;
     sig: string;
     start: string;
@@ -128,7 +130,7 @@ export interface GetEventRsvpsArgs {
 }
 
 export interface GetEventCalendarsArgs {
-    eventId?: string;
+    eventId?: string | number;
 }
 
 /**
@@ -256,6 +258,32 @@ async (
     }
 
     return handleResponse<EventRsvpsResponse>(response);
+};
+
+export const getEventAttendees = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    args: GetEventCalendarsArgs,
+): Promise<AccountDTO[] | Error> => {
+    const url = copyURL(urlArg);
+    const jwtToken = getJwt();
+    let headers;
+    if (jwtToken !== "") {
+        headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    url.pathname = `/secure/events/${args.eventId}/attendees`;
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+
+    if (response instanceof Error) {
+        return response;
+    }
+
+    return handleResponse<AccountDTO[]>(response);
 };
 
 export interface UpdateRsvpStatusItem {
