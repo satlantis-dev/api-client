@@ -623,6 +623,7 @@ export enum AnswerType {
 
 export interface EventTicketType {
     name: string;
+    id: number;
     description: string;
     priceSats: number | null;
     priceFiat: number | null;
