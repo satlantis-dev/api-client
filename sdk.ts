@@ -206,11 +206,12 @@ import { mapUserToDestination } from "./api/location.ts";
 import {
     createEventTicketType,
     deleteEventTicketType,
+    getEventAttendees,
+    getEventCalendars,
     getEventDetails,
     getEventRsvps,
-    getEventAttendees,
     getEvents,
-    getEventCalendars,
+    getEventTicketPaymentStatus,
     getEventTicketTypes,
     getFeaturedEvents,
     getNewestEvents,
@@ -219,6 +220,7 @@ import {
     getRecommendedEvents,
     inviteAttendees,
     markCalendarEventAsFeatured,
+    purchaseEventTicket,
     saveRegistrationQuestions,
     unmarkCalendarEventAsFeatured,
     updateEventTicketType,
@@ -303,6 +305,8 @@ export class Client {
     updateEventTicketType: ReturnType<typeof updateEventTicketType>;
     deleteEventTicketType: ReturnType<typeof deleteEventTicketType>;
     getEventTicketTypes: ReturnType<typeof getEventTicketTypes>;
+    purchaseEventTicket: ReturnType<typeof purchaseEventTicket>;
+    getEventTicketPaymentStatus: ReturnType<typeof getEventTicketPaymentStatus>;
     createCalendar: ReturnType<typeof createCalendar>;
     editCalendar: ReturnType<typeof editCalendar>;
     deleteCalendar: ReturnType<typeof deleteCalendar>;
@@ -592,6 +596,8 @@ export class Client {
         this.updateEventTicketType = updateEventTicketType(rest_api_url, getJwt);
         this.deleteEventTicketType = deleteEventTicketType(rest_api_url, getJwt);
         this.getEventTicketTypes = getEventTicketTypes(rest_api_url, getJwt);
+        this.purchaseEventTicket = purchaseEventTicket(rest_api_url, getJwt);
+        this.getEventTicketPaymentStatus = getEventTicketPaymentStatus(rest_api_url);
 
         // Calendars
         this.getCalendarByID = getCalendarByID(rest_api_url);

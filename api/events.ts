@@ -2,13 +2,13 @@ import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { AccountDTO } from "../models/account.ts";
 import type {
+    Calendar,
     CalendarEventAnnouncement,
     CalendarEventNote,
     CalendarEventRSVP,
     CalendarEventType,
     Cohost,
     EventInterest,
-    Calendar,
 } from "../models/calendar.ts";
 import type { LocationDTO } from "../models/location.ts";
 import type { BoundingBox, Place } from "../models/place.ts";
@@ -198,9 +198,9 @@ async (args: GetEventsArgs, options?: {
 };
 
 export const getEventCalendars = (urlArg: URL) =>
-  async (
+async (
     args: GetEventCalendarsArgs,
-  ): Promise<Calendar[] | Error> => {
+): Promise<Calendar[] | Error> => {
     const url = copyURL(urlArg);
 
     url.pathname = `/events/${args.eventId}/calendars`;
@@ -209,21 +209,21 @@ export const getEventCalendars = (urlArg: URL) =>
     delete queryParams.eventId;
 
     Object.keys(queryParams).forEach((key) => {
-      if (!!(queryParams as any)[key]) {
-        url.searchParams.set(key, (queryParams as any)[key]);
-      }
+        if (!!(queryParams as any)[key]) {
+            url.searchParams.set(key, (queryParams as any)[key]);
+        }
     });
 
     const response = await safeFetch(url, {
-      method: "GET",
+        method: "GET",
     });
 
     if (response instanceof Error) {
-      return response;
+        return response;
     }
 
     return handleResponse<Calendar[]>(response);
-  };
+};
 
 export const getEventRsvps = (urlArg: URL, getJwt: func_GetJwt) =>
 async (
@@ -623,6 +623,7 @@ export enum AnswerType {
 
 export interface EventTicketType {
     name: string;
+    id: number;
     description: string;
     priceSats: number | null;
     priceFiat: number | null;
@@ -736,4 +737,79 @@ async (
         return response;
     }
     return handleResponse<GetEventTicketTypeResponse[]>(response);
+};
+
+export interface EventTicketPurchasePayload {
+    ticketTypeOrders: [
+        {
+            ticketTypeId: number;
+            quantity: number;
+        },
+    ];
+    rsvpData: {
+        lightningAddress?: string;
+        name?: string;
+        email?: string;
+    };
+}
+
+export interface EventTicketPurchaseResponse {
+    paymentId: number;
+    orderId: number;
+    paymentHash: string;
+    paymentRequest: string;
+    amount: number;
+    currency: string;
+    status: string;
+    expiresAt: Date;
+    paidAt: Date | null;
+    expiredAt: Date | null;
+    failedAt: Date | null;
+}
+
+export type GetEventTicketStatusResponse = EventTicketPurchaseResponse;
+export const purchaseEventTicket = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    eventId: number,
+    payload: EventTicketPurchasePayload,
+): Promise<EventTicketPurchaseResponse | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/events/${eventId}/order`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<EventTicketPurchaseResponse>(response);
+};
+
+export const getEventTicketPaymentStatus = (urlArg: URL) =>
+async (
+    paymentId: number,
+): Promise<GetEventTicketStatusResponse | null | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/payments/${paymentId}/status`;
+
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<GetEventTicketStatusResponse>(response);
 };
