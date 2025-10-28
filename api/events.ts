@@ -630,6 +630,7 @@ export interface EventTicketType {
     maxCapacity: number | null;
     sellStartDate: string;
     sellEndDate: string;
+    soldQuantity: number;
 }
 
 export interface GetEventTicketTypeResponse extends EventTicketType {
