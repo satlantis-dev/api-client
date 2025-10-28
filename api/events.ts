@@ -716,19 +716,15 @@ async (
     return handleResponse<{}>(response);
 };
 
-export const getEventTicketTypes = (urlArg: URL, getJwt: func_GetJwt) =>
+export const getEventTicketTypes = (urlArg: URL) =>
 async (
     eventId: number,
 ): Promise<EventTicketType[] | null | Error> => {
     const url = copyURL(urlArg);
-    url.pathname = `/secure/events/${eventId}/ticket-types`;
+    url.pathname = `/events/${eventId}/ticket-types`;
 
-    const jwtToken = getJwt();
     const headers = new Headers();
     headers.set("Content-Type", "application/json");
-    if (jwtToken) {
-        headers.set("Authorization", `Bearer ${jwtToken}`);
-    }
 
     const response = await safeFetch(url, {
         method: "GET",

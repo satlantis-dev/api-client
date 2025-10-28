@@ -595,7 +595,7 @@ export class Client {
         this.createEventTicketType = createEventTicketType(rest_api_url, getJwt);
         this.updateEventTicketType = updateEventTicketType(rest_api_url, getJwt);
         this.deleteEventTicketType = deleteEventTicketType(rest_api_url, getJwt);
-        this.getEventTicketTypes = getEventTicketTypes(rest_api_url, getJwt);
+        this.getEventTicketTypes = getEventTicketTypes(rest_api_url);
         this.purchaseEventTicket = purchaseEventTicket(rest_api_url, getJwt);
         this.getEventTicketPaymentStatus = getEventTicketPaymentStatus(rest_api_url);
 
