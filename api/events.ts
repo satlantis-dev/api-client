@@ -745,9 +745,8 @@ export interface EventTicketPurchasePayload {
     ];
     rsvpData: {
         lightningAddress?: string;
-        name?: string;
-        email?: string;
     };
+    email: string;
 }
 
 export interface EventTicketPurchaseResponse {
@@ -765,7 +764,7 @@ export interface EventTicketPurchaseResponse {
 }
 
 export type GetEventTicketStatusResponse = EventTicketPurchaseResponse;
-export const purchaseEventTicket = (urlArg: URL, getJwt: func_GetJwt) =>
+export const purchaseEventTicket = (urlArg: URL) =>
 async (
     eventId: number,
     payload: EventTicketPurchasePayload,
@@ -773,12 +772,8 @@ async (
     const url = copyURL(urlArg);
     url.pathname = `/events/${eventId}/order`;
 
-    const jwtToken = getJwt();
     const headers = new Headers();
     headers.set("Content-Type", "application/json");
-    if (jwtToken) {
-        headers.set("Authorization", `Bearer ${jwtToken}`);
-    }
 
     const response = await safeFetch(url, {
         method: "POST",
