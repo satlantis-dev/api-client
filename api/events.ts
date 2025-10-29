@@ -105,8 +105,19 @@ export interface EventRsvpItem {
     registrationTime: string;
     about: string;
     nip05: string;
+    ticket: GetEventRsvpTicket;
 }
 
+export interface GetEventRsvpTicket {
+    checkedInAt: null | Date;
+    code: string;
+    createdAt: string;
+    id: number;
+    orderItemId: number;
+    status: string;
+    ticketType: EventTicketType;
+    ticketTypeId: number;
+}
 export interface EventRsvpsResponse {
     items: EventRsvpItem[];
     total: number;
