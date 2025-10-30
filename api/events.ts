@@ -81,6 +81,17 @@ export interface EventDetails {
     registrationQuestions: {
         questions: RegistrationQuestion[];
     };
+
+    userTicket?: UserTicketEventDetails;
+}
+
+export interface UserTicketEventDetails {
+    accountId: number;
+    createdAt: Date;
+    id: number;
+    status: string;
+    ticketTypeId: number;
+    ticketTypeName: string;
 }
 
 export interface EventDetailsPLace {
@@ -155,22 +166,28 @@ export interface CalendarEventRSVPExtended extends CalendarEventRSVP {
     IsSatlantisCreated: boolean;
 }
 
-export const getEventDetails =
-    (urlArg: URL) => async (args: { eventId: string }): Promise<EventDetails | Error> => {
-        const url = copyURL(urlArg);
-        url.pathname = `/events/${args.eventId}`;
+export const getEventDetails = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    args: { eventId: string },
+): Promise<EventDetails | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/events/${args.eventId}`;
 
-        const headers = new Headers();
+    let headers;
+    const jwtToken = getJwt();
 
-        const response = await safeFetch(url, {
-            method: "GET",
-            headers,
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<EventDetails>(response);
-    };
+    headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<EventDetails>(response);
+};
 
 export interface GetEventsArgs {
     destination?: string;

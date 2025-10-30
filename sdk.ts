@@ -550,7 +550,7 @@ export class Client {
         this.getNewestEvents = getNewestEvents(rest_api_url);
         this.getFeaturedEvents = getFeaturedEvents(rest_api_url);
         this.getRecommendedEvents = getRecommendedEvents(rest_api_url, getJwt);
-        this.getEventDetails = getEventDetails(rest_api_url);
+        this.getEventDetails = getEventDetails(rest_api_url, getJwt);
 
         // Check username availability in satlantis
 
