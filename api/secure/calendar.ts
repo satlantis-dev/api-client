@@ -592,6 +592,11 @@ export type SetOfficialCalendarToEventArgs = {
     eventId: number;
 };
 
+/**
+ * Prerequisites for Official Calendar:
+ * 1. Events must have already been added to the target calendar (verified by CalendarHasEvent).
+ * 2. An event that is not listed on the calendar cannot be set as the official event for that calendar.
+ */
 export const setOfficialCalendarToEvent =
     (urlArg: URL, getJwt: () => string) => async (args: SetOfficialCalendarToEventArgs) => {
         const jwtToken = getJwt();
@@ -630,6 +635,109 @@ export const unsetOfficialCalendarFromEvent =
         headers.set("Authorization", `Bearer ${jwtToken}`);
         const response = await safeFetch(url, {
             method: "DELETE",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleStringResponse(response);
+    };
+
+/**
+ * Submit an event to a calendar for review
+ *
+ * This function allows an event owner to submit their event to another user's calendar.
+ * The submission requires approval from the calendar owner before the event is officially added.
+ *
+ * Backend validation:
+ * - Event must exist and belong to the authenticated user
+ * - Event cannot already be assigned to the target calendar
+ * - Cannot submit to your own calendar
+ * - Creates a notification of type CalendarEventSubmission for the calendar owner
+ */
+export const submitEventToCalendar =
+    (urlArg: URL, getJwt: () => string) => async (args: { calendarId: number; eventId: number }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/calendars/${args.calendarId}/event/${args.eventId}/submit`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        const response = await safeFetch(url, {
+            method: "POST",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleStringResponse(response);
+    };
+
+/**
+ * Approve an event submission to a calendar
+ *
+ * This function allows a calendar owner to approve a submitted event, officially adding it to their calendar.
+ * Only the calendar owner can approve submissions for their calendar.
+ *
+ * Backend operations:
+ * - Confirms submission notification exists with matching payload
+ * - Adds event to the calendar via AddEventToCalendar
+ * - Sets official calendar for the event via SetOfficialCalendarForEvent
+ * - Creates a notification of type CalendarEventSubmissionAccepted for the event owner
+ * - Notification includes calendar banner if available
+ */
+export const approveEventSubmission =
+    (urlArg: URL, getJwt: () => string) => async (args: { calendarId: number; eventId: number }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/calendars/${args.calendarId}/event/${args.eventId}/approve`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        const response = await safeFetch(url, {
+            method: "POST",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleStringResponse(response);
+    };
+
+/**
+ * Decline an event submission to a calendar
+ *
+ * This function allows a calendar owner to decline a submitted event, rejecting the request to add it to their calendar.
+ * Only the calendar owner can decline submissions for their calendar.
+ *
+ * Backend operations:
+ * - Confirms submission notification exists with matching payload
+ * - Creates a notification of type CalendarEventSubmissionDeclined for the event owner
+ * - Notification includes event banner if available
+ * - No changes are made to the calendar or event relationships
+ */
+export const declineEventSubmission =
+    (urlArg: URL, getJwt: () => string) => async (args: { calendarId: number; eventId: number }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/calendars/${args.calendarId}/event/${args.eventId}/reject`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        const response = await safeFetch(url, {
+            method: "POST",
             headers,
         });
         if (response instanceof Error) {
