@@ -663,7 +663,7 @@ export const submitEventToCalendar =
         }
 
         const url = copyURL(urlArg);
-        url.pathname = `/secure/calendars/${args.calendarId}/event/${args.eventId}/submit`;
+        url.pathname = `/secure/calendar/${args.calendarId}/event/${args.eventId}/submit`;
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
@@ -698,7 +698,7 @@ export const approveEventSubmission =
         }
 
         const url = copyURL(urlArg);
-        url.pathname = `/secure/calendars/${args.calendarId}/event/${args.eventId}/approve`;
+        url.pathname = `/secure/calendar/${args.calendarId}/event/${args.eventId}/approve`;
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
@@ -732,7 +732,7 @@ export const declineEventSubmission =
         }
 
         const url = copyURL(urlArg);
-        url.pathname = `/secure/calendars/${args.calendarId}/event/${args.eventId}/reject`;
+        url.pathname = `/secure/calendar/${args.calendarId}/event/${args.eventId}/reject`;
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
