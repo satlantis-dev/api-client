@@ -212,6 +212,9 @@ import {
     getEventRsvps,
     getEvents,
     getEventTicketPaymentStatus,
+    getEventFinancialsSummary,
+    getEventFinancialsWithdrawalStatus,
+    postEventFinancialsWithdraw,
     getEventTicketTypes,
     getFeaturedEvents,
     getNewestEvents,
@@ -307,6 +310,9 @@ export class Client {
     getEventTicketTypes: ReturnType<typeof getEventTicketTypes>;
     purchaseEventTicket: ReturnType<typeof purchaseEventTicket>;
     getEventTicketPaymentStatus: ReturnType<typeof getEventTicketPaymentStatus>;
+    getEventFinancialsSummary: ReturnType<typeof getEventFinancialsSummary>;
+    getEventFinancialsWithdrawalStatus: ReturnType<typeof getEventFinancialsWithdrawalStatus>;
+    postEventFinancialsWithdraw: ReturnType<typeof postEventFinancialsWithdraw>;
     createCalendar: ReturnType<typeof createCalendar>;
     editCalendar: ReturnType<typeof editCalendar>;
     deleteCalendar: ReturnType<typeof deleteCalendar>;
@@ -598,6 +604,9 @@ export class Client {
         this.getEventTicketTypes = getEventTicketTypes(rest_api_url);
         this.purchaseEventTicket = purchaseEventTicket(rest_api_url);
         this.getEventTicketPaymentStatus = getEventTicketPaymentStatus(rest_api_url);
+        this.getEventFinancialsSummary = getEventFinancialsSummary(rest_api_url, getJwt);
+        this.getEventFinancialsWithdrawalStatus = getEventFinancialsWithdrawalStatus(rest_api_url, getJwt);
+        this.postEventFinancialsWithdraw = postEventFinancialsWithdraw(rest_api_url, getJwt);
 
         // Calendars
         this.getCalendarByID = getCalendarByID(rest_api_url);

@@ -833,3 +833,134 @@ async (
     }
     return handleResponse<GetEventTicketStatusResponse>(response);
 };
+
+export interface EventFinancialsSummaryResponse {
+  totalEarnings: number, // Total from all paid orders (satoshis)
+  availableBalance: number, // Available to withdraw = earnings - withdrawn - pending withdrawals - refunded
+  pendingBalance: number, // Orders awaiting payment
+  pendingWithdrawals: number, // Withdrawals being processed
+  totalWithdrawn: number,// Total withdrawn to date
+  totalRefunded: number, // Total refunded to customers
+  currency: string, // "BTC" or "USD"(in future)
+  totalTicketsSold: number // Number of tickets sold
+}
+
+export const getEventFinancialsSummary = (urlArg: URL, getJwt: func_GetJwt) =>
+  async (
+    eventId: number,
+  ): Promise<EventFinancialsSummaryResponse | null | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/${eventId}/financials/summary`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+      headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+      method: "GET",
+      headers,
+    });
+    if (response instanceof Error) {
+      return response;
+    }
+    return handleResponse<EventFinancialsSummaryResponse>(response);
+  };
+
+
+/**
+ * Withdrawal status enum with
+ */
+export enum WithdrawalStatus {
+  /** Withdrawal created, payment not initiated */
+  Pending = "pending",
+  /** Lightning payment in progress (IN_FLIGHT) */
+  Processing = "processing",
+  /** Payment successful, funds transferred */
+  Completed = "completed",
+  /** Payment failed, funds remain in wallet */
+  Failed = "failed",
+  /** Withdrawal cancelled */
+  Cancelled = "cancelled"
+}
+
+export interface EventFinancialsWithdrawalResponse {
+  id: number;
+  calendarEventId: number;
+  accountId: number;
+  amount: number;
+  currency: string;
+  fee: number;
+  netAmount: number;
+  status: WithdrawalStatus;
+  withdrawalMethod: string;
+  destinationAddress: string;
+  requestedAt: string;
+  processingStartedAt: string;
+  completedAt: string | null;
+  failedAt: string | null;
+  failureReason: string | null;
+}
+
+
+export const getEventFinancialsWithdrawalStatus = (urlArg: URL, getJwt: func_GetJwt) =>
+  async (
+    withdrawalId: number,
+  ): Promise<EventFinancialsWithdrawalResponse | null | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/financials/withdrawals/${withdrawalId}`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+      headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+      method: "GET",
+      headers,
+    });
+    if (response instanceof Error) {
+      return response;
+    }
+    return handleResponse<EventFinancialsWithdrawalResponse>(response);
+  };
+
+
+
+export const postEventFinancialsWithdraw = (urlArg: URL, getJwt: func_GetJwt) =>
+  async (
+    params: {
+      eventId: number;
+      amount: number;
+      lightningAddress: string;
+    }
+  ): Promise<EventFinancialsWithdrawalResponse | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/${params.eventId}/financials/withdraw`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+
+    if (jwtToken !== "") {
+      headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const { eventId, ...payload } = params;
+
+    const response = await safeFetch(url, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(payload),
+    });
+
+    if (response instanceof Error) {
+      return response;
+    }
+
+    return handleResponse<EventFinancialsWithdrawalResponse>(response);
+  };
