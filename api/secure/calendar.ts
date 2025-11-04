@@ -12,6 +12,7 @@ import {
     type Calendar,
     type CalendarEvent,
     type CalendarEventNote,
+    type CalendarEventSubmission,
     type func_GetJwt,
     type func_GetNostrSigner,
     type PlaceCalendarEvent,
@@ -647,11 +648,10 @@ export const unsetOfficialCalendarFromEvent =
 /**
  * Submit an event to a calendar for review
  *
- * This function allows an event owner to submit their event to another user's calendar.
+ * This function allows an event owner to submit any event to another user's calendar.
  * The submission requires approval from the calendar owner before the event is officially added.
  *
  * Backend validation:
- * - Event must exist and belong to the authenticated user
  * - Event cannot already be assigned to the target calendar
  * - Cannot submit to your own calendar
  * - Creates a notification of type CalendarEventSubmission for the calendar owner
@@ -746,12 +746,6 @@ export const declineEventSubmission =
         }
         return handleStringResponse(response);
     };
-
-export interface CalendarEventSubmission {
-    calendarId: number;
-    event: CalendarEvent;
-    submitter: AccountDTO;
-}
 
 export const getEventSubmissions =
     (urlArg: URL, getJwt: () => string) =>
