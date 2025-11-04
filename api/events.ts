@@ -1,4 +1,5 @@
-import { copyURL, handleResponse } from "../helpers/_helper.ts";
+import { NostrKind, prepareNostrEvent } from "@blowater/nostr-sdk";
+import { copyURL, generateUUID, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { AccountDTO } from "../models/account.ts";
 import type {
@@ -13,7 +14,7 @@ import type {
 import type { LocationDTO } from "../models/location.ts";
 import type { BoundingBox, Place } from "../models/place.ts";
 import type { PlaceEvent } from "../models/place.ts";
-import type { func_GetJwt } from "@satlantis/api-client";
+import type { func_GetJwt, func_GetNostrSigner } from "@satlantis/api-client";
 
 export enum RsvpStatus {
     Accepted = "accepted",
@@ -668,10 +669,20 @@ export interface GetEventTicketTypeResponse extends EventTicketType {
     requireApproval?: boolean;
 }
 
+export interface CreateTicketType {
+    description: string;
+    maxCapacity: null | number;
+    name: string;
+    priceFiat: null | number;
+    priceSats: null | number;
+    sellEndDate: string;
+    sellStartDate: string;
+}
+
 export const createEventTicketType = (urlArg: URL, getJwt: func_GetJwt) =>
 async (
     eventId: number,
-    payload: EventTicketType,
+    payload: CreateTicketType,
 ): Promise<EventTicketType | Error> => {
     const url = copyURL(urlArg);
     url.pathname = `/secure/events/${eventId}/ticket-types`;
@@ -697,7 +708,7 @@ async (
 export const updateEventTicketType = (urlArg: URL, getJwt: func_GetJwt) =>
 async (
     ticketTypeId: number,
-    payload: EventTicketType,
+    payload: Partial<EventTicketType> | Omit<EventTicketType, "id" | "soldQuantity">,
 ): Promise<EventTicketType | Error> => {
     const url = copyURL(urlArg);
     url.pathname = `/secure/events/ticket-types/${ticketTypeId}`;
@@ -773,8 +784,12 @@ export interface EventTicketPurchasePayload {
     ];
     rsvpData: {
         lightningAddress?: string;
+        status: string;
+        calendarEventId: number;
+        registrationAnswers: any;
     };
     email: string;
+    name: string;
 }
 
 export interface EventTicketPurchaseResponse {
@@ -792,27 +807,72 @@ export interface EventTicketPurchaseResponse {
 }
 
 export type GetEventTicketStatusResponse = EventTicketPurchaseResponse;
-export const purchaseEventTicket = (urlArg: URL) =>
-async (
-    eventId: number,
-    payload: EventTicketPurchasePayload,
-): Promise<EventTicketPurchaseResponse | Error> => {
-    const url = copyURL(urlArg);
-    url.pathname = `/events/${eventId}/order`;
+export const purchaseEventTicket =
+    (urlArg: URL, getJwt: func_GetJwt, getNostrSigner: func_GetNostrSigner) =>
+    async (
+        eventId: number,
+        payload: EventTicketPurchasePayload,
+        calendarEvent: {
+            accountId: number;
+            calendarEventId: number;
+            dtag: string;
+            pubkey: string;
+        },
+    ): Promise<EventTicketPurchaseResponse | Error> => {
+        const url = copyURL(urlArg);
+        url.pathname = `/events/${eventId}/order`;
 
-    const headers = new Headers();
-    headers.set("Content-Type", "application/json");
+        let isNostrAccount = null;
 
-    const response = await safeFetch(url, {
-        method: "POST",
-        headers,
-        body: JSON.stringify(payload),
-    });
-    if (response instanceof Error) {
-        return response;
-    }
-    return handleResponse<EventTicketPurchaseResponse>(response);
-};
+        let signer = null;
+
+        signer = await getNostrSigner();
+        if (signer instanceof Error) {
+            isNostrAccount = false;
+            signer = null;
+        } else {
+            isNostrAccount = true;
+        }
+
+        const uuid = generateUUID();
+        const dTag = calendarEvent.dtag;
+        const aTag = `${NostrKind.Calendar_Time}:${calendarEvent.pubkey}:${dTag}`;
+        let event = null;
+
+        if (signer && isNostrAccount) {
+            event = await prepareNostrEvent(signer, {
+                kind: 31925 as NostrKind,
+                content: "",
+                tags: [
+                    ["a", aTag],
+                    ["d", uuid],
+                    ["status", "accepted"],
+                ],
+            });
+        }
+
+        if (event instanceof Error) {
+            return event;
+        }
+
+        const jwtToken = getJwt();
+        const headers = new Headers();
+        headers.set("Content-Type", "application/json");
+
+        if (jwtToken) {
+            headers.set("Authorization", `Bearer ${jwtToken}`);
+        }
+
+        const response = await safeFetch(url, {
+            method: "POST",
+            headers,
+            body: JSON.stringify(isNostrAccount ? { ...payload, event } : payload),
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<EventTicketPurchaseResponse>(response);
+    };
 
 export const getEventTicketPaymentStatus = (urlArg: URL) =>
 async (
