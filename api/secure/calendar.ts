@@ -594,11 +594,6 @@ export type SetOfficialCalendarToEventArgs = {
     eventId: number;
 };
 
-/**
- * Prerequisites for Official Calendar:
- * 1. Events must have already been added to the target calendar (verified by CalendarHasEvent).
- * 2. An event that is not listed on the calendar cannot be set as the official event for that calendar.
- */
 export const setOfficialCalendarToEvent =
     (urlArg: URL, getJwt: () => string) => async (args: SetOfficialCalendarToEventArgs) => {
         const jwtToken = getJwt();
