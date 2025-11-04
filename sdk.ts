@@ -129,6 +129,7 @@ import {
     getCalendarByID,
     getCalendarsByAccount,
     getEventById,
+    getEventSubmissions,
     postCalendarEventAnnouncement,
     postCalendarEventNote,
     postCalendarEventRSVP,
@@ -212,12 +213,11 @@ import {
     getEventAttendees,
     getEventCalendars,
     getEventDetails,
+    getEventFinancialsSummary,
+    getEventFinancialsWithdrawalStatus,
     getEventRsvps,
     getEvents,
     getEventTicketPaymentStatus,
-    getEventFinancialsSummary,
-    getEventFinancialsWithdrawalStatus,
-    postEventFinancialsWithdraw,
     getEventTicketTypes,
     getFeaturedEvents,
     getNewestEvents,
@@ -226,6 +226,7 @@ import {
     getRecommendedEvents,
     inviteAttendees,
     markCalendarEventAsFeatured,
+    postEventFinancialsWithdraw,
     purchaseEventTicket,
     saveRegistrationQuestions,
     unmarkCalendarEventAsFeatured,
@@ -327,6 +328,7 @@ export class Client {
     submitEventToCalendar: ReturnType<typeof submitEventToCalendar>;
     approveEventSubmission: ReturnType<typeof approveEventSubmission>;
     declineEventSubmission: ReturnType<typeof declineEventSubmission>;
+    getEventSubmissions: ReturnType<typeof getEventSubmissions>;
 
     // Account
     /**
@@ -626,6 +628,7 @@ export class Client {
         this.submitEventToCalendar = submitEventToCalendar(rest_api_url, getJwt);
         this.approveEventSubmission = approveEventSubmission(rest_api_url, getJwt);
         this.declineEventSubmission = declineEventSubmission(rest_api_url, getJwt);
+        this.getEventSubmissions = getEventSubmissions(rest_api_url, getJwt);
 
         // account
         this._getAccount = getAccount(rest_api_url, getJwt);

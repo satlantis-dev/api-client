@@ -18,6 +18,7 @@ import {
     type SearchAccountDTO,
 } from "../../sdk.ts";
 import type { AnswerType } from "../events.ts";
+import type { AccountDTO } from "../../models/account.ts";
 
 export interface PlaceCalendarEventPost {
     event: NostrEvent;
@@ -744,4 +745,34 @@ export const declineEventSubmission =
             return response;
         }
         return handleStringResponse(response);
+    };
+
+export interface CalendarEventSubmission {
+    calendarId: number;
+    event: CalendarEvent;
+    submitter: AccountDTO;
+}
+
+export const getEventSubmissions =
+    (urlArg: URL, getJwt: () => string) =>
+    async (args: { calendarId: number }): Promise<CalendarEventSubmission[] | Error> => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/calendar/${args.calendarId}/submissions`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<CalendarEventSubmission[]>(response);
     };
