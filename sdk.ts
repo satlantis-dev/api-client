@@ -117,7 +117,9 @@ import {
 } from "./api/secure/interests.ts";
 import {
     addEventToCalendar,
+    approveEventSubmission,
     createCalendar,
+    declineEventSubmission,
     deleteCalendar,
     deletePlaceCalendarEvent,
     deletePlaceCalendarEventById,
@@ -127,6 +129,7 @@ import {
     getCalendarByID,
     getCalendarsByAccount,
     getEventById,
+    getEventSubmissions,
     postCalendarEventAnnouncement,
     postCalendarEventNote,
     postCalendarEventRSVP,
@@ -137,6 +140,7 @@ import {
     searchAccountViaEmail,
     sendCohostEmailInviteToCalendarEvent,
     setOfficialCalendarToEvent,
+    submitEventToCalendar,
     unsetOfficialCalendarFromEvent,
 } from "./api/secure/calendar.ts";
 import { followPubkeys, getFollowingPubkeys, getInterestsOf, unfollowPubkeys } from "./nostr-helpers.ts";
@@ -209,12 +213,11 @@ import {
     getEventAttendees,
     getEventCalendars,
     getEventDetails,
+    getEventFinancialsSummary,
+    getEventFinancialsWithdrawalStatus,
     getEventRsvps,
     getEvents,
     getEventTicketPaymentStatus,
-    getEventFinancialsSummary,
-    getEventFinancialsWithdrawalStatus,
-    postEventFinancialsWithdraw,
     getEventTicketTypes,
     getFeaturedEvents,
     getNewestEvents,
@@ -223,6 +226,7 @@ import {
     getRecommendedEvents,
     inviteAttendees,
     markCalendarEventAsFeatured,
+    postEventFinancialsWithdraw,
     purchaseEventTicket,
     saveRegistrationQuestions,
     unmarkCalendarEventAsFeatured,
@@ -321,6 +325,10 @@ export class Client {
     setOfficialCalendarToEvent: ReturnType<typeof setOfficialCalendarToEvent>;
     unsetOfficialCalendarFromEvent: ReturnType<typeof unsetOfficialCalendarFromEvent>;
     getCalendarByID: ReturnType<typeof getCalendarByID>;
+    submitEventToCalendar: ReturnType<typeof submitEventToCalendar>;
+    approveEventSubmission: ReturnType<typeof approveEventSubmission>;
+    declineEventSubmission: ReturnType<typeof declineEventSubmission>;
+    getEventSubmissions: ReturnType<typeof getEventSubmissions>;
 
     // Account
     /**
@@ -617,6 +625,10 @@ export class Client {
         this.removeEventFromCalendar = removeEventFromCalendar(rest_api_url, getJwt);
         this.setOfficialCalendarToEvent = setOfficialCalendarToEvent(rest_api_url, getJwt);
         this.unsetOfficialCalendarFromEvent = unsetOfficialCalendarFromEvent(rest_api_url, getJwt);
+        this.submitEventToCalendar = submitEventToCalendar(rest_api_url, getJwt);
+        this.approveEventSubmission = approveEventSubmission(rest_api_url, getJwt);
+        this.declineEventSubmission = declineEventSubmission(rest_api_url, getJwt);
+        this.getEventSubmissions = getEventSubmissions(rest_api_url, getJwt);
 
         // account
         this._getAccount = getAccount(rest_api_url, getJwt);

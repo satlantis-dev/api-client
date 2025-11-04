@@ -123,3 +123,9 @@ export type Calendar = {
     createdAt: string;
     updatedAt: string;
 };
+
+export interface CalendarEventSubmission {
+    calendarId: number;
+    event: CalendarEvent;
+    submitter: AccountDTO;
+}
