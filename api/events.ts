@@ -631,6 +631,44 @@ async (args: {
     return handleResponse<InviteAttendeesResponse>(response);
 };
 
+export enum EventTicketStatus {
+    Active = "active",
+    Used = "used",
+    Refunded = "refunded",
+    Cancelled = "cancelled",
+    Reissued = "reissued",
+}
+
+export interface UpdateEventTicketStatusPayloadType {
+  status: EventTicketStatus;
+}
+
+export const updateEventTicketStatus = (urlArg: URL, getJwt: func_GetJwt) =>
+  async (
+    ticketId: number,
+    payload: UpdateEventTicketStatusPayloadType,
+  ): Promise<EventTicketType | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/tickets/${ticketId}/checkin`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+      headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+      method: "PUT",
+      headers,
+      body: JSON.stringify(payload),
+    });
+    if (response instanceof Error) {
+      return response;
+    }
+    return handleResponse<EventTicketType>(response);
+  };
+
 export type RegistrationQuestion = {
     label: string;
     required: boolean;

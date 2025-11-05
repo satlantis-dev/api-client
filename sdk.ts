@@ -232,6 +232,7 @@ import {
     saveRegistrationQuestions,
     unmarkCalendarEventAsFeatured,
     updateEventTicketType,
+    updateEventTicketStatus,
     updateRsvpStatus,
 } from "./api/events.ts";
 import { getTimezoneInfo } from "./api/base.ts";
@@ -311,6 +312,7 @@ export class Client {
     inviteAttendees: ReturnType<typeof inviteAttendees>;
     createEventTicketType: ReturnType<typeof createEventTicketType>;
     updateEventTicketType: ReturnType<typeof updateEventTicketType>;
+    updateEventTicketStatus: ReturnType<typeof updateEventTicketStatus>;
     deleteEventTicketType: ReturnType<typeof deleteEventTicketType>;
     getEventTicketTypes: ReturnType<typeof getEventTicketTypes>;
     purchaseEventTicket: ReturnType<typeof purchaseEventTicket>;
@@ -610,6 +612,7 @@ export class Client {
         this.inviteAttendees = inviteAttendees(rest_api_url, getJwt);
         this.createEventTicketType = createEventTicketType(rest_api_url, getJwt);
         this.updateEventTicketType = updateEventTicketType(rest_api_url, getJwt);
+        this.updateEventTicketStatus = updateEventTicketStatus(rest_api_url, getJwt);
         this.deleteEventTicketType = deleteEventTicketType(rest_api_url, getJwt);
         this.getEventTicketTypes = getEventTicketTypes(rest_api_url);
         this.purchaseEventTicket = purchaseEventTicket(rest_api_url, getJwt, getNostrSigner);
