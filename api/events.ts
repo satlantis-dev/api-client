@@ -895,6 +895,38 @@ async (
     return handleResponse<GetEventTicketStatusResponse>(response);
 };
 
+export const assignTicketToRSVP = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    ticketTypeId: number,
+    rsvpId: number,
+): Promise<{ success: boolean; message: string } | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/rsvps/${rsvpId}`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+
+    if (jwtToken !== "") {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+    let payload = {
+        ticketTypeId,
+    };
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+    });
+
+    if (response instanceof Error) {
+        return response;
+    }
+
+    return handleResponse<{ success: boolean; message: string } | Error>(response);
+};
+
 export interface EventFinancialsSummaryResponse {
     totalEarnings: number; // Total from all paid orders (satoshis)
     availableBalance: number; // Available to withdraw = earnings - withdrawn - pending withdrawals - refunded
