@@ -128,9 +128,12 @@ import {
     editCalendar,
     getCalendarByID,
     getCalendarsByAccount,
+    getCalendarSubscribers,
     getEventById,
     getEventSubmissions,
+    getUserCalendarSubscriptions,
     importEventFromUrl,
+    isSubscribedToCalendar,
     postCalendarEventAnnouncement,
     postCalendarEventNote,
     postCalendarEventRSVP,
@@ -142,7 +145,9 @@ import {
     sendCohostEmailInviteToCalendarEvent,
     setOfficialCalendarToEvent,
     submitEventToCalendar,
+    subscribeToCalendar,
     unsetOfficialCalendarFromEvent,
+    unsubscribeFromCalendar,
 } from "./api/secure/calendar.ts";
 import { followPubkeys, getFollowingPubkeys, getInterestsOf, unfollowPubkeys } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
@@ -335,6 +340,11 @@ export class Client {
     declineEventSubmission: ReturnType<typeof declineEventSubmission>;
     getEventSubmissions: ReturnType<typeof getEventSubmissions>;
     importEventFromUrl: ReturnType<typeof importEventFromUrl>;
+    subscribeToCalendar: ReturnType<typeof subscribeToCalendar>;
+    unsubscribeFromCalendar: ReturnType<typeof unsubscribeFromCalendar>;
+    isSubscribedToCalendar: ReturnType<typeof isSubscribedToCalendar>;
+    getUserCalendarSubscriptions: ReturnType<typeof getUserCalendarSubscriptions>;
+    getCalendarSubscribers: ReturnType<typeof getCalendarSubscribers>;
 
     // Account
     /**
@@ -623,6 +633,11 @@ export class Client {
         this.getEventFinancialsSummary = getEventFinancialsSummary(rest_api_url, getJwt);
         this.getEventFinancialsWithdrawalStatus = getEventFinancialsWithdrawalStatus(rest_api_url, getJwt);
         this.postEventFinancialsWithdraw = postEventFinancialsWithdraw(rest_api_url, getJwt);
+        this.subscribeToCalendar = subscribeToCalendar(rest_api_url, getJwt);
+        this.unsubscribeFromCalendar = unsubscribeFromCalendar(rest_api_url, getJwt);
+        this.isSubscribedToCalendar = isSubscribedToCalendar(rest_api_url, getJwt);
+        this.getUserCalendarSubscriptions = getUserCalendarSubscriptions(rest_api_url, getJwt);
+        this.getCalendarSubscribers = getCalendarSubscribers(rest_api_url, getJwt);
 
         // Calendars
         this.getCalendarByID = getCalendarByID(rest_api_url);
