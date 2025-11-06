@@ -235,6 +235,7 @@ import {
     markCalendarEventAsFeatured,
     postEventFinancialsWithdraw,
     purchaseEventTicket,
+    removeTicketFromUser,
     saveRegistrationQuestions,
     unmarkCalendarEventAsFeatured,
     updateEventTicketStatus,
@@ -324,6 +325,7 @@ export class Client {
     purchaseEventTicket: ReturnType<typeof purchaseEventTicket>;
     getEventTicketPaymentStatus: ReturnType<typeof getEventTicketPaymentStatus>;
     assignTicketToRSVP: ReturnType<typeof assignTicketToRSVP>;
+    removeTicketFromUser: ReturnType<typeof removeTicketFromUser>;
     getEventFinancialsSummary: ReturnType<typeof getEventFinancialsSummary>;
     getEventFinancialsWithdrawalStatus: ReturnType<typeof getEventFinancialsWithdrawalStatus>;
     postEventFinancialsWithdraw: ReturnType<typeof postEventFinancialsWithdraw>;
@@ -630,6 +632,7 @@ export class Client {
         this.purchaseEventTicket = purchaseEventTicket(rest_api_url, getJwt, getNostrSigner);
         this.getEventTicketPaymentStatus = getEventTicketPaymentStatus(rest_api_url);
         this.assignTicketToRSVP = assignTicketToRSVP(rest_api_url, getJwt);
+        this.removeTicketFromUser = removeTicketFromUser(rest_api_url, getJwt);
         this.getEventFinancialsSummary = getEventFinancialsSummary(rest_api_url, getJwt);
         this.getEventFinancialsWithdrawalStatus = getEventFinancialsWithdrawalStatus(rest_api_url, getJwt);
         this.postEventFinancialsWithdraw = postEventFinancialsWithdraw(rest_api_url, getJwt);

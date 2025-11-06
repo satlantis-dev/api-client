@@ -972,6 +972,33 @@ async (
     return handleResponse<{ success: boolean; message: string } | Error>(response);
 };
 
+export const removeTicketFromUser = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    rsvpId: number,
+): Promise<{ success: boolean; message: string } | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/tickets/${rsvpId}`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+
+    if (jwtToken !== "") {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+        method: "DELETE",
+        headers,
+    });
+
+    if (response instanceof Error) {
+        return response;
+    }
+
+    return handleResponse<{ success: boolean; message: string } | Error>(response);
+};
+
 export interface EventFinancialsSummaryResponse {
     totalEarnings: number; // Total from all paid orders (satoshis)
     availableBalance: number; // Available to withdraw = earnings - withdrawn - pending withdrawals - refunded
