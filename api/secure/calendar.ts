@@ -728,7 +728,7 @@ export const declineEventSubmission =
         }
 
         const url = copyURL(urlArg);
-        url.pathname = `/secure/calendar/${args.calendarId}/event/${args.eventId}/reject`;
+        url.pathname = `/secure/calendar/${args.calendarId}/event/${args.eventId}/decline`;
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
