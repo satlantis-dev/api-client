@@ -231,8 +231,8 @@ import {
     purchaseEventTicket,
     saveRegistrationQuestions,
     unmarkCalendarEventAsFeatured,
-    updateEventTicketType,
     updateEventTicketStatus,
+    updateEventTicketType,
     updateRsvpStatus,
 } from "./api/events.ts";
 import { getTimezoneInfo } from "./api/base.ts";

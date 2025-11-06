@@ -1,4 +1,4 @@
-import { NostrKind, prepareNostrEvent } from "@blowater/nostr-sdk";
+import { type NostrEvent, NostrKind, prepareNostrEvent, type Tag } from "@blowater/nostr-sdk";
 import { copyURL, generateUUID, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { AccountDTO } from "../models/account.ts";
@@ -640,14 +640,14 @@ export enum EventTicketStatus {
 }
 
 export interface UpdateEventTicketStatusPayloadType {
-  status: EventTicketStatus;
+    status: EventTicketStatus;
 }
 
 export const updateEventTicketStatus = (urlArg: URL, getJwt: func_GetJwt) =>
-  async (
+async (
     ticketId: number,
     payload: UpdateEventTicketStatusPayloadType,
-  ): Promise<EventTicketType | Error> => {
+): Promise<EventTicketType | Error> => {
     const url = copyURL(urlArg);
     url.pathname = `/secure/tickets/${ticketId}/checkin`;
 
@@ -655,19 +655,19 @@ export const updateEventTicketStatus = (urlArg: URL, getJwt: func_GetJwt) =>
     const headers = new Headers();
     headers.set("Content-Type", "application/json");
     if (jwtToken) {
-      headers.set("Authorization", `Bearer ${jwtToken}`);
+        headers.set("Authorization", `Bearer ${jwtToken}`);
     }
 
     const response = await safeFetch(url, {
-      method: "PUT",
-      headers,
-      body: JSON.stringify(payload),
+        method: "PUT",
+        headers,
+        body: JSON.stringify(payload),
     });
     if (response instanceof Error) {
-      return response;
+        return response;
     }
     return handleResponse<EventTicketType>(response);
-  };
+};
 
 export type RegistrationQuestion = {
     label: string;
@@ -826,6 +826,7 @@ export interface EventTicketPurchasePayload {
         status: string;
         calendarEventId: number;
         registrationAnswers: any;
+        event?: NostrEvent<NostrKind, Tag>;
     };
     email: string;
     name: string;
@@ -902,10 +903,16 @@ export const purchaseEventTicket =
             headers.set("Authorization", `Bearer ${jwtToken}`);
         }
 
+        let eventRSVPData;
+        if (event && isNostrAccount) {
+            eventRSVPData = { ...payload.rsvpData, event };
+            payload.rsvpData = eventRSVPData;
+        }
+
         const response = await safeFetch(url, {
             method: "POST",
             headers,
-            body: JSON.stringify(isNostrAccount ? { ...payload, event } : payload),
+            body: JSON.stringify(payload),
         });
         if (response instanceof Error) {
             return response;
