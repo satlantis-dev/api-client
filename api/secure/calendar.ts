@@ -874,7 +874,9 @@ export const isSubscribedToCalendar =
         if (response instanceof Error) {
             return response;
         }
-        return handleResponse<boolean>(response);
+        return handleResponse<{
+            isSubscribed: boolean;
+        }>(response);
     };
 
 export const getCalendarSubscribers =
