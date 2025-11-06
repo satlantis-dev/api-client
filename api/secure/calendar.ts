@@ -765,3 +765,28 @@ export const getEventSubmissions =
         }
         return handleResponse<CalendarEventSubmission[]>(response);
     };
+
+export const importEventFromUrl =
+    (urlArg: URL, getJwt: () => string) =>
+    async (args: { eventUrl: string }): Promise<CalendarEvent | Error> => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/import-event-from-url`;
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        headers.set("Content-Type", "application/json");
+        const body = JSON.stringify({ url: args.eventUrl });
+        const response = await safeFetch(url, {
+            method: "POST",
+            body,
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<CalendarEvent>(response);
+    };

@@ -130,6 +130,7 @@ import {
     getCalendarsByAccount,
     getEventById,
     getEventSubmissions,
+    importEventFromUrl,
     postCalendarEventAnnouncement,
     postCalendarEventNote,
     postCalendarEventRSVP,
@@ -333,6 +334,7 @@ export class Client {
     approveEventSubmission: ReturnType<typeof approveEventSubmission>;
     declineEventSubmission: ReturnType<typeof declineEventSubmission>;
     getEventSubmissions: ReturnType<typeof getEventSubmissions>;
+    importEventFromUrl: ReturnType<typeof importEventFromUrl>;
 
     // Account
     /**
@@ -635,6 +637,7 @@ export class Client {
         this.approveEventSubmission = approveEventSubmission(rest_api_url, getJwt);
         this.declineEventSubmission = declineEventSubmission(rest_api_url, getJwt);
         this.getEventSubmissions = getEventSubmissions(rest_api_url, getJwt);
+        this.importEventFromUrl = importEventFromUrl(rest_api_url, getJwt);
 
         // account
         this._getAccount = getAccount(rest_api_url, getJwt);
