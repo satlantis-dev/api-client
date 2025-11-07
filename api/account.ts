@@ -185,6 +185,39 @@ async (
     return handleResponse<CalendarEvent[]>(response);
 };
 
+export type GetEventsByAccountArgs = {
+  npub: string;
+  period?: CalendarEventPeriod;
+  rsvp?: "waitlisted" | "accepted";
+};
+
+export const getEventsByAccount = (urlArg: URL, getJwt?: () => string) => async (args: GetEventsByAccountArgs) => {
+  const url = copyURL(urlArg);
+  url.pathname = `/account/${args.npub}/events`;
+  const period = args.period ?? CalendarEventPeriod.Upcoming;
+  url.searchParams.set("period", period.toString());
+  if (args.rsvp) {
+    url.searchParams.set("rsvp", args.rsvp);
+  }
+  const headers = new Headers();
+  if (getJwt) {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+      return new Error("jwt token is empty");
+    }
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+  }
+
+  const response = await safeFetch(url, { headers });
+
+  if (response instanceof Error) {
+    return response;
+  }
+
+  return handleResponse<CalendarEvent[]>(response);
+};
+
 export const sendOTP = (urlArg: URL) => async (args: { email: string }) => {
     const url = copyURL(urlArg);
     url.pathname = `/auth/otp`;

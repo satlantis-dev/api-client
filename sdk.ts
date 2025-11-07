@@ -13,20 +13,21 @@ import {
 } from "@blowater/nostr-sdk";
 
 import {
-    checkUsernameAvailabilityInSatlantis,
-    createAccount,
-    getAccount,
-    getAccountById,
-    getAccountCalendarEvents,
-    getAccountFollowers,
-    getAccountFollowings,
-    initiatePasswordReset,
-    login,
-    resetPassword,
-    sendEventSignup,
-    sendOTP,
-    verifyEmail,
-    verifyOTP,
+  checkUsernameAvailabilityInSatlantis,
+  createAccount,
+  getAccount,
+  getAccountById,
+  getAccountCalendarEvents,
+  getAccountFollowers,
+  getAccountFollowings,
+  getEventsByAccount,
+  initiatePasswordReset,
+  login,
+  resetPassword,
+  sendEventSignup,
+  sendOTP,
+  verifyEmail,
+  verifyOTP,
 } from "./api/account.ts";
 import { getIpInfo } from "./api/ip.ts";
 import {
@@ -360,6 +361,7 @@ export class Client {
     searchAccountViaEmail: ReturnType<typeof searchAccountViaEmail>;
     sendCohostEmailInviteToCalendarEvent: ReturnType<typeof sendCohostEmailInviteToCalendarEvent>;
     getCalendarsByAccount: ReturnType<typeof getCalendarsByAccount>;
+    getEventsByAccount: ReturnType<typeof getEventsByAccount>;
     createAccount: ReturnType<typeof createAccount>;
     /**
      * @unstable
@@ -574,15 +576,15 @@ export class Client {
         this.getBrands = getBrands(rest_api_url);
         this.getExchangeRate = getExchangeRate(rest_api_url);
         // Event details
-        this.getEvents = getEvents(rest_api_url);
+        this.getEvents = getEvents(rest_api_url, getJwt);
         this.getEventCalendars = getEventCalendars(rest_api_url);
         this.getEventRsvps = getEventRsvps(rest_api_url, getJwt);
         this.getEventAttendees = getEventAttendees(rest_api_url, getJwt);
         this.updateRsvpStatus = updateRsvpStatus(rest_api_url, getJwt);
-        this.getRandomizedEvents = getRandomizedEvents(rest_api_url);
-        this.getPopularEvents = getPopularEvents(rest_api_url);
-        this.getNewestEvents = getNewestEvents(rest_api_url);
-        this.getFeaturedEvents = getFeaturedEvents(rest_api_url);
+        this.getRandomizedEvents = getRandomizedEvents(rest_api_url, getJwt);
+        this.getPopularEvents = getPopularEvents(rest_api_url, getJwt);
+        this.getNewestEvents = getNewestEvents(rest_api_url, getJwt);
+        this.getFeaturedEvents = getFeaturedEvents(rest_api_url, getJwt);
         this.getRecommendedEvents = getRecommendedEvents(rest_api_url, getJwt);
         this.getEventDetails = getEventDetails(rest_api_url, getJwt);
 
@@ -670,6 +672,7 @@ export class Client {
             getJwt,
         );
         this.getCalendarsByAccount = getCalendarsByAccount(rest_api_url);
+        this.getEventsByAccount = getEventsByAccount(rest_api_url, getJwt);
         this.createAccount = createAccount(rest_api_url);
         this.updateAccount = updateAccount(rest_api_url, getJwt);
         this.deleteAccount = deleteAccount(rest_api_url, getJwt, getNostrSigner);

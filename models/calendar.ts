@@ -70,6 +70,7 @@ export type CalendarEvent = {
     geohash?: string;
     image: string;
     kind: number;
+    knownAttendees?: AccountDTO[];
     location?: string;
     nostrId: string;
     notes: CalendarEventNote[];
