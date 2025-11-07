@@ -81,6 +81,7 @@ import {
     getRegion,
 } from "./api/place.ts";
 import {
+    getUserAccount,
     addAccountRole,
     blacklistAccount,
     blockAccount,
@@ -439,6 +440,7 @@ export class Client {
     // authed APIs //
     /////////////////
     // acount role
+    getUserAccount: ReturnType<typeof getUserAccount>;
     removeAccountRole: ReturnType<typeof removeAccountRole>;
     addAccountRole: ReturnType<typeof addAccountRole>;
     saveDeviceInfo: ReturnType<typeof saveDeviceInfo>;
@@ -728,6 +730,7 @@ export class Client {
         this.getCoordinatesByGoogleId = getCoordinatesByGoogleId(rest_api_url);
 
         // authed APIs
+        this.getUserAccount = getUserAccount(rest_api_url, this.getJwt);
         this.removeAccountRole = removeAccountRole(
             rest_api_url,
             this.getJwt,

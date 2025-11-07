@@ -301,22 +301,26 @@ export const deletePlaceCalendarEventById =
         return handleResponse<PlaceCalendarEvent>(response);
     };
 
+export type EventRegistrationAnswer = {
+    label: string;
+    answerType: AnswerType;
+    answer?: string | boolean;
+};
+
+export type PostCalendarEventRSVPArgs = {
+    response: "accepted" | "maybe" | "declined" | "tentative" | "waitlisted" | "requested";
+    calendarEvent: {
+        accountId: number;
+        calendarEventId: number;
+        dtag: string;
+        pubkey: string;
+    };
+    registrationAnswers?: EventRegistrationAnswer[];
+};
+
 export const postCalendarEventRSVP =
     (urlArg: URL, getJwt: func_GetJwt, getSigner: func_GetNostrSigner) =>
-    async (args: {
-        response: "accepted" | "maybe" | "declined" | "tentative" | "waitlisted" | "requested";
-        calendarEvent: {
-            accountId: number;
-            calendarEventId: number;
-            dtag: string;
-            pubkey: string;
-        };
-        registrationAnswers?: {
-            label: string;
-            answerType: AnswerType;
-            answer?: string | boolean;
-        }[];
-    }) => {
+    async (args: PostCalendarEventRSVPArgs) => {
         const jwtToken = getJwt();
         if (jwtToken == "") {
             return new Error("jwt token is empty");
