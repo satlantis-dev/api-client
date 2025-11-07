@@ -80,7 +80,7 @@ export interface EventDetails {
         name: string;
     };
 
-    registrationQuestions: {
+    registrationQuestions?: {
         questions: RegistrationQuestion[];
     };
 
