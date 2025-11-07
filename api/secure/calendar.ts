@@ -301,22 +301,26 @@ export const deletePlaceCalendarEventById =
         return handleResponse<PlaceCalendarEvent>(response);
     };
 
+export type EventRegistrationAnswer = {
+    label: string;
+    answerType: AnswerType;
+    answer?: string | boolean;
+};
+
+export type PostCalendarEventRSVPArgs = {
+    response: "accepted" | "maybe" | "declined" | "tentative" | "waitlisted" | "requested";
+    calendarEvent: {
+        accountId: number;
+        calendarEventId: number;
+        dtag: string;
+        pubkey: string;
+    };
+    registrationAnswers?: EventRegistrationAnswer[];
+};
+
 export const postCalendarEventRSVP =
     (urlArg: URL, getJwt: func_GetJwt, getSigner: func_GetNostrSigner) =>
-    async (args: {
-        response: "accepted" | "maybe" | "declined" | "tentative" | "waitlisted" | "requested";
-        calendarEvent: {
-            accountId: number;
-            calendarEventId: number;
-            dtag: string;
-            pubkey: string;
-        };
-        registrationAnswers?: {
-            label: string;
-            answerType: AnswerType;
-            answer?: string | boolean;
-        }[];
-    }) => {
+    async (args: PostCalendarEventRSVPArgs) => {
         const jwtToken = getJwt();
         if (jwtToken == "") {
             return new Error("jwt token is empty");
@@ -728,7 +732,7 @@ export const declineEventSubmission =
         }
 
         const url = copyURL(urlArg);
-        url.pathname = `/secure/calendar/${args.calendarId}/event/${args.eventId}/reject`;
+        url.pathname = `/secure/calendar/${args.calendarId}/event/${args.eventId}/decline`;
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
@@ -764,4 +768,139 @@ export const getEventSubmissions =
             return response;
         }
         return handleResponse<CalendarEventSubmission[]>(response);
+    };
+
+export const importEventFromUrl =
+    (urlArg: URL, getJwt: () => string) =>
+    async (args: { eventUrl: string }): Promise<CalendarEvent | Error> => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/import-event-from-url`;
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        headers.set("Content-Type", "application/json");
+        const body = JSON.stringify({ url: args.eventUrl });
+        const response = await safeFetch(url, {
+            method: "POST",
+            body,
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<CalendarEvent>(response);
+    };
+
+export const subscribeToCalendar =
+    (urlArg: URL, getJwt: () => string) => async (args: { calendarId: number }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/user/calendar/${args.calendarId}/subscribe`;
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        const response = await safeFetch(url, {
+            method: "POST",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleStringResponse(response);
+    };
+
+export const unsubscribeFromCalendar =
+    (urlArg: URL, getJwt: () => string) => async (args: { calendarId: number }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/user/calendar/${args.calendarId}/unsubscribe`;
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        const response = await safeFetch(url, {
+            method: "DELETE",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleStringResponse(response);
+    };
+
+export const getUserCalendarSubscriptions =
+    (urlArg: URL, getJwt: () => string) => async (): Promise<Calendar[] | Error> => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/user/calendar-subscriptions`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<Calendar[]>(response);
+    };
+
+export const isSubscribedToCalendar =
+    (urlArg: URL, getJwt: () => string) => async (args: { calendarId: number }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/user/calendar/${args.calendarId}/is-subscribed`;
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<{
+            isSubscribed: boolean;
+        }>(response);
+    };
+
+export const getCalendarSubscribers =
+    (urlArg: URL, getJwt: () => string) =>
+    async (args: { calendarId: number }): Promise<AccountDTO[] | Error> => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/user/calendar/${args.calendarId}/subscribers`;
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<AccountDTO[]>(response);
     };

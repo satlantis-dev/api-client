@@ -82,6 +82,7 @@ import {
     getRegion,
 } from "./api/place.ts";
 import {
+    getUserAccount,
     addAccountRole,
     blacklistAccount,
     blockAccount,
@@ -129,8 +130,12 @@ import {
     editCalendar,
     getCalendarByID,
     getCalendarsByAccount,
+    getCalendarSubscribers,
     getEventById,
     getEventSubmissions,
+    getUserCalendarSubscriptions,
+    importEventFromUrl,
+    isSubscribedToCalendar,
     postCalendarEventAnnouncement,
     postCalendarEventNote,
     postCalendarEventRSVP,
@@ -142,7 +147,9 @@ import {
     sendCohostEmailInviteToCalendarEvent,
     setOfficialCalendarToEvent,
     submitEventToCalendar,
+    subscribeToCalendar,
     unsetOfficialCalendarFromEvent,
+    unsubscribeFromCalendar,
 } from "./api/secure/calendar.ts";
 import { followPubkeys, getFollowingPubkeys, getInterestsOf, unfollowPubkeys } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
@@ -230,10 +237,11 @@ import {
     markCalendarEventAsFeatured,
     postEventFinancialsWithdraw,
     purchaseEventTicket,
+    removeTicketFromUser,
     saveRegistrationQuestions,
     unmarkCalendarEventAsFeatured,
-    updateEventTicketType,
     updateEventTicketStatus,
+    updateEventTicketType,
     updateRsvpStatus,
 } from "./api/events.ts";
 import { getTimezoneInfo } from "./api/base.ts";
@@ -319,6 +327,7 @@ export class Client {
     purchaseEventTicket: ReturnType<typeof purchaseEventTicket>;
     getEventTicketPaymentStatus: ReturnType<typeof getEventTicketPaymentStatus>;
     assignTicketToRSVP: ReturnType<typeof assignTicketToRSVP>;
+    removeTicketFromUser: ReturnType<typeof removeTicketFromUser>;
     getEventFinancialsSummary: ReturnType<typeof getEventFinancialsSummary>;
     getEventFinancialsWithdrawalStatus: ReturnType<typeof getEventFinancialsWithdrawalStatus>;
     postEventFinancialsWithdraw: ReturnType<typeof postEventFinancialsWithdraw>;
@@ -334,6 +343,12 @@ export class Client {
     approveEventSubmission: ReturnType<typeof approveEventSubmission>;
     declineEventSubmission: ReturnType<typeof declineEventSubmission>;
     getEventSubmissions: ReturnType<typeof getEventSubmissions>;
+    importEventFromUrl: ReturnType<typeof importEventFromUrl>;
+    subscribeToCalendar: ReturnType<typeof subscribeToCalendar>;
+    unsubscribeFromCalendar: ReturnType<typeof unsubscribeFromCalendar>;
+    isSubscribedToCalendar: ReturnType<typeof isSubscribedToCalendar>;
+    getUserCalendarSubscriptions: ReturnType<typeof getUserCalendarSubscriptions>;
+    getCalendarSubscribers: ReturnType<typeof getCalendarSubscribers>;
 
     // Account
     /**
@@ -427,6 +442,7 @@ export class Client {
     // authed APIs //
     /////////////////
     // acount role
+    getUserAccount: ReturnType<typeof getUserAccount>;
     removeAccountRole: ReturnType<typeof removeAccountRole>;
     addAccountRole: ReturnType<typeof addAccountRole>;
     saveDeviceInfo: ReturnType<typeof saveDeviceInfo>;
@@ -620,9 +636,15 @@ export class Client {
         this.purchaseEventTicket = purchaseEventTicket(rest_api_url, getJwt, getNostrSigner);
         this.getEventTicketPaymentStatus = getEventTicketPaymentStatus(rest_api_url);
         this.assignTicketToRSVP = assignTicketToRSVP(rest_api_url, getJwt);
+        this.removeTicketFromUser = removeTicketFromUser(rest_api_url, getJwt);
         this.getEventFinancialsSummary = getEventFinancialsSummary(rest_api_url, getJwt);
         this.getEventFinancialsWithdrawalStatus = getEventFinancialsWithdrawalStatus(rest_api_url, getJwt);
         this.postEventFinancialsWithdraw = postEventFinancialsWithdraw(rest_api_url, getJwt);
+        this.subscribeToCalendar = subscribeToCalendar(rest_api_url, getJwt);
+        this.unsubscribeFromCalendar = unsubscribeFromCalendar(rest_api_url, getJwt);
+        this.isSubscribedToCalendar = isSubscribedToCalendar(rest_api_url, getJwt);
+        this.getUserCalendarSubscriptions = getUserCalendarSubscriptions(rest_api_url, getJwt);
+        this.getCalendarSubscribers = getCalendarSubscribers(rest_api_url, getJwt);
 
         // Calendars
         this.getCalendarByID = getCalendarByID(rest_api_url);
@@ -637,6 +659,7 @@ export class Client {
         this.approveEventSubmission = approveEventSubmission(rest_api_url, getJwt);
         this.declineEventSubmission = declineEventSubmission(rest_api_url, getJwt);
         this.getEventSubmissions = getEventSubmissions(rest_api_url, getJwt);
+        this.importEventFromUrl = importEventFromUrl(rest_api_url, getJwt);
 
         // account
         this._getAccount = getAccount(rest_api_url, getJwt);
@@ -710,6 +733,7 @@ export class Client {
         this.getCoordinatesByGoogleId = getCoordinatesByGoogleId(rest_api_url);
 
         // authed APIs
+        this.getUserAccount = getUserAccount(rest_api_url, this.getJwt);
         this.removeAccountRole = removeAccountRole(
             rest_api_url,
             this.getJwt,
