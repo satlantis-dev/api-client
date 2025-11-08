@@ -24,7 +24,7 @@ export const getUserAccount = (urlArg: URL, getJwt: func_GetJwt) => async () => 
         return response;
     }
     return handleResponse<Account>(response);
-}
+};
 
 export const saveDeviceInfo = (urlArg: URL, getJwt: func_GetJwt) =>
 async (args: {

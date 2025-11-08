@@ -215,12 +215,12 @@ async (args: GetEventsArgs, options?: {
         url.searchParams.set(key, (args as any)[key]);
     });
 
-  const headers = new Headers();
+    const headers = new Headers();
     if (getJwt) {
-      const jwtToken = getJwt();
-      if (jwtToken !== "") {
-        headers.set("Authorization", `Bearer ${jwtToken}`);
-      }
+        const jwtToken = getJwt();
+        if (jwtToken !== "") {
+            headers.set("Authorization", `Bearer ${jwtToken}`);
+        }
     }
 
     const response = await safeFetch(url, {
@@ -379,7 +379,8 @@ export interface GetRandomizedEventsArgs {
 }
 
 export const getRandomizedEvents =
-    (urlArg: URL, getJwt?: () => string) => async (args: GetRandomizedEventsArgs): Promise<EventDetails[] | Error> => {
+    (urlArg: URL, getJwt?: () => string) =>
+    async (args: GetRandomizedEventsArgs): Promise<EventDetails[] | Error> => {
         const url = copyURL(urlArg);
         url.pathname = `/getEventsRandomized`;
         Object.keys(args).forEach((key) => {
@@ -391,12 +392,12 @@ export const getRandomizedEvents =
         const headers = new Headers();
 
         if (getJwt) {
-          const jwtToken = getJwt();
-          if (jwtToken == "") {
-            return new Error("jwt token is empty");
-          }
-          headers.set("Authorization", `Bearer ${jwtToken}`);
-          headers.set("Content-Type", "application/json");
+            const jwtToken = getJwt();
+            if (jwtToken == "") {
+                return new Error("jwt token is empty");
+            }
+            headers.set("Authorization", `Bearer ${jwtToken}`);
+            headers.set("Content-Type", "application/json");
         }
         const response = await safeFetch(url, {
             method: "GET",
@@ -413,7 +414,8 @@ export interface GetPopularEventsArgs {
 }
 
 export const getPopularEvents =
-    (urlArg: URL, getJwt?: () => string) => async (args: GetPopularEventsArgs): Promise<EventDetails[] | Error> => {
+    (urlArg: URL, getJwt?: () => string) =>
+    async (args: GetPopularEventsArgs): Promise<EventDetails[] | Error> => {
         const url = copyURL(urlArg);
         url.pathname = `/getPopularEvents`;
         Object.keys(args).forEach((key) => {
@@ -424,12 +426,12 @@ export const getPopularEvents =
 
         const headers = new Headers();
         if (getJwt) {
-          const jwtToken = getJwt();
-          if (jwtToken == "") {
-            return new Error("jwt token is empty");
-          }
-          headers.set("Authorization", `Bearer ${jwtToken}`);
-          headers.set("Content-Type", "application/json");
+            const jwtToken = getJwt();
+            if (jwtToken == "") {
+                return new Error("jwt token is empty");
+            }
+            headers.set("Authorization", `Bearer ${jwtToken}`);
+            headers.set("Content-Type", "application/json");
         }
 
         const response = await safeFetch(url, {
@@ -447,7 +449,8 @@ export interface GetNewestEventsArgs {
 }
 
 export const getNewestEvents =
-    (urlArg: URL, getJwt?: func_GetJwt) => async (args: GetNewestEventsArgs): Promise<EventDetails[] | Error> => {
+    (urlArg: URL, getJwt?: func_GetJwt) =>
+    async (args: GetNewestEventsArgs): Promise<EventDetails[] | Error> => {
         const url = copyURL(urlArg);
         url.pathname = `/getNewestEvents`;
         Object.keys(args).forEach((key) => {
@@ -459,12 +462,12 @@ export const getNewestEvents =
         const headers = new Headers();
 
         if (getJwt) {
-          const jwtToken = getJwt();
-          if (jwtToken == "") {
-            return new Error("jwt token is empty");
-          }
-          headers.set("Authorization", `Bearer ${jwtToken}`);
-          headers.set("Content-Type", "application/json");
+            const jwtToken = getJwt();
+            if (jwtToken == "") {
+                return new Error("jwt token is empty");
+            }
+            headers.set("Authorization", `Bearer ${jwtToken}`);
+            headers.set("Content-Type", "application/json");
         }
         const response = await safeFetch(url, {
             method: "GET",
@@ -481,7 +484,8 @@ export interface GetFeaturedEventsArgs {
 }
 
 export const getFeaturedEvents =
-    (urlArg: URL, getJwt?: func_GetJwt) => async (args: GetFeaturedEventsArgs): Promise<EventDetails[] | Error> => {
+    (urlArg: URL, getJwt?: func_GetJwt) =>
+    async (args: GetFeaturedEventsArgs): Promise<EventDetails[] | Error> => {
         const url = copyURL(urlArg);
         url.pathname = `/getFeaturedEvents`;
         Object.keys(args).forEach((key) => {
@@ -492,12 +496,12 @@ export const getFeaturedEvents =
 
         const headers = new Headers();
         if (getJwt) {
-          const jwtToken = getJwt();
-          if (jwtToken == "") {
-            return new Error("jwt token is empty");
-          }
-          headers.set("Authorization", `Bearer ${jwtToken}`);
-          headers.set("Content-Type", "application/json");
+            const jwtToken = getJwt();
+            if (jwtToken == "") {
+                return new Error("jwt token is empty");
+            }
+            headers.set("Authorization", `Bearer ${jwtToken}`);
+            headers.set("Content-Type", "application/json");
         }
 
         const response = await safeFetch(url, {
@@ -925,7 +929,7 @@ export const purchaseEventTicket =
                 tags: [
                     ["a", aTag],
                     ["d", uuid],
-                    ["status", "accepted"],
+                    ["status", payload.rsvpData.status],
                 ],
             });
         }
