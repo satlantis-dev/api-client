@@ -341,7 +341,7 @@ export const postCalendarEventRSVP =
             tags: [
                 ["a", aTag],
                 ["d", uuid],
-                ["status", "accepted"],
+                ["status", args.response],
             ],
         });
         if (event instanceof Error) {
@@ -361,9 +361,11 @@ export const postCalendarEventRSVP =
                 calendarEventId: args.calendarEvent.calendarEventId,
                 event,
                 status: args.response,
-                registrationAnswers: {
-                    answers: args.registrationAnswers,
-                },
+                ...(args.registrationAnswers && Object.keys(args.registrationAnswers).length > 0 && {
+                    registrationAnswers: {
+                        answers: args.registrationAnswers,
+                    },
+                }),
             }),
             headers,
         });
