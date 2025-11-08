@@ -13,21 +13,21 @@ import {
 } from "@blowater/nostr-sdk";
 
 import {
-  checkUsernameAvailabilityInSatlantis,
-  createAccount,
-  getAccount,
-  getAccountById,
-  getAccountCalendarEvents,
-  getAccountFollowers,
-  getAccountFollowings,
-  getEventsByAccount,
-  initiatePasswordReset,
-  login,
-  resetPassword,
-  sendEventSignup,
-  sendOTP,
-  verifyEmail,
-  verifyOTP,
+    checkUsernameAvailabilityInSatlantis,
+    createAccount,
+    getAccount,
+    getAccountById,
+    getAccountCalendarEvents,
+    getAccountFollowers,
+    getAccountFollowings,
+    getEventsByAccount,
+    initiatePasswordReset,
+    login,
+    resetPassword,
+    sendEventSignup,
+    sendOTP,
+    verifyEmail,
+    verifyOTP,
 } from "./api/account.ts";
 import { getIpInfo } from "./api/ip.ts";
 import {
@@ -82,7 +82,6 @@ import {
     getRegion,
 } from "./api/place.ts";
 import {
-    getUserAccount,
     addAccountRole,
     blacklistAccount,
     blockAccount,
@@ -93,6 +92,7 @@ import {
     getBlockedAccounts,
     getFollowedByAccounts,
     getMutedAccounts,
+    getUserAccount,
     getUserFollowers,
     muteAccount,
     removeAccountRole,
