@@ -121,6 +121,9 @@ export type Calendar = {
     events: CalendarEvent[] | null;
     eventCount: number;
     isPublic: boolean;
+    place?: Place;
+    placeId?: number;
+    contributors?: AccountDTO[];
     createdAt: string;
     updatedAt: string;
 };

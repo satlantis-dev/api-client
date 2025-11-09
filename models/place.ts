@@ -56,6 +56,7 @@ export type Place = {
     weatherId: number;
     weather: Weather;
     hashtags: string[];
+    timezone: string;
 };
 
 export interface BoundingBox {
