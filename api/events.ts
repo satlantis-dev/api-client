@@ -393,11 +393,10 @@ export const getRandomizedEvents =
 
         if (getJwt) {
             const jwtToken = getJwt();
-            if (jwtToken == "") {
-                return new Error("jwt token is empty");
+            if (jwtToken !== "") {
+                headers.set("Authorization", `Bearer ${jwtToken}`);
+                headers.set("Content-Type", "application/json");
             }
-            headers.set("Authorization", `Bearer ${jwtToken}`);
-            headers.set("Content-Type", "application/json");
         }
         const response = await safeFetch(url, {
             method: "GET",
@@ -427,11 +426,10 @@ export const getPopularEvents =
         const headers = new Headers();
         if (getJwt) {
             const jwtToken = getJwt();
-            if (jwtToken == "") {
-                return new Error("jwt token is empty");
+            if (jwtToken !== "") {
+                headers.set("Authorization", `Bearer ${jwtToken}`);
+                headers.set("Content-Type", "application/json");
             }
-            headers.set("Authorization", `Bearer ${jwtToken}`);
-            headers.set("Content-Type", "application/json");
         }
 
         const response = await safeFetch(url, {
@@ -463,11 +461,10 @@ export const getNewestEvents =
 
         if (getJwt) {
             const jwtToken = getJwt();
-            if (jwtToken == "") {
-                return new Error("jwt token is empty");
+            if (jwtToken !== "") {
+                headers.set("Authorization", `Bearer ${jwtToken}`);
+                headers.set("Content-Type", "application/json");
             }
-            headers.set("Authorization", `Bearer ${jwtToken}`);
-            headers.set("Content-Type", "application/json");
         }
         const response = await safeFetch(url, {
             method: "GET",
@@ -497,11 +494,10 @@ export const getFeaturedEvents =
         const headers = new Headers();
         if (getJwt) {
             const jwtToken = getJwt();
-            if (jwtToken == "") {
-                return new Error("jwt token is empty");
+            if (jwtToken !== "") {
+                headers.set("Authorization", `Bearer ${jwtToken}`);
+                headers.set("Content-Type", "application/json");
             }
-            headers.set("Authorization", `Bearer ${jwtToken}`);
-            headers.set("Content-Type", "application/json");
         }
 
         const response = await safeFetch(url, {
