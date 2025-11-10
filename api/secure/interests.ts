@@ -1,7 +1,7 @@
 import type { PublicKey } from "@blowater/nostr-sdk";
 import { copyURL, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
-import type { Interest } from "../../models/interest.ts";
+import type { Interest, InterestImage } from "../../models/interest.ts";
 import type { AccountDTO } from "@satlantis/api-client";
 
 // CreateInterestsPost
@@ -111,3 +111,23 @@ async (args?: {
     }
     return handleResponse<AccountDTO[]>(response);
 };
+
+export const getInterestImages = (urlArg: URL) =>
+    async (args: { interestId: number; page?: number; limit?: number }) => {
+        const url = copyURL(urlArg);
+        url.pathname = `/interest/${args.interestId}/images`;
+        if (args?.page != null) {
+            url.searchParams.append("page", args.page.toString());
+        }
+        if (args?.limit != null) {
+            url.searchParams.append("limit", args.limit.toString());
+        }
+    
+        const response = await safeFetch(url, {
+            method: "GET",
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<InterestImage[]>(response);
+    };
