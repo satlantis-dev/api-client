@@ -26,3 +26,10 @@ export enum InterestCategory {
     ActivityInterest,
     FoodInterest,
 }
+
+export type InterestImage = {
+    readonly id: number;
+    readonly interestId: number;
+    readonly url: string;
+    readonly interest?: Interest;
+};
