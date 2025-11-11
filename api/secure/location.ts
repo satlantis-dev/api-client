@@ -254,12 +254,9 @@ export type GetGlobalLocationsArgs = {
 export const getGlobalLocations = (urlArg: URL, getJwt: () => string) => {
     return async (args: GetGlobalLocationsArgs) => {
         const jwtToken = getJwt();
-        if (jwtToken == "") {
-            return new Error("jwt token is empty");
-        }
 
         const url = copyURL(urlArg);
-        url.pathname = `/secure/getGlobalLocations`;
+        url.pathname = `/places/global`;
 
         const { lat, lng, search, page, limit, category, tags } = args;
 
@@ -272,7 +269,9 @@ export const getGlobalLocations = (urlArg: URL, getJwt: () => string) => {
         if (tags?.length) url.searchParams.set("tags", tags.join(","));
 
         const headers = new Headers();
-        headers.set("Authorization", `Bearer ${jwtToken}`);
+        if (jwtToken == "") {
+          headers.set("Authorization", `Bearer ${jwtToken}`);
+        }
 
         const response = await safeFetch(url, { headers });
 
