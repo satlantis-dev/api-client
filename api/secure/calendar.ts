@@ -170,6 +170,58 @@ export const putUpdateCalendarEvent =
         return handleResponse<PlaceCalendarEvent>(response);
     };
 
+export const relistCalendarEvent =
+    (urlArg: URL, getJwt: () => string) => async (args: { eventId: number; }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/${args.eventId}/relist`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const body = JSON.stringify(args);
+
+        const response = await safeFetch(url, {
+            method: "PUT",
+            body,
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<PlaceCalendarEvent>(response);
+    };
+
+export const unlistCalendarEvent =
+    (urlArg: URL, getJwt: () => string) => async (args: { eventId: number }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/${args.eventId}/unlist`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const body = JSON.stringify(args);
+
+        const response = await safeFetch(url, {
+            method: "PUT",
+            body,
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<PlaceCalendarEvent>(response);
+    };
+
 export const respondCalendarEventCohostInvitation =
     (urlArg: URL, getJwt: () => string) => async (args: RespondCalendarEventCohostInvitationPut) => {
         const jwtToken = getJwt();

@@ -76,6 +76,7 @@ export type CalendarEvent = {
     notes: CalendarEventNote[];
     pubkey: string;
     sig: string;
+    isUnlisted?: boolean;
     start: string;
     startTzId?: string;
     summary: string;

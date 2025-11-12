@@ -21,6 +21,7 @@ import {
     getAccountFollowers,
     getAccountFollowings,
     getEventsByAccount,
+    getAllUserEvents,
     initiatePasswordReset,
     login,
     resetPassword,
@@ -151,6 +152,8 @@ import {
     subscribeToCalendar,
     unsetOfficialCalendarFromEvent,
     unsubscribeFromCalendar,
+    relistCalendarEvent,
+    unlistCalendarEvent,
 } from "./api/secure/calendar.ts";
 import { followPubkeys, getFollowingPubkeys, getInterestsOf, unfollowPubkeys } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
@@ -309,6 +312,8 @@ export class Client {
     >;
     postCalendarEventNote: ReturnType<typeof postCalendarEventNote>;
     putUpdateCalendarEvent: ReturnType<typeof putUpdateCalendarEvent>;
+    relistCalendarEvent: ReturnType<typeof relistCalendarEvent>;
+    unlistCalendarEvent: ReturnType<typeof unlistCalendarEvent>;
     respondCalendarEventCohostInvitation: ReturnType<
         typeof respondCalendarEventCohostInvitation
     >;
@@ -363,6 +368,7 @@ export class Client {
     sendCohostEmailInviteToCalendarEvent: ReturnType<typeof sendCohostEmailInviteToCalendarEvent>;
     getCalendarsByAccount: ReturnType<typeof getCalendarsByAccount>;
     getEventsByAccount: ReturnType<typeof getEventsByAccount>;
+    getAllUserEvents: ReturnType<typeof getAllUserEvents>;
     createAccount: ReturnType<typeof createAccount>;
     /**
      * @unstable
@@ -618,6 +624,8 @@ export class Client {
         );
         this.postCalendarEventNote = postCalendarEventNote(rest_api_url, getJwt);
         this.putUpdateCalendarEvent = putUpdateCalendarEvent(rest_api_url, getJwt);
+        this.relistCalendarEvent = relistCalendarEvent(rest_api_url, getJwt);
+        this.unlistCalendarEvent = unlistCalendarEvent(rest_api_url, getJwt);
         this.respondCalendarEventCohostInvitation = respondCalendarEventCohostInvitation(
             rest_api_url,
             getJwt,
@@ -675,6 +683,7 @@ export class Client {
         );
         this.getCalendarsByAccount = getCalendarsByAccount(rest_api_url);
         this.getEventsByAccount = getEventsByAccount(rest_api_url, getJwt);
+        this.getAllUserEvents = getAllUserEvents(rest_api_url, getJwt);
         this.createAccount = createAccount(rest_api_url);
         this.updateAccount = updateAccount(rest_api_url, getJwt);
         this.deleteAccount = deleteAccount(rest_api_url, getJwt, getNostrSigner);
@@ -1256,6 +1265,28 @@ export class Client {
             return res;
         }
         return { postResult: res, event };
+    };
+
+    updateCalendarEventListing = async (args: {
+      eventId: number;
+      isUnlisted: boolean;
+    }) => {
+        const jwtToken = this.getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        if (args.isUnlisted) {
+          const res = await this.unlistCalendarEvent({
+            eventId: args.eventId,
+          });
+          return res;
+        } else {
+          const res = await this.relistCalendarEvent({
+            eventId: args.eventId,
+          });
+          return res;
+        }
     };
 
     createCalendarEventAnnouncement = async (args: {

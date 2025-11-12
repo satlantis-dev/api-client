@@ -219,6 +219,29 @@ export const getEventsByAccount =
         return handleResponse<CalendarEvent[]>(response);
     };
 
+export const getAllUserEvents =
+    (urlArg: URL, getJwt?: () => string) => async () => {
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/user/events`;
+        const headers = new Headers();
+        if (getJwt) {
+            const jwtToken = getJwt();
+            if (jwtToken == "") {
+                return new Error("jwt token is empty");
+            }
+            headers.set("Authorization", `Bearer ${jwtToken}`);
+            headers.set("Content-Type", "application/json");
+        }
+
+        const response = await safeFetch(url, { headers });
+
+        if (response instanceof Error) {
+            return response;
+        }
+
+        return handleResponse<CalendarEvent[]>(response);
+    };
+
 export const sendOTP = (urlArg: URL) => async (args: { email: string }) => {
     const url = copyURL(urlArg);
     url.pathname = `/auth/otp`;
