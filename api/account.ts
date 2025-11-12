@@ -220,7 +220,7 @@ export const getEventsByAccount =
     };
 
 export const getAllUserEvents =
-    (urlArg: URL, getJwt?: () => string) => async () => {
+    (urlArg: URL, getJwt?: () => string) => async (args: { period: CalendarEventPeriod }) => {
         const url = copyURL(urlArg);
         url.pathname = `/secure/user/events`;
         const headers = new Headers();
@@ -232,6 +232,8 @@ export const getAllUserEvents =
             headers.set("Authorization", `Bearer ${jwtToken}`);
             headers.set("Content-Type", "application/json");
         }
+      const period = args.period ?? CalendarEventPeriod.Upcoming;
+      url.searchParams.set("period", period.toString());
 
         const response = await safeFetch(url, { headers });
 
