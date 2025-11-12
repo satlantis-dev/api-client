@@ -85,6 +85,7 @@ export interface EventDetails {
     };
 
     userTicket?: UserTicketEventDetails;
+    isUnlisted: boolean;
 }
 
 export interface UserTicketEventDetails {
