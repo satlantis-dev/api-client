@@ -220,7 +220,7 @@ export const getEventsByAccount =
     };
 
 export const getAllUserEvents =
-    (urlArg: URL, getJwt?: () => string) => async (args: { period: CalendarEventPeriod }) => {
+    (urlArg: URL, getJwt?: () => string) => async (args: { period?: CalendarEventPeriod }) => {
         const url = copyURL(urlArg);
         url.pathname = `/secure/user/events`;
         const headers = new Headers();
