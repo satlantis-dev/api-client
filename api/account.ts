@@ -172,7 +172,7 @@ async (
     args: GetAccountCalendarEventsArgs,
 ) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getAccountCalendarEvents/${args.npub}`;
+    url.pathname = `/account/${args.npub}/events`;
     const period = args.period ?? CalendarEventPeriod.Upcoming;
     url.searchParams.set("period", period.toString());
     if (args.rsvp) {
