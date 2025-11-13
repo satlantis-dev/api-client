@@ -837,7 +837,7 @@ async (
 export const getEventTicketTypes = (urlArg: URL) =>
 async (
     eventId: number,
-): Promise<EventTicketType[] | null | Error> => {
+): Promise<GetEventTicketTypeResponse[] | null | Error> => {
     const url = copyURL(urlArg);
     url.pathname = `/events/${eventId}/ticket-types`;
 
