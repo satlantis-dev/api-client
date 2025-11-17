@@ -182,6 +182,7 @@ import {
     getRecommendedPlaces,
     postLocationGalleryImage,
     promoteLocationGalleryImageToBanner,
+    reportLocation,
     updateLocationGalleryImage,
 } from "./api/secure/location.ts";
 import {
@@ -426,6 +427,7 @@ export class Client {
     getLocationTagsV2: ReturnType<typeof getLocationTagsV2>;
     getSimilarLocations: ReturnType<typeof getSimilarLocations>;
     mapUserToDestination: ReturnType<typeof mapUserToDestination>;
+    reportLocation: ReturnType<typeof reportLocation>;
 
     // address
     addressLookup: ReturnType<typeof addressLookup>;
@@ -737,6 +739,7 @@ export class Client {
         this.getLocationTagsV2 = getLocationTagsV2(rest_api_url);
         this.getSimilarLocations = getSimilarLocations(rest_api_url);
         this.mapUserToDestination = mapUserToDestination(rest_api_url);
+        this.reportLocation = reportLocation(rest_api_url, this.getJwt);
 
         // address
         this.addressLookup = addressLookup(rest_api_url);
