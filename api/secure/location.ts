@@ -226,6 +226,40 @@ export const getRandomizedPlaces = (urlArg: URL) => async (args?: GetRandomizedP
     return handleResponse<LocationDTO[]>(response);
 };
 
+export type LocationReportType = "remove" | "closed" | "missingInfo" | "wrongInfo" | "duplicate";
+
+export const reportLocation = (urlArg: URL, getJwt: () => string) =>
+async (args: {
+    locationId: number;
+    comment: string;
+    reportType: LocationReportType;
+}) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/reportLocation`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        body: JSON.stringify({
+            locationId: args.locationId,
+            comment: args.comment,
+            reportType: args.reportType,
+        }),
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{ success: boolean }>(response);
+};
+
 export const getNewestPlaces = (urlArg: URL) => async (args: { placeId?: number | null } | undefined) => {
     const url = copyURL(urlArg);
     url.pathname = args?.placeId ? `/destination/${args.placeId}/places/newest` : `/places/newest`;
