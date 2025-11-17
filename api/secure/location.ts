@@ -226,7 +226,7 @@ export const getRandomizedPlaces = (urlArg: URL) => async (args?: GetRandomizedP
     return handleResponse<LocationDTO[]>(response);
 };
 
-export type LocationReportType = "remove" | "closed" | "missingInfo" | "wrongInfo" | "duplicate";
+export type LocationReportType = "Remove" | "Closed" | "MissingInfo" | "WrongInfo" | "Duplicate";
 
 export const reportLocation = (urlArg: URL, getJwt: () => string) =>
 async (args: {
@@ -240,15 +240,14 @@ async (args: {
     }
 
     const url = copyURL(urlArg);
-    url.pathname = `/secure/reportLocation`;
+    url.pathname = `/secure/place/${args.locationId}/report`;
 
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
     const response = await safeFetch(url, {
-        method: "POST",
+        method: "PUT",
         body: JSON.stringify({
-            locationId: args.locationId,
             comment: args.comment,
             reportType: args.reportType,
         }),
