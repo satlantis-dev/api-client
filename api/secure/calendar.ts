@@ -171,7 +171,7 @@ export const putUpdateCalendarEvent =
     };
 
 export const relistCalendarEvent =
-    (urlArg: URL, getJwt: () => string) => async (args: { eventId: number; }) => {
+    (urlArg: URL, getJwt: () => string) => async (args: { eventId: number }) => {
         const jwtToken = getJwt();
         if (jwtToken == "") {
             return new Error("jwt token is empty");
@@ -542,6 +542,7 @@ export type EditCalendarRequest = {
     description?: string;
     slug?: string;
     banner?: string;
+    placeId?: number;
 };
 
 export type EditCalendarArgs = {
