@@ -112,8 +112,8 @@ async (args?: {
     return handleResponse<AccountDTO[]>(response);
 };
 
-export const getInterestImages = (urlArg: URL) =>
-    async (args: { interestId: number; page?: number; limit?: number }) => {
+export const getInterestImages =
+    (urlArg: URL) => async (args: { interestId: number; page?: number; limit?: number }) => {
         const url = copyURL(urlArg);
         url.pathname = `/interest/${args.interestId}/images`;
         if (args?.page != null) {
@@ -122,7 +122,7 @@ export const getInterestImages = (urlArg: URL) =>
         if (args?.limit != null) {
             url.searchParams.append("limit", args.limit.toString());
         }
-    
+
         const response = await safeFetch(url, {
             method: "GET",
         });

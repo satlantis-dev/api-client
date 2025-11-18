@@ -303,7 +303,7 @@ export const getGlobalLocations = (urlArg: URL, getJwt: () => string) => {
 
         const headers = new Headers();
         if (jwtToken == "") {
-          headers.set("Authorization", `Bearer ${jwtToken}`);
+            headers.set("Authorization", `Bearer ${jwtToken}`);
         }
 
         const response = await safeFetch(url, { headers });
