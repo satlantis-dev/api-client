@@ -20,8 +20,8 @@ import {
     getAccountCalendarEvents,
     getAccountFollowers,
     getAccountFollowings,
-    getEventsByAccount,
     getAllUserEvents,
+    getEventsByAccount,
     initiatePasswordReset,
     login,
     resetPassword,
@@ -143,6 +143,7 @@ import {
     postCalendarEventRSVP,
     postPlaceCalendarEvent,
     putUpdateCalendarEvent,
+    relistCalendarEvent,
     removeEventFromCalendar,
     respondCalendarEventCohostInvitation,
     searchAccountViaEmail,
@@ -150,10 +151,9 @@ import {
     setOfficialCalendarToEvent,
     submitEventToCalendar,
     subscribeToCalendar,
+    unlistCalendarEvent,
     unsetOfficialCalendarFromEvent,
     unsubscribeFromCalendar,
-    relistCalendarEvent,
-    unlistCalendarEvent,
 } from "./api/secure/calendar.ts";
 import { followPubkeys, getFollowingPubkeys, getInterestsOf, unfollowPubkeys } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
@@ -1271,8 +1271,8 @@ export class Client {
     };
 
     updateCalendarEventListing = async (args: {
-      eventId: number;
-      isUnlisted: boolean;
+        eventId: number;
+        isUnlisted: boolean;
     }) => {
         const jwtToken = this.getJwt();
         if (jwtToken == "") {
@@ -1280,15 +1280,15 @@ export class Client {
         }
 
         if (args.isUnlisted) {
-          const res = await this.unlistCalendarEvent({
-            eventId: args.eventId,
-          });
-          return res;
+            const res = await this.unlistCalendarEvent({
+                eventId: args.eventId,
+            });
+            return res;
         } else {
-          const res = await this.relistCalendarEvent({
-            eventId: args.eventId,
-          });
-          return res;
+            const res = await this.relistCalendarEvent({
+                eventId: args.eventId,
+            });
+            return res;
         }
     };
 

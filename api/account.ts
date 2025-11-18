@@ -232,8 +232,8 @@ export const getAllUserEvents =
             headers.set("Authorization", `Bearer ${jwtToken}`);
             headers.set("Content-Type", "application/json");
         }
-      const period = args.period ?? CalendarEventPeriod.Upcoming;
-      url.searchParams.set("period", period.toString());
+        const period = args.period ?? CalendarEventPeriod.Upcoming;
+        url.searchParams.set("period", period.toString());
 
         const response = await safeFetch(url, { headers });
 

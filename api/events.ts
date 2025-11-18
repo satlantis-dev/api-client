@@ -729,6 +729,11 @@ export enum AnswerType {
     Facebook = "facebook",
 }
 
+export enum DescriptionOrientation {
+    VERTICAL = "vertical",
+    HORIZONTAL = "horizontal",
+}
+
 export interface EventTicketType {
     name: string;
     id: number;
