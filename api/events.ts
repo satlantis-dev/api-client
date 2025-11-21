@@ -1170,3 +1170,49 @@ async (
 
     return handleResponse<EventFinancialsWithdrawalResponse>(response);
 };
+
+export interface UserEventsContactsResponse {
+    contacts: AccountDTO[];
+    accepted: AccountDTO[];
+    declined: AccountDTO[];
+}
+
+/**
+ * GET /secure/user/events/contacts
+ * Returns the list of attendees (RSVP accepted) of past events for which the
+ * authenticated user was the owner or a cohost.
+ *
+ * Response grouping:
+ * - contacts: Attendees who have NOT yet RSVPed to `forEventId` (or all if `forEventId` is omitted)
+ * - accepted: Attendees who have already RSVPed "accepted" to `forEventId`
+ * - declined: Attendees who have already RSVPed "declined" to `forEventId`
+ *
+ * Optional query params (all are part of the `args` object):
+ * @param fromEventId Filter: only include attendees who attended this source event.
+ * @param forEventId  Partition: move any attendees who already RSVPed to this target event
+ *                    into `accepted` or `declined`; if omitted, everyone stays under `contacts`.
+ *
+ * @returns Promise<UserEventsContactsResponse | Error>
+ */
+export const getEventsContacts =
+    (urlArg: URL, getJwt: () => string) => async (args: { fromEventId?: number; forEventId?: number }) => {
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/user/events/contacts`;
+        if (args.fromEventId !== undefined) {
+            url.searchParams.set("fromEventId", args.fromEventId.toString());
+        }
+        if (args.forEventId !== undefined) {
+            url.searchParams.set("forEventId", args.forEventId.toString());
+        }
+
+        const jwtToken = getJwt();
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        headers.set("Content-Type", "application/json");
+
+        const response = await safeFetch(url, { headers });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<UserEventsContactsResponse>(response);
+    };

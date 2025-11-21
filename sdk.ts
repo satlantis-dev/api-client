@@ -231,6 +231,7 @@ import {
     getEventFinancialsWithdrawalStatus,
     getEventRsvps,
     getEvents,
+    getEventsContacts,
     getEventTicketPaymentStatus,
     getEventTicketTypes,
     getFeaturedEvents,
@@ -356,6 +357,7 @@ export class Client {
     isSubscribedToCalendar: ReturnType<typeof isSubscribedToCalendar>;
     getUserCalendarSubscriptions: ReturnType<typeof getUserCalendarSubscriptions>;
     getCalendarSubscribers: ReturnType<typeof getCalendarSubscribers>;
+    getEventsContacts: ReturnType<typeof getEventsContacts>;
 
     // Account
     /**
@@ -657,6 +659,7 @@ export class Client {
         this.isSubscribedToCalendar = isSubscribedToCalendar(rest_api_url, getJwt);
         this.getUserCalendarSubscriptions = getUserCalendarSubscriptions(rest_api_url, getJwt);
         this.getCalendarSubscribers = getCalendarSubscribers(rest_api_url, getJwt);
+        this.getEventsContacts = getEventsContacts(rest_api_url, getJwt);
 
         // Calendars
         this.getCalendarByID = getCalendarByID(rest_api_url);
