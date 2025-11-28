@@ -131,3 +131,19 @@ export const getInterestImages =
         }
         return handleResponse<InterestImage[]>(response);
     };
+
+export const searchInterestImages = (urlArg: URL) => async (args: { search: string }) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/interest-images`;
+    if (args?.search) {
+        url.searchParams.append("search", args.search);
+    }
+
+    const response = await safeFetch(url, {
+        method: "GET",
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<InterestImage[]>(response);
+};

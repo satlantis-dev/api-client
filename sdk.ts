@@ -118,6 +118,7 @@ import {
     getInterestImages,
     getInterests,
     getRecommendedFollows,
+    searchInterestImages,
 } from "./api/secure/interests.ts";
 import {
     addEventToCalendar,
@@ -478,6 +479,7 @@ export class Client {
     getAccountInterests: ReturnType<typeof getAccountInterests>;
     getInterests: ReturnType<typeof getInterests>;
     getInterestImages: ReturnType<typeof getInterestImages>;
+    searchInterestImages: ReturnType<typeof searchInterestImages>;
     getRecommendedFollows: ReturnType<typeof getRecommendedFollows>;
 
     // nostr note
@@ -797,6 +799,7 @@ export class Client {
         this.getRecommendedFollows = getRecommendedFollows(this.rest_api_url, this.getJwt);
         this.getInterests = getInterests(this.rest_api_url);
         this.getInterestImages = getInterestImages(this.rest_api_url);
+        this.searchInterestImages = searchInterestImages(this.rest_api_url);
         this.sendOTP = sendOTP(this.rest_api_url);
         this.verifyOTP = verifyOTP(this.rest_api_url);
         this.authApple = authApple(this.rest_api_url);
