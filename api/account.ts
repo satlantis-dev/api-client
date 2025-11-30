@@ -2,7 +2,7 @@ import { ApiError, copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { Account, AccountDTO } from "../models/account.ts";
 import { type CalendarEvent, CalendarEventPeriod, type func_GetJwt, type SearchAccountDTO } from "../sdk.ts";
-import type { AnswerType } from "./events.ts";
+import { type AnswerType, RsvpStatus } from "./events.ts";
 
 export const getAccount =
     (urlArg: URL, getJwt: func_GetJwt) => async (args: { npub?: string; username?: string }) => {
@@ -164,7 +164,7 @@ export const verifyEmail = (urlArg: URL) => async (args: { token: string }) => {
 export type GetAccountCalendarEventsArgs = {
     npub: string;
     period?: CalendarEventPeriod;
-    rsvp?: "waitlisted" | "accepted";
+    rsvp?: RsvpStatus;
 };
 
 export const getAccountCalendarEvents = (urlArg: URL) =>
@@ -175,9 +175,9 @@ async (
     url.pathname = `/account/${args.npub}/events`;
     const period = args.period ?? CalendarEventPeriod.Upcoming;
     url.searchParams.set("period", period.toString());
-    if (args.rsvp) {
-        url.searchParams.set("rsvp", args.rsvp);
-    }
+    const rsvp = args.rsvp ?? RsvpStatus.Accepted;
+    url.searchParams.set("rsvp", rsvp.toString());
+
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;
@@ -220,7 +220,8 @@ export const getEventsByAccount =
     };
 
 export const getAllUserEvents =
-    (urlArg: URL, getJwt?: () => string) => async (args: { period?: CalendarEventPeriod }) => {
+    (urlArg: URL, getJwt?: () => string) =>
+    async (args: { period?: CalendarEventPeriod; rsvp?: RsvpStatus }) => {
         const url = copyURL(urlArg);
         url.pathname = `/secure/user/events`;
         const headers = new Headers();
@@ -234,6 +235,8 @@ export const getAllUserEvents =
         }
         const period = args.period ?? CalendarEventPeriod.Upcoming;
         url.searchParams.set("period", period.toString());
+        const rsvp = args.rsvp ?? RsvpStatus.Accepted;
+        url.searchParams.set("rsvp", rsvp.toString());
 
         const response = await safeFetch(url, { headers });
 

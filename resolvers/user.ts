@@ -3,6 +3,7 @@ import type { Kind0MetaData } from "../models/account.ts";
 import { AccountPlaceRoleTypeEnum, CalendarEventPeriod, type Client } from "../sdk.ts";
 import { NoteResolver } from "./note.ts";
 import { LocationResolver } from "./location.ts";
+import { RsvpStatus } from "../api/events.ts";
 
 export class UserResolver {
     metaData: Kind0MetaData;
@@ -230,10 +231,14 @@ export class UserResolver {
         );
     };
 
-    getCalendarEvents = async (period: CalendarEventPeriod = CalendarEventPeriod.Upcoming) => {
+    getCalendarEvents = async (
+        period: CalendarEventPeriod = CalendarEventPeriod.Upcoming,
+        rsvp: RsvpStatus = RsvpStatus.Accepted,
+    ) => {
         const events = await this.client.getAccountCalendarEvents({
             npub: this.pubkey.bech32(),
             period,
+            rsvp,
         });
         if (events instanceof Error) {
             return events;
