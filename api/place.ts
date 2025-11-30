@@ -1,4 +1,4 @@
-import type { CalendarEvent, CalendarEventType, FeedNote } from "@satlantis/api-client";
+import type { CalendarEvent, CalendarEventType, FeedNote, func_GetJwt } from "@satlantis/api-client";
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type {
@@ -169,10 +169,52 @@ export const getPlaceMetrics = (urlArg: URL) => async (args: { placeID: string |
 /**
  * GET /getPlaceCalendarEvents/{placeID}
  */
-export const getPlaceCalendarEvents = (urlArg: URL) => async (args: { placeID: string | number }) => {
+export const getPlaceCalendarEvents = (urlArg: URL, getJwt: func_GetJwt) =>
+async (args: {
+    limit: number;
+    page: number;
+    placeID: string | number;
+    type?: string;
+    period?: "past" | "upcoming";
+    search?: string;
+    start_date?: string;
+    end_date?: string;
+    my_events?: boolean;
+}) => {
     const url = copyURL(urlArg);
     url.pathname = `/destination/${args.placeID}/events`;
-    const response = await safeFetch(url);
+
+    url.searchParams.append("limit", JSON.stringify(args.limit));
+    url.searchParams.append("page", JSON.stringify(args.page));
+
+    if (args.type) {
+        url.searchParams.append("type", args.type);
+    }
+    if (args.period) {
+        url.searchParams.append("period", args.period);
+    }
+    if (args.search) {
+        url.searchParams.append("search", args.search);
+    }
+    if (args.start_date) {
+        url.searchParams.append("start_date", args.start_date);
+    }
+    if (args.end_date) {
+        url.searchParams.append("end_date", args.end_date);
+    }
+    if (args.my_events) {
+        url.searchParams.append("my_events", String(args.my_events));
+    }
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+
+    if (jwtToken !== "") {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, { headers });
     if (response instanceof Error) {
         return response;
     }

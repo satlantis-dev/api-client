@@ -608,7 +608,7 @@ export class Client {
 
         // Calendar Events
         this.getEventById = getEventById(rest_api_url);
-        this.getPlaceCalendarEvents = getPlaceCalendarEvents(rest_api_url);
+        this.getPlaceCalendarEvents = getPlaceCalendarEvents(rest_api_url, getJwt);
         this.deletePlaceCalendarEvent = deletePlaceCalendarEvent(
             rest_api_url,
             getJwt,
