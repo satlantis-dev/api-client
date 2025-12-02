@@ -221,7 +221,7 @@ export const getEventsByAccount =
 
 export const getAllUserEvents =
     (urlArg: URL, getJwt?: () => string) =>
-    async (args: { period?: CalendarEventPeriod; rsvp?: RsvpStatus }) => {
+    async (args: { period?: CalendarEventPeriod; isOrganizer?: boolean; rsvp?: RsvpStatus }) => {
         const url = copyURL(urlArg);
         url.pathname = `/secure/user/events`;
         const headers = new Headers();
@@ -235,8 +235,19 @@ export const getAllUserEvents =
         }
         const period = args.period ?? CalendarEventPeriod.Upcoming;
         url.searchParams.set("period", period.toString());
-        const rsvp = args.rsvp ?? RsvpStatus.Accepted;
-        url.searchParams.set("rsvp", rsvp.toString());
+
+        // Hosted events should not be called with the rsvp parameter. It does not make sense.
+        // an event host shouldn't have to RSVP to his own event.
+        if (typeof args.isOrganizer === "boolean") {
+            url.searchParams.set("isOrganizer", args.isOrganizer.toString());
+        }
+
+        if (args.rsvp) {
+            // if args.isOrganizer is false, or is not present (falsy value for condition check)
+            // set rsvp status parameter
+            const rsvp = args.rsvp ?? RsvpStatus.Accepted;
+            url.searchParams.set("rsvp", rsvp.toString());
+        }
 
         const response = await safeFetch(url, { headers });
 

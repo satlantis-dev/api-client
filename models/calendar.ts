@@ -88,6 +88,7 @@ export type CalendarEvent = {
     website: string;
     googleId?: string;
     autoFollowHosts?: boolean;
+    isOrganizer: boolean;
 };
 
 export type PlaceCalendarEvent = {
