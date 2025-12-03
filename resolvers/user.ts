@@ -233,13 +233,27 @@ export class UserResolver {
 
     getCalendarEvents = async (
         period: CalendarEventPeriod = CalendarEventPeriod.Upcoming,
-        rsvp: RsvpStatus = RsvpStatus.Accepted,
+        rsvp?: RsvpStatus,
+        isOrganizer?: boolean,
     ) => {
-        const events = await this.client.getAccountCalendarEvents({
+        let eventParams: {
+            npub: string;
+            period: CalendarEventPeriod;
+            rsvp?: RsvpStatus;
+            isOrganizer?: boolean;
+        } = {
             npub: this.pubkey.bech32(),
             period,
-            rsvp,
-        });
+        };
+
+        if (rsvp) {
+            eventParams = { ...eventParams, rsvp };
+        }
+
+        if (typeof isOrganizer === "boolean") {
+            eventParams = { ...eventParams, isOrganizer };
+        }
+        const events = await this.client.getAccountCalendarEvents(eventParams);
         if (events instanceof Error) {
             return events;
         }

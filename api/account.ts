@@ -165,6 +165,7 @@ export type GetAccountCalendarEventsArgs = {
     npub: string;
     period?: CalendarEventPeriod;
     rsvp?: RsvpStatus;
+    isOrganizer?: boolean;
 };
 
 export const getAccountCalendarEvents = (urlArg: URL) =>
@@ -175,8 +176,15 @@ async (
     url.pathname = `/account/${args.npub}/events`;
     const period = args.period ?? CalendarEventPeriod.Upcoming;
     url.searchParams.set("period", period.toString());
-    const rsvp = args.rsvp ?? RsvpStatus.Accepted;
-    url.searchParams.set("rsvp", rsvp.toString());
+
+    if (typeof args.isOrganizer === "boolean") {
+        url.searchParams.set("isOrganizer", args.isOrganizer.toString());
+    }
+
+    if (args.rsvp) {
+        const rsvp = args.rsvp ?? RsvpStatus.Accepted;
+        url.searchParams.set("rsvp", rsvp.toString());
+    }
 
     const response = await safeFetch(url);
     if (response instanceof Error) {
