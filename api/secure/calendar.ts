@@ -687,7 +687,7 @@ export const unsetOfficialCalendarFromEvent =
         }
 
         const url = copyURL(urlArg);
-        url.pathname = `/secure/events/${args.eventId}`;
+        url.pathname = `/secure/events/${args.eventId}/official-calendar`;
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
         const response = await safeFetch(url, {
