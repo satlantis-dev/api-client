@@ -644,6 +644,7 @@ async (args: {
     eventId: number;
     emails?: string[];
     npubs?: string[];
+    invitationMessage?: string;
     options?: {
         signal: AbortSignal;
     };
@@ -658,7 +659,7 @@ async (args: {
         headers.set("Authorization", `Bearer ${jwtToken}`);
     }
 
-    const payload = { emails: args.emails, npubs: args.npubs };
+    const payload = { emails: args.emails, npubs: args.npubs, invitationMessage: args.invitationMessage };
     const response = await safeFetch(url, {
         method: "POST",
         headers,
