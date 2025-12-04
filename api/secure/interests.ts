@@ -115,7 +115,7 @@ async (args?: {
 export const getInterestImages =
     (urlArg: URL) => async (args: { interestId: number; page?: number; limit?: number }) => {
         const url = copyURL(urlArg);
-        url.pathname = `/interest/${args.interestId}/images`;
+        url.pathname = `/interests/${args.interestId}/images`;
         if (args?.page != null) {
             url.searchParams.append("page", args.page.toString());
         }
@@ -134,7 +134,7 @@ export const getInterestImages =
 
 export const searchInterestImages = (urlArg: URL) => async (args: { search: string }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/interest-images`;
+    url.pathname = `/interests/images`;
     if (args?.search) {
         url.searchParams.append("search", args.search);
     }
