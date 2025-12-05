@@ -12,9 +12,10 @@ import type {
     EventInterest,
 } from "../models/calendar.ts";
 import type { LocationDTO } from "../models/location.ts";
-import type { BoundingBox, Place } from "../models/place.ts";
+import type { BoundingBox } from "../models/place.ts";
 import type { PlaceEvent } from "../models/place.ts";
 import type { func_GetJwt, func_GetNostrSigner } from "@satlantis/api-client";
+import type { EventUserTimeline } from "../models/event.ts";
 
 export enum RsvpStatus {
     Accepted = "accepted",
@@ -1217,3 +1218,31 @@ export const getEventsContacts =
         }
         return handleResponse<UserEventsContactsResponse>(response);
     };
+
+export type GetEventUserFinancialTimelineArgs = {
+    eventId: number;
+    accountId: number;
+};
+
+export const getEventUserFinancialTimeline = (urlArg: URL, getJwt: func_GetJwt) => {
+    return async (args: GetEventUserFinancialTimelineArgs) => {
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/${args.eventId}/accounts/${args.accountId}/timeline`;
+
+        const jwtToken = getJwt();
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        headers.set("Content-Type", "application/json");
+
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+
+        if (response instanceof Error) {
+            return response;
+        }
+
+        return handleResponse<EventUserTimeline>(response);
+    };
+};
