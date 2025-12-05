@@ -55,6 +55,7 @@ export type EventOrderPaymentHistory = {
     refunds: EventRefundHistory[];
     totalRefunded: number;
     netAmount: number;
+    lightningAddress?: string;
 };
 
 export type EventUserTimeline = {
