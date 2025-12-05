@@ -1175,19 +1175,19 @@ async (
 
 export interface UserEventsContactsResponse {
     contacts: AccountDTO[];
-    accepted: AccountDTO[];
-    declined: AccountDTO[];
+    accepted?: AccountDTO[];
+    declined?: AccountDTO[];
+    tentative?: AccountDTO[];
+    waitlisted?: AccountDTO[];
+    requested?: AccountDTO[];
+    rejected?: AccountDTO[];
+    invited?: AccountDTO[];
 }
 
 /**
  * GET /secure/user/events/contacts
  * Returns the list of attendees (RSVP accepted) of past events for which the
  * authenticated user was the owner or a cohost.
- *
- * Response grouping:
- * - contacts: Attendees who have NOT yet RSVPed to `forEventId` (or all if `forEventId` is omitted)
- * - accepted: Attendees who have already RSVPed "accepted" to `forEventId`
- * - declined: Attendees who have already RSVPed "declined" to `forEventId`
  *
  * Optional query params (all are part of the `args` object):
  * @param fromEventId Filter: only include attendees who attended this source event.
