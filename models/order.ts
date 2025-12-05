@@ -1,5 +1,5 @@
 export enum PaymentMethod {
-    LIGHTNING = "ligntning",
+    LIGHTNING = "lightning",
 }
 
 export enum OrderStatus {
