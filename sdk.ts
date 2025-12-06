@@ -387,6 +387,7 @@ export class Client {
     private updateAccount: ReturnType<typeof updateAccount>;
     deleteAccount: ReturnType<typeof deleteAccount>;
     _blackListAccount: ReturnType<typeof blacklistAccount>;
+    blacklistAccountWithNpub: ReturnType<typeof blacklistAccount>;
     getUserFollowers: ReturnType<typeof getUserFollowers>;
 
     // note
@@ -709,6 +710,7 @@ export class Client {
         this.updateAccount = updateAccount(rest_api_url, getJwt);
         this.deleteAccount = deleteAccount(rest_api_url, getJwt, getNostrSigner);
         this._blackListAccount = blacklistAccount(rest_api_url, getJwt);
+        this.blacklistAccountWithNpub = blacklistAccount(rest_api_url, getJwt);
         this.getUserFollowers = getUserFollowers(rest_api_url, getJwt);
 
         this.getNotesOfPubkey = getNotesOfPubkey(rest_api_url);

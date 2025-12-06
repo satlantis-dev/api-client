@@ -1,6 +1,6 @@
 import { type NostrEvent, NostrKind, prepareNostrEvent } from "@blowater/nostr-sdk";
 
-import { copyURL, handleResponse, handleStringResponse } from "../../helpers/_helper.ts";
+import { copyURL, handleResponse, handleSafeResponse, handleStringResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
 import type { AccountDTO, AccountPlaceRole, AccountPlaceRoleTypeEnum } from "../../models/account.ts";
 import type { Account, AccountSearchDTO, func_GetJwt, func_GetNostrSigner } from "../../sdk.ts";
@@ -316,7 +316,7 @@ export const blacklistAccount = (urlArg: URL, getJwt: () => string) => async (ar
     if (response instanceof Error) {
         return response;
     }
-    const res = await handleResponse<{ status: "success" }>(response);
+    const res = await handleSafeResponse<{ status: "success" }>(response);
     if (res instanceof Error) {
         return res;
     }
