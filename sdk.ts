@@ -235,6 +235,7 @@ import {
     getEventsContacts,
     getEventTicketPaymentStatus,
     getEventTicketTypes,
+    getEventUserFinancialTimeline,
     getFeaturedEvents,
     getNewestEvents,
     getPopularEvents,
@@ -250,11 +251,15 @@ import {
     updateEventTicketStatus,
     updateEventTicketType,
     updateRsvpStatus,
-    getEventUserFinancialTimeline,
 } from "./api/events.ts";
 import { getTimezoneInfo } from "./api/base.ts";
 import { getVanityPathMapping } from "./api/vanity.ts";
-import { getSingleOrderHistory, refundOrder, getRefundStatus } from './api/secure/order.ts'
+import {
+    getRefundFeeEstimation,
+    getRefundStatus,
+    getSingleOrderHistory,
+    refundOrder,
+} from "./api/secure/order.ts";
 
 export type func_GetNostrSigner = () => Promise<(Signer & Encrypter) | Error>;
 export type func_GetJwt = () => string;
@@ -566,6 +571,7 @@ export class Client {
     getSingleOrderHistory: ReturnType<typeof getSingleOrderHistory>;
     refundOrder: ReturnType<typeof refundOrder>;
     getRefundStatus: ReturnType<typeof getRefundStatus>;
+    getRefundFeeEstimation: ReturnType<typeof getRefundFeeEstimation>;
 
     private constructor(
         public readonly rest_api_url: URL,
@@ -885,6 +891,7 @@ export class Client {
         this.getSingleOrderHistory = getSingleOrderHistory(rest_api_url, getJwt);
         this.refundOrder = refundOrder(rest_api_url, getJwt);
         this.getRefundStatus = getRefundStatus(rest_api_url, getJwt);
+        this.getRefundFeeEstimation = getRefundFeeEstimation(rest_api_url, getJwt);
     }
 
     static New(args: {

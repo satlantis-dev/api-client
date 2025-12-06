@@ -32,6 +32,7 @@ export type EventRefundHistory = {
     status: RefundStatus;
     refundMethod: "lightning" | "stripe";
     lightningAddress?: string;
+    lightningPreimage?: string;
     lightningPaymentHash?: string;
     stripeRefundId?: string;
     stripePaymentIntentId?: string;

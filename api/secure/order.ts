@@ -109,3 +109,38 @@ export const getRefundStatus = (urlArg: URL, getJwt: func_GetJwt) => {
         return handleResponse<RefundOrderResponse>(response);
     };
 };
+
+export type RefundFeeEstimationArgs = {
+    orderId: number;
+    amount: number;
+    lightning_address: string;
+};
+
+export type RefundFeeEstimationResponse = {
+    fee: number;
+    maxRefundableAmount: number;
+};
+
+export const getRefundFeeEstimation = (urlArg: URL, getJwt: func_GetJwt) => {
+    return async (args: RefundFeeEstimationArgs) => {
+        const url = createSecureUrl(urlArg, `/orders/${args.orderId}/refund/fee-estimation`);
+
+        url.searchParams.set("amount", args.amount.toString());
+        url.searchParams.set("lightning_address", args.lightning_address);
+
+        const jwtToken = getJwt();
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+
+        if (response instanceof Error) {
+            return response;
+        }
+
+        return handleResponse<RefundFeeEstimationResponse>(response);
+    };
+};
