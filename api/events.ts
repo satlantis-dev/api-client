@@ -48,6 +48,8 @@ export interface EventDetails {
     location?: string;
     kind: number;
     knownAttendees?: AccountDTO[];
+    sampleAttendees?: AccountDTO[];
+    attendeeCount?: number;
     nostrId: string;
     notes: CalendarEventNote[];
     officialCalendar?: Calendar;
