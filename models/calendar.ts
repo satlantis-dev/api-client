@@ -60,7 +60,6 @@ export type CalendarEvent = {
     account: AccountDTO;
     cohosts: Cohost[];
     announcements: CalendarEventAnnouncement[];
-    calendarEventRsvps: CalendarEventRSVP[];
     content: string;
     createdAt: string;
     dtag: string;
@@ -71,6 +70,8 @@ export type CalendarEvent = {
     image: string;
     kind: number;
     knownAttendees?: AccountDTO[];
+    sampleAttendees?: AccountDTO[];
+    attendeeCount?: number;
     location?: string;
     nostrId: string;
     notes: CalendarEventNote[];
