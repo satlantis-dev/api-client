@@ -1,5 +1,6 @@
 import type { Interest, Location, Note, Place } from "../sdk.ts";
 import type { AccountDTO } from "./account.ts";
+import type { CalendarEventTag } from "./event.ts";
 
 export interface CalendarEventRSVP {
     id: number;
@@ -121,12 +122,15 @@ export type Calendar = {
     banner: string;
     account_id: number;
     account?: AccountDTO;
+    eventTags: CalendarEventTag[]
     events: CalendarEvent[] | null;
     eventCount: number;
     isPublic: boolean;
+    featured: boolean;
     place?: Place;
     placeId?: number;
     contributors?: AccountDTO[];
+    numSubscriptions: number;
     createdAt: string;
     updatedAt: string;
 };

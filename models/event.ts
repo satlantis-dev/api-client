@@ -71,3 +71,10 @@ export type EventUserTimeline = {
     currency: string; // "BTC"
     lightningAddress?: string; // Refunding lightning address entered when purchasing a ticket.
 };
+
+export type CalendarEventTag = {
+    id: number;
+    name: string;
+    numEvents: number;
+}
+
