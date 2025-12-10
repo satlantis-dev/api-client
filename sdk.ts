@@ -139,6 +139,7 @@ import {
     getUserCalendarSubscriptions,
     importEventFromUrl,
     isSubscribedToCalendar,
+    markCalendarAsFeatured,
     postCalendarEventAnnouncement,
     postCalendarEventNote,
     postCalendarEventRSVP,
@@ -153,6 +154,7 @@ import {
     submitEventToCalendar,
     subscribeToCalendar,
     unlistCalendarEvent,
+    unmarkCalendarAsFeatured,
     unsetOfficialCalendarFromEvent,
     unsubscribeFromCalendar,
 } from "./api/secure/calendar.ts";
@@ -366,6 +368,8 @@ export class Client {
     getUserCalendarSubscriptions: ReturnType<typeof getUserCalendarSubscriptions>;
     getCalendarSubscribers: ReturnType<typeof getCalendarSubscribers>;
     getEventsContacts: ReturnType<typeof getEventsContacts>;
+    markCalendarAsFeatured: ReturnType<typeof markCalendarAsFeatured>;
+    unmarkCalendarAsFeatured: ReturnType<typeof unmarkCalendarAsFeatured>;
 
     // Account
     /**
@@ -692,6 +696,8 @@ export class Client {
         this.declineEventSubmission = declineEventSubmission(rest_api_url, getJwt);
         this.getEventSubmissions = getEventSubmissions(rest_api_url, getJwt);
         this.importEventFromUrl = importEventFromUrl(rest_api_url, getJwt);
+        this.markCalendarAsFeatured = markCalendarAsFeatured(rest_api_url, getJwt);
+        this.unmarkCalendarAsFeatured = unmarkCalendarAsFeatured(rest_api_url, getJwt);
 
         // account
         this._getAccount = getAccount(rest_api_url, getJwt);
@@ -2067,8 +2073,8 @@ export class Client {
             noteType: args.image || args.hasVideo
                 ? NoteType.MEDIA
                 : args.qTag
-                ? NoteType.BASIC
-                : NoteType.BASIC,
+                    ? NoteType.BASIC
+                    : NoteType.BASIC,
             placeId: args.placeID,
         });
         return res;
