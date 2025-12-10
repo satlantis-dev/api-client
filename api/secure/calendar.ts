@@ -986,7 +986,7 @@ export function markCalendarAsFeatured(urlArg: URL, getJwt: func_GetJwt) {
 
 export function unmarkCalendarAsFeatured(urlArg: URL, getJwt: func_GetJwt) {
     return async (args: {
-        calendaerId: number;
+        calendarId: number;
     }) => {
         const jwtToken = getJwt();
         if (!jwtToken) return new Error("JWT token is empty.");
@@ -995,7 +995,7 @@ export function unmarkCalendarAsFeatured(urlArg: URL, getJwt: func_GetJwt) {
         headers.set("Authorization", `Bearer ${jwtToken}`);
 
         const url = copyURL(urlArg);
-        url.pathname = `/secure/calendar/${args.calendaerId}/unmark-featured`;
+        url.pathname = `/secure/calendar/${args.calendarId}/unmark-featured`;
 
         const response = await safeFetch(url, {
             method: "PUT",
