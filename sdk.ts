@@ -225,8 +225,10 @@ import { mapUserToDestination } from "./api/location.ts";
 
 import {
     assignTicketToRSVP,
+    createCalendarEventTag,
     createEventTicketType,
     deleteEventTicketType,
+    getCalendarEventTags,
     getEventAttendees,
     getEventCalendars,
     getEventDetails,
@@ -242,6 +244,7 @@ import {
     getNewestEvents,
     getPopularEvents,
     getRandomizedEvents,
+    getRecommendedCalendarEventTags,
     getRecommendedEvents,
     inviteAttendees,
     markCalendarEventAsFeatured,
@@ -370,6 +373,9 @@ export class Client {
     getEventsContacts: ReturnType<typeof getEventsContacts>;
     markCalendarAsFeatured: ReturnType<typeof markCalendarAsFeatured>;
     unmarkCalendarAsFeatured: ReturnType<typeof unmarkCalendarAsFeatured>;
+    getCalendarEventTags: ReturnType<typeof getCalendarEventTags>;
+    getRecommendedCalendarEventTags: ReturnType<typeof getRecommendedCalendarEventTags>;
+    createCalendarEventTag: ReturnType<typeof createCalendarEventTag>;
 
     // Account
     /**
@@ -681,6 +687,9 @@ export class Client {
         this.getUserCalendarSubscriptions = getUserCalendarSubscriptions(rest_api_url, getJwt);
         this.getCalendarSubscribers = getCalendarSubscribers(rest_api_url, getJwt);
         this.getEventsContacts = getEventsContacts(rest_api_url, getJwt);
+        this.getCalendarEventTags = getCalendarEventTags(rest_api_url)
+        this.getRecommendedCalendarEventTags = getRecommendedCalendarEventTags(rest_api_url)
+        this.createCalendarEventTag = createCalendarEventTag(rest_api_url, getJwt)
 
         // Calendars
         this.getCalendarByID = getCalendarByID(rest_api_url);
