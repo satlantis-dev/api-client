@@ -1207,7 +1207,7 @@ export class Client {
         // todo: use RFC3339 / ISO8601 format
         cohosts: string;
         venue: string;
-        interests: string;
+        calendarEventTags: string;
         googleMapsUri: string;
         venueName: string;
         googlePlaceId: string;
@@ -1241,7 +1241,7 @@ export class Client {
             ["summary", args.summary],
             ["url", args.url],
             ["cohosts", args.cohosts],
-            ["interests", args.interests],
+            ["calendar_event_tags", args.calendarEventTags],
             ["website", args.website],
             [
                 "autoFollowHosts",
