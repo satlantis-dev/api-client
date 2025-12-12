@@ -1076,7 +1076,7 @@ export class Client {
         location: string;
         cohosts: string;
         venue: string;
-        interests: string;
+        calendarEventTags: string;
         placeId: number | undefined;
         summary: string;
         website: string;
@@ -1112,7 +1112,7 @@ export class Client {
             ["summary", args.summary],
             ["url", args.url],
             ["cohosts", args.cohosts],
-            ["interests", args.interests],
+            ["calendar_event_tags", args.calendarEventTags],
             [
                 "autoFollowHosts",
                 args.autofollowHostAndCohosts ? args.autofollowHostAndCohosts.toString() : "false",
