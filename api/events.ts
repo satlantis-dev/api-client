@@ -44,7 +44,7 @@ export interface EventDetails {
     event: PlaceEvent;
     geohash: string;
     image: string;
-    interests: EventInterest[];
+    calendarEventTags: CalendarEventTag[];
     location?: string;
     kind: number;
     knownAttendees?: AccountDTO[];
