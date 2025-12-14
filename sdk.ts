@@ -234,6 +234,7 @@ import {
     getEventDetails,
     getEventFinancialsSummary,
     getEventFinancialsWithdrawalStatus,
+    getEventFinancialsWithdrawalFeeEstimations,
     getEventRsvps,
     getEvents,
     getEventsContacts,
@@ -352,6 +353,7 @@ export class Client {
     getEventFinancialsSummary: ReturnType<typeof getEventFinancialsSummary>;
     getEventFinancialsWithdrawalStatus: ReturnType<typeof getEventFinancialsWithdrawalStatus>;
     postEventFinancialsWithdraw: ReturnType<typeof postEventFinancialsWithdraw>;
+    getEventFinancialsWithdrawalFeeEstimations: ReturnType<typeof getEventFinancialsWithdrawalFeeEstimations>;
     createCalendar: ReturnType<typeof createCalendar>;
     editCalendar: ReturnType<typeof editCalendar>;
     deleteCalendar: ReturnType<typeof deleteCalendar>;
@@ -681,6 +683,7 @@ export class Client {
         this.getEventFinancialsSummary = getEventFinancialsSummary(rest_api_url, getJwt);
         this.getEventFinancialsWithdrawalStatus = getEventFinancialsWithdrawalStatus(rest_api_url, getJwt);
         this.postEventFinancialsWithdraw = postEventFinancialsWithdraw(rest_api_url, getJwt);
+        this.getEventFinancialsWithdrawalFeeEstimations = getEventFinancialsWithdrawalFeeEstimations(rest_api_url, getJwt);
         this.subscribeToCalendar = subscribeToCalendar(rest_api_url, getJwt);
         this.unsubscribeFromCalendar = unsubscribeFromCalendar(rest_api_url, getJwt);
         this.isSubscribedToCalendar = isSubscribedToCalendar(rest_api_url, getJwt);

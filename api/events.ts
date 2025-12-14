@@ -1141,6 +1141,40 @@ export const getEventFinancialsWithdrawalStatus = (urlArg: URL, getJwt: func_Get
         return handleResponse<EventFinancialsWithdrawalResponse>(response);
     };
 
+
+export interface EventFinancialsWithdrawalFeeEstimationsResponse {
+  fee: number;
+  maxWithdrawableAmount: number;
+}
+
+export const getEventFinancialsWithdrawalFeeEstimations = (urlArg: URL, getJwt: func_GetJwt) =>
+    async (
+        eventId: number,
+        lightningAddress: string,
+        amount: number,
+    ): Promise<EventFinancialsWithdrawalFeeEstimationsResponse | null | Error> => {
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/${eventId}/withdrawals/fee-estimations`;
+        url.searchParams.set("lightning_address", lightningAddress);
+        url.searchParams.set("amount", amount.toString());
+
+        const jwtToken = getJwt();
+        const headers = new Headers();
+        headers.set("Content-Type", "application/json");
+        if (jwtToken) {
+            headers.set("Authorization", `Bearer ${jwtToken}`);
+        }
+
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<EventFinancialsWithdrawalFeeEstimationsResponse>(response);
+    };
+
 export const postEventFinancialsWithdraw = (urlArg: URL, getJwt: func_GetJwt) =>
     async (
         params: {
