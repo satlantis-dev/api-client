@@ -63,6 +63,7 @@ export type CalendarEvent = {
     announcements: CalendarEventAnnouncement[];
     content: string;
     createdAt: string;
+    calendarEventRsvps?: CalendarEventRSVP[];
     dtag: string;
     end: string;
     endTzId?: string;
