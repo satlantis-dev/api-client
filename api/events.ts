@@ -1117,6 +1117,11 @@ export interface EventFinancialsWithdrawalResponse {
     failureReason: string | null;
 }
 
+export interface EventTicketWithdrawalFeeResponse {
+    fee: number;
+    maxWithdrawableAmount: number;
+}
+
 export const getEventFinancialsWithdrawalStatus = (urlArg: URL, getJwt: func_GetJwt) =>
     async (
         withdrawalId: number,
@@ -1174,6 +1179,33 @@ export const getEventFinancialsWithdrawalFeeEstimations = (urlArg: URL, getJwt: 
         }
         return handleResponse<EventFinancialsWithdrawalFeeEstimationsResponse>(response);
     };
+
+export const getEventTicketWithdrawalFee = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    params: { eventId: number; lightningAddress: string; amount: number },
+): Promise<EventTicketWithdrawalFeeResponse | null | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/${params.eventId}/withdrawals/fee-estimations`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const queryString = `lightning_address=${params.lightningAddress}&amount=${params.amount}`;
+    const finalUrl = `${url.origin}${url.pathname}?${queryString}`;
+
+    const response = await safeFetch(finalUrl, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<EventTicketWithdrawalFeeResponse>(response);
+};
 
 export const postEventFinancialsWithdraw = (urlArg: URL, getJwt: func_GetJwt) =>
     async (
