@@ -136,6 +136,10 @@ import {
     getCalendarSubscribers,
     getEventById,
     getEventSubmissions,
+    getFeaturedCalendars,
+    getNewestCalendars,
+    getPopularCalendars,
+    getRecommendedCalendars,
     getUserCalendarSubscriptions,
     importEventFromUrl,
     isSubscribedToCalendar,
@@ -149,6 +153,7 @@ import {
     removeEventFromCalendar,
     respondCalendarEventCohostInvitation,
     searchAccountViaEmail,
+    searchCalendars,
     sendCohostEmailInviteToCalendarEvent,
     setOfficialCalendarToEvent,
     submitEventToCalendar,
@@ -378,6 +383,11 @@ export class Client {
     getCalendarEventTags: ReturnType<typeof getCalendarEventTags>;
     getRecommendedCalendarEventTags: ReturnType<typeof getRecommendedCalendarEventTags>;
     createCalendarEventTag: ReturnType<typeof createCalendarEventTag>;
+    getFeaturedCalendars: ReturnType<typeof getFeaturedCalendars>;
+    getNewestCalendars: ReturnType<typeof getNewestCalendars>;
+    getPopularCalendars: ReturnType<typeof getPopularCalendars>;
+    getRecommendedCalendars: ReturnType<typeof getRecommendedCalendars>;
+    searchCalendars: ReturnType<typeof searchCalendars>;
 
     // Account
     /**
@@ -710,6 +720,11 @@ export class Client {
         this.importEventFromUrl = importEventFromUrl(rest_api_url, getJwt);
         this.markCalendarAsFeatured = markCalendarAsFeatured(rest_api_url, getJwt);
         this.unmarkCalendarAsFeatured = unmarkCalendarAsFeatured(rest_api_url, getJwt);
+        this.getFeaturedCalendars = getFeaturedCalendars(rest_api_url);
+        this.getNewestCalendars = getNewestCalendars(rest_api_url);
+        this.getPopularCalendars = getPopularCalendars(rest_api_url);
+        this.getRecommendedCalendars = getRecommendedCalendars(rest_api_url, getJwt);
+        this.searchCalendars = searchCalendars(rest_api_url);
 
         // account
         this._getAccount = getAccount(rest_api_url, getJwt);

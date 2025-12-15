@@ -1006,3 +1006,107 @@ export function unmarkCalendarAsFeatured(urlArg: URL, getJwt: func_GetJwt) {
         return handleResponse(response);
     };
 }
+
+export function getFeaturedCalendars(urlArg: URL) {
+    return async (args: {
+        placeId?: number;
+    }) => {
+        const url = copyURL(urlArg);
+        url.pathname = `/calendars/featured`;
+        if (args.placeId) {
+            url.searchParams.set("placeId", args.placeId.toString());
+        }
+
+        const response = await safeFetch(url);
+
+        if (response instanceof Error) return response;
+        return handleResponse<Calendar[]>(response);
+    };
+}
+
+export function getRecommendedCalendars(urlArg: URL, getJwt: func_GetJwt) {
+    return async (args: {
+        placeId?: number;
+    }) => {
+        const jwtToken = getJwt();
+        if (!jwtToken) return new Error("JWT token is empty.");
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/calendars/recommended`;
+        if (args.placeId) {
+            url.searchParams.set("placeId", args.placeId.toString());
+        }
+
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+
+        if (response instanceof Error) return response;
+        return handleResponse<Calendar[]>(response);
+    }
+}
+
+export function getPopularCalendars(urlArg: URL) {
+    return async (args: {
+        placeId?: number;
+    }) => {
+        const url = copyURL(urlArg);
+        url.pathname = `/calendars/popular`;
+        if (args.placeId) {
+            url.searchParams.set("placeId", args.placeId.toString());
+        }
+
+        const response = await safeFetch(url);
+
+        if (response instanceof Error) return response;
+        return handleResponse<Calendar[]>(response);
+    };
+}
+
+export function getNewestCalendars(urlArg: URL) {
+    return async (args: {
+        placeId?: number;
+    }) => {
+        const url = copyURL(urlArg);
+        url.pathname = `/calendars/newest`;
+        if (args.placeId) {
+            url.searchParams.set("placeId", args.placeId.toString());
+        }
+
+        const response = await safeFetch(url);
+
+        if (response instanceof Error) return response;
+        return handleResponse<Calendar[]>(response);
+    }
+}
+
+export function searchCalendars(urlArg: URL) {
+    return async (args: {
+        search: string;
+        placeId?: number;
+        page?: number;
+        limit?: number;
+    }) => {
+        const url = copyURL(urlArg);
+        url.pathname = `/calendars`;
+        url.searchParams.set("query", args.search);
+        if (args.placeId) {
+            url.searchParams.set("placeId", args.placeId.toString());
+        }
+        if (args.page) {
+            url.searchParams.set("page", args.page.toString());
+        }
+        if (args.limit) {
+            url.searchParams.set("limit", args.limit.toString());
+        }
+
+        const response = await safeFetch(url);
+
+        if (response instanceof Error) return response;
+        return handleResponse<Calendar[]>(response);
+    };
+}
