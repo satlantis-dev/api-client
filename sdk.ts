@@ -245,6 +245,7 @@ import {
     getEventsContacts,
     getEventTicketPaymentStatus,
     getEventTicketTypes,
+    getEventTicketWithdrawalFee,
     getEventUserFinancialTimeline,
     getFeaturedEvents,
     getNewestEvents,
@@ -356,6 +357,7 @@ export class Client {
     assignTicketToRSVP: ReturnType<typeof assignTicketToRSVP>;
     removeTicketFromUser: ReturnType<typeof removeTicketFromUser>;
     getEventFinancialsSummary: ReturnType<typeof getEventFinancialsSummary>;
+    getEventTicketWithdrawalFee: ReturnType<typeof getEventTicketWithdrawalFee>;
     getEventFinancialsWithdrawalStatus: ReturnType<typeof getEventFinancialsWithdrawalStatus>;
     postEventFinancialsWithdraw: ReturnType<typeof postEventFinancialsWithdraw>;
     getEventFinancialsWithdrawalFeeEstimations: ReturnType<typeof getEventFinancialsWithdrawalFeeEstimations>;
@@ -691,6 +693,7 @@ export class Client {
         this.assignTicketToRSVP = assignTicketToRSVP(rest_api_url, getJwt);
         this.removeTicketFromUser = removeTicketFromUser(rest_api_url, getJwt);
         this.getEventFinancialsSummary = getEventFinancialsSummary(rest_api_url, getJwt);
+        this.getEventTicketWithdrawalFee = getEventTicketWithdrawalFee(rest_api_url, getJwt);
         this.getEventFinancialsWithdrawalStatus = getEventFinancialsWithdrawalStatus(rest_api_url, getJwt);
         this.postEventFinancialsWithdraw = postEventFinancialsWithdraw(rest_api_url, getJwt);
         this.getEventFinancialsWithdrawalFeeEstimations = getEventFinancialsWithdrawalFeeEstimations(rest_api_url, getJwt);
@@ -2100,8 +2103,8 @@ export class Client {
             noteType: args.image || args.hasVideo
                 ? NoteType.MEDIA
                 : args.qTag
-                    ? NoteType.BASIC
-                    : NoteType.BASIC,
+                ? NoteType.BASIC
+                : NoteType.BASIC,
             placeId: args.placeID,
         });
         return res;
