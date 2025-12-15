@@ -1090,6 +1090,8 @@ export function searchCalendars(urlArg: URL) {
         placeId?: number;
         page?: number;
         limit?: number;
+    }, options?: {
+        signal: AbortSignal;
     }) => {
         const url = copyURL(urlArg);
         url.pathname = `/calendars`;
@@ -1104,7 +1106,9 @@ export function searchCalendars(urlArg: URL) {
             url.searchParams.set("limit", args.limit.toString());
         }
 
-        const response = await safeFetch(url);
+        const response = await safeFetch(url, {
+            signal: options?.signal,
+        });
 
         if (response instanceof Error) return response;
         return handleResponse<Calendar[]>(response);
