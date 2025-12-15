@@ -123,7 +123,7 @@ export type Calendar = {
     banner: string;
     account_id: number;
     account?: AccountDTO;
-    eventTags: CalendarEventTag[]
+    eventTags: CalendarEventTag[];
     events: CalendarEvent[] | null;
     eventCount: number;
     isPublic: boolean;

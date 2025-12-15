@@ -76,5 +76,4 @@ export type CalendarEventTag = {
     id: number;
     name: string;
     numEvents: number;
-}
-
+};
