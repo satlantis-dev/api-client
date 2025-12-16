@@ -133,6 +133,7 @@ import {
     editCalendar,
     getCalendarByID,
     getCalendarsByAccount,
+    getCalendarsRandomized,
     getCalendarSubscribers,
     getEventById,
     getEventSubmissions,
@@ -390,6 +391,7 @@ export class Client {
     getPopularCalendars: ReturnType<typeof getPopularCalendars>;
     getRecommendedCalendars: ReturnType<typeof getRecommendedCalendars>;
     searchCalendars: ReturnType<typeof searchCalendars>;
+    getCalendarsRandomized: ReturnType<typeof getCalendarsRandomized>;
 
     // Account
     /**
@@ -728,6 +730,7 @@ export class Client {
         this.getPopularCalendars = getPopularCalendars(rest_api_url);
         this.getRecommendedCalendars = getRecommendedCalendars(rest_api_url, getJwt);
         this.searchCalendars = searchCalendars(rest_api_url);
+        this.getCalendarsRandomized = getCalendarsRandomized(rest_api_url);
 
         // account
         this._getAccount = getAccount(rest_api_url, getJwt);
