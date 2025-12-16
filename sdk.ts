@@ -103,6 +103,7 @@ import {
     unblockAccount,
     unmuteAccount,
     updateAccount,
+    updateAccountEmail,
     updateAccountFollowingList,
 } from "./api/secure/account.ts";
 import { deletePlaceGalleryImage, postPlaceGalleryImage, updatePlace } from "./api/secure/place.ts";
@@ -479,6 +480,7 @@ export class Client {
     initiatePasswordReset: ReturnType<typeof initiatePasswordReset>;
     resetPassword: ReturnType<typeof resetPassword>;
     resendEmailVerification: ReturnType<typeof resendEmailVerification>;
+    updateAccountEmail: ReturnType<typeof updateAccountEmail>;
     verifyEmail: ReturnType<typeof verifyEmail>;
     sendOTP: ReturnType<typeof sendOTP>;
     verifyOTP: ReturnType<typeof verifyOTP>;
@@ -851,6 +853,10 @@ export class Client {
         this.initiatePasswordReset = initiatePasswordReset(this.rest_api_url);
         this.resetPassword = resetPassword(this.rest_api_url);
         this.resendEmailVerification = resendEmailVerification(
+            this.rest_api_url,
+            getJwt,
+        );
+        this.updateAccountEmail = updateAccountEmail(
             this.rest_api_url,
             getJwt,
         );
