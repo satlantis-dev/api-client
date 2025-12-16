@@ -20,6 +20,7 @@ import {
 } from "../../sdk.ts";
 import type { AnswerType } from "../events.ts";
 import type { AccountDTO } from "../../models/account.ts";
+import type { CalendarEventTag } from "../../models/event.ts";
 
 export interface PlaceCalendarEventPost {
     event: NostrEvent;
@@ -1109,6 +1110,40 @@ export function searchCalendars(urlArg: URL) {
         const response = await safeFetch(url, {
             signal: options?.signal,
         });
+
+        if (response instanceof Error) return response;
+        return handleResponse<Calendar[]>(response);
+    };
+}
+
+export function getCalendarsRandomized(urlArg: URL) {
+    return async (args: {
+        placeId?: number;
+        page?: number;
+        limit?: number;
+        search?: string;
+        calendarEventTags?: CalendarEventTag[];
+    }) => {
+        const url = copyURL(urlArg);
+        url.pathname = `/calendars/randomized`;
+        if (args.placeId) {
+            url.searchParams.set("placeId", args.placeId.toString());
+        }
+        if (args.page) {
+            url.searchParams.set("page", args.page.toString());
+        }
+        if (args.limit) {
+            url.searchParams.set("limit", args.limit.toString());
+        }
+        if (args.search) {
+            url.searchParams.set("search", args.search);
+        }
+        if (args.calendarEventTags && args.calendarEventTags.length > 0) {
+            // https://github.com/satlantis-dev/api/blob/dev/rest/calendar.go#L1141
+            url.searchParams.set("calendarEventTags", args.calendarEventTags.map(tag => tag.id).join(","));
+        }
+
+        const response = await safeFetch(url);
 
         if (response instanceof Error) return response;
         return handleResponse<Calendar[]>(response);
