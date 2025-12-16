@@ -1113,6 +1113,7 @@ export class Client {
         capacity?: number;
         isLimitedEvent?: boolean;
         gatedEvent?: boolean;
+        isUnlisted?: boolean;
     }) => {
         const jwtToken = this.getJwt();
         if (jwtToken == "") {
@@ -1202,6 +1203,7 @@ export class Client {
 
         const res = await this.postPlaceCalendarEvent({
             ...(args.placeId && { placeId: args.placeId }), // Only include if placeId exists
+            ...(args.isUnlisted !== undefined && { isUnlisted: args.isUnlisted }),
             event,
         });
         if (res instanceof Error) {
@@ -2106,8 +2108,8 @@ export class Client {
             noteType: args.image || args.hasVideo
                 ? NoteType.MEDIA
                 : args.qTag
-                ? NoteType.BASIC
-                : NoteType.BASIC,
+                    ? NoteType.BASIC
+                    : NoteType.BASIC,
             placeId: args.placeID,
         });
         return res;
