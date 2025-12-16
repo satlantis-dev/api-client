@@ -1096,7 +1096,7 @@ export function searchCalendars(urlArg: URL) {
     }) => {
         const url = copyURL(urlArg);
         url.pathname = `/calendars`;
-        url.searchParams.set("query", args.search);
+        url.searchParams.set("search", args.search);
         if (args.placeId) {
             url.searchParams.set("placeId", args.placeId.toString());
         }
