@@ -136,6 +136,7 @@ import {
     getCalendarsRandomized,
     getCalendarSubscribers,
     getEventById,
+    getEventsFromCalendar,
     getEventSubmissions,
     getFeaturedCalendars,
     getNewestCalendars,
@@ -392,6 +393,7 @@ export class Client {
     getRecommendedCalendars: ReturnType<typeof getRecommendedCalendars>;
     searchCalendars: ReturnType<typeof searchCalendars>;
     getCalendarsRandomized: ReturnType<typeof getCalendarsRandomized>;
+    getEventsFromCalendar: ReturnType<typeof getEventsFromCalendar>;
 
     // Account
     /**
@@ -731,6 +733,7 @@ export class Client {
         this.getRecommendedCalendars = getRecommendedCalendars(rest_api_url, getJwt);
         this.searchCalendars = searchCalendars(rest_api_url);
         this.getCalendarsRandomized = getCalendarsRandomized(rest_api_url);
+        this.getEventsFromCalendar = getEventsFromCalendar(rest_api_url);
 
         // account
         this._getAccount = getAccount(rest_api_url, getJwt);

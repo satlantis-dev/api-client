@@ -1154,3 +1154,30 @@ export function getCalendarsRandomized(urlArg: URL) {
         return handleResponse<Calendar[]>(response);
     };
 }
+
+export function getEventsFromCalendar(urlArg: URL) {
+    return async (args: {
+        calendarId: number;
+        period?: "upcoming" | "past";
+        start_date?: string; // 'YYYY-MM-DD' format (overrides period)
+        end_date?: string; // 'YYYY-MM-DD' format (overrides period)
+    }) => {
+        const url = copyURL(urlArg);
+        url.pathname = `/calendar/${args.calendarId}/events`;
+
+        if (args.start_date) {
+            url.searchParams.set("start_date", args.start_date);
+        }
+        if (args.end_date) {
+            url.searchParams.set("end_date", args.end_date);
+        }
+        if (args.period) {
+            url.searchParams.set("period", args.period);
+        }
+
+        const response = await safeFetch(url);
+
+        if (response instanceof Error) return response;
+        return handleResponse<CalendarEvent[]>(response);
+    };
+}
