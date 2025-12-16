@@ -612,3 +612,27 @@ export function getUserFollowers(urlArg: URL, getJwt: func_GetJwt) {
         return handleResponse<AccountDTO[]>(response);
     };
 }
+
+export const updateAccountEmail = (urlArg: URL, getJwt: func_GetJwt) => async (args: { email: string }) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/user/account/email`;
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+    const response = await safeFetch(url, {
+        method: "PUT",
+        body: JSON.stringify(args),
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    if (response.status === 202) {
+        return { email: args.email, status: "success" as const, httpStatus: 202 };
+    }
+    return handleResponse<{ email: string; status: "success" | "error" }>(response);
+}; 
