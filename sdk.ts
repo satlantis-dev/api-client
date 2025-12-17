@@ -241,8 +241,8 @@ import {
     getEventCalendars,
     getEventDetails,
     getEventFinancialsSummary,
-    getEventFinancialsWithdrawalStatus,
     getEventFinancialsWithdrawalFeeEstimations,
+    getEventFinancialsWithdrawalStatus,
     getEventRsvps,
     getEvents,
     getEventsContacts,
@@ -702,16 +702,19 @@ export class Client {
         this.getEventTicketWithdrawalFee = getEventTicketWithdrawalFee(rest_api_url, getJwt);
         this.getEventFinancialsWithdrawalStatus = getEventFinancialsWithdrawalStatus(rest_api_url, getJwt);
         this.postEventFinancialsWithdraw = postEventFinancialsWithdraw(rest_api_url, getJwt);
-        this.getEventFinancialsWithdrawalFeeEstimations = getEventFinancialsWithdrawalFeeEstimations(rest_api_url, getJwt);
+        this.getEventFinancialsWithdrawalFeeEstimations = getEventFinancialsWithdrawalFeeEstimations(
+            rest_api_url,
+            getJwt,
+        );
         this.subscribeToCalendar = subscribeToCalendar(rest_api_url, getJwt);
         this.unsubscribeFromCalendar = unsubscribeFromCalendar(rest_api_url, getJwt);
         this.isSubscribedToCalendar = isSubscribedToCalendar(rest_api_url, getJwt);
         this.getUserCalendarSubscriptions = getUserCalendarSubscriptions(rest_api_url, getJwt);
         this.getCalendarSubscribers = getCalendarSubscribers(rest_api_url, getJwt);
         this.getEventsContacts = getEventsContacts(rest_api_url, getJwt);
-        this.getCalendarEventTags = getCalendarEventTags(rest_api_url)
-        this.getRecommendedCalendarEventTags = getRecommendedCalendarEventTags(rest_api_url)
-        this.createCalendarEventTag = createCalendarEventTag(rest_api_url, getJwt)
+        this.getCalendarEventTags = getCalendarEventTags(rest_api_url);
+        this.getRecommendedCalendarEventTags = getRecommendedCalendarEventTags(rest_api_url);
+        this.createCalendarEventTag = createCalendarEventTag(rest_api_url, getJwt);
 
         // Calendars
         this.getCalendarByID = getCalendarByID(rest_api_url);
@@ -1146,7 +1149,7 @@ export class Client {
             ["summary", args.summary],
             ["url", args.url],
             ["cohosts", args.cohosts],
-            ["calendar_event_tags", args.calendarEventTags],
+            ["calendar_event_tags", args.calendarEventTags ?? ""],
             [
                 "autoFollowHosts",
                 args.autofollowHostAndCohosts ? args.autofollowHostAndCohosts.toString() : "false",
@@ -1276,7 +1279,7 @@ export class Client {
             ["summary", args.summary],
             ["url", args.url],
             ["cohosts", args.cohosts],
-            ["calendar_event_tags", args.calendarEventTags],
+            ["calendar_event_tags", args.calendarEventTags ?? ""],
             ["website", args.website],
             [
                 "autoFollowHosts",
@@ -2117,8 +2120,8 @@ export class Client {
             noteType: args.image || args.hasVideo
                 ? NoteType.MEDIA
                 : args.qTag
-                    ? NoteType.BASIC
-                    : NoteType.BASIC,
+                ? NoteType.BASIC
+                : NoteType.BASIC,
             placeId: args.placeID,
         });
         return res;

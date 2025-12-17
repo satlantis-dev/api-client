@@ -635,4 +635,4 @@ export const updateAccountEmail = (urlArg: URL, getJwt: func_GetJwt) => async (a
         return { email: args.email, status: "success" as const, httpStatus: 202 };
     }
     return handleResponse<{ email: string; status: "success" | "error" }>(response);
-}; 
+};
