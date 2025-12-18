@@ -204,6 +204,7 @@ export type GetEventsByAccountArgs = {
     npub: string;
     period?: CalendarEventPeriod;
     rsvp?: "waitlisted" | "accepted";
+    limit?: number;
 };
 
 export const getEventsByAccount =
@@ -212,6 +213,9 @@ export const getEventsByAccount =
         url.pathname = `/account/${args.npub}/events`;
         const period = args.period ?? CalendarEventPeriod.Upcoming;
         url.searchParams.set("period", period.toString());
+        if (!!args.limit) {
+          url.searchParams.set("limit", args.limit.toString());
+        }
         if (args.rsvp) {
             url.searchParams.set("rsvp", args.rsvp);
         }
