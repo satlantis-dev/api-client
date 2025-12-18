@@ -1,4 +1,5 @@
 import { type NostrEvent, NostrKind, prepareNostrEvent, type Tag } from "@blowater/nostr-sdk";
+import type { func_GetJwt, func_GetNostrSigner } from "@satlantis/api-client";
 import { copyURL, generateUUID, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { AccountDTO } from "../models/account.ts";
@@ -9,13 +10,10 @@ import type {
     CalendarEventRSVP,
     CalendarEventType,
     Cohost,
-    EventInterest,
 } from "../models/calendar.ts";
-import type { LocationDTO } from "../models/location.ts";
-import type { BoundingBox } from "../models/place.ts";
-import type { PlaceEvent } from "../models/place.ts";
-import type { func_GetJwt, func_GetNostrSigner } from "@satlantis/api-client";
 import type { CalendarEventTag, EventUserTimeline } from "../models/event.ts";
+import type { LocationDTO } from "../models/location.ts";
+import type { BoundingBox, PlaceEvent } from "../models/place.ts";
 
 export enum RsvpStatus {
     Accepted = "accepted",
@@ -160,6 +158,7 @@ export interface GetEventRsvpsArgs {
 
 export interface GetEventCalendarsArgs {
     eventId?: string | number;
+    status?: RsvpStatus.Accepted | RsvpStatus.Waitlisted | RsvpStatus.Tentative | RsvpStatus.Requested;
 }
 
 /**
@@ -301,9 +300,14 @@ async (
     return handleResponse<EventRsvpsResponse>(response);
 };
 
+export interface GetEventAttendeesArgs {
+    eventId: string | number;
+    status?: RsvpStatus.Accepted | RsvpStatus.Waitlisted | RsvpStatus.Tentative | RsvpStatus.Requested;
+}
+
 export const getEventAttendees = (urlArg: URL, getJwt: func_GetJwt) =>
 async (
-    args: GetEventCalendarsArgs,
+    args: GetEventAttendeesArgs,
 ): Promise<AccountDTO[] | Error> => {
     const url = copyURL(urlArg);
     const jwtToken = getJwt();
@@ -314,6 +318,10 @@ async (
     }
 
     url.pathname = `/secure/events/${args.eventId}/attendees`;
+
+    if (args.status) {
+        url.searchParams.set("status", args.status);
+    }
 
     const response = await safeFetch(url, {
         method: "GET",
