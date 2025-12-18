@@ -158,7 +158,6 @@ export interface GetEventRsvpsArgs {
 
 export interface GetEventCalendarsArgs {
     eventId?: string | number;
-    status?: RsvpStatus.Accepted | RsvpStatus.Waitlisted | RsvpStatus.Tentative | RsvpStatus.Requested;
 }
 
 /**
