@@ -166,6 +166,8 @@ export type GetAccountCalendarEventsArgs = {
     period?: CalendarEventPeriod;
     rsvp?: RsvpStatus;
     isOrganizer?: boolean;
+    page?: number;
+    limit?: number;
 };
 
 export const getAccountCalendarEvents = (urlArg: URL) =>
@@ -184,6 +186,11 @@ async (
     if (args.rsvp) {
         const rsvp = args.rsvp ?? RsvpStatus.Accepted;
         url.searchParams.set("rsvp", rsvp.toString());
+    }
+
+    if (args.page && args.limit) {
+        url.searchParams.set("page", args.page.toString());
+        url.searchParams.set("limit", args.limit.toString());
     }
 
     const response = await safeFetch(url);
@@ -227,44 +234,56 @@ export const getEventsByAccount =
         return handleResponse<CalendarEvent[]>(response);
     };
 
-export const getAllUserEvents =
-    (urlArg: URL, getJwt?: () => string) =>
-    async (args: { period?: CalendarEventPeriod; isOrganizer?: boolean; rsvp?: RsvpStatus }) => {
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/user/events`;
-        const headers = new Headers();
-        if (getJwt) {
-            const jwtToken = getJwt();
-            if (jwtToken == "") {
-                return new Error("jwt token is empty");
-            }
-            headers.set("Authorization", `Bearer ${jwtToken}`);
-            headers.set("Content-Type", "application/json");
+export const getAllUserEvents = (urlArg: URL, getJwt?: () => string) =>
+async (
+    args: {
+        period?: CalendarEventPeriod;
+        isOrganizer?: boolean;
+        rsvp?: RsvpStatus;
+        page?: number;
+        limit?: number;
+    },
+) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/user/events`;
+    const headers = new Headers();
+    if (getJwt) {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
         }
-        const period = args.period ?? CalendarEventPeriod.Upcoming;
-        url.searchParams.set("period", period.toString());
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        headers.set("Content-Type", "application/json");
+    }
+    const period = args.period ?? CalendarEventPeriod.Upcoming;
+    url.searchParams.set("period", period.toString());
 
-        // Hosted events should not be called with the rsvp parameter. It does not make sense.
-        // an event host shouldn't have to RSVP to his own event.
-        if (typeof args.isOrganizer === "boolean") {
-            url.searchParams.set("isOrganizer", args.isOrganizer.toString());
-        }
+    if (args.page && args.limit) {
+        url.searchParams.set("page", args.page.toString());
+        url.searchParams.set("limit", args.limit.toString());
+    }
 
-        if (args.rsvp) {
-            // if args.isOrganizer is false, or is not present (falsy value for condition check)
-            // set rsvp status parameter
-            const rsvp = args.rsvp ?? RsvpStatus.Accepted;
-            url.searchParams.set("rsvp", rsvp.toString());
-        }
+    // Hosted events should not be called with the rsvp parameter. It does not make sense.
+    // an event host shouldn't have to RSVP to his own event.
+    if (typeof args.isOrganizer === "boolean") {
+        url.searchParams.set("isOrganizer", args.isOrganizer.toString());
+    }
 
-        const response = await safeFetch(url, { headers });
+    if (args.rsvp) {
+        // if args.isOrganizer is false, or is not present (falsy value for condition check)
+        // set rsvp status parameter
+        const rsvp = args.rsvp ?? RsvpStatus.Accepted;
+        url.searchParams.set("rsvp", rsvp.toString());
+    }
 
-        if (response instanceof Error) {
-            return response;
-        }
+    const response = await safeFetch(url, { headers });
 
-        return handleResponse<CalendarEvent[]>(response);
-    };
+    if (response instanceof Error) {
+        return response;
+    }
+
+    return handleResponse<CalendarEvent[]>(response);
+};
 
 export const sendOTP = (urlArg: URL) => async (args: { email: string }) => {
     const url = copyURL(urlArg);

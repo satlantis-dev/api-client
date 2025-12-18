@@ -235,12 +235,16 @@ export class UserResolver {
         period: CalendarEventPeriod = CalendarEventPeriod.Upcoming,
         rsvp?: RsvpStatus,
         isOrganizer?: boolean,
+        page?: number,
+        limit?: number,
     ) => {
         let eventParams: {
             npub: string;
             period: CalendarEventPeriod;
             rsvp?: RsvpStatus;
             isOrganizer?: boolean;
+            page?: number;
+            limit?: number;
         } = {
             npub: this.pubkey.bech32(),
             period,
@@ -248,6 +252,10 @@ export class UserResolver {
 
         if (rsvp) {
             eventParams = { ...eventParams, rsvp };
+        }
+
+        if (page && limit) {
+            eventParams = { ...eventParams, page, limit };
         }
 
         if (typeof isOrganizer === "boolean") {
