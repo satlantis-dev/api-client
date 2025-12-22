@@ -148,6 +148,7 @@ import {
     isSubscribedToCalendar,
     markCalendarAsFeatured,
     postCalendarEventAnnouncement,
+    postCalendarEventAnnouncementV2,
     postCalendarEventNote,
     postCalendarEventRSVP,
     postPlaceCalendarEvent,
@@ -169,7 +170,7 @@ import {
 import { followPubkeys, getFollowingPubkeys, getInterestsOf, unfollowPubkeys } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
 import { safeFetch } from "./helpers/safe-fetch.ts";
-import type { Account, Kind0MetaData } from "./models/account.ts";
+import type { Account, AccountDTO, Kind0MetaData } from "./models/account.ts";
 import { UserResolver } from "./resolvers/user.ts";
 import { LocationResolver } from "./resolvers/location.ts";
 import { NoteResolver } from "./resolvers/note.ts";
@@ -266,6 +267,7 @@ import {
     updateEventTicketStatus,
     updateEventTicketType,
     updateRsvpStatus,
+    type EventDetails,
 } from "./api/events.ts";
 import { getTimezoneInfo } from "./api/base.ts";
 import { getVanityPathMapping } from "./api/vanity.ts";
@@ -335,6 +337,7 @@ export class Client {
     postCalendarEventAnnouncement: ReturnType<
         typeof postCalendarEventAnnouncement
     >;
+    postCalendarEventAnnouncementV2: ReturnType<typeof postCalendarEventAnnouncementV2>;
     postCalendarEventNote: ReturnType<typeof postCalendarEventNote>;
     putUpdateCalendarEvent: ReturnType<typeof putUpdateCalendarEvent>;
     relistCalendarEvent: ReturnType<typeof relistCalendarEvent>;
@@ -670,6 +673,10 @@ export class Client {
             getNostrSigner,
         );
         this.postCalendarEventAnnouncement = postCalendarEventAnnouncement(
+            rest_api_url,
+            getJwt,
+        );
+        this.postCalendarEventAnnouncementV2 = postCalendarEventAnnouncementV2(
             rest_api_url,
             getJwt,
         );
@@ -1442,6 +1449,48 @@ export class Client {
         return { postResult: res, event };
     };
 
+    createCalendarEventAnnouncementV2 = async (args: {
+        event: {
+            id: number;
+            atag: string;
+        },
+        subject: string,
+        body: string,
+        toDiscussion: boolean,
+        recipients: { id: number }[]
+    }) => {
+        const jwtToken = this.getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const signer = await this.getNostrSigner();
+        if (signer instanceof Error) {
+            return signer;
+        }
+        const event = await prepareNostrEvent(signer, {
+            kind: NostrKind.TEXT_NOTE,
+            content: args.body,
+            tags: [["a", args.event.atag]],
+        });
+        if (event instanceof Error) {
+            return event;
+        }
+        const res = await this.postCalendarEventAnnouncementV2({
+            calendarEventId: args.event.id,
+            event,
+            toDiscussion: args.toDiscussion,
+            toEmail: true,
+            toNostr: false,
+            emailSubject: args.subject,
+            emailRecipientIds: args.recipients.map(r => r.id)
+        });
+        if (res instanceof Error) {
+            return res;
+        }
+        return { postResult: res, event };
+    }
+
     deleteCalendarEvent = async (args: {
         eventId: string;
         placeCalendarEventId: number;
@@ -2120,8 +2169,8 @@ export class Client {
             noteType: args.image || args.hasVideo
                 ? NoteType.MEDIA
                 : args.qTag
-                ? NoteType.BASIC
-                : NoteType.BASIC,
+                    ? NoteType.BASIC
+                    : NoteType.BASIC,
             placeId: args.placeID,
         });
         return res;
