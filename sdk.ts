@@ -269,6 +269,17 @@ import {
     updateRsvpStatus,
     type EventDetails,
 } from "./api/events.ts";
+
+import {
+    createReceiveInvoice,
+    decodeInvoice,
+    estimatePaymentFee,
+    getTransactionDetails,
+    getTransactionHistory,
+    getWallet,
+    getWalletExchangeRate,
+    sendPayment,
+} from "./api/secure/wallet.ts";
 import { getTimezoneInfo } from "./api/base.ts";
 import { getVanityPathMapping } from "./api/vanity.ts";
 import {
@@ -434,6 +445,16 @@ export class Client {
 
     // Notifications
     getNotifications: ReturnType<typeof getNotifications>;
+
+    // Wallet
+    getWallet: ReturnType<typeof getWallet>;
+    createReceiveInvoice: ReturnType<typeof createReceiveInvoice>;
+    sendPayment: ReturnType<typeof sendPayment>;
+    estimatePaymentFee: ReturnType<typeof estimatePaymentFee>;
+    getTransactionHistory: ReturnType<typeof getTransactionHistory>;
+    getTransactionDetails: ReturnType<typeof getTransactionDetails>;
+    decodeInvoice: ReturnType<typeof decodeInvoice>;
+    getWalletExchangeRate: ReturnType<typeof getWalletExchangeRate>;
 
     // Location
     getLocationsWithinBoundingBox: ReturnType<
@@ -778,6 +799,16 @@ export class Client {
 
         // notifications
         this.getNotifications = getNotifications(rest_api_url, getJwt);
+
+        // wallet
+        this.getWallet = getWallet(rest_api_url, getJwt);
+        this.createReceiveInvoice = createReceiveInvoice(rest_api_url, getJwt);
+        this.sendPayment = sendPayment(rest_api_url, getJwt);
+        this.estimatePaymentFee = estimatePaymentFee(rest_api_url, getJwt);
+        this.getTransactionHistory = getTransactionHistory(rest_api_url, getJwt);
+        this.getTransactionDetails = getTransactionDetails(rest_api_url, getJwt);
+        this.decodeInvoice = decodeInvoice(rest_api_url, getJwt);
+        this.getWalletExchangeRate = getWalletExchangeRate(rest_api_url, getJwt);
 
         // location
         this.getLocationsWithinBoundingBox = getLocationsWithinBoundingBox(rest_api_url, getJwt);
