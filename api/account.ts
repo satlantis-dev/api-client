@@ -1,6 +1,7 @@
 import { ApiError, copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { Account, AccountDTO } from "../models/account.ts";
+import type { Activity } from "../models/activity.ts";
 import { type CalendarEvent, CalendarEventPeriod, type func_GetJwt, type SearchAccountDTO } from "../sdk.ts";
 import { type AnswerType, RsvpStatus } from "./events.ts";
 
@@ -204,6 +205,8 @@ export type GetEventsByAccountArgs = {
     npub: string;
     period?: CalendarEventPeriod;
     rsvp?: "waitlisted" | "accepted";
+    page?: number;
+    limit?: number;
 };
 
 export const getEventsByAccount =
@@ -214,6 +217,10 @@ export const getEventsByAccount =
         url.searchParams.set("period", period.toString());
         if (args.rsvp) {
             url.searchParams.set("rsvp", args.rsvp);
+        }
+        if (args.page !== undefined && args.limit !== undefined) {
+            url.searchParams.set("page", args.page.toString());
+            url.searchParams.set("limit", args.limit.toString());
         }
         const headers = new Headers();
         if (getJwt) {
@@ -387,3 +394,17 @@ export const getAccountById = (urlArg: URL) => async (args: { id: number }) => {
 
     return handleResponse<SearchAccountDTO>(response);
 };
+
+export const getAccountActivities =
+    (urlArg: URL) => async (args: { npub: string; page?: number; limit?: number }) => {
+        const url = copyURL(urlArg);
+        url.pathname = `/account/${args.npub}/activities`;
+        if (args.page) url.searchParams.set("page", args.page.toString());
+        if (args.limit) url.searchParams.set("limit", args.limit.toString());
+
+        const response = await safeFetch(url);
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<Activity[]>(response);
+    };
