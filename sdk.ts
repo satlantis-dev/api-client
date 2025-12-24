@@ -163,6 +163,7 @@ import {
   isSubscribedToCalendar,
   markCalendarAsFeatured,
   postCalendarEventAnnouncement,
+  postCalendarEventAnnouncementV2,
   postCalendarEventNote,
   postCalendarEventRSVP,
   postPlaceCalendarEvent,
@@ -189,7 +190,7 @@ import {
 } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
 import { safeFetch } from "./helpers/safe-fetch.ts";
-import type { Account, Kind0MetaData } from "./models/account.ts";
+import type { Account, AccountDTO, Kind0MetaData } from "./models/account.ts";
 import { UserResolver } from "./resolvers/user.ts";
 import { LocationResolver } from "./resolvers/location.ts";
 import { NoteResolver } from "./resolvers/note.ts";
@@ -286,7 +287,19 @@ import {
   updateEventTicketStatus,
   updateEventTicketType,
   updateRsvpStatus,
+  type EventDetails,
 } from "./api/events.ts";
+
+import {
+  createReceiveInvoice,
+  decodeInvoice,
+  estimatePaymentFee,
+  getTransactionDetails,
+  getTransactionHistory,
+  getWallet,
+  getWalletExchangeRate,
+  sendPayment,
+} from "./api/secure/wallet.ts";
 import { getTimezoneInfo } from "./api/base.ts";
 import { getVanityPathMapping } from "./api/vanity.ts";
 import {
@@ -357,6 +370,9 @@ export class Client {
   postCalendarEventAnnouncement: ReturnType<
     typeof postCalendarEventAnnouncement
   >;
+  postCalendarEventAnnouncementV2: ReturnType<
+    typeof postCalendarEventAnnouncementV2
+  >;
   postCalendarEventNote: ReturnType<typeof postCalendarEventNote>;
   putUpdateCalendarEvent: ReturnType<typeof putUpdateCalendarEvent>;
   relistCalendarEvent: ReturnType<typeof relistCalendarEvent>;
@@ -365,8 +381,6 @@ export class Client {
     typeof respondCalendarEventCohostInvitation
   >;
   getAccountCalendarEvents: ReturnType<typeof getAccountCalendarEvents>;
-  getAccountActivities: ReturnType<typeof getAccountActivities>;
-  getUserActivities: ReturnType<typeof getUserActivities>;
   getCalendarEventTypes: ReturnType<typeof getCalendarEventTypes>;
   downloadCalendarEventAttendees: ReturnType<
     typeof downloadCalendarEventAttendees
@@ -456,6 +470,8 @@ export class Client {
   _blackListAccount: ReturnType<typeof blacklistAccount>;
   blacklistAccountWithNpub: ReturnType<typeof blacklistAccount>;
   getUserFollowers: ReturnType<typeof getUserFollowers>;
+  getAccountActivities: ReturnType<typeof getAccountActivities>;
+  getUserActivities: ReturnType<typeof getUserActivities>;
 
   // note
   private getNotesOfPubkey: ReturnType<typeof getNotesOfPubkey>;
@@ -469,6 +485,16 @@ export class Client {
 
   // Notifications
   getNotifications: ReturnType<typeof getNotifications>;
+
+  // Wallet
+  getWallet: ReturnType<typeof getWallet>;
+  createReceiveInvoice: ReturnType<typeof createReceiveInvoice>;
+  sendPayment: ReturnType<typeof sendPayment>;
+  estimatePaymentFee: ReturnType<typeof estimatePaymentFee>;
+  getTransactionHistory: ReturnType<typeof getTransactionHistory>;
+  getTransactionDetails: ReturnType<typeof getTransactionDetails>;
+  decodeInvoice: ReturnType<typeof decodeInvoice>;
+  getWalletExchangeRate: ReturnType<typeof getWalletExchangeRate>;
 
   // Location
   getLocationsWithinBoundingBox: ReturnType<
@@ -731,6 +757,10 @@ export class Client {
       rest_api_url,
       getJwt
     );
+    this.postCalendarEventAnnouncementV2 = postCalendarEventAnnouncementV2(
+      rest_api_url,
+      getJwt
+    );
     this.postCalendarEventNote = postCalendarEventNote(rest_api_url, getJwt);
     this.putUpdateCalendarEvent = putUpdateCalendarEvent(rest_api_url, getJwt);
     this.relistCalendarEvent = relistCalendarEvent(rest_api_url, getJwt);
@@ -738,8 +768,6 @@ export class Client {
     this.respondCalendarEventCohostInvitation =
       respondCalendarEventCohostInvitation(rest_api_url, getJwt);
     this.getAccountCalendarEvents = getAccountCalendarEvents(rest_api_url);
-    this.getAccountActivities = getAccountActivities(rest_api_url);
-    this.getUserActivities = getUserActivities(rest_api_url, getJwt);
     this.getCalendarEventTypes = getCalendarEventTypes(rest_api_url);
     this.downloadCalendarEventAttendees = downloadCalendarEventAttendees(
       rest_api_url,
@@ -851,7 +879,7 @@ export class Client {
     this.getCalendarsRandomized = getCalendarsRandomized(rest_api_url);
     this.getEventsFromCalendar = getEventsFromCalendar(rest_api_url);
 
-    // account
+    // Account
     this._getAccount = getAccount(rest_api_url, getJwt);
     this._getAccountFollowings = getAccountFollowings(rest_api_url);
     this._getAccountFollowers = getAccountFollowers(rest_api_url);
@@ -877,11 +905,23 @@ export class Client {
     this.getNote = getNote(rest_api_url);
     this.getNoteByNostrId = getNoteByNostrId(rest_api_url);
     this.getIpInfo = getIpInfo(rest_api_url);
+    this.getAccountActivities = getAccountActivities(rest_api_url);
+    this.getUserActivities = getUserActivities(rest_api_url, getJwt);
 
-    // notifications
+    // Notifications
     this.getNotifications = getNotifications(rest_api_url, getJwt);
 
-    // location
+    // Wallet
+    this.getWallet = getWallet(rest_api_url, getJwt);
+    this.createReceiveInvoice = createReceiveInvoice(rest_api_url, getJwt);
+    this.sendPayment = sendPayment(rest_api_url, getJwt);
+    this.estimatePaymentFee = estimatePaymentFee(rest_api_url, getJwt);
+    this.getTransactionHistory = getTransactionHistory(rest_api_url, getJwt);
+    this.getTransactionDetails = getTransactionDetails(rest_api_url, getJwt);
+    this.decodeInvoice = decodeInvoice(rest_api_url, getJwt);
+    this.getWalletExchangeRate = getWalletExchangeRate(rest_api_url, getJwt);
+
+    // Location
     this.getLocationsWithinBoundingBox = getLocationsWithinBoundingBox(
       rest_api_url,
       getJwt
@@ -938,12 +978,12 @@ export class Client {
     this.mapUserToDestination = mapUserToDestination(rest_api_url);
     this.reportLocation = reportLocation(rest_api_url, this.getJwt);
 
-    // address
+    // Address
     this.addressLookup = addressLookup(rest_api_url);
     this.getCoordinatesByAddress = getCoordinatesByAddress(rest_api_url);
     this.getCoordinatesByGoogleId = getCoordinatesByGoogleId(rest_api_url);
 
-    // authed APIs
+    // Authed APIs
     this.getUserAccount = getUserAccount(rest_api_url, this.getJwt);
     this.removeAccountRole = removeAccountRole(
       rest_api_url,
@@ -1617,6 +1657,48 @@ export class Client {
     const res = await this.postCalendarEventNote({
       calendarEventId: args.calendarEventId,
       event,
+    });
+    if (res instanceof Error) {
+      return res;
+    }
+    return { postResult: res, event };
+  };
+
+  createCalendarEventAnnouncementV2 = async (args: {
+    event: {
+      id: number;
+      atag: string;
+    };
+    subject: string;
+    body: string;
+    toDiscussion: boolean;
+    recipients: { id: number }[];
+  }) => {
+    const jwtToken = this.getJwt();
+    if (jwtToken == "") {
+      return new Error("jwt token is empty");
+    }
+
+    const signer = await this.getNostrSigner();
+    if (signer instanceof Error) {
+      return signer;
+    }
+    const event = await prepareNostrEvent(signer, {
+      kind: NostrKind.TEXT_NOTE,
+      content: args.body,
+      tags: [["a", args.event.atag]],
+    });
+    if (event instanceof Error) {
+      return event;
+    }
+    const res = await this.postCalendarEventAnnouncementV2({
+      calendarEventId: args.event.id,
+      event,
+      toDiscussion: args.toDiscussion,
+      toEmail: true,
+      toNostr: false,
+      emailSubject: args.subject,
+      emailRecipientIds: args.recipients.map((r) => r.id),
     });
     if (res instanceof Error) {
       return res;

@@ -22,6 +22,13 @@ export interface CalendarEventAnnouncement {
     calendarEventId: number;
     noteId: number;
     note: Note;
+    createdAt: string;
+    updatedAt: string;
+    toDiscussion: boolean;
+    toNostr: boolean;
+    toEmail: boolean;
+    emailSubject?: string;
+    emailRecipientIds: number[];
 }
 
 export interface CalendarEventNote {
