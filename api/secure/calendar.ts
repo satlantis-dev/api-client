@@ -314,14 +314,14 @@ export const postCalendarEventAnnouncementV2 =
 export const deleteAnnouncement =
     (urlArg: URL, getJwt: () => string) => async (args: {
         calendarEventId: number,
-        eventId: number,
+        announcementId: number,
     }) => {
         const jwtToken = getJwt();
         if (jwtToken == "") {
             return new Error("jwt token is empty");
         }
         const url = copyURL(urlArg);
-        url.pathname = `/secure/events/${args.calendarEventId}/announcements/${args.eventId}`;
+        url.pathname = `/secure/events/${args.calendarEventId}/announcements/${args.announcementId}`;
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
         const response = await safeFetch(url, {
@@ -337,7 +337,7 @@ export const deleteAnnouncement =
 export const updateAnnouncementContent =
     (urlArg: URL, getJwt: () => string) => async (args: {
         calendarEventId: number,
-        eventId: number,
+        announcementId: number,
         event: NostrEvent,
     }) => {
         const jwtToken = getJwt();
@@ -345,7 +345,7 @@ export const updateAnnouncementContent =
             return new Error("jwt token is empty");
         }
         const url = copyURL(urlArg);
-        url.pathname = `/secure/events/${args.calendarEventId}/announcements/${args.eventId}`;
+        url.pathname = `/secure/events/${args.calendarEventId}/announcements/${args.announcementId}`;
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
         const body = JSON.stringify(args.event);
@@ -363,7 +363,7 @@ export const updateAnnouncementContent =
 export const republishAnnouncement =
     (urlArg: URL, getJwt: () => string) => async (args: {
         calendarEventId: number,
-        eventId: number,
+        announcementId: number,
         body: {
             toDiscussion: boolean,
             toEmail: boolean,
@@ -377,7 +377,7 @@ export const republishAnnouncement =
             return new Error("jwt token is empty");
         }
         const url = copyURL(urlArg);
-        url.pathname = `/secure/events/${args.calendarEventId}/announcements/${args.eventId}/republish`;
+        url.pathname = `/secure/events/${args.calendarEventId}/announcements/${args.announcementId}/republish`;
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
         const body = JSON.stringify(args.body);
