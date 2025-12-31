@@ -334,7 +334,7 @@ export const deleteAnnouncement =
         return handleResponse<CalendarEventNote>(response);
     };
 
-export const updateAnnouncementContent =
+export const putAnnouncementContent =
     (urlArg: URL, getJwt: () => string) => async (args: {
         calendarEventId: number,
         announcementId: number,

@@ -183,7 +183,7 @@ import {
   unmarkCalendarAsFeatured,
   unsetOfficialCalendarFromEvent,
   unsubscribeFromCalendar,
-  updateAnnouncementContent,
+  putAnnouncementContent as putAnnouncementContent,
 } from "./api/secure/calendar.ts";
 import {
   followPubkeys,
@@ -377,7 +377,7 @@ export class Client {
     typeof postCalendarEventAnnouncementV2
   >;
   deleteAnnouncement: ReturnType<typeof deleteAnnouncement>;
-  updateAnnouncementContent: ReturnType<typeof updateAnnouncementContent>;
+  putAnnouncementContent: ReturnType<typeof putAnnouncementContent>;
   republishAnnouncement: ReturnType<typeof republishAnnouncement>;
   postCalendarEventNote: ReturnType<typeof postCalendarEventNote>;
   putUpdateCalendarEvent: ReturnType<typeof putUpdateCalendarEvent>;
@@ -768,7 +768,7 @@ export class Client {
       getJwt
     );
     this.deleteAnnouncement = deleteAnnouncement(rest_api_url, getJwt);
-    this.updateAnnouncementContent = updateAnnouncementContent(
+    this.putAnnouncementContent = putAnnouncementContent(
       rest_api_url,
       getJwt
     );
@@ -1719,6 +1719,44 @@ export class Client {
       return res;
     }
     return { postResult: res, event };
+  };
+
+  updateAnnouncementContent = async (args: {
+    event: {
+      id: number;
+      atag: string;
+    };
+    announcementId: number;
+    content: string;
+  }) => {
+    const jwtToken = this.getJwt();
+    if (jwtToken == "") {
+      return new Error("jwt token is empty");
+    }
+
+    const signer = await this.getNostrSigner();
+    if (signer instanceof Error) {
+      return signer;
+    }
+
+    const event = await prepareNostrEvent(signer, {
+      kind: NostrKind.TEXT_NOTE,
+      content: args.content,
+      tags: [["a", args.event.atag]],
+    });
+    if (event instanceof Error) {
+      return event;
+    }
+
+    const res = await this.putAnnouncementContent({
+      calendarEventId: args.event.id,
+      announcementId: args.announcementId,
+      event,
+    });
+    if (res instanceof Error) {
+      return res;
+    }
+    return { putResult: res, event };
   };
 
   deleteCalendarEvent = async (args: {
