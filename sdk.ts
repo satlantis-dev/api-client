@@ -107,7 +107,9 @@ import {
   updateAccountEmail,
   updateAccountFollowingList,
   getUserActivities,
+  updateAdditionalPictures,
 } from "./api/secure/account.ts";
+import { getSystemBanners } from "./api/system.ts";
 import {
   deletePlaceGalleryImage,
   postPlaceGalleryImage,
@@ -478,6 +480,8 @@ export class Client {
   getUserFollowers: ReturnType<typeof getUserFollowers>;
   getAccountActivities: ReturnType<typeof getAccountActivities>;
   getUserActivities: ReturnType<typeof getUserActivities>;
+  updateAdditionalPictures: ReturnType<typeof updateAdditionalPictures>;
+  getSystemBanners: ReturnType<typeof getSystemBanners>;
 
   // note
   private getNotesOfPubkey: ReturnType<typeof getNotesOfPubkey>;
@@ -922,6 +926,11 @@ export class Client {
     this.getIpInfo = getIpInfo(rest_api_url);
     this.getAccountActivities = getAccountActivities(rest_api_url);
     this.getUserActivities = getUserActivities(rest_api_url, getJwt);
+    this.updateAdditionalPictures = updateAdditionalPictures(
+      rest_api_url,
+      getJwt
+    );
+    this.getSystemBanners = getSystemBanners(rest_api_url);
 
     // Notifications
     this.getNotifications = getNotifications(rest_api_url, getJwt);
@@ -2149,7 +2158,9 @@ export class Client {
       this.me = currentProfile;
     }
 
-    const kind0 = await prepareKind0(signer, metaData);
+    // deno-lint-ignore no-unused-vars -- removed banner from Nostr metaData
+    const { banner, ...metaDataWithoutBanner } = metaData;
+    const kind0 = await prepareKind0(signer, metaDataWithoutBanner);
     if (kind0 instanceof Error) {
       return kind0;
     }
