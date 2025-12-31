@@ -46,7 +46,13 @@ export type Account = {
     referredBy: string;
     type: "owner";
   }[];
-  socialLinks: AccountSocialLinks;
+  socialLinks?: AccountSocialLinks;
+  additionalPictures?: AdditionalPicture[] | null;
+};
+
+export type AdditionalPicture = {
+  url: string;
+  order: number;
 };
 
 // https://github.com/satlantis-dev/models/blob/main/account.go#L92
@@ -145,6 +151,7 @@ export type Kind0MetaData = {
   picture?: string;
   website?: string;
   npub?: string;
+  socialLinks?: AccountSocialLinks;
   /**
    * @deprecated remove after Oct 25
    */

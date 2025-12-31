@@ -20,6 +20,7 @@ import type { Activity } from "../../models/activity.ts";
 import type {
   Account,
   AccountSearchDTO,
+  AccountSocialLinks,
   func_GetJwt,
   func_GetNostrSigner,
 } from "../../sdk.ts";
@@ -437,6 +438,7 @@ export const updateAccount =
       phone?: string;
       website?: string;
       isBusiness?: boolean;
+      socialLinks?: AccountSocialLinks;
     };
   }) => {
     const jwtToken = getJwt();
@@ -650,23 +652,53 @@ export const updateAccountEmail =
   };
 
 export const getUserActivities =
-    (urlArg: URL, getJwt: func_GetJwt) => async (args: { page?: number; limit?: number }) => {
-        const jwtToken = getJwt();
-        if (jwtToken == "") {
-            return new Error("jwt token is empty");
-        }
-        
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/user/activities`;
-        if (args.page) url.searchParams.set("page", args.page.toString());
-        if (args.limit) url.searchParams.set("limit", args.limit.toString());
-        
-        const headers = new Headers();
-        headers.set("Authorization", `Bearer ${jwtToken}`);
-        
-        const response = await safeFetch(url, { headers });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<Activity[]>(response);
-    };
+  (urlArg: URL, getJwt: func_GetJwt) =>
+  async (args: { page?: number; limit?: number }) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+      return new Error("jwt token is empty");
+    }
+
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/user/activities`;
+    if (args.page) url.searchParams.set("page", args.page.toString());
+    if (args.limit) url.searchParams.set("limit", args.limit.toString());
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, { headers });
+    if (response instanceof Error) {
+      return response;
+    }
+    return handleResponse<Activity[]>(response);
+  };
+
+export type AdditionalPicturePayload = {
+  url: string;
+  order: number;
+};
+
+export const updateAdditionalPictures =
+  (urlArg: URL, getJwt: func_GetJwt) =>
+  async (pictures: AdditionalPicturePayload[]) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+      return new Error("jwt token is empty");
+    }
+
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/account/update/additional-pictures`;
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+      method: "PUT",
+      body: JSON.stringify(pictures),
+      headers,
+    });
+    if (response instanceof Error) {
+      return response;
+    }
+    return handleResponse<{ success: boolean }>(response);
+  };
