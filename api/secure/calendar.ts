@@ -311,6 +311,87 @@ export const postCalendarEventAnnouncementV2 =
         return handleResponse<CalendarEventNote>(response);
     };
 
+export const deleteAnnouncement =
+    (urlArg: URL, getJwt: () => string) => async (args: {
+        calendarEventId: number,
+        eventId: number,
+    }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/${args.calendarEventId}/announcements/${args.eventId}`;
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        const response = await safeFetch(url, {
+            method: "DELETE",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<CalendarEventNote>(response);
+    };
+
+export const updateAnnouncementContent =
+    (urlArg: URL, getJwt: () => string) => async (args: {
+        calendarEventId: number,
+        eventId: number,
+        event: NostrEvent,
+    }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/${args.calendarEventId}/announcements/${args.eventId}`;
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        const body = JSON.stringify(args.event);
+        const response = await safeFetch(url, {
+            method: "DELETE",
+            body,
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<CalendarEventNote>(response);
+    };
+
+export const republishAnnouncement =
+    (urlArg: URL, getJwt: () => string) => async (args: {
+        calendarEventId: number,
+        eventId: number,
+        body: {
+            toDiscussion: boolean,
+            toEmail: boolean,
+            toNostr: boolean,
+            emailSubject: string,
+            emailRecipientIds: number[]
+        }
+    }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/${args.calendarEventId}/announcements/${args.eventId}/republish`;
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        const body = JSON.stringify(args.body);
+        const response = await safeFetch(url, {
+            method: "POST",
+            body,
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<CalendarEventNote>(response);
+    };
+
 export const postCalendarEventNote =
     (urlArg: URL, getJwt: () => string) => async (args: CalendarEventNotePost) => {
         const jwtToken = getJwt();

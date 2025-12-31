@@ -141,6 +141,7 @@ import {
   approveEventSubmission,
   createCalendar,
   declineEventSubmission,
+  deleteAnnouncement,
   deleteCalendar,
   deletePlaceCalendarEvent,
   deletePlaceCalendarEventById,
@@ -170,6 +171,7 @@ import {
   putUpdateCalendarEvent,
   relistCalendarEvent,
   removeEventFromCalendar,
+  republishAnnouncement,
   respondCalendarEventCohostInvitation,
   searchAccountViaEmail,
   searchCalendars,
@@ -181,6 +183,7 @@ import {
   unmarkCalendarAsFeatured,
   unsetOfficialCalendarFromEvent,
   unsubscribeFromCalendar,
+  updateAnnouncementContent,
 } from "./api/secure/calendar.ts";
 import {
   followPubkeys,
@@ -373,6 +376,9 @@ export class Client {
   postCalendarEventAnnouncementV2: ReturnType<
     typeof postCalendarEventAnnouncementV2
   >;
+  deleteAnnouncement: ReturnType<typeof deleteAnnouncement>;
+  updateAnnouncementContent: ReturnType<typeof updateAnnouncementContent>;
+  republishAnnouncement: ReturnType<typeof republishAnnouncement>;
   postCalendarEventNote: ReturnType<typeof postCalendarEventNote>;
   putUpdateCalendarEvent: ReturnType<typeof putUpdateCalendarEvent>;
   relistCalendarEvent: ReturnType<typeof relistCalendarEvent>;
@@ -758,6 +764,15 @@ export class Client {
       getJwt
     );
     this.postCalendarEventAnnouncementV2 = postCalendarEventAnnouncementV2(
+      rest_api_url,
+      getJwt
+    );
+    this.deleteAnnouncement = deleteAnnouncement(rest_api_url, getJwt);
+    this.updateAnnouncementContent = updateAnnouncementContent(
+      rest_api_url,
+      getJwt
+    );
+    this.republishAnnouncement = republishAnnouncement(
       rest_api_url,
       getJwt
     );
