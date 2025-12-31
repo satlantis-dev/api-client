@@ -350,7 +350,7 @@ export const putAnnouncementContent =
         headers.set("Authorization", `Bearer ${jwtToken}`);
         const body = JSON.stringify(args.event);
         const response = await safeFetch(url, {
-            method: "DELETE",
+            method: "PUT",
             body,
             headers,
         });
