@@ -1,43 +1,8 @@
 import type { func_GetJwt } from "../../sdk.ts";
-import { ApiError, copyURL, InvalidJSON, parseJSON } from "../../helpers/_helper.ts";
-import { Aborted, type FetchResult, safeFetch } from "../../helpers/safe-fetch.ts";
+import { safeFetch } from "../../helpers/safe-fetch.ts";
 import type { Collection } from "../../models/collection.ts";
 import type { Account, AccountDTO } from "../../models/account.ts";
-
-/**
- * Re-creating handleResponse because the success status code should be between 200 and 299, not just 200.
- */
-const handleResponse = async <T extends {}>(response: FetchResult) => {
-    const body = await response.text();
-    if (body instanceof Aborted) {
-        return body;
-    }
-
-    // 200-299 is success.
-    if (response.status < 200 || response.status >= 300) {
-        return new ApiError(response.status, body);
-    }
-    if (!body) {
-        return {} as T;
-    }
-    const result = parseJSON<T>(body);
-    if (result instanceof InvalidJSON) {
-        return result;
-    }
-    return result as T;
-};
-
-const createPublicUrl = (urlArg: URL, path: string) => {
-    const url = copyURL(urlArg);
-    url.pathname = path;
-    return url;
-};
-
-const createSecureUrl = (urlArg: URL, path: string) => {
-    const url = copyURL(urlArg);
-    url.pathname = `/secure${path}`;
-    return url;
-};
+import { createPublicUrl, createSecureUrl, handleResponse } from "../../helpers/util.ts";
 
 /**
  * ==========================================
