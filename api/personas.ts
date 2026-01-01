@@ -49,6 +49,6 @@ export function updateUserPersonas(urlArg: URL, getJwt: func_GetJwt) {
             return response;
         }
 
-        return handleResponse<void>(response);
+        return handleResponse<{}>(response);
     };
 }
