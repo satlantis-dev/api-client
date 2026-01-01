@@ -1,7 +1,7 @@
 import { safeFetch } from "../helpers/safe-fetch.ts";
-import { createPublicUrl, createSecureUrl, handleResponse } from "../../helpers/util.ts";
+import { createPublicUrl, createSecureUrl, handleResponse } from "../helpers/util.ts";
 import type { Persona } from "../models/persona.ts";
-import type { func_GetJwt } from "../../sdk.ts";
+import type { func_GetJwt } from "../sdk.ts";
 
 export function getPersonas(urlArg: URL) {
     return async () => {
