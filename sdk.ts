@@ -165,6 +165,7 @@ import {
     respondCalendarEventCohostInvitation,
     searchAccountViaEmail,
     searchCalendars,
+    sendAnnouncementPreview,
     sendCohostEmailInviteToCalendarEvent,
     setOfficialCalendarToEvent,
     submitEventToCalendar,
@@ -362,6 +363,7 @@ export class Client {
     postCalendarEventAnnouncementV2: ReturnType<
         typeof postCalendarEventAnnouncementV2
     >;
+    sendAnnouncementPreview: ReturnType<typeof sendAnnouncementPreview>;
     deleteAnnouncement: ReturnType<typeof deleteAnnouncement>;
     putAnnouncementContent: ReturnType<typeof putAnnouncementContent>;
     republishAnnouncement: ReturnType<typeof republishAnnouncement>;
@@ -763,6 +765,10 @@ export class Client {
             getJwt,
         );
         this.republishAnnouncement = republishAnnouncement(
+            rest_api_url,
+            getJwt,
+        );
+        this.sendAnnouncementPreview = sendAnnouncementPreview(
             rest_api_url,
             getJwt,
         );
@@ -1681,7 +1687,10 @@ export class Client {
         };
         subject: string;
         body: string;
+        toEmail: boolean;
+        toNostr: boolean;
         toDiscussion: boolean;
+        toNotification: boolean;
         recipients: { id: number }[];
     }) => {
         const jwtToken = this.getJwt();
@@ -1704,9 +1713,10 @@ export class Client {
         const res = await this.postCalendarEventAnnouncementV2({
             calendarEventId: args.event.id,
             event,
+            toEmail: args.toEmail,
+            toNostr: args.toNostr,
             toDiscussion: args.toDiscussion,
-            toEmail: true,
-            toNostr: false,
+            toNotification: args.toNotification,
             emailSubject: args.subject,
             emailRecipientIds: args.recipients.map((r) => r.id),
         });
@@ -2437,8 +2447,8 @@ export class Client {
             noteType: args.image || args.hasVideo
                 ? NoteType.MEDIA
                 : args.qTag
-                ? NoteType.BASIC
-                : NoteType.BASIC,
+                    ? NoteType.BASIC
+                    : NoteType.BASIC,
             placeId: args.placeID,
         });
         return res;

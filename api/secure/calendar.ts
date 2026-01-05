@@ -288,6 +288,7 @@ export const postCalendarEventAnnouncementV2 =
         toDiscussion: boolean,
         toEmail: boolean,
         toNostr: boolean,
+        toNotification: boolean,
         emailSubject: string,
         emailRecipientIds: number[]
     }) => {
@@ -300,6 +301,32 @@ export const postCalendarEventAnnouncementV2 =
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
         const body = JSON.stringify(args);
+        const response = await safeFetch(url, {
+            method: "POST",
+            body,
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<CalendarEventNote>(response);
+    };
+
+export const sendAnnouncementPreview =
+    (urlArg: URL, getJwt: () => string) => async (args: {
+        calendarEventId: number,
+        announcementId: number,
+        email: string
+    }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/${args.calendarEventId}/announcements/${args.announcementId}/preview`;
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        const body = JSON.stringify({ email: args.email });
         const response = await safeFetch(url, {
             method: "POST",
             body,
@@ -368,6 +395,7 @@ export const republishAnnouncement =
             toDiscussion: boolean,
             toEmail: boolean,
             toNostr: boolean,
+            toNotification: boolean,
             emailSubject: string,
             emailRecipientIds: number[]
         }
