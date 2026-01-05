@@ -154,6 +154,9 @@ export interface GetEventRsvpsArgs {
     sort_by?: string;
     sort_order?: string;
     search?: string;
+    options?: {
+        signal: AbortSignal;
+    };
 }
 
 export interface GetEventCalendarsArgs {
@@ -278,18 +281,16 @@ async (
 
     url.pathname = `/secure/events/${args.eventId}/rsvps`;
 
-    const queryParams = { ...args };
-    delete queryParams.eventId;
-
-    Object.keys(queryParams).forEach((key) => {
-        if (!!(queryParams as any)[key]) {
-            url.searchParams.set(key, (queryParams as any)[key]);
-        }
-    });
+    const { eventId: _eventId, options: _options, ...queryParams } = args;
+    for (const [key, value] of Object.entries(queryParams)) {
+        if (value === undefined || value === null || value === "") continue;
+        url.searchParams.set(key, String(value));
+    }
 
     const response = await safeFetch(url, {
         method: "GET",
         headers,
+        signal: args.options?.signal,
     });
 
     if (response instanceof Error) {
