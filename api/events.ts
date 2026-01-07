@@ -130,6 +130,7 @@ export interface GetEventRsvpTicket {
     createdAt: string;
     id: number;
     orderItemId: number;
+    orderId: number;
     status: string;
     ticketType: EventTicketType;
     ticketTypeId: number;
