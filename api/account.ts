@@ -214,7 +214,7 @@ export const getEventsByAccount =
         const period = args.period ?? CalendarEventPeriod.Upcoming;
         url.searchParams.set("period", period.toString());
         if (!!args.limit) {
-          url.searchParams.set("limit", args.limit.toString());
+            url.searchParams.set("limit", args.limit.toString());
         }
         if (args.rsvp) {
             url.searchParams.set("rsvp", args.rsvp);

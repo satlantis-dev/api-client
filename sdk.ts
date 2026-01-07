@@ -237,6 +237,7 @@ import {
     createCalendarEventTag,
     createEventTicketType,
     deleteEventTicketType,
+    type EventDetails,
     getCalendarEventTags,
     getEventAttendees,
     getEventCalendars,
@@ -267,7 +268,6 @@ import {
     updateEventTicketStatus,
     updateEventTicketType,
     updateRsvpStatus,
-    type EventDetails,
 } from "./api/events.ts";
 
 import {
@@ -1484,11 +1484,11 @@ export class Client {
         event: {
             id: number;
             atag: string;
-        },
-        subject: string,
-        body: string,
-        toDiscussion: boolean,
-        recipients: { id: number }[]
+        };
+        subject: string;
+        body: string;
+        toDiscussion: boolean;
+        recipients: { id: number }[];
     }) => {
         const jwtToken = this.getJwt();
         if (jwtToken == "") {
@@ -1514,13 +1514,13 @@ export class Client {
             toEmail: true,
             toNostr: false,
             emailSubject: args.subject,
-            emailRecipientIds: args.recipients.map(r => r.id)
+            emailRecipientIds: args.recipients.map((r) => r.id),
         });
         if (res instanceof Error) {
             return res;
         }
         return { postResult: res, event };
-    }
+    };
 
     deleteCalendarEvent = async (args: {
         eventId: string;
@@ -2200,8 +2200,8 @@ export class Client {
             noteType: args.image || args.hasVideo
                 ? NoteType.MEDIA
                 : args.qTag
-                    ? NoteType.BASIC
-                    : NoteType.BASIC,
+                ? NoteType.BASIC
+                : NoteType.BASIC,
             placeId: args.placeID,
         });
         return res;
