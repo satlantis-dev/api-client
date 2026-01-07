@@ -1269,28 +1269,20 @@ export interface UserEventsContactsResponse {
  * @param limit  Optional limit (defaults to 20).
  * @returns Promise<string[] | Error> Array of image URLs.
  */
-export const getUserEventsImages =
-    (urlArg: URL, getJwt: () => string) => async (args?: { offset?: number; limit?: number }) => {
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/user/events/images`;
-        if (args?.offset !== undefined) {
-            url.searchParams.set("offset", args.offset.toString());
-        }
-        if (args?.limit !== undefined) {
-            url.searchParams.set("limit", args.limit.toString());
-        }
+export const getUserEventsImages = (urlArg: URL, getJwt: () => string) => async () => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/user/events/images`;
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
 
-        const jwtToken = getJwt();
-        const headers = new Headers();
-        headers.set("Authorization", `Bearer ${jwtToken}`);
-        headers.set("Content-Type", "application/json");
-
-        const response = await safeFetch(url, { headers });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<string[]>(response);
-    };
+    const response = await safeFetch(url, { headers });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<string[]>(response);
+};
 
 /**
  * GET /secure/user/events/contacts
