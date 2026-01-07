@@ -256,7 +256,6 @@ import {
     getEventRsvps,
     getEvents,
     getEventsContacts,
-    getUserEventsImages,
     getEventTicketPaymentStatus,
     getEventTicketTypes,
     getEventTicketWithdrawalFee,
@@ -267,6 +266,7 @@ import {
     getRandomizedEvents,
     getRecommendedCalendarEventTags,
     getRecommendedEvents,
+    getUserEventsImages,
     inviteAttendees,
     markCalendarEventAsFeatured,
     postEventFinancialsWithdraw,
@@ -299,6 +299,7 @@ import {
 } from "./api/secure/order.ts";
 
 import { getPersonas, updateUserPersonas } from "./api/personas.ts";
+import { getUserOnboardingProfile, setHostFlag } from "./api/secure/onboarding.ts";
 
 export type func_GetNostrSigner = () => Promise<(Signer & Encrypter) | Error>;
 export type func_GetJwt = () => string;
@@ -311,6 +312,10 @@ export class Client {
     private places = new Map<number | string, Place>();
 
     getTimezoneInfo: ReturnType<typeof getTimezoneInfo>;
+
+    // Onboarding
+    getUserOnboardingProfile: ReturnType<typeof getUserOnboardingProfile>;
+    setHostFlag: ReturnType<typeof setHostFlag>;
 
     // Place
     private _getPlaceNames: ReturnType<typeof getPlaceNames>;
@@ -696,6 +701,12 @@ export class Client {
         public readonly getNostrSigner: func_GetNostrSigner,
     ) {
         this.getTimezoneInfo = getTimezoneInfo(rest_api_url);
+
+        this.getUserOnboardingProfile = getUserOnboardingProfile(
+            rest_api_url,
+            getJwt,
+        );
+        this.setHostFlag = setHostFlag(rest_api_url, getJwt);
 
         this._getPlaceNames = getPlaceNames(rest_api_url);
         this._getAllPlaceRegionCountryNames = getAllPlaceRegionCountryNames(rest_api_url);
@@ -2450,8 +2461,8 @@ export class Client {
             noteType: args.image || args.hasVideo
                 ? NoteType.MEDIA
                 : args.qTag
-                    ? NoteType.BASIC
-                    : NoteType.BASIC,
+                ? NoteType.BASIC
+                : NoteType.BASIC,
             placeId: args.placeID,
         });
         return res;
