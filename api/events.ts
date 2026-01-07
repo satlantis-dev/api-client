@@ -1260,6 +1260,39 @@ export interface UserEventsContactsResponse {
 }
 
 /**
+ * GET /secure/user/events/images
+ * Returns URLs of images from previous events for which the authenticated user
+ * is an organizer (owner or cohost). Ordered from most recent to oldest,
+ * deduplicated, and limited to 20 by default.
+ *
+ * @param offset Optional offset for pagination.
+ * @param limit  Optional limit (defaults to 20).
+ * @returns Promise<string[] | Error> Array of image URLs.
+ */
+export const getUserEventsImages =
+    (urlArg: URL, getJwt: () => string) => async (args?: { offset?: number; limit?: number }) => {
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/user/events/images`;
+        if (args?.offset !== undefined) {
+            url.searchParams.set("offset", args.offset.toString());
+        }
+        if (args?.limit !== undefined) {
+            url.searchParams.set("limit", args.limit.toString());
+        }
+
+        const jwtToken = getJwt();
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        headers.set("Content-Type", "application/json");
+
+        const response = await safeFetch(url, { headers });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<string[]>(response);
+    };
+
+/**
  * GET /secure/user/events/contacts
  * Returns the list of attendees (RSVP accepted) of past events for which the
  * authenticated user was the owner or a cohost.

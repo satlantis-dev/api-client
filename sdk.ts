@@ -256,6 +256,7 @@ import {
     getEventRsvps,
     getEvents,
     getEventsContacts,
+    getUserEventsImages,
     getEventTicketPaymentStatus,
     getEventTicketTypes,
     getEventTicketWithdrawalFee,
@@ -425,6 +426,7 @@ export class Client {
     getUserCalendarSubscriptions: ReturnType<typeof getUserCalendarSubscriptions>;
     getCalendarSubscribers: ReturnType<typeof getCalendarSubscribers>;
     getEventsContacts: ReturnType<typeof getEventsContacts>;
+    getUserEventsImages: ReturnType<typeof getUserEventsImages>;
     markCalendarAsFeatured: ReturnType<typeof markCalendarAsFeatured>;
     unmarkCalendarAsFeatured: ReturnType<typeof unmarkCalendarAsFeatured>;
     getCalendarEventTags: ReturnType<typeof getCalendarEventTags>;
@@ -848,6 +850,7 @@ export class Client {
         );
         this.getCalendarSubscribers = getCalendarSubscribers(rest_api_url, getJwt);
         this.getEventsContacts = getEventsContacts(rest_api_url, getJwt);
+        this.getUserEventsImages = getUserEventsImages(rest_api_url, getJwt);
         this.getCalendarEventTags = getCalendarEventTags(rest_api_url);
         this.getRecommendedCalendarEventTags = getRecommendedCalendarEventTags(rest_api_url);
         this.createCalendarEventTag = createCalendarEventTag(rest_api_url, getJwt);
