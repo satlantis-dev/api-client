@@ -23,7 +23,7 @@ export function getPersonas(urlArg: URL) {
 }
 
 export type UpdateUserPersonasArgs = {
-    personaIds: number[];
+    personas: string[];
 };
 
 export function updateUserPersonas(urlArg: URL, getJwt: func_GetJwt) {
