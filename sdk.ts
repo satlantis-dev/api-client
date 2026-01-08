@@ -245,7 +245,7 @@ import {
     createCalendarEventTag,
     createEventTicketType,
     deleteEventTicketType,
-    type EventDetails,
+    getAccountEventTickets,
     getCalendarEventTags,
     getEventAttendees,
     getEventCalendars,
@@ -352,6 +352,7 @@ export class Client {
     getEventRsvps: ReturnType<typeof getEventRsvps>;
     getEventAttendees: ReturnType<typeof getEventAttendees>;
     updateRsvpStatus: ReturnType<typeof updateRsvpStatus>;
+    getAccountEventTickets: ReturnType<typeof getAccountEventTickets>;
     getRandomizedEvents: ReturnType<typeof getRandomizedEvents>;
     getPopularEvents: ReturnType<typeof getPopularEvents>;
     getNewestEvents: ReturnType<typeof getNewestEvents>;
@@ -735,6 +736,7 @@ export class Client {
         this.getEventRsvps = getEventRsvps(rest_api_url, getJwt);
         this.getEventAttendees = getEventAttendees(rest_api_url, getJwt);
         this.updateRsvpStatus = updateRsvpStatus(rest_api_url, getJwt);
+        this.getAccountEventTickets = getAccountEventTickets(rest_api_url, getJwt);
         this.getRandomizedEvents = getRandomizedEvents(rest_api_url, getJwt);
         this.getPopularEvents = getPopularEvents(rest_api_url, getJwt);
         this.getNewestEvents = getNewestEvents(rest_api_url, getJwt);

@@ -77,3 +77,15 @@ export type CalendarEventTag = {
     name: string;
     numEvents: number;
 };
+
+export type AccountEventTicket = {
+    id: number;
+    ticketCode: string;
+    ticketName: string;
+    eventTitle: string;
+    eventLocation: string;
+    eventStart: string;
+    ticketHolder: string;
+    checkedInAt: string | null;
+    status: string;
+};

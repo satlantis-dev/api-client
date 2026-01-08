@@ -11,7 +11,7 @@ import type {
     CalendarEventType,
     Cohost,
 } from "../models/calendar.ts";
-import type { CalendarEventTag, EventUserTimeline } from "../models/event.ts";
+import type { AccountEventTicket, CalendarEventTag, EventUserTimeline } from "../models/event.ts";
 import type { LocationDTO } from "../models/location.ts";
 import type { BoundingBox, PlaceEvent } from "../models/place.ts";
 
@@ -1423,4 +1423,48 @@ async (
         return response;
     }
     return handleResponse<CalendarEventTag>(response);
+};
+
+export type GetAccountEventTIcketsArgs = {
+    page?: number; // @default 1
+    limit?: number; // @default 10
+};
+
+export type GetAccountEventTicketResponse = {
+    items: AccountEventTicket[];
+    total: number;
+    page: number;
+    limit: number;
+};
+
+export const getAccountEventTickets = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    args?: GetAccountEventTIcketsArgs,
+) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/me/tickets`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    if (args?.page) {
+        url.searchParams.set("page", args.page.toString());
+    }
+    if (args?.limit) {
+        url.searchParams.set("limit", args.limit.toString());
+    }
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+
+    if (response instanceof Error) {
+        return response;
+    }
+
+    return handleResponse(response);
 };
