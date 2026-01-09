@@ -1466,5 +1466,5 @@ async (
         return response;
     }
 
-    return handleResponse(response);
+    return handleResponse<GetAccountEventTicketResponse>(response);
 };
