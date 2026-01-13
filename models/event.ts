@@ -88,4 +88,11 @@ export type AccountEventTicket = {
     ticketHolder: string;
     checkedInAt: string | null;
     status: string;
+    eventId: number;
+    eventImage: string;
+    place?: {
+        id: number;
+        name: string
+        countryName?: string;
+    }
 };
