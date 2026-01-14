@@ -349,32 +349,46 @@ async (args: {
     }>(response);
 };
 
-export const verifyOTP = (urlArg: URL) => async (args: { token: string; otp: string }) => {
-    const url = copyURL(urlArg);
-    url.pathname = `/auth/otp/verify`;
-    const response = await safeFetch(url, {
-        method: "POST",
-        body: JSON.stringify({
-            ...args,
-        }),
-    });
-    if (response instanceof Error) {
-        return response;
-    }
-    return handleResponse<{
-        account: Account;
-        message: string; // e.g. OTP verification successful
-        success: boolean;
-        token: string; // JWT token that can be used as auth token
-        accountRsvpAnswers?: {
-            answers: {
-                label: string;
-                answerType: AnswerType;
-                answer?: string | boolean;
-            }[];
-        };
-    }>(response);
-};
+export const verifyOTP =
+    (urlArg: URL) => async (args: { token: string; otp: string; calendarEventId?: number }) => {
+        const url = copyURL(urlArg);
+        url.pathname = `/auth/otp/verify`;
+
+        let body;
+
+        if (args.calendarEventId) {
+            body = JSON.stringify({
+                token: args.token,
+                otp: args.otp,
+                calendarEventId: args.calendarEventId,
+            });
+        } else {
+            body = JSON.stringify({
+                token: args.token,
+                otp: args.otp,
+            });
+        }
+        const response = await safeFetch(url, {
+            method: "POST",
+            body,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<{
+            account: Account;
+            message: string; // e.g. OTP verification successful
+            success: boolean;
+            token: string; // JWT token that can be used as auth token
+            accountRsvpAnswers?: {
+                answers: {
+                    label: string;
+                    answerType: AnswerType;
+                    answer?: string | boolean;
+                }[];
+            };
+        }>(response);
+    };
 
 export const getAccountById = (urlArg: URL) => async (args: { id: number }) => {
     const url = copyURL(urlArg);
