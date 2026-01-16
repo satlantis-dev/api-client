@@ -46,6 +46,8 @@ export interface PlaceCalendarEventPut {
     event: NostrEvent;
     calendarEventId: number;
     contactEmail?: string;
+    isHidingAttendees?: boolean
+    isUnlisted?: boolean;
 }
 
 export interface RespondCalendarEventCohostInvitationPut {
@@ -211,6 +213,58 @@ export const unlistCalendarEvent =
 
         const url = copyURL(urlArg);
         url.pathname = `/secure/events/${args.eventId}/unlist`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const body = JSON.stringify(args);
+
+        const response = await safeFetch(url, {
+            method: "PUT",
+            body,
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<PlaceCalendarEvent>(response);
+    };
+
+export const unhideAttendeesCalendarEvent =
+    (urlArg: URL, getJwt: () => string) => async (args: { eventId: number }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/${args.eventId}/unhide-attendees`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const body = JSON.stringify(args);
+
+        const response = await safeFetch(url, {
+            method: "PUT",
+            body,
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<PlaceCalendarEvent>(response);
+    };
+
+export const hideAttendeesCalendarEvent =
+    (urlArg: URL, getJwt: () => string) => async (args: { eventId: number }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/${args.eventId}/hide-attendees`;
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);

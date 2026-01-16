@@ -87,6 +87,8 @@ export interface EventDetails {
 
     userTicket?: UserTicketEventDetails;
     isUnlisted: boolean;
+    isHidingLocation?: boolean;
+    isHidingAttendees?: boolean;
 }
 
 export interface UserTicketEventDetails {

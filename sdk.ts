@@ -162,7 +162,7 @@ import {
   getNewestCalendars,
   getPopularCalendars,
   getRecommendedCalendars,
-  getUserCalendarSubscriptions,
+  getUserCalendarSubscriptions, hideAttendeesCalendarEvent,
   importEventFromUrl,
   isSubscribedToCalendar,
   markCalendarAsFeatured,
@@ -183,11 +183,11 @@ import {
   sendCohostEmailInviteToCalendarEvent,
   setOfficialCalendarToEvent,
   submitEventToCalendar,
-  subscribeToCalendar,
+  subscribeToCalendar, unhideAttendeesCalendarEvent,
   unlistCalendarEvent,
   unmarkCalendarAsFeatured,
   unsetOfficialCalendarFromEvent,
-  unsubscribeFromCalendar,
+  unsubscribeFromCalendar
 } from "./api/secure/calendar.ts";
 import {
   followPubkeys,
@@ -401,6 +401,8 @@ export class Client {
   putUpdateCalendarEvent: ReturnType<typeof putUpdateCalendarEvent>;
   relistCalendarEvent: ReturnType<typeof relistCalendarEvent>;
   unlistCalendarEvent: ReturnType<typeof unlistCalendarEvent>;
+  unhideAttendeesCalendarEvent: ReturnType<typeof unhideAttendeesCalendarEvent>;
+  hideAttendeesCalendarEvent: ReturnType<typeof hideAttendeesCalendarEvent>;
   respondCalendarEventCohostInvitation: ReturnType<
     typeof respondCalendarEventCohostInvitation
   >;
@@ -811,6 +813,8 @@ export class Client {
     this.putUpdateCalendarEvent = putUpdateCalendarEvent(rest_api_url, getJwt);
     this.relistCalendarEvent = relistCalendarEvent(rest_api_url, getJwt);
     this.unlistCalendarEvent = unlistCalendarEvent(rest_api_url, getJwt);
+    this.hideAttendeesCalendarEvent = hideAttendeesCalendarEvent(rest_api_url, getJwt);
+    this.unhideAttendeesCalendarEvent = unhideAttendeesCalendarEvent(rest_api_url, getJwt);
     this.respondCalendarEventCohostInvitation =
       respondCalendarEventCohostInvitation(rest_api_url, getJwt);
     this.getAccountCalendarEvents = getAccountCalendarEvents(rest_api_url);
@@ -1406,6 +1410,7 @@ export class Client {
     isLimitedEvent?: boolean;
     gatedEvent?: boolean;
     isUnlisted?: boolean;
+    isHidingAttendees?: boolean;
   }) => {
     const jwtToken = this.getJwt();
     if (jwtToken == "") {
@@ -1499,6 +1504,7 @@ export class Client {
       ...(args.placeId && { placeId: args.placeId }), // Only include if placeId exists
       ...(args.isUnlisted !== undefined && { isUnlisted: args.isUnlisted }),
       event,
+      isHidingAttendees: args.isHidingAttendees ?? false,
     });
     if (res instanceof Error) {
       return res;
@@ -1537,6 +1543,8 @@ export class Client {
     capacity?: number;
     isLimitedEvent?: boolean;
     gatedEvent?: boolean;
+    isHidingAttendees?: boolean;
+    isUnlisted?: boolean;
   }) => {
     const jwtToken = this.getJwt();
     if (jwtToken == "") {
@@ -1629,6 +1637,8 @@ export class Client {
       calendarEventId: args.calendarEventId,
       ...(args.placeId && { placeId: args.placeId }), // Only include if placeId exists
       event,
+      isHidingAttendees: args.isHidingAttendees,
+      isUnlisted: args.isUnlisted,
     });
     if (res instanceof Error) {
       return res;
@@ -1652,6 +1662,28 @@ export class Client {
       return res;
     } else {
       const res = await this.relistCalendarEvent({
+        eventId: args.eventId,
+      });
+      return res;
+    }
+  };
+
+  toggleCalendarEventAttendees = async (args: {
+    eventId: number;
+    isHidingAttendees: boolean;
+  }) => {
+    const jwtToken = this.getJwt();
+    if (jwtToken == "") {
+      return new Error("jwt token is empty");
+    }
+
+    if (args.isHidingAttendees) {
+      const res = await this.hideAttendeesCalendarEvent({
+        eventId: args.eventId,
+      });
+      return res;
+    } else {
+      const res = await this.unhideAttendeesCalendarEvent({
         eventId: args.eventId,
       });
       return res;
