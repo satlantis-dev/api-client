@@ -348,13 +348,13 @@ export class Client {
   private _getPlaceByOsmRef: ReturnType<typeof getPlaceByOsmRef>;
   private _getPlaceById: ReturnType<typeof getPlaceById>;
   private _getPlaces: ReturnType<typeof getPlaces>;
+  private _getPlace: ReturnType<typeof getPlace>;
   getPlaceEvent: ReturnType<typeof getPlaceEvent>;
   getPlaceNotes: ReturnType<typeof getPlaceNotes>;
   getPlaceMetrics: ReturnType<typeof getPlaceMetrics>;
   getPlaceChats: ReturnType<typeof getPlaceChats>;
   getPlaceCategoryScores: ReturnType<typeof getPlaceCategoryScores>;
   getPlaceGalleryImages: ReturnType<typeof getPlaceGalleryImages>;
-  getPlace: ReturnType<typeof getPlace>;
   postPlaceGalleryImage: ReturnType<typeof postPlaceGalleryImage>;
   deletePlaceGalleryImage: ReturnType<typeof deletePlaceGalleryImage>;
 
