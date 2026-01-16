@@ -103,6 +103,7 @@ export interface EventDetailsPLace {
     boundingBox: BoundingBox;
     id: number;
     name: string;
+    level: string;
     osmRef: string;
 }
 // Event RSVP Interfaces
