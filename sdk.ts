@@ -149,6 +149,7 @@ import {
     getPopularCalendars,
     getRecommendedCalendars,
     getUserCalendarSubscriptions,
+    hideEventAttendees,
     importEventFromUrl,
     isSubscribedToCalendar,
     markCalendarAsFeatured,
@@ -170,6 +171,7 @@ import {
     setOfficialCalendarToEvent,
     submitEventToCalendar,
     subscribeToCalendar,
+    unhideEventAttendees,
     unlistCalendarEvent,
     unmarkCalendarAsFeatured,
     unsetOfficialCalendarFromEvent,
@@ -435,6 +437,8 @@ export class Client {
     getUserEventsImages: ReturnType<typeof getUserEventsImages>;
     markCalendarAsFeatured: ReturnType<typeof markCalendarAsFeatured>;
     unmarkCalendarAsFeatured: ReturnType<typeof unmarkCalendarAsFeatured>;
+    hideEventAttendees: ReturnType<typeof hideEventAttendees>;
+    unhideEventAttendees: ReturnType<typeof unhideEventAttendees>;
     getCalendarEventTags: ReturnType<typeof getCalendarEventTags>;
     getRecommendedCalendarEventTags: ReturnType<
         typeof getRecommendedCalendarEventTags
@@ -896,6 +900,8 @@ export class Client {
             rest_api_url,
             getJwt,
         );
+        this.hideEventAttendees = hideEventAttendees(rest_api_url, getJwt);
+        this.unhideEventAttendees = unhideEventAttendees(rest_api_url, getJwt);
         this.getFeaturedCalendars = getFeaturedCalendars(rest_api_url);
         this.getNewestCalendars = getNewestCalendars(rest_api_url);
         this.getPopularCalendars = getPopularCalendars(rest_api_url);
@@ -1375,6 +1381,7 @@ export class Client {
         googlePlaceId: string;
         autofollowHostAndCohosts?: boolean;
         allowCohostsToDownloadAttendeeList?: boolean;
+        isHidingAttendees?: boolean;
         enableWaitlist?: boolean;
         capacity?: number;
         isLimitedEvent?: boolean;
@@ -1471,6 +1478,7 @@ export class Client {
             ...(args.placeId && { placeId: args.placeId }), // Only include if placeId exists
             ...(args.isUnlisted !== undefined && { isUnlisted: args.isUnlisted }),
             event,
+            isHidingAttendees: args.isHidingAttendees ?? false,
         });
         if (res instanceof Error) {
             return res;

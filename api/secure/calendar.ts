@@ -1152,6 +1152,52 @@ export function unmarkCalendarAsFeatured(urlArg: URL, getJwt: func_GetJwt) {
     };
 }
 
+export function hideEventAttendees(urlArg: URL, getJwt: func_GetJwt) {
+    return async (args: {
+        eventId: number;
+    }) => {
+        const jwtToken = getJwt();
+        if (!jwtToken) return new Error("JWT token is empty.");
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/${args.eventId}/hide-attendees`;
+
+        const response = await safeFetch(url, {
+            method: "PUT",
+            headers,
+        });
+
+        if (response instanceof Error) return response;
+        return handleResponse(response);
+    };
+}
+
+export function unhideEventAttendees(urlArg: URL, getJwt: func_GetJwt) {
+    return async (args: {
+        eventId: number;
+    }) => {
+        const jwtToken = getJwt();
+        if (!jwtToken) return new Error("JWT token is empty.");
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/${args.eventId}/unhide-attendees`;
+
+        const response = await safeFetch(url, {
+            method: "PUT",
+            headers,
+        });
+
+        if (response instanceof Error) return response;
+        return handleResponse(response);
+    };
+}
+
 export function getFeaturedCalendars(urlArg: URL) {
     return async (args: {
         placeId?: number;
