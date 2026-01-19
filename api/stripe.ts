@@ -13,7 +13,8 @@ export type ConnectStripeAccountResponse = {
 
 export function connectStripeAccount(urlArg: URL, getJwt: func_GetJwt) {
     return async (args: ConnectStripeAccountArgs) => {
-        const url = createSecureUrl(urlArg, `/stripe/connect/authorize?redirect-url=${args.redirectUrl}`);
+        const url = createSecureUrl(urlArg, `/stripe/connect/authorize`);
+        url.searchParams.set("redirect_url", args.redirectUrl);
 
         const jwtToken = getJwt();
         const headers = new Headers();
