@@ -1271,6 +1271,7 @@ export class Client {
             page: number;
             sortColumn: "score" | "id" | "price" | "trending" | "topPicks";
             sortDirection: "desc" | "asc";
+            active_only?: boolean;
         },
         options?: { useCache: boolean },
     ) => {
