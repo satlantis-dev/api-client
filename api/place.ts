@@ -75,7 +75,7 @@ export const getPlaces =
     active_only?: boolean;
   }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getPlaces`;
+    url.pathname = `/destinations`;
     url.searchParams.append("filters", JSON.stringify(args.filters));
     url.searchParams.append("limit", JSON.stringify(args.limit));
     url.searchParams.append("page", JSON.stringify(args.page));
@@ -110,7 +110,7 @@ export type GetPlacesMinimalArgs = {
 export const getPlacesMinimal =
   (urlArg: URL) => async (args: GetPlacesMinimalArgs) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getPlacesMinimal`;
+    url.pathname = `/destinations/minimal`;
     url.searchParams.append("filters", JSON.stringify(args.filters));
     url.searchParams.append("limit", JSON.stringify(args.limit));
     url.searchParams.append("page", JSON.stringify(args.page));
