@@ -181,4 +181,7 @@ export type AccountSocialLinks = {
     instagram?: string;
     tiktok?: string;
     linkedin?: string;
+    telegram?: string;
+    youtube?: string;
+    whatsapp?: string;
 };
