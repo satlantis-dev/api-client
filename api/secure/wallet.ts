@@ -24,6 +24,12 @@ export interface Recipient {
     identifier: string;
 }
 
+export interface LightningAddressInfo {
+  minSendableSat: number;
+  maxSendableSat: number;
+  amountValid: boolean;
+}
+
 // --- Response Interfaces ---
 
 export interface GetWalletResponse {
@@ -63,6 +69,7 @@ export interface FeeEstimateResponse {
     total: number;
     destination: string;
     recipient: Recipient;
+    lightningAddressInfo?: LightningAddressInfo;
 }
 
 export interface Transaction {
