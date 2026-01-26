@@ -151,7 +151,6 @@ export type Kind0MetaData = {
     picture?: string;
     website?: string;
     npub?: string;
-    socialLinks?: AccountSocialLinks;
     /**
      * @deprecated remove after Oct 25
      */
