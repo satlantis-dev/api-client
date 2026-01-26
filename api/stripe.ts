@@ -34,7 +34,8 @@ export function connectStripeAccount(urlArg: URL, getJwt: func_GetJwt) {
 }
 
 export type DisconnectStripeAccountArgs = {
-    id: string;
+    // use StripeAccount.id
+    id: number;
 };
 
 export type DisconnectStripeAccountResponse = {
