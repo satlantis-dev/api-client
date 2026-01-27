@@ -133,6 +133,7 @@ import {
     declineEventSubmission,
     deleteAnnouncement,
     deleteCalendar,
+    deleteCalendarEventNote,
     deletePlaceCalendarEvent,
     deletePlaceCalendarEventById,
     downloadCalendarEventAttendees,
@@ -464,6 +465,7 @@ export class Client {
     searchCalendars: ReturnType<typeof searchCalendars>;
     getCalendarsRandomized: ReturnType<typeof getCalendarsRandomized>;
     getEventsFromCalendar: ReturnType<typeof getEventsFromCalendar>;
+    deleteCalendarEventNote: ReturnType<typeof deleteCalendarEventNote>;
 
     // Account
     /**
@@ -928,6 +930,7 @@ export class Client {
         this.searchCalendars = searchCalendars(rest_api_url);
         this.getCalendarsRandomized = getCalendarsRandomized(rest_api_url);
         this.getEventsFromCalendar = getEventsFromCalendar(rest_api_url);
+        this.deleteCalendarEventNote = deleteCalendarEventNote(rest_api_url, getJwt);
 
         // Account
         this._getAccount = getAccount(rest_api_url, getJwt);

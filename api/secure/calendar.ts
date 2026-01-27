@@ -21,6 +21,7 @@ import {
 import type { AnswerType, EventDetails } from "../events.ts";
 import type { AccountDTO } from "../../models/account.ts";
 import type { CalendarEventTag } from "../../models/event.ts";
+import { createSecureUrl } from "../../helpers/util.ts";
 
 // https://github.com/satlantis-dev/api/blob/dev/shared/models.go#L17
 export interface PlaceCalendarEventPost {
@@ -46,7 +47,7 @@ export interface PlaceCalendarEventPut {
     event: NostrEvent;
     calendarEventId: number;
     contactEmail?: string;
-    isHidingAttendees?: boolean
+    isHidingAttendees?: boolean;
     isUnlisted?: boolean;
 }
 
@@ -125,6 +126,29 @@ export const sendCohostEmailInviteToCalendarEvent =
         }
         return handleResponse<PlaceCalendarEvent>(response);
     };
+
+export const deleteCalendarEventNote = (urlArg: URL, getJwt: () => string) =>
+async (args: {
+    calendarEventId: number;
+    noteId: number;
+}) => {
+    const url = createSecureUrl(urlArg, `/events/${args.calendarEventId}/notes/${args.noteId}`);
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+
+    if (!jwtToken) return new Error("jwt token is empty");
+
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "DELETE",
+        headers,
+    });
+
+    if (response instanceof Error) return response;
+    return handleResponse<{}>(response);
+};
 
 export const postPlaceCalendarEvent =
     (urlArg: URL, getJwt: () => string) => async (args: PlaceCalendarEventPost) => {
