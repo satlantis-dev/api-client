@@ -173,6 +173,8 @@ import {
     submitEventToCalendar,
     subscribeToCalendar,
     unhideAttendeesCalendarEvent,
+    hideLocationCalendarEvent,
+    unhideLocationCalendarEvent,
     unlistCalendarEvent,
     unmarkCalendarAsFeatured,
     unsetOfficialCalendarFromEvent,
@@ -391,6 +393,8 @@ export class Client {
     unlistCalendarEvent: ReturnType<typeof unlistCalendarEvent>;
     unhideAttendeesCalendarEvent: ReturnType<typeof unhideAttendeesCalendarEvent>;
     hideAttendeesCalendarEvent: ReturnType<typeof hideAttendeesCalendarEvent>;
+    hideLocationCalendarEvent: ReturnType<typeof hideLocationCalendarEvent>;
+    unhideLocationCalendarEvent: ReturnType<typeof unhideLocationCalendarEvent>;
     respondCalendarEventCohostInvitation: ReturnType<
         typeof respondCalendarEventCohostInvitation
     >;
@@ -807,6 +811,8 @@ export class Client {
         this.unlistCalendarEvent = unlistCalendarEvent(rest_api_url, getJwt);
         this.hideAttendeesCalendarEvent = hideAttendeesCalendarEvent(rest_api_url, getJwt);
         this.unhideAttendeesCalendarEvent = unhideAttendeesCalendarEvent(rest_api_url, getJwt);
+        this.hideLocationCalendarEvent = hideLocationCalendarEvent(rest_api_url, getJwt);
+        this.unhideLocationCalendarEvent = unhideLocationCalendarEvent(rest_api_url, getJwt);
         this.respondCalendarEventCohostInvitation = respondCalendarEventCohostInvitation(
             rest_api_url,
             getJwt,
@@ -1679,6 +1685,28 @@ export class Client {
             return res;
         } else {
             const res = await this.unhideAttendeesCalendarEvent({
+                eventId: args.eventId,
+            });
+            return res;
+        }
+    };
+
+    toggleCalendarEventLocationVisibility = async (args: {
+        eventId: number;
+        isHidingAttendees: boolean;
+    }) => {
+        const jwtToken = this.getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        if (args.isHidingAttendees) {
+            const res = await this.hideLocationCalendarEvent({
+                eventId: args.eventId,
+            });
+            return res;
+        } else {
+            const res = await this.unhideLocationCalendarEvent({
                 eventId: args.eventId,
             });
             return res;
