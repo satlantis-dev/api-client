@@ -114,3 +114,31 @@ export function setDefaultStripeAccount(urlArg: URL, getJwt: func_GetJwt) {
         return handleResponse<SetDefaultStripeAccountResponse>(response);
     };
 }
+
+export type LinkStripeAccountToEventArgs = {
+    eventId: number;
+    accountStripeConnectId: number;
+};
+
+export function linkStripeAccountToEvent(urlArg: URL, getJwt: func_GetJwt) {
+    return async ({ eventId, accountStripeConnectId }: LinkStripeAccountToEventArgs) => {
+        const url = createSecureUrl(urlArg, `/events/${eventId}/stripe`);
+
+        const jwtToken = getJwt();
+        const headers = new Headers();
+
+        if (!jwtToken) return new Error("jwt token is empty");
+
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const response = await safeFetch(url, {
+            method: "PUT",
+            headers,
+            body: JSON.stringify({ accountStripeConnectId }),
+        });
+
+        if (response instanceof Error) return response;
+        // Just returns 200 OK.
+        return handleResponse<{}>(response);
+    };
+}

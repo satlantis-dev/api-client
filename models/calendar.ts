@@ -101,6 +101,7 @@ export type CalendarEvent = {
     googleId?: string;
     autoFollowHosts?: boolean;
     isOrganizer: boolean;
+    accountStripeConnectId?: number | null;
 };
 
 export type PlaceCalendarEvent = {

@@ -152,6 +152,7 @@ import {
     getRecommendedCalendars,
     getUserCalendarSubscriptions,
     hideAttendeesCalendarEvent,
+    hideLocationCalendarEvent,
     importEventFromUrl,
     isSubscribedToCalendar,
     markCalendarAsFeatured,
@@ -174,7 +175,6 @@ import {
     submitEventToCalendar,
     subscribeToCalendar,
     unhideAttendeesCalendarEvent,
-    hideLocationCalendarEvent,
     unhideLocationCalendarEvent,
     unlistCalendarEvent,
     unmarkCalendarAsFeatured,
@@ -311,6 +311,7 @@ import {
     connectStripeAccount,
     disconnectStripeAccount,
     getAllStripeAccounts,
+    linkStripeAccountToEvent,
     setDefaultStripeAccount,
 } from "./api/stripe.ts";
 
@@ -718,6 +719,7 @@ export class Client {
     disconnectStripeAccount: ReturnType<typeof disconnectStripeAccount>;
     getAllStripeAccounts: ReturnType<typeof getAllStripeAccounts>;
     setDefaultStripeAccount: ReturnType<typeof setDefaultStripeAccount>;
+    linkStripeAccountToEvent: ReturnType<typeof linkStripeAccountToEvent>;
 
     private constructor(
         public readonly rest_api_url: URL,
@@ -1230,6 +1232,7 @@ export class Client {
         this.disconnectStripeAccount = disconnectStripeAccount(rest_api_url, getJwt);
         this.getAllStripeAccounts = getAllStripeAccounts(rest_api_url, getJwt);
         this.setDefaultStripeAccount = setDefaultStripeAccount(rest_api_url, getJwt);
+        this.linkStripeAccountToEvent = linkStripeAccountToEvent(rest_api_url, getJwt);
     }
 
     static New(args: {

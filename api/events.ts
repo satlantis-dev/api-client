@@ -751,15 +751,20 @@ export enum DescriptionOrientation {
 }
 
 export interface EventTicketType {
-    name: string;
     id: number;
+    calendarEventId: number;
+    name: string;
     description: string;
     priceSats: number | null;
     priceFiat: number | null;
+    fiatCurrency?: string; // USD.
     maxCapacity: number | null;
     sellStartDate: string;
     sellEndDate: string;
+    createdAt: string;
     soldQuantity: number;
+    totalFundsCollected: number;
+    warning?: string;
 }
 
 export interface GetEventTicketTypeResponse extends EventTicketType {
