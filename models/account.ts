@@ -159,6 +159,7 @@ export type Kind0MetaData = {
      * @deprecated remove after Oct 25
      */
     email?: string;
+    socialLinks?: AccountSocialLinks;
 };
 
 export type SearchAccountDTO = {
