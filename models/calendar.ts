@@ -69,6 +69,7 @@ export type CalendarEvent = {
     accountId: number;
     account: AccountDTO;
     cohosts: Cohost[];
+    isHidingAttendees?: boolean;
     announcements: CalendarEventAnnouncement[];
     content: string;
     createdAt: string;
