@@ -1422,6 +1422,7 @@ export class Client {
         gatedEvent?: boolean;
         isUnlisted?: boolean;
         isHidingAttendees?: boolean;
+        isHidingLocation?: boolean;
     }) => {
         const jwtToken = this.getJwt();
         if (jwtToken == "") {
@@ -1514,6 +1515,7 @@ export class Client {
             ...(args.isUnlisted !== undefined && { isUnlisted: args.isUnlisted }),
             event,
             isHidingAttendees: args.isHidingAttendees ?? false,
+            isHidingLocation: args.isHidingLocation ?? false,
         });
         if (res instanceof Error) {
             return res;
@@ -1699,14 +1701,14 @@ export class Client {
 
     toggleCalendarEventLocationVisibility = async (args: {
         eventId: number;
-        isHidingAttendees: boolean;
+        isHidingLocation: boolean;
     }) => {
         const jwtToken = this.getJwt();
         if (jwtToken == "") {
             return new Error("jwt token is empty");
         }
 
-        if (args.isHidingAttendees) {
+        if (args.isHidingLocation) {
             const res = await this.hideLocationCalendarEvent({
                 eventId: args.eventId,
             });

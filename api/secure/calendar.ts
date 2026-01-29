@@ -30,6 +30,7 @@ export interface PlaceCalendarEventPost {
     contactEmail?: string;
     isUnlisted?: boolean;
     isHidingAttendees?: boolean;
+    isHidingLocation?: boolean;
 }
 
 interface EmailEventCohost {
@@ -48,6 +49,7 @@ export interface PlaceCalendarEventPut {
     calendarEventId: number;
     contactEmail?: string;
     isHidingAttendees?: boolean;
+    isHidingLocation?: boolean;
     isUnlisted?: boolean;
 }
 
