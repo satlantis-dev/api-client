@@ -89,6 +89,7 @@ export interface EventDetails {
     isUnlisted: boolean;
     isHidingLocation?: boolean;
     isHidingAttendees?: boolean;
+    accountStripeConnectId?: number | null
 }
 
 export interface UserTicketEventDetails {
