@@ -886,6 +886,8 @@ export interface EventTicketPurchasePayload {
         {
             ticketTypeId: number;
             quantity: number;
+            priceSats?: number;
+            priceFiat?: number;
         },
     ];
     rsvpData: {
