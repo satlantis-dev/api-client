@@ -89,7 +89,7 @@ export interface EventDetails {
     isUnlisted: boolean;
     isHidingLocation?: boolean;
     isHidingAttendees?: boolean;
-    accountStripeConnectId?: number | null
+    accountStripeConnectId?: number | null;
 }
 
 export interface UserTicketEventDetails {
@@ -911,6 +911,8 @@ export interface EventTicketPurchaseResponse {
     paidAt: Date | null;
     expiredAt: Date | null;
     failedAt: Date | null;
+    stripeClientSecret?: string;
+    stripePublishableKey?: string;
 }
 
 export type GetEventTicketStatusResponse = EventTicketPurchaseResponse;
