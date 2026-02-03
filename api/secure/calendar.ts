@@ -712,7 +712,7 @@ export const downloadCalendarEventAttendees =
         }
 
         const url = copyURL(urlArg);
-        url.pathname = `/secure/downloadCalendarEventAttendees/${args.placeCalendarEventId}`;
+        url.pathname = `/secure/events/${args.placeCalendarEventId}/attendees/csv`;
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
@@ -735,7 +735,7 @@ export const downloadCalendarEventIcsFile =
         }
 
         const url = copyURL(urlArg);
-        url.pathname = `/secure/downloadCalendarEventIcsFile/${args.calendarEventId}`;
+        url.pathname = `/secure/events/${args.calendarEventId}/ics`;
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
