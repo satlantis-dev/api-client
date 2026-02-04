@@ -776,9 +776,13 @@ export interface GetEventTicketTypeResponse extends EventTicketType {
 }
 
 export interface CreateTicketType {
-    description: string;
-    maxCapacity: null | number;
     name: string;
+    description: string;
+    priceCurrency?: string;
+    priceAmount?: number;
+    priceAmountForBTC?: number;
+    sellCurrencies: string[]; // USD, BTC, etc.
+    maxCapacity: null | number;
     priceFiat: null | number;
     priceSats: null | number;
     sellEndDate: string;
@@ -888,6 +892,7 @@ export interface EventTicketPurchasePayload {
             quantity: number;
             priceSats?: number;
             priceFiat?: number;
+            paymentCurrency: string; // "BTC" or "USD"
         },
     ];
     rsvpData: {
