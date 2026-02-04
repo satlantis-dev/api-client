@@ -1075,15 +1075,28 @@ async (
     return handleResponse<{ success: boolean; message: string } | Error>(response);
 };
 
+export type CurrencyEarnings = {
+    currency: "BTC" | "USD";
+    totalEarnings: number;
+    availableBalance: number;
+    pendingBalance: number;
+    totalWithdrawn: number;
+    pendingWithdrawals: number;
+    totalRefunded: number;
+    pendingRefunds: number;
+    ticketsSold: number;
+};
 export interface EventFinancialsSummaryResponse {
+    overallEarningsFiat: number;
+    fiatCurrency: string; // "USD"
+
+    btc: CurrencyEarnings & { currency: "BTC" };
+    fiat: CurrencyEarnings & { currency: "USD" };
+
+    totalTicketsSold: number; // Number of tickets sold
     totalEarnings: number; // Total from all paid orders (satoshis)
     availableBalance: number; // Available to withdraw = earnings - withdrawn - pending withdrawals - refunded
-    pendingBalance: number; // Orders awaiting payment
-    pendingWithdrawals: number; // Withdrawals being processed
-    totalWithdrawn: number; // Total withdrawn to date
-    totalRefunded: number; // Total refunded to customers
     currency: string; // "BTC" or "USD"(in future)
-    totalTicketsSold: number; // Number of tickets sold
 }
 
 export const getEventFinancialsSummary = (urlArg: URL, getJwt: func_GetJwt) =>
