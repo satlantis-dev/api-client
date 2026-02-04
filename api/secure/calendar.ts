@@ -560,7 +560,7 @@ export const postCalendarEventNote =
         }
 
         const url = copyURL(urlArg);
-        url.pathname = `/secure/createCalendarEventNote`;
+        url.pathname = `/secure/events/${args.calendarEventId}/notes`;
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
