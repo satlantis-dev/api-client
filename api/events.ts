@@ -759,12 +759,17 @@ export interface EventTicketType {
     priceSats: number | null;
     priceFiat: number | null;
     fiatCurrency?: string; // USD.
+    priceCurrency: number | null;
+    sellCurrencies: string[] | null; // USD, BTC, etc.
+    priceAmount: number | null;
+    priceAmountForBTC: number | null;
     maxCapacity: number | null;
     sellStartDate: string;
     sellEndDate: string;
     createdAt: string;
     soldQuantity: number;
     totalFundsCollected: number;
+    totalFundsCollectedFiat: number;
     warning?: string;
 }
 
