@@ -1111,8 +1111,8 @@ export interface CurrencyEarnings {
 export interface EventFinancialsSummaryResponse {
     overallEarningsFiat: number; // Total earnings converted to fiat
     fiatCurrency: Currency.USD; // Always USD
-    btcEarnings: CurrencyEarnings; // BTC/Lightning earnings breakdown
-    fiatEarnings: CurrencyEarnings; // Fiat/Stripe earnings breakdown
+    btc: CurrencyEarnings; // BTC/Lightning earnings breakdown
+    fiat: CurrencyEarnings; // Fiat/Stripe earnings breakdown
     totalTicketsSold: number; // Number of tickets sold
     // Legacy/aggregate fields
     totalEarnings: number; // Total from all paid orders
