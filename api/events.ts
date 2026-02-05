@@ -783,13 +783,13 @@ export interface GetEventTicketTypeResponse extends EventTicketType {
 export interface CreateTicketType {
     name: string;
     description: string;
-    priceCurrency?: string;
-    priceAmount?: number;
-    priceAmountForBTC?: number;
-    sellCurrencies: string[]; // USD, BTC, etc.
-    maxCapacity: null | number;
     priceFiat: null | number;
     priceSats: null | number;
+    priceCurrency?: string | null;
+    priceAmount?: number | null;
+    priceAmountForBTC?: number | null;
+    sellCurrencies: string[] | null; // USD, BTC, etc.
+    maxCapacity: null | number;
     sellEndDate: string;
     sellStartDate: string;
 }
