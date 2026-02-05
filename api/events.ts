@@ -89,7 +89,7 @@ export interface EventDetails {
     isUnlisted: boolean;
     isHidingLocation?: boolean;
     isHidingAttendees?: boolean;
-    accountStripeConnectId?: number | null;
+    accountStripeConnectId?: number;
 }
 
 export interface UserTicketEventDetails {
@@ -756,13 +756,12 @@ export interface EventTicketType {
     calendarEventId: number;
     name: string;
     description: string;
+    priceCurrency: PriceCurrency;
+    priceAmount: number;
+    sellCurrencies?: SellCurrency[];
     priceSats: number | null;
     priceFiat: number | null;
-    fiatCurrency?: string; // USD.
-    priceCurrency: string | null;
-    sellCurrencies: string[] | null; // USD, BTC, etc.
-    priceAmount: number | null;
-    priceAmountForBTC: number | null;
+    fiatCurrency?: string;
     maxCapacity: number | null;
     sellStartDate: string;
     sellEndDate: string;
@@ -771,7 +770,11 @@ export interface EventTicketType {
     totalFundsCollected: number;
     totalFundsCollectedFiat: number;
     warning?: string;
+    priceAmountForBTC?: number | null;
 }
+
+export type PriceCurrency = "BTC" | "USD";
+export type SellCurrency = "BTC" | "USD";
 
 export interface GetEventTicketTypeResponse extends EventTicketType {
     id: number;
@@ -783,15 +786,17 @@ export interface GetEventTicketTypeResponse extends EventTicketType {
 export interface CreateTicketType {
     name: string;
     description: string;
-    priceFiat: null | number;
-    priceSats: null | number;
-    priceCurrency?: string | null;
-    priceAmount?: number | null;
-    priceAmountForBTC?: number | null;
-    sellCurrencies: string[] | null; // USD, BTC, etc.
-    maxCapacity: null | number;
-    sellEndDate: string;
+    sellCurrencies: SellCurrency[];
+    maxCapacity: number | null;
     sellStartDate: string;
+    sellEndDate: string;
+    // Native pricing (scenarios 0-3)
+    priceSats?: number | null;
+    priceFiat?: number | null; // in cents
+    // USD-based BTC pricing (scenarios 4-5)
+    priceAmount?: number; // in cents
+    priceCurrency?: PriceCurrency;
+    priceAmountForBTC?: number; // in cents, for scenario 5
 }
 
 export const createEventTicketType = (urlArg: URL, getJwt: func_GetJwt) =>
@@ -895,9 +900,9 @@ export interface EventTicketPurchasePayload {
         {
             ticketTypeId: number;
             quantity: number;
-            priceSats?: number;
             priceFiat?: number;
             paymentCurrency: string; // "BTC" or "USD"
+            priceSats?: number;
         },
     ];
     rsvpData: {
@@ -923,11 +928,16 @@ export interface EventTicketPurchaseResponse {
     paidAt: Date | null;
     expiredAt: Date | null;
     failedAt: Date | null;
-    stripeClientSecret?: string;
     stripePublishableKey?: string;
+    stripeClientSecret?: string;
 }
 
 export type GetEventTicketStatusResponse = EventTicketPurchaseResponse;
+export enum XPlatform {
+    Web = "web",
+    iOS = "ios",
+    Android = "android",
+}
 export const purchaseEventTicket =
     (urlArg: URL, getJwt: func_GetJwt, getNostrSigner: func_GetNostrSigner) =>
     async (
@@ -939,6 +949,7 @@ export const purchaseEventTicket =
             dtag: string;
             pubkey: string;
         },
+        xplatform?: XPlatform,
     ): Promise<EventTicketPurchaseResponse | Error> => {
         const url = copyURL(urlArg);
         url.pathname = `/events/${eventId}/order`;
@@ -1080,33 +1091,38 @@ async (
     return handleResponse<{ success: boolean; message: string } | Error>(response);
 };
 
-export type CurrencyEarnings = {
-    currency: "BTC" | "USD";
-    totalEarnings: number;
-    availableBalance: number;
-    pendingBalance: number;
-    totalWithdrawn: number;
-    pendingWithdrawals: number;
-    totalRefunded: number;
-    pendingRefunds: number;
-    ticketsSold: number;
-};
-export interface EventFinancialsSummaryResponse {
-    overallEarningsFiat: number;
-    fiatCurrency: string; // "USD"
+export enum Currency {
+    USD = "USD",
+    BTC = "BTC",
+}
 
-    btc: CurrencyEarnings & { currency: "BTC" };
-    fiat: CurrencyEarnings & { currency: "USD" };
-
-    totalTicketsSold: number; // Number of tickets sold
-    totalEarnings: number; // Total from all paid orders (satoshis)
+export interface CurrencyEarnings {
+    currency: Currency;
+    totalEarnings: number; // Total from all paid orders
     availableBalance: number; // Available to withdraw = earnings - withdrawn - pending withdrawals - refunded
-    currency: string; // "BTC" or "USD"(in future)
+    pendingBalance: number; // Orders awaiting payment
+    totalWithdrawn: number; // Total withdrawn to date
+    pendingWithdrawals: number; // Withdrawals being processed
+    totalRefunded: number; // Total refunded to customers
+    pendingRefunds: number; // Refunds being processed
+    ticketsSold: number;
+}
+
+export interface EventFinancialsSummaryResponse {
+    overallEarningsFiat: number; // Total earnings converted to fiat
+    fiatCurrency: Currency.USD; // Always USD
+    btcEarnings: CurrencyEarnings; // BTC/Lightning earnings breakdown
+    fiatEarnings: CurrencyEarnings; // Fiat/Stripe earnings breakdown
+    totalTicketsSold: number; // Number of tickets sold
+    // Legacy/aggregate fields
+    totalEarnings: number; // Total from all paid orders
+    availableBalance: number; // Available to withdraw
+    currency: Currency;
 }
 
 export const getEventFinancialsSummary = (urlArg: URL, getJwt: func_GetJwt) =>
 async (
-    eventId: number,
+    eventId: string,
 ): Promise<EventFinancialsSummaryResponse | null | Error> => {
     const url = copyURL(urlArg);
     url.pathname = `/secure/events/${eventId}/financials/summary`;

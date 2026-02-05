@@ -92,7 +92,7 @@ export type AccountEventTicket = {
     eventImage: string;
     place?: {
         id: number;
-        name: string
+        name: string;
         countryName?: string;
-    }
+    };
 };

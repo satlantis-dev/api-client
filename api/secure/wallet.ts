@@ -25,9 +25,9 @@ export interface Recipient {
 }
 
 export interface LightningAddressInfo {
-  minSendableSat: number;
-  maxSendableSat: number;
-  amountValid: boolean;
+    minSendableSat: number;
+    maxSendableSat: number;
+    amountValid: boolean;
 }
 
 // --- Response Interfaces ---
