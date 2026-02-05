@@ -130,9 +130,11 @@ import {
     addEventToCalendar,
     approveEventSubmission,
     createCalendar,
+    createCalendarEventDraft,
     declineEventSubmission,
     deleteAnnouncement,
     deleteCalendar,
+    deleteCalendarEventDraft,
     deleteCalendarEventNote,
     deletePlaceCalendarEvent,
     deletePlaceCalendarEventById,
@@ -142,6 +144,8 @@ import {
     getCalendarByID,
     getCalendarsByAccount,
     getCalendarsRandomized,
+    getCalendarEventDraftById,
+    getCalendarEventDrafts,
     getCalendarSubscribers,
     getEventById,
     getEventsFromCalendar,
@@ -180,6 +184,7 @@ import {
     unmarkCalendarAsFeatured,
     unsetOfficialCalendarFromEvent,
     unsubscribeFromCalendar,
+    updateCalendarEventDraft,
 } from "./api/secure/calendar.ts";
 import { followPubkeys, getFollowingPubkeys, getInterestsOf, unfollowPubkeys } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
@@ -467,6 +472,13 @@ export class Client {
     getCalendarsRandomized: ReturnType<typeof getCalendarsRandomized>;
     getEventsFromCalendar: ReturnType<typeof getEventsFromCalendar>;
     deleteCalendarEventNote: ReturnType<typeof deleteCalendarEventNote>;
+
+    // Calendar Event Drafts
+    createCalendarEventDraft: ReturnType<typeof createCalendarEventDraft>;
+    getCalendarEventDrafts: ReturnType<typeof getCalendarEventDrafts>;
+    getCalendarEventDraftById: ReturnType<typeof getCalendarEventDraftById>;
+    updateCalendarEventDraft: ReturnType<typeof updateCalendarEventDraft>;
+    deleteCalendarEventDraft: ReturnType<typeof deleteCalendarEventDraft>;
 
     // Account
     /**
@@ -893,6 +905,13 @@ export class Client {
         this.getCalendarEventTags = getCalendarEventTags(rest_api_url);
         this.getRecommendedCalendarEventTags = getRecommendedCalendarEventTags(rest_api_url);
         this.createCalendarEventTag = createCalendarEventTag(rest_api_url, getJwt);
+
+        // Calendar Event Drafts
+        this.createCalendarEventDraft = createCalendarEventDraft(rest_api_url, getJwt);
+        this.getCalendarEventDrafts = getCalendarEventDrafts(rest_api_url, getJwt);
+        this.getCalendarEventDraftById = getCalendarEventDraftById(rest_api_url, getJwt);
+        this.updateCalendarEventDraft = updateCalendarEventDraft(rest_api_url, getJwt);
+        this.deleteCalendarEventDraft = deleteCalendarEventDraft(rest_api_url, getJwt);
 
         // Calendars
         this.getCalendarByID = getCalendarByID(rest_api_url);
