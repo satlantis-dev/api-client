@@ -1452,3 +1452,151 @@ export function getEventsFromCalendar(urlArg: URL) {
         return handleResponse<CalendarEvent[]>(response);
     };
 }
+
+// Calendar Event Draft Types
+export interface CalendarEventDraft {
+    id: number;
+    accountId: string;
+    title: string;
+    draft: any; // Any valid JSON (entire calendar event create data)
+    createdAt: string;
+    updatedAt: string;
+}
+
+// Create Calendar Event Draft
+export function createCalendarEventDraft(
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) {
+    return async (args: { draft: any }): Promise<CalendarEventDraft | Error> => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = "/secure/calendar-event-drafts";
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        headers.set("Content-Type", "application/json");
+
+        const response = await safeFetch(url, {
+            method: "POST",
+            headers,
+            body: JSON.stringify(args.draft),
+        });
+
+        if (response instanceof Error) return response;
+        return handleResponse<CalendarEventDraft>(response);
+    };
+}
+
+// Get User's Calendar Event Drafts
+export function getCalendarEventDrafts(
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) {
+    return async (): Promise<CalendarEventDraft[] | Error> => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = "/secure/calendar-event-drafts";
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const response = await safeFetch(url, { headers });
+
+        if (response instanceof Error) return response;
+        return handleResponse<CalendarEventDraft[]>(response);
+    };
+}
+
+// Get Single Calendar Event Draft by ID
+export function getCalendarEventDraftById(
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) {
+    return async (args: { draftId: number }): Promise<CalendarEventDraft | Error> => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/calendar-event-drafts/${args.draftId}`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const response = await safeFetch(url, { headers });
+
+        if (response instanceof Error) return response;
+        return handleResponse<CalendarEventDraft>(response);
+    };
+}
+
+// Update Calendar Event Draft
+export function updateCalendarEventDraft(
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) {
+    return async (args: {
+        draftId: number;
+        draft: any;
+    }): Promise<CalendarEventDraft | Error> => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/calendar-event-drafts/${args.draftId}`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        headers.set("Content-Type", "application/json");
+
+        const response = await safeFetch(url, {
+            method: "PUT",
+            headers,
+            body: JSON.stringify(args.draft),
+        });
+
+        if (response instanceof Error) return response;
+        return handleResponse<CalendarEventDraft>(response);
+    };
+}
+
+// Delete Calendar Event Draft
+export function deleteCalendarEventDraft(
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) {
+    return async (args: { draftId: number }): Promise<void | Error> => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/calendar-event-drafts/${args.draftId}`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const response = await safeFetch(url, {
+            method: "DELETE",
+            headers,
+        });
+
+        if (response instanceof Error) return response;
+        // DELETE typically returns 204 No Content
+        if (response.status === 204) return;
+        return handleResponse<void>(response);
+    };
+}
