@@ -756,9 +756,9 @@ export interface EventTicketType {
     calendarEventId: number;
     name: string;
     description: string;
-    priceCurrency: PriceCurrency;
-    priceAmount: number;
-    sellCurrencies?: SellCurrency[];
+    priceCurrency: PriceCurrency | null;
+    priceAmount: number | null;
+    sellCurrencies?: SellCurrency[] | null;
     priceSats: number | null;
     priceFiat: number | null;
     fiatCurrency?: string;
@@ -786,7 +786,6 @@ export interface GetEventTicketTypeResponse extends EventTicketType {
 export interface CreateTicketType {
     name: string;
     description: string;
-    sellCurrencies: SellCurrency[];
     maxCapacity: number | null;
     sellStartDate: string;
     sellEndDate: string;
@@ -794,9 +793,10 @@ export interface CreateTicketType {
     priceSats?: number | null;
     priceFiat?: number | null; // in cents
     // USD-based BTC pricing (scenarios 4-5)
-    priceAmount?: number; // in cents
-    priceCurrency?: PriceCurrency;
-    priceAmountForBTC?: number; // in cents, for scenario 5
+    priceAmount?: number | null; // in cents
+    priceCurrency?: PriceCurrency | null;
+    priceAmountForBTC?: number | null; // in cents, for scenario 5
+    sellCurrencies?: SellCurrency[] | null;
 }
 
 export const createEventTicketType = (urlArg: URL, getJwt: func_GetJwt) =>
@@ -996,7 +996,7 @@ export const purchaseEventTicket =
         }
 
         if (xplatform) {
-            headers.set('X-Platform', xplatform);
+            headers.set("X-Platform", xplatform);
         }
 
         let eventRSVPData;
