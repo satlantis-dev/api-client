@@ -901,7 +901,7 @@ export interface EventTicketPurchasePayload {
             ticketTypeId: number;
             quantity: number;
             priceFiat?: number;
-            paymentCurrency: string; // "BTC" or "USD"
+            paymentCurrency?: string; // "BTC" or "USD"
             priceSats?: number;
         },
     ];
