@@ -995,6 +995,10 @@ export const purchaseEventTicket =
             headers.set("Authorization", `Bearer ${jwtToken}`);
         }
 
+        if (xplatform) {
+            headers.set('X-Platform', xplatform);
+        }
+
         let eventRSVPData;
         if (event && isNostrAccount) {
             eventRSVPData = { ...payload.rsvpData, event };
