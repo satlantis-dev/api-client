@@ -1,5 +1,6 @@
 export enum PaymentMethod {
     LIGHTNING = "lightning",
+    STRIPE = 'stripe'
 }
 
 export enum OrderStatus {
