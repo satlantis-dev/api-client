@@ -1597,6 +1597,6 @@ export function deleteCalendarEventDraft(
         if (response instanceof Error) return response;
         // DELETE typically returns 204 No Content
         if (response.status === 204) return;
-        return handleResponse<void>(response);
+        return handleResponse<any>(response);
     };
 }
