@@ -128,11 +128,13 @@ import {
     searchInterestImages,
 } from "./api/secure/interests.ts";
 import {
+    acceptInvitationToCalendar,
     addEventToCalendar,
     approveEventSubmission,
     createCalendar,
     createCalendarEventDraft,
     declineEventSubmission,
+    declineInvitationToCalendar,
     deleteAnnouncement,
     deleteCalendar,
     deleteCalendarEventDraft,
@@ -159,6 +161,7 @@ import {
     hideAttendeesCalendarEvent,
     hideLocationCalendarEvent,
     importEventFromUrl,
+    inviteContributorToCalendar,
     isSubscribedToCalendar,
     markCalendarAsFeatured,
     postCalendarEventAnnouncement,
@@ -169,6 +172,7 @@ import {
     putAnnouncementContent as putAnnouncementContent,
     putUpdateCalendarEvent,
     relistCalendarEvent,
+    removeContributorFromCalendar,
     removeEventFromCalendar,
     republishAnnouncement,
     respondCalendarEventCohostInvitation,
@@ -701,15 +705,15 @@ export class Client {
     getCollectionViewers: ReturnType<typeof getCollectionViewers>;
     addViewerToCollection: ReturnType<typeof addViewerToCollection>;
     removeViewerFromCollection: ReturnType<typeof removeViewerFromCollection>;
-    inviteContributorToCollection: ReturnType<
-        typeof inviteContributorToCollection
+    inviteContributorToCalendar: ReturnType<
+        typeof this.inviteContributorToCalendar
     >;
-    acceptInvitationToCollection: ReturnType<typeof acceptInvitationToCollection>;
-    declineInvitationToCollection: ReturnType<
-        typeof declineInvitationToCollection
+    acceptInvitationToCalendar: ReturnType<typeof acceptInvitationToCalendar>;
+    declineInvitationToCalendar: ReturnType<
+        typeof declineInvitationToCalendar
     >;
-    removeContributorFromCollection: ReturnType<
-        typeof removeContributorFromCollection
+    removeContributorFromCalendar: ReturnType<
+        typeof removeContributorFromCalendar
     >;
     canEditCollection: ReturnType<typeof canEditCollection>;
 
@@ -960,10 +964,10 @@ export class Client {
         this.getCalendarsRandomized = getCalendarsRandomized(rest_api_url);
         this.getEventsFromCalendar = getEventsFromCalendar(rest_api_url);
         this.deleteCalendarEventNote = deleteCalendarEventNote(rest_api_url, getJwt);
-        this.inviteContributorToCollection = inviteContributorToCollection(rest_api_url, getJwt);
-        this.removeContributorFromCollection = removeContributorFromCollection(rest_api_url, getJwt);
-        this.acceptInvitationToCollection = acceptInvitationToCollection(rest_api_url, getJwt);
-        this.declineInvitationToCollection = declineInvitationToCollection(rest_api_url, getJwt);
+        this.inviteContributorToCalendar = inviteContributorToCalendar(rest_api_url, getJwt);
+        this.removeContributorFromCalendar = removeContributorFromCalendar(rest_api_url, getJwt);
+        this.acceptInvitationToCalendar = acceptInvitationToCalendar(rest_api_url, getJwt);
+        this.declineInvitationToCalendar = declineInvitationToCalendar(rest_api_url, getJwt);
         this.canEditCalendar = canEditCalendar(rest_api_url, getJwt);
 
         // Account
