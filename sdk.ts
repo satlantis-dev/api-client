@@ -706,7 +706,7 @@ export class Client {
     addViewerToCollection: ReturnType<typeof addViewerToCollection>;
     removeViewerFromCollection: ReturnType<typeof removeViewerFromCollection>;
     inviteContributorToCalendar: ReturnType<
-        typeof this.inviteContributorToCalendar
+        typeof inviteContributorToCalendar
     >;
     acceptInvitationToCalendar: ReturnType<typeof acceptInvitationToCalendar>;
     declineInvitationToCalendar: ReturnType<

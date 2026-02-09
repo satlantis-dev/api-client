@@ -1607,7 +1607,7 @@ export const inviteContributorToCalendar = (
 ) =>
 async (args: {
     calendarId: number;
-    contributorId: string;
+    contributorId: number;
 }) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
@@ -1643,7 +1643,7 @@ export const removeContributorFromCalendar = (
 ) =>
 async (args: {
     calendarId: number;
-    contributorId: string;
+    contributorId: number;
 }) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
