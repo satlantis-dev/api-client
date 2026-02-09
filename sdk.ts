@@ -274,6 +274,7 @@ import {
     getFeaturedEvents,
     getNewestEvents,
     getPopularEvents,
+    getPublicTicketDetails,
     getRandomizedEvents,
     getRecommendedCalendarEventTags,
     getRecommendedEvents,
@@ -366,6 +367,7 @@ export class Client {
 
     // Event Details getEventDetails
     getEventDetails: ReturnType<typeof getEventDetails>;
+    getPublicTicketDetails: ReturnType<typeof getPublicTicketDetails>;
     // Calendar Events
     getEvents: ReturnType<typeof getEvents>;
     getEventCalendars: ReturnType<typeof getEventCalendars>;
@@ -783,6 +785,7 @@ export class Client {
         this.getFeaturedEvents = getFeaturedEvents(rest_api_url, getJwt);
         this.getRecommendedEvents = getRecommendedEvents(rest_api_url, getJwt);
         this.getEventDetails = getEventDetails(rest_api_url, getJwt);
+        this.getPublicTicketDetails = getPublicTicketDetails(rest_api_url);
 
         // Check username availability in satlantis
 
