@@ -16,6 +16,12 @@ export type EventPaymentHistory = {
     paymentMethod: PaymentMethod;
     status: PaymentStatus;
     amount: number;
+    // Stripe payment
+    cardLast4?: string;
+    cardBrand?: string;
+    receiptUrl?: string;
+    paymentMethodId?: string;
+    //Lightning payment
     lightningInvoice?: string;
     lightningPaymentHash?: string;
     lightningPreimage?: string;
