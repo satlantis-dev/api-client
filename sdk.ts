@@ -88,6 +88,7 @@ import {
     addAccountRole,
     blacklistAccount,
     blockAccount,
+    canEditCalendar,
     checkBlockStatus,
     deleteAccount,
     followTierZeroPlaces,
@@ -479,6 +480,13 @@ export class Client {
     getCalendarEventDraftById: ReturnType<typeof getCalendarEventDraftById>;
     updateCalendarEventDraft: ReturnType<typeof updateCalendarEventDraft>;
     deleteCalendarEventDraft: ReturnType<typeof deleteCalendarEventDraft>;
+
+    // Calendar admins(contributors)
+    inviteContributorToCollection: ReturnType<typeof inviteContributorToCollection>;
+    removeContributorFromCollection: ReturnType<typeof removeContributorFromCollection>;
+    acceptInvitationToCollection: ReturnType<typeof acceptInvitationToCollection>;
+    declineInvitationToCollection: ReturnType<typeof declineInvitationToCollection>;
+    canEditCalendar: ReturnType<typeof canEditCalendar>;
 
     // Account
     /**
@@ -952,6 +960,11 @@ export class Client {
         this.getCalendarsRandomized = getCalendarsRandomized(rest_api_url);
         this.getEventsFromCalendar = getEventsFromCalendar(rest_api_url);
         this.deleteCalendarEventNote = deleteCalendarEventNote(rest_api_url, getJwt);
+        this.inviteContributorToCollection = inviteContributorToCollection(rest_api_url, getJwt);
+        this.removeContributorFromCollection = removeContributorFromCollection(rest_api_url, getJwt);
+        this.acceptInvitationToCollection = acceptInvitationToCollection(rest_api_url, getJwt);
+        this.declineInvitationToCollection = declineInvitationToCollection(rest_api_url, getJwt);
+        this.canEditCalendar = canEditCalendar(rest_api_url, getJwt);
 
         // Account
         this._getAccount = getAccount(rest_api_url, getJwt);

@@ -1600,3 +1600,133 @@ export function deleteCalendarEventDraft(
         return handleResponse<any>(response);
     };
 }
+
+export const inviteContributorToCalendar = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: {
+    calendarId: number;
+    contributorId: string;
+}) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/calendar/${args.calendarId}/invite-contributor`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const body = JSON.stringify({
+        contributorId: args.contributorId,
+    });
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        body,
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{
+        message: string;
+    }>(response);
+};
+
+export const removeContributorFromCalendar = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: {
+    calendarId: number;
+    contributorId: string;
+}) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/calendar/${args.calendarId}/remove-contributor`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const body = JSON.stringify({
+        contributorId: args.contributorId,
+    });
+
+    const response = await safeFetch(url, {
+        method: "DELETE",
+        body,
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{
+        message: string;
+    }>(response);
+};
+
+export const acceptInvitationToCalendar = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: {
+    calendarId: number;
+}) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/calendar/${args.calendarId}/accept-invitation`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{
+        message: string;
+    }>(response);
+};
+
+export const declineInvitationToCalendar = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: {
+    calendarId: number;
+}) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/calendar/${args.calendarId}/decline-invitation`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{
+        message: string;
+    }>(response);
+};

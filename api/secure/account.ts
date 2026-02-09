@@ -670,3 +670,24 @@ export const updateAdditionalPictures =
         }
         return handleResponse<{ success: boolean }>(response);
     };
+
+export const canEditCalendar = (urlArg: URL, getJwt: func_GetJwt) => async (args: { calendarId: string }) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/user/permissions/calendar/${args.calendarId}/edit`;
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{ canEdit: boolean }>(response);
+};
