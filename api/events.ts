@@ -101,6 +101,32 @@ export interface UserTicketEventDetails {
     ticketTypeName: string;
 }
 
+export interface PublicTicketDetails {
+    id: number;
+    code: string;
+    status: string;
+    checkedInAt: string | null;
+    createdAt: string;
+    ticketType: {
+        name: string;
+        description: string;
+    };
+    event: {
+        id: number;
+        title: string;
+        description: string;
+        startDate: string;
+        endDate: string;
+        location: string;
+        image: string;
+    };
+    ticketHolder: {
+        id: number;
+        name: string;
+        email: string;
+    };
+}
+
 export interface EventDetailsPLace {
     banner: string;
     boundingBox: BoundingBox;
@@ -200,6 +226,22 @@ async (
         return response;
     }
     return handleResponse<EventDetails>(response);
+};
+
+export const getPublicTicketDetails = (urlArg: URL) =>
+async (
+    args: { code: string },
+): Promise<PublicTicketDetails | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/tickets/public/${args.code}`;
+
+    const response = await safeFetch(url, {
+        method: "GET",
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<PublicTicketDetails>(response);
 };
 
 export interface GetEventsArgs {
