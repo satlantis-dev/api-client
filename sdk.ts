@@ -325,6 +325,19 @@ import {
     linkStripeAccountToEvent,
     setDefaultStripeAccount,
 } from "./api/stripe.ts";
+import {
+addMembersToCommunity,
+createCommunityFromCalendar,
+    createCommunityNewsletter,
+    deleteCommunityNewsletter,
+    getCommunityNewsletter,
+    getCommunityNewsletters,
+    listCommunityMembers,
+    previewCommunityNewsletter,
+    removeMembersFromCommunity,
+    sendCommunityNewsletter,
+    updateCommunityNewsletter,
+} from "./api/community.ts";
 
 export type func_GetNostrSigner = () => Promise<(Signer & Encrypter) | Error>;
 export type func_GetJwt = () => string;
@@ -746,6 +759,49 @@ export class Client {
     getAllStripeAccounts: ReturnType<typeof getAllStripeAccounts>;
     setDefaultStripeAccount: ReturnType<typeof setDefaultStripeAccount>;
     linkStripeAccountToEvent: ReturnType<typeof linkStripeAccountToEvent>;
+
+    /**
+     *
+	secure.HandleFunc("/calendar/{calendarId}/community", rest.CreateCommunityFromCalendar).Methods("POST")
+
+	// Members
+	secure.HandleFunc("/communities/{communityId}/members", rest.ListCommunityMembers).Methods("GET")
+	secure.HandleFunc("/communities/{communityId}/members", rest.AddMembersToCommunity).Methods("POST")
+	secure.HandleFunc("/communities/{communityId}/members", rest.RemoveMembersFromCommunity).Methods("DELETE")
+
+	// Newsletters
+	secure.HandleFunc("/communities/{communityId}/newsletters", rest.CreateCommunityNewsletter).Methods("POST")
+	secure.HandleFunc("/communities/{communityId}/newsletters/{newsletterId}", rest.UpdateCommunityNewsletter).Methods("PUT")
+	secure.HandleFunc("/communities/{communityId}/newsletters/{newsletterId}", rest.DeleteCommunityNewsletter).Methods("DELETE")
+	secure.HandleFunc("/communities/{communityId}/newsletters/{newsletterId}", rest.GetCommunityNewsletter).Methods("GET")
+	secure.HandleFunc("/communities/{communityId}/newsletters", rest.GetCommunityNewsletters).Methods("GET")
+	secure.HandleFunc("/communities/{communityId}/newsletters/{newsletterId}/preview", rest.PreviewCommunityNewsletter).Methods("POST")
+	secure.HandleFunc("/communities/{communityId}/newsletters/{newsletterId}/send", rest.SendCommunityNewsletter).Methods("POST")
+    */
+    // Community
+    createCommunityFromCalendar: ReturnType<
+        typeof createCommunityFromCalendar
+    >;
+    listCommunityMembers: ReturnType<typeof listCommunityMembers>;
+    addMembersToCommunity: ReturnType<typeof addMembersToCommunity>;
+    removeMembersFromCommunity: ReturnType<typeof removeMembersFromCommunity>;
+    createCommunityNewsletter: ReturnType<
+        typeof createCommunityNewsletter
+    >;
+    updateCommunityNewsletter: ReturnType<
+        typeof updateCommunityNewsletter
+    >;
+    deleteCommunityNewsletter: ReturnType<
+        typeof deleteCommunityNewsletter
+    >;
+    getCommunityNewsletter: ReturnType<typeof getCommunityNewsletter>;
+    getCommunityNewsletters: ReturnType<
+        typeof getCommunityNewsletters
+    >;
+    previewCommunityNewsletter: ReturnType<
+        typeof previewCommunityNewsletter
+    >;
+    sendCommunityNewsletter: ReturnType<typeof sendCommunityNewsletter>;
 
     private constructor(
         public readonly rest_api_url: URL,
@@ -1272,6 +1328,49 @@ export class Client {
         this.getAllStripeAccounts = getAllStripeAccounts(rest_api_url, getJwt);
         this.setDefaultStripeAccount = setDefaultStripeAccount(rest_api_url, getJwt);
         this.linkStripeAccountToEvent = linkStripeAccountToEvent(rest_api_url, getJwt);
+
+        // Community
+        this.createCommunityFromCalendar = createCommunityFromCalendar(
+            rest_api_url,
+            getJwt,
+        );
+        this.listCommunityMembers = listCommunityMembers(rest_api_url, getJwt);
+        this.addMembersToCommunity = addMembersToCommunity(
+            rest_api_url,
+            getJwt,
+        );
+        this.removeMembersFromCommunity = removeMembersFromCommunity(
+            rest_api_url,
+            getJwt,
+        );
+        this.createCommunityNewsletter = createCommunityNewsletter(
+            rest_api_url,
+            getJwt,
+        );
+        this.updateCommunityNewsletter = updateCommunityNewsletter(
+            rest_api_url,
+            getJwt,
+        );
+        this.deleteCommunityNewsletter = deleteCommunityNewsletter(
+            rest_api_url,
+            getJwt,
+        );
+        this.getCommunityNewsletter = getCommunityNewsletter(
+            rest_api_url,
+            getJwt,
+        );
+        this.getCommunityNewsletters = getCommunityNewsletters(
+            rest_api_url,
+            getJwt,
+        );
+        this.previewCommunityNewsletter = previewCommunityNewsletter(
+            rest_api_url,
+            getJwt,
+        );
+        this.sendCommunityNewsletter = sendCommunityNewsletter(
+            rest_api_url,
+            getJwt,
+        );
     }
 
     static New(args: {

@@ -1,5 +1,6 @@
 import type { Interest, Location, Note, Place } from "../sdk.ts";
 import type { AccountDTO } from "./account.ts";
+import type { Community } from "./community.ts";
 import type { CalendarEventTag } from "./event.ts";
 
 export interface CalendarEventRSVP {
@@ -145,6 +146,8 @@ export type Calendar = {
     numSubscriptions: number;
     createdAt: string;
     updatedAt: string;
+    communityId?: number;
+    community?: Community;
 };
 
 export interface CalendarEventSubmission {
