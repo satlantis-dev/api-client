@@ -1,6 +1,7 @@
 import type { AccountDTO, func_GetJwt } from "@satlantis/api-client";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
+import type { Community } from "../models/community.ts";
 
 export const createCommunityFromCalendar = (
     urlArg: URL,
@@ -26,9 +27,7 @@ async (args: {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{
-        message: string;
-    }>(response);
+    return handleResponse<Community>(response);
 };
 
 export const listCommunityMembers = (
