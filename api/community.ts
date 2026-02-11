@@ -64,7 +64,7 @@ export const addMembersToCommunity = (
 ) =>
 async (args: {
     communityId: number;
-    memberIds: number[];
+    accountIds: number[];
 }) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
@@ -81,7 +81,7 @@ async (args: {
         method: "POST",
         headers,
         body: JSON.stringify({
-            memberIds: args.memberIds,
+            accountIds: args.accountIds,
         }),
     });
     if (response instanceof Error) {
