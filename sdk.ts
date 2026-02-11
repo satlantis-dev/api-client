@@ -144,6 +144,7 @@ import {
     downloadCalendarEventAttendees,
     downloadCalendarEventIcsFile,
     editCalendar,
+    getAccountRolesForCalendar,
     getCalendarByID,
     getCalendarEventDraftById,
     getCalendarEventDrafts,
@@ -326,8 +327,8 @@ import {
     setDefaultStripeAccount,
 } from "./api/stripe.ts";
 import {
-addMembersToCommunity,
-createCommunityFromCalendar,
+    addMembersToCommunity,
+    createCommunityFromCalendar,
     createCommunityNewsletter,
     deleteCommunityNewsletter,
     getCommunityNewsletter,
@@ -477,6 +478,7 @@ export class Client {
     getCalendarSubscribers: ReturnType<typeof getCalendarSubscribers>;
     getEventsContacts: ReturnType<typeof getEventsContacts>;
     getUserEventsImages: ReturnType<typeof getUserEventsImages>;
+    getAccountRolesForCalendar: ReturnType<typeof getAccountRolesForCalendar>;
     markCalendarAsFeatured: ReturnType<typeof markCalendarAsFeatured>;
     unmarkCalendarAsFeatured: ReturnType<typeof unmarkCalendarAsFeatured>;
     getCalendarEventTags: ReturnType<typeof getCalendarEventTags>;
@@ -976,6 +978,7 @@ export class Client {
         this.getCalendarEventTags = getCalendarEventTags(rest_api_url);
         this.getRecommendedCalendarEventTags = getRecommendedCalendarEventTags(rest_api_url);
         this.createCalendarEventTag = createCalendarEventTag(rest_api_url, getJwt);
+        this.getAccountRolesForCalendar = getAccountRolesForCalendar(rest_api_url, getJwt);
 
         // Calendar Event Drafts
         this.createCalendarEventDraft = createCalendarEventDraft(rest_api_url, getJwt);

@@ -1,4 +1,4 @@
-import type { Interest, Location, Note, Place } from "../sdk.ts";
+import type { Account, Interest, Location, Note, Place } from "../sdk.ts";
 import type { AccountDTO } from "./account.ts";
 import type { Community } from "./community.ts";
 import type { CalendarEventTag } from "./event.ts";
@@ -155,3 +155,20 @@ export interface CalendarEventSubmission {
     event: CalendarEvent;
     submitter: AccountDTO;
 }
+
+export enum AccountCalendarRoleType {
+    CalendarOwner = 1,
+    CalendarContributor,
+    CalendarViewer,
+    CalendarInvited,
+}
+
+export type AccountCalendarRole = {
+    accountId: number;
+    account?: AccountDTO;
+    calendarId: number;
+    calendar?: Calendar;
+    type: AccountCalendarRoleType;
+    createdAt: string;
+    updatedAt: string;
+};
