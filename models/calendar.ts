@@ -1,4 +1,4 @@
-import type { Account, Interest, Location, Note, Place } from "../sdk.ts";
+import type { Interest, Location, Note, Place } from "../sdk.ts";
 import type { AccountDTO } from "./account.ts";
 import type { Community } from "./community.ts";
 import type { CalendarEventTag } from "./event.ts";
