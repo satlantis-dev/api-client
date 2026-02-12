@@ -1,7 +1,7 @@
 import type { AccountDTO, func_GetJwt } from "@satlantis/api-client";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
-import type { Community } from "../models/community.ts";
+import type { Community, CommunityNewsletter } from "../models/community.ts";
 
 export const createCommunityFromCalendar = (
     urlArg: URL,
@@ -132,9 +132,8 @@ export const createCommunityNewsletter = (
 async (args: {
     communityId: number;
     subject: string;
-    contentJson?: Record<string, unknown>;
-    contentHtml?: string;
-    scheduledFor?: string;
+    contentHtml: string;
+    contentJson?: JSON;
 }) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
@@ -154,7 +153,6 @@ async (args: {
             subject: args.subject,
             contentJson: args.contentJson,
             contentHtml: args.contentHtml,
-            scheduledFor: args.scheduledFor,
         }),
     });
     if (response instanceof Error) {
@@ -173,7 +171,7 @@ async (args: {
     communityId: number;
     newsletterId: number;
     subject?: string;
-    contentJson?: Record<string, unknown>;
+    contentJson?: JSON;
     contentHtml?: string;
     scheduledFor?: string;
 }) => {
@@ -290,9 +288,7 @@ async (args: {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{
-        newsletters: Record<string, unknown>[];
-    }>(response);
+    return handleResponse<CommunityNewsletter[]>(response);
 };
 
 export const previewCommunityNewsletter = (

@@ -27,7 +27,7 @@ export type CommunityNewsletter = {
     community?: Community;
     accountId: number;
     account?: AccountDTO;
-    contentJson?: Record<string, unknown>;
+    contentJson?: JSON;
     contentHtml?: string;
     subject: string;
     status: NewsletterStatus;
