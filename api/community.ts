@@ -133,7 +133,7 @@ async (args: {
     communityId: number;
     subject: string;
     contentHtml: string;
-    contentJson?: JSON;
+    contentJson?: Record<string, unknown>;
 }) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
