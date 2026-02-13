@@ -296,6 +296,7 @@ export const previewCommunityNewsletter = (
 async (args: {
     communityId: number;
     newsletterId: number;
+    email: string;
 }) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
@@ -310,6 +311,9 @@ async (args: {
     const response = await safeFetch(url, {
         method: "POST",
         headers,
+        body: JSON.stringify({
+            email: args.email,
+        }),
     });
     if (response instanceof Error) {
         return response;
