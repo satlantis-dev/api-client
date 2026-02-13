@@ -1495,6 +1495,52 @@ async (
     return handleResponse<CalendarEventTag[]>(response);
 };
 
+export interface GenerateAiEventDescriptionPayload {
+    prompt: string;
+    title: string;
+    time: {
+        start: string;
+        end: string;
+        timezone: string;
+    };
+    googleId?: string;
+    existingDescription?: string;
+}
+
+export interface GenerateAiEventDescriptionResponse {
+    description: string;
+    generatedDescription?: string;
+    summary?: string;
+}
+
+export const generateAiEventDescription = (urlArg: URL, getJwt?: func_GetJwt) =>
+async (
+    payload: GenerateAiEventDescriptionPayload,
+): Promise<GenerateAiEventDescriptionResponse | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/ai-description`;
+
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+
+    if (getJwt) {
+        const jwtToken = getJwt();
+        if (jwtToken !== "") {
+            headers.set("Authorization", `Bearer ${jwtToken}`);
+        }
+    }
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<GenerateAiEventDescriptionResponse>(response);
+};
+
 export const createCalendarEventTag = (urlArg: URL, getJwt: func_GetJwt) =>
 async (
     tagName: string,
