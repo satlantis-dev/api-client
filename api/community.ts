@@ -1,7 +1,7 @@
 import type { AccountDTO, func_GetJwt } from "@satlantis/api-client";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
-import type { Community } from "../models/community.ts";
+import type { Community, CommunityNewsletter } from "../models/community.ts";
 
 export const createCommunityFromCalendar = (
     urlArg: URL,
@@ -132,9 +132,8 @@ export const createCommunityNewsletter = (
 async (args: {
     communityId: number;
     subject: string;
+    contentHtml: string;
     contentJson?: Record<string, unknown>;
-    contentHtml?: string;
-    scheduledFor?: string;
 }) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
@@ -154,15 +153,12 @@ async (args: {
             subject: args.subject,
             contentJson: args.contentJson,
             contentHtml: args.contentHtml,
-            scheduledFor: args.scheduledFor,
         }),
     });
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{
-        message: string;
-    }>(response);
+    return handleResponse<Community>(response);
 };
 
 export const updateCommunityNewsletter = (
@@ -173,7 +169,7 @@ async (args: {
     communityId: number;
     newsletterId: number;
     subject?: string;
-    contentJson?: Record<string, unknown>;
+    contentJson?: JSON;
     contentHtml?: string;
     scheduledFor?: string;
 }) => {
@@ -261,9 +257,7 @@ async (args: {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{
-        newsletter: Record<string, unknown>;
-    }>(response);
+    return handleResponse<CommunityNewsletter>(response);
 };
 
 export const getCommunityNewsletters = (
@@ -290,9 +284,7 @@ async (args: {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{
-        newsletters: Record<string, unknown>[];
-    }>(response);
+    return handleResponse<CommunityNewsletter[]>(response);
 };
 
 export const previewCommunityNewsletter = (
@@ -302,6 +294,7 @@ export const previewCommunityNewsletter = (
 async (args: {
     communityId: number;
     newsletterId: number;
+    email: string;
 }) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
@@ -316,13 +309,14 @@ async (args: {
     const response = await safeFetch(url, {
         method: "POST",
         headers,
+        body: JSON.stringify({
+            email: args.email,
+        }),
     });
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{
-        previewUrl: string;
-    }>(response);
+    return handleResponse<string>(response);
 };
 
 export const sendCommunityNewsletter = (
@@ -351,6 +345,6 @@ async (args: {
         return response;
     }
     return handleResponse<{
-        message: string;
+        status: string;
     }>(response);
 };
