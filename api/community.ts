@@ -318,9 +318,7 @@ async (args: {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{
-        previewUrl: string;
-    }>(response);
+    return handleResponse<string>(response);
 };
 
 export const sendCommunityNewsletter = (
@@ -349,6 +347,6 @@ async (args: {
         return response;
     }
     return handleResponse<{
-        message: string;
+        status: string;
     }>(response);
 };
