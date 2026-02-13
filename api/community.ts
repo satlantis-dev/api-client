@@ -257,9 +257,7 @@ async (args: {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{
-        newsletter: Record<string, unknown>;
-    }>(response);
+    return handleResponse<CommunityNewsletter>(response);
 };
 
 export const getCommunityNewsletters = (
