@@ -261,6 +261,7 @@ import {
     createCalendarEventTag,
     createEventTicketType,
     deleteEventTicketType,
+    generateAiEventDescription,
     getAccountEventTickets,
     getCalendarEventTags,
     getEventAttendees,
@@ -470,6 +471,7 @@ export class Client {
     getRecommendedCalendarEventTags: ReturnType<
         typeof getRecommendedCalendarEventTags
     >;
+    generateAiEventDescription: ReturnType<typeof generateAiEventDescription>;
     createCalendarEventTag: ReturnType<typeof createCalendarEventTag>;
     getFeaturedCalendars: ReturnType<typeof getFeaturedCalendars>;
     getNewestCalendars: ReturnType<typeof getNewestCalendars>;
@@ -919,6 +921,7 @@ export class Client {
         this.getUserEventsImages = getUserEventsImages(rest_api_url, getJwt);
         this.getCalendarEventTags = getCalendarEventTags(rest_api_url);
         this.getRecommendedCalendarEventTags = getRecommendedCalendarEventTags(rest_api_url);
+        this.generateAiEventDescription = generateAiEventDescription(rest_api_url, getJwt);
         this.createCalendarEventTag = createCalendarEventTag(rest_api_url, getJwt);
 
         // Calendar Event Drafts
