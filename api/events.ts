@@ -90,6 +90,7 @@ export interface EventDetails {
     isHidingLocation?: boolean;
     isHidingAttendees?: boolean;
     accountStripeConnectId?: number;
+    contactEmail?: string;
 }
 
 export interface UserTicketEventDetails {
