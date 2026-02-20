@@ -1567,6 +1567,7 @@ export class Client {
         isUnlisted?: boolean;
         isHidingAttendees?: boolean;
         isHidingLocation?: boolean;
+        contactEmail?: string;
     }) => {
         const jwtToken = this.getJwt();
         if (jwtToken == "") {
@@ -1657,6 +1658,7 @@ export class Client {
         const res = await this.postPlaceCalendarEvent({
             ...(args.placeId && { placeId: args.placeId }), // Only include if placeId exists
             ...(args.isUnlisted !== undefined && { isUnlisted: args.isUnlisted }),
+            ...(args.contactEmail !== undefined && { contactEmail: args.contactEmail }),
             event,
             isHidingAttendees: args.isHidingAttendees ?? false,
             isHidingLocation: args.isHidingLocation ?? false,
@@ -1700,6 +1702,7 @@ export class Client {
         gatedEvent?: boolean;
         isHidingAttendees?: boolean;
         isUnlisted?: boolean;
+        contactEmail?: string;
     }) => {
         const jwtToken = this.getJwt();
         if (jwtToken == "") {
@@ -1789,6 +1792,7 @@ export class Client {
         const res = await this.putUpdateCalendarEvent({
             calendarEventId: args.calendarEventId,
             ...(args.placeId && { placeId: args.placeId }), // Only include if placeId exists
+            ...(args.contactEmail !== undefined && { contactEmail: args.contactEmail }),
             event,
             isHidingAttendees: args.isHidingAttendees,
             isUnlisted: args.isUnlisted,
