@@ -19,7 +19,7 @@ import {
     type PlaceCalendarEvent,
     type SearchAccountDTO,
 } from "../../sdk.ts";
-import type { AnswerType, EventDetails } from "../events.ts";
+import type { AnswerType } from "../events.ts";
 import type { AccountDTO } from "../../models/account.ts";
 import type { CalendarEventTag } from "../../models/event.ts";
 import { createSecureUrl } from "../../helpers/util.ts";
