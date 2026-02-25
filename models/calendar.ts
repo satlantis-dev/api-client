@@ -104,6 +104,7 @@ export type CalendarEvent = {
     autoFollowHosts?: boolean;
     isOrganizer: boolean;
     accountStripeConnectId?: number | null;
+    contactEmail?: string;
 };
 
 export type PlaceCalendarEvent = {
