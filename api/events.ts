@@ -186,6 +186,7 @@ export interface GetEventRsvpsArgs {
     sort_by?: string;
     sort_order?: string;
     search?: string;
+    ticket_type_id?: string;
     options?: {
         signal: AbortSignal;
     };
