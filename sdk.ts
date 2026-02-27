@@ -1568,6 +1568,7 @@ export class Client {
         isHidingAttendees?: boolean;
         isHidingLocation?: boolean;
         contactEmail?: string;
+        multipleTicketsPurchaseAllowed?: boolean;
     }) => {
         const jwtToken = this.getJwt();
         if (jwtToken == "") {
@@ -1610,6 +1611,7 @@ export class Client {
             ],
 
             ["website", args.website],
+            ["multiple_tickets_purchase_allowed", args.multipleTicketsPurchaseAllowed ? "true" : "false"],
         ];
 
         if (args.placeATag) {
@@ -1703,6 +1705,7 @@ export class Client {
         isHidingAttendees?: boolean;
         isUnlisted?: boolean;
         contactEmail?: string;
+        multipleTicketsPurchaseAllowed?: boolean;
     }) => {
         const jwtToken = this.getJwt();
         if (jwtToken == "") {
@@ -1744,6 +1747,7 @@ export class Client {
                     ? args.allowCohostsToDownloadAttendeeList.toString()
                     : "false",
             ],
+            ["multiple_tickets_purchase_allowed", args.multipleTicketsPurchaseAllowed ? "true" : "false"],
         ];
 
         if (args.placeATag) {
