@@ -111,7 +111,7 @@ import {
     updateAccountFollowingList,
     updateAdditionalPictures,
 } from "./api/secure/account.ts";
-import { getSystemBanners } from "./api/system.ts";
+import { getSystemBanners, getSystemVersion } from "./api/system.ts";
 import { deletePlaceGalleryImage, postPlaceGalleryImage, updatePlace } from "./api/secure/place.ts";
 import { deleteNote, postNote, postReaction, recordNotesAsSeen } from "./api/secure/note.ts";
 import { getNotifications } from "./api/secure/notification.ts";
@@ -539,6 +539,7 @@ export class Client {
     getUserActivities: ReturnType<typeof getUserActivities>;
     updateAdditionalPictures: ReturnType<typeof updateAdditionalPictures>;
     getSystemBanners: ReturnType<typeof getSystemBanners>;
+    getSystemVersion: ReturnType<typeof getSystemVersion>;
 
     // note
     private getNotesOfPubkey: ReturnType<typeof getNotesOfPubkey>;
@@ -1070,6 +1071,7 @@ export class Client {
             getJwt,
         );
         this.getSystemBanners = getSystemBanners(rest_api_url);
+        this.getSystemVersion = getSystemVersion(rest_api_url);
 
         // Notifications
         this.getNotifications = getNotifications(rest_api_url, getJwt);
@@ -3318,6 +3320,7 @@ export * from "./models/interest.ts";
 export * from "./models/reaction.ts";
 export * from "./models/collection.ts";
 export * from "./models/activity.ts";
+export * from "./models/system.ts";
 // data resolvers
 export * from "./resolvers/location.ts";
 export * from "./resolvers/user.ts";
