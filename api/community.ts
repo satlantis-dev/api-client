@@ -41,6 +41,7 @@ export const listCommunityMembers = (
 ) =>
 async (args: {
     communityId: number;
+    order?: "date_desc" | "date_asc" | "num_events" | "revenue";
 }) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
@@ -48,6 +49,9 @@ async (args: {
     }
     const url = copyURL(urlArg);
     url.pathname = `/secure/communities/${args.communityId}/members`;
+    if (args.order) {
+        url.searchParams.set("order", args.order);
+    }
 
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
