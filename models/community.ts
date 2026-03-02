@@ -40,6 +40,9 @@ export type CommunityNewsletter = {
 export type CommunityMember = {
     id: number;
     communityId: number;
+    community?: Community;
     accountId: number;
-    account?: AccountDTO;
+    account: AccountDTO;
+    createdAt: string;
+    updatedAt: string;
 };

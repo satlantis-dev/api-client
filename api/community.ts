@@ -1,7 +1,7 @@
-import type { AccountDTO, func_GetJwt } from "@satlantis/api-client";
-import { safeFetch } from "../helpers/safe-fetch.ts";
+import type { func_GetJwt } from "@satlantis/api-client";
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
-import type { Community, CommunityNewsletter } from "../models/community.ts";
+import { safeFetch } from "../helpers/safe-fetch.ts";
+import type { Community, CommunityMember, CommunityNewsletter } from "../models/community.ts";
 
 export const createCommunityFromCalendar = (
     urlArg: URL,
@@ -30,12 +30,18 @@ async (args: {
     return handleResponse<Community>(response);
 };
 
+export type CommunityMemberExtended = CommunityMember & {
+    numEvents: number;
+    revenue: number;
+};
+
 export const listCommunityMembers = (
     urlArg: URL,
     getJwt: func_GetJwt,
 ) =>
 async (args: {
     communityId: number;
+    order?: "date_desc" | "date_asc" | "num_events" | "revenue";
 }) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
@@ -43,6 +49,9 @@ async (args: {
     }
     const url = copyURL(urlArg);
     url.pathname = `/secure/communities/${args.communityId}/members`;
+    if (args.order) {
+        url.searchParams.set("order", args.order);
+    }
 
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
@@ -54,7 +63,7 @@ async (args: {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<AccountDTO[]>(response);
+    return handleResponse<CommunityMemberExtended[]>(response);
 };
 
 export const addMembersToCommunity = (

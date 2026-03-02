@@ -23,6 +23,7 @@ import type { AnswerType } from "../events.ts";
 import type { AccountDTO } from "../../models/account.ts";
 import type { CalendarEventTag } from "../../models/event.ts";
 import { createSecureUrl } from "../../helpers/util.ts";
+import type { CalendarEventTicketOrderPayment } from "../../models/ticketing.ts";
 
 // https://github.com/satlantis-dev/api/blob/dev/shared/models.go#L17
 export interface PlaceCalendarEventPost {
@@ -1237,6 +1238,61 @@ export const getCalendarSubscribers =
             return response;
         }
         return handleResponse<AccountDTO[]>(response);
+    };
+
+export const GetUserEventsFromCalendar =
+    (urlArg: URL, getJwt: () => string) => async (args: { calendarId: number }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/user/calendar/${args.calendarId}/events`;
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<{
+            events: CalendarEvent[];
+            rsvpAcceptedCount: number;
+            rsvpWaitlistedCount: number;
+            rsvpInvitedCount: number;
+            rsvpTentativeCount: number;
+            rsvpRequestedCount: number;
+            rsvpDeclinedCount: number;
+            rsvpRejectedCount: number;
+        }>(response);
+    };
+
+export const GetUserPaymentsFromCalendar =
+    (urlArg: URL, getJwt: () => string) => async (args: { calendarId: number }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/user/calendar/${args.calendarId}/payments`;
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<{
+            payments: CalendarEventTicketOrderPayment[];
+            totalAmountBtc: number;
+            totalAmountUsd: number;
+        }>(response);
     };
 
 export function markCalendarAsFeatured(urlArg: URL, getJwt: func_GetJwt) {
