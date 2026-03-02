@@ -1295,6 +1295,61 @@ export const GetUserPaymentsFromCalendar =
         }>(response);
     };
 
+export const GetAccountEventsFromCalendar =
+    (urlArg: URL, getJwt: () => string) => async (args: { npub: string; calendarId: number }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/account/${args.npub}/calendar/${args.calendarId}/events`;
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<{
+            events: CalendarEvent[];
+            rsvpAcceptedCount: number;
+            rsvpWaitlistedCount: number;
+            rsvpInvitedCount: number;
+            rsvpTentativeCount: number;
+            rsvpRequestedCount: number;
+            rsvpDeclinedCount: number;
+            rsvpRejectedCount: number;
+        }>(response);
+    };
+
+export const GetAccountPaymentsFromCalendar =
+    (urlArg: URL, getJwt: () => string) => async (args: { npub: string; calendarId: number }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/account/${args.npub}/calendar/${args.calendarId}/payments`;
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<{
+            payments: CalendarEventTicketOrderPayment[];
+            totalAmountBtc: number;
+            totalAmountUsd: number;
+        }>(response);
+    };
+
 export function markCalendarAsFeatured(urlArg: URL, getJwt: func_GetJwt) {
     return async (args: {
         calendarId: number;

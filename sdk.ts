@@ -144,6 +144,8 @@ import {
     downloadCalendarEventAttendees,
     downloadCalendarEventIcsFile,
     editCalendar,
+    GetAccountEventsFromCalendar,
+    GetAccountPaymentsFromCalendar,
     getAccountRolesForCalendar,
     getCalendarByID,
     getCalendarEventDraftById,
@@ -484,6 +486,8 @@ export class Client {
     getAccountRolesForCalendar: ReturnType<typeof getAccountRolesForCalendar>;
     GetUserEventsFromCalendar: ReturnType<typeof GetUserEventsFromCalendar>;
     GetUserPaymentsFromCalendar: ReturnType<typeof GetUserPaymentsFromCalendar>;
+    GetAccountEventsFromCalendar: ReturnType<typeof GetAccountEventsFromCalendar>;
+    GetAccountPaymentsFromCalendar: ReturnType<typeof GetAccountPaymentsFromCalendar>;
     markCalendarAsFeatured: ReturnType<typeof markCalendarAsFeatured>;
     unmarkCalendarAsFeatured: ReturnType<typeof unmarkCalendarAsFeatured>;
     getCalendarEventTags: ReturnType<typeof getCalendarEventTags>;
@@ -989,6 +993,8 @@ export class Client {
         this.getAccountRolesForCalendar = getAccountRolesForCalendar(rest_api_url, getJwt);
         this.GetUserEventsFromCalendar = GetUserEventsFromCalendar(rest_api_url, getJwt);
         this.GetUserPaymentsFromCalendar = GetUserPaymentsFromCalendar(rest_api_url, getJwt);
+        this.GetAccountEventsFromCalendar = GetAccountEventsFromCalendar(rest_api_url, getJwt);
+        this.GetAccountPaymentsFromCalendar = GetAccountPaymentsFromCalendar(rest_api_url, getJwt);
 
         // Calendar Event Drafts
         this.createCalendarEventDraft = createCalendarEventDraft(rest_api_url, getJwt);
