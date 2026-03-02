@@ -159,6 +159,8 @@ import {
     getPopularCalendars,
     getRecommendedCalendars,
     getUserCalendarSubscriptions,
+    GetUserEventsFromCalendar,
+    GetUserPaymentsFromCalendar,
     hideAttendeesCalendarEvent,
     hideLocationCalendarEvent,
     importEventFromUrl,
@@ -480,6 +482,8 @@ export class Client {
     getEventsContacts: ReturnType<typeof getEventsContacts>;
     getUserEventsImages: ReturnType<typeof getUserEventsImages>;
     getAccountRolesForCalendar: ReturnType<typeof getAccountRolesForCalendar>;
+    GetUserEventsFromCalendar: ReturnType<typeof GetUserEventsFromCalendar>;
+    GetUserPaymentsFromCalendar: ReturnType<typeof GetUserPaymentsFromCalendar>;
     markCalendarAsFeatured: ReturnType<typeof markCalendarAsFeatured>;
     unmarkCalendarAsFeatured: ReturnType<typeof unmarkCalendarAsFeatured>;
     getCalendarEventTags: ReturnType<typeof getCalendarEventTags>;
@@ -983,6 +987,8 @@ export class Client {
         this.generateAiEventDescription = generateAiEventDescription(rest_api_url, getJwt);
         this.createCalendarEventTag = createCalendarEventTag(rest_api_url, getJwt);
         this.getAccountRolesForCalendar = getAccountRolesForCalendar(rest_api_url, getJwt);
+        this.GetUserEventsFromCalendar = GetUserEventsFromCalendar(rest_api_url, getJwt);
+        this.GetUserPaymentsFromCalendar = GetUserPaymentsFromCalendar(rest_api_url, getJwt);
 
         // Calendar Event Drafts
         this.createCalendarEventDraft = createCalendarEventDraft(rest_api_url, getJwt);
@@ -3321,6 +3327,7 @@ export * from "./models/reaction.ts";
 export * from "./models/collection.ts";
 export * from "./models/activity.ts";
 export * from "./models/system.ts";
+export * from "./models/ticketing.ts";
 // data resolvers
 export * from "./resolvers/location.ts";
 export * from "./resolvers/user.ts";
