@@ -817,8 +817,9 @@ export interface EventTicketType {
     priceAmountForBTC?: number | null;
 }
 
-export type PriceCurrency = "BTC" | "USD";
-export type SellCurrency = "BTC" | "USD";
+export type FiatCurrency = "USD" | "EUR" | "CAD" | "AUD" | "GBP";
+export type PriceCurrency = "BTC" | FiatCurrency;
+export type SellCurrency = "BTC" | FiatCurrency;
 
 export interface GetEventTicketTypeResponse extends EventTicketType {
     id: number;
