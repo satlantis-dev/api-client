@@ -91,6 +91,7 @@ export interface EventDetails {
     isHidingAttendees?: boolean;
     accountStripeConnectId?: number;
     contactEmail?: string;
+    multipleTicketsPurchaseAllowedAt?: string | null;
 }
 
 export interface UserTicketEventDetails {
