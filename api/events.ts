@@ -1142,6 +1142,10 @@ async (
 
 export enum Currency {
     USD = "USD",
+    EUR = "EUR",
+    CAD = "CAD",
+    AUD = "AUD",
+    GBP = "GBP",
     BTC = "BTC",
 }
 
@@ -1159,7 +1163,7 @@ export interface CurrencyEarnings {
 
 export interface EventFinancialsSummaryResponse {
     overallEarningsFiat: number; // Total earnings converted to fiat
-    fiatCurrency: Currency.USD; // Always USD
+    fiatCurrency: FiatCurrency;
     btc: CurrencyEarnings; // BTC/Lightning earnings breakdown
     fiat: CurrencyEarnings; // Fiat/Stripe earnings breakdown
     totalTicketsSold: number; // Number of tickets sold
