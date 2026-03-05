@@ -26,6 +26,7 @@ export type EventPaymentHistory = {
     lightningPaymentHash?: string;
     lightningPreimage?: string;
     stripePaymentIntentId?: string;
+    stripeTransactionId?: string;
     createdAt: string;
     paidAt?: string;
     expiredAt?: string;
