@@ -96,6 +96,8 @@ import {
     getBlockedAccounts,
     getFollowedByAccounts,
     getMutedAccounts,
+    getTicketAppleWalletData,
+    getTicketGoogleWalletData,
     getUserAccount,
     getUserActivities,
     getUserFollowers,
@@ -639,6 +641,8 @@ export class Client {
     /////////////////
     // acount role
     getUserAccount: ReturnType<typeof getUserAccount>;
+    getTicketAppleWalletData: ReturnType<typeof getTicketAppleWalletData>;
+    getTicketGoogleWalletData: ReturnType<typeof getTicketGoogleWalletData>;
     removeAccountRole: ReturnType<typeof removeAccountRole>;
     addAccountRole: ReturnType<typeof addAccountRole>;
     saveDeviceInfo: ReturnType<typeof saveDeviceInfo>;
@@ -1160,6 +1164,8 @@ export class Client {
 
         // Authed APIs
         this.getUserAccount = getUserAccount(rest_api_url, this.getJwt);
+        this.getTicketAppleWalletData = getTicketAppleWalletData(rest_api_url, this.getJwt);
+        this.getTicketGoogleWalletData = getTicketGoogleWalletData(rest_api_url, this.getJwt);
         this.removeAccountRole = removeAccountRole(
             rest_api_url,
             this.getJwt,

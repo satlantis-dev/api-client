@@ -2,6 +2,7 @@ export type FetchResult = {
     headers: Headers;
     status: number;
     text: () => Promise<string | Aborted>;
+    arrayBuffer: () => Promise<ArrayBuffer | Aborted>;
 };
 
 export async function safeFetch(input: RequestInfo | URL, init?: RequestInit) {
@@ -33,6 +34,20 @@ export async function safeFetch(input: RequestInfo | URL, init?: RequestInit) {
                     throw e; // impossible according to our implementation
                 }
                 throw e; // impossible according to MDN, caller should not handle
+            }
+        },
+        arrayBuffer: async () => {
+            try {
+                return response.arrayBuffer();
+            } catch (e) {
+                if (globalThis.DOMException && e instanceof DOMException) {
+                    if (e.name == "AbortError") {
+                        return new Aborted(e);
+                    }
+                } else if (e instanceof TypeError) {
+                    throw e;
+                }
+                throw e;
             }
         },
     };

@@ -84,6 +84,21 @@ export const handleSafeResponse = async <T extends {}>(response: FetchResult) =>
     return result as T;
 };
 
+export async function handleBinaryResponse(response: FetchResult): Promise<ArrayBuffer | Aborted | ApiError> {
+    if (response.status < 200 || response.status >= 300) {
+        const body = await response.text();
+        if (body instanceof Aborted) {
+            return body;
+        }
+        return new ApiError(response.status, body);
+    }
+    const buffer = await response.arrayBuffer();
+    if (buffer instanceof Aborted) {
+        return buffer;
+    }
+    return buffer;
+}
+
 export function parseJSON<T extends {}>(text: string) {
     try {
         return JSON.parse(text) as T;

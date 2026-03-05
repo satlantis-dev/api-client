@@ -1,9 +1,10 @@
 import { type NostrEvent, NostrKind, prepareNostrEvent } from "@blowater/nostr-sdk";
 
-import { copyURL, handleResponse, handleSafeResponse, handleStringResponse } from "../../helpers/_helper.ts";
+import { copyURL, handleBinaryResponse, handleResponse, handleSafeResponse, handleStringResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
 import type { AccountDTO, AccountPlaceRole, AccountPlaceRoleTypeEnum } from "../../models/account.ts";
 import type { Activity } from "../../models/activity.ts";
+import type { GoogleWalletData } from "../../models/event.ts";
 import type {
     Account,
     AccountSearchDTO,
@@ -690,4 +691,47 @@ export const canEditCalendar = (urlArg: URL, getJwt: func_GetJwt) => async (args
         return response;
     }
     return handleResponse<{ canEdit: boolean }>(response);
+};
+
+export const getTicketAppleWalletData = (urlArg: URL, getJwt: func_GetJwt) => async (args: { ticketId: number }) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/tickets/${args.ticketId}/wallet/apple`;
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleBinaryResponse(response);
+};
+
+
+export const getTicketGoogleWalletData = (urlArg: URL, getJwt: func_GetJwt) => async (args: { ticketId: number }) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/tickets/${args.ticketId}/wallet/google`;
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<GoogleWalletData>(response);
 };

@@ -79,6 +79,11 @@ export type EventUserTimeline = {
     lightningAddress?: string; // Refunding lightning address entered when purchasing a ticket.
 };
 
+export type GoogleWalletData = {
+    saveUrl: string;
+    jwt: string;
+};
+
 export type CalendarEventTag = {
     id: number;
     name: string;
