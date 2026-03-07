@@ -92,6 +92,10 @@ export interface EventDetails {
     accountStripeConnectId?: number;
     contactEmail?: string;
     multipleTicketsPurchaseAllowedAt?: string | null;
+    stripeStatus?: {
+        isValid: boolean;
+        reason?: string;
+    };
 }
 
 export interface UserTicketEventDetails {
