@@ -1,6 +1,6 @@
-import type { CalendarEventRSVP } from "@satlantis/api-client";
+import type { CalendarEvent, CalendarEventRSVP } from "@satlantis/api-client";
 import type { OrderStatus, PaymentMethod, PaymentStatus, RefundStatus } from "./order.ts";
-import type { EventTicketStatus } from "../api/events.ts";
+import type { EventDetails, EventTicketStatus } from "../api/events.ts";
 
 export enum OrderCurrency {
     BTC = "BTC",
@@ -43,6 +43,8 @@ export type CalendarEventTicketType = {
 export type CalendarEventTicketOrder = {
     id: number;
     calendarEventId: number;
+    calendarEvent: CalendarEvent;
+    items: CalendarEventTicketOrderItem[];
     accountId: number;
     totalPrice: number;
     currency: OrderCurrency;
