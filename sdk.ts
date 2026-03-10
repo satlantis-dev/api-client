@@ -201,7 +201,7 @@ import {
 import { followPubkeys, getFollowingPubkeys, getInterestsOf, unfollowPubkeys } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
 import { safeFetch } from "./helpers/safe-fetch.ts";
-import type { Account, Kind0MetaData } from "./models/account.ts";
+import { type Account, type Kind0MetaData, normalizeKind0MetaData } from "./models/account.ts";
 import { UserResolver } from "./resolvers/user.ts";
 import { LocationResolver } from "./resolvers/location.ts";
 import { NoteResolver } from "./resolvers/note.ts";
@@ -2181,6 +2181,22 @@ export class Client {
     };
 
     /**
+     * Prepare a kind0 (metadata) Nostr event.
+     * Public wrapper around the private prepareKind0 helper.
+     */
+    prepareKind0 = async (signer: Signer, metadata: Kind0MetaData) => {
+        return await prepareKind0(signer, metadata);
+    };
+
+    /**
+     * Directly update an account via the REST API.
+     * Useful for setting username/displayName after login without going through updateMyProfile.
+     */
+    updateAccountDirect = async (args: Parameters<ReturnType<typeof updateAccount>>[0]) => {
+        return await this.updateAccount(args);
+    };
+
+    /**
      * get following list of the current pubkey
      * @unstable
      */
@@ -2433,13 +2449,22 @@ export class Client {
             this.me = currentProfile;
         }
 
+        // Build NIP-24 compliant kind0 for Nostr relays:
+        // NIP-24: `name` = handle/username, `display_name` = display name
+        // Backend: `name` = display name, `displayName` = display name, `username` = handle
         // deno-lint-ignore no-unused-vars -- removed banner from Nostr metaData
         const { banner, ...metaDataWithoutBanner } = metaData;
-        const kind0 = await prepareKind0(signer, metaDataWithoutBanner);
+        const kind0MetaData = {
+            ...metaDataWithoutBanner,
+            name: metaData.username || metaData.name || "",
+            display_name: metaData.displayName || metaData.display_name || "",
+        };
+        const kind0 = await prepareKind0(signer, kind0MetaData);
         if (kind0 instanceof Error) {
             return kind0;
         }
 
+        // Send REST body with original field semantics (backend expects `name` = display name)
         this.me.metaData = metaData;
         {
             const res = await this.updateAccount({
@@ -2453,6 +2478,23 @@ export class Client {
                 return res;
             }
         }
+
+        // Fire-and-forget: broadcast kind0 to public relays so Primal/Nostr.Band see the update
+        // Only use relay.nostr.band (indexer) to avoid creating extra sessions on relay.primal.net
+        const publicRelays = [
+            "wss://relay.nostr.band",
+        ];
+        Promise.allSettled(
+            publicRelays.map(async (relayUrl) => {
+                const relay = SingleRelayConnection.New(relayUrl);
+                if (relay instanceof Error) return;
+                try {
+                    await relay.sendEvent(kind0);
+                } finally {
+                    await relay.close();
+                }
+            }),
+        ).catch(() => {});
 
         return this.me;
     };
@@ -2929,7 +2971,8 @@ export class Client {
             if (msg.type === "EOSE") {
                 break;
             } else if (msg.type === "EVENT") {
-                const metadata = JSON.parse(msg.event.content) as Kind0MetaData;
+                const raw = JSON.parse(msg.event.content);
+                const metadata = normalizeKind0MetaData(raw);
                 metadataList.push(metadata);
             } else if (msg.type === "NOTICE") {
                 console.warn(msg.note);
