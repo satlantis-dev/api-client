@@ -142,8 +142,13 @@ type Currency = {
 export type Kind0MetaData = {
     about?: string;
     banner?: string;
+    /** NIP-24 standard field for username/handle */
     name?: string;
+    /** NIP-24 standard field for display name (snake_case) */
+    display_name?: string;
+    /** @deprecated NIP-24: use `display_name` instead */
     displayName?: string;
+    /** @deprecated NIP-24: use `name` instead */
     username?: string;
     lud06?: string;
     lud16?: string;
@@ -161,6 +166,31 @@ export type Kind0MetaData = {
     email?: string;
     socialLinks?: AccountSocialLinks;
 };
+
+/**
+ * Normalizes Kind 0 metadata from Nostr relays to handle both
+ * standard (NIP-24) and deprecated field names.
+ *
+ * Per NIP-24:
+ * - `username` is deprecated → use `name` instead
+ * - `displayName` is deprecated → use `display_name` instead
+ *
+ * Primal and other standard-compliant clients use `name` and `display_name`,
+ * so we need to ensure those values are mapped to our internal fields.
+ */
+export function normalizeKind0MetaData(raw: Record<string, unknown>): Kind0MetaData {
+    const metadata = raw as Kind0MetaData;
+    return {
+        ...metadata,
+        // NIP-24: `username` is deprecated, `name` is the standard field
+        username: metadata.username || metadata.name,
+        // NIP-24: `displayName` is deprecated, `display_name` is the standard field
+        displayName: metadata.displayName || metadata.display_name,
+        // Preserve the standard fields as well
+        name: metadata.name,
+        display_name: metadata.display_name || metadata.displayName,
+    };
+}
 
 export type SearchAccountDTO = {
     id: number;
