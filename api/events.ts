@@ -946,15 +946,13 @@ async (
 };
 
 export interface EventTicketPurchasePayload {
-    ticketTypeOrders: [
-        {
-            ticketTypeId: number;
-            quantity: number;
-            priceFiat?: number;
-            paymentCurrency?: string; // "BTC" or "USD"
-            priceSats?: number;
-        },
-    ];
+    ticketTypeOrders: Array<{
+        ticketTypeId: number;
+        quantity: number;
+        priceFiat?: number;
+        paymentCurrency?: string; // "BTC" or "USD"
+        priceSats?: number;
+    }>;
     rsvpData: {
         lightningAddress?: string;
         status: string;
