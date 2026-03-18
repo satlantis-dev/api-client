@@ -793,6 +793,7 @@ export enum AnswerType {
     Insta = "insta",
     X = "x",
     Facebook = "facebook",
+    LinkedIn = "linkedin",
 }
 
 export enum DescriptionOrientation {
