@@ -1,6 +1,6 @@
 import type { CalendarEvent, CalendarEventRSVP } from "@satlantis/api-client";
+import type { EventTicketStatus, EventTicketType } from "../api/events.ts";
 import type { OrderStatus, PaymentMethod, PaymentStatus, RefundStatus } from "./order.ts";
-import type { EventDetails, EventTicketStatus } from "../api/events.ts";
 
 export enum OrderCurrency {
     BTC = "BTC",
@@ -20,25 +20,6 @@ export enum CouponScope {
     Event = "event",
     Calendar = "calendar",
 }
-
-export type CalendarEventTicketType = {
-    id: number;
-    calendarEventId: number;
-    name: string;
-    description?: string;
-    priceSats?: number;
-    priceFiat?: number;
-    fiatCurrency?: OrderCurrency;
-    priceCurrency?: OrderCurrency;
-    sellCurrencies: Record<string, unknown>;
-    priceAmount?: number;
-    priceAmountForBTC?: number;
-    maxCapacity?: number;
-    sellStartDate?: string;
-    sellEndDate?: string;
-    createdAt: string;
-    isHidden: boolean;
-};
 
 export type CalendarEventTicketOrder = {
     id: number;
@@ -60,7 +41,7 @@ export type CalendarEventTicketOrderItem = {
     orderId: number;
     order: CalendarEventTicketOrder;
     ticketTypeId: number;
-    ticketType: CalendarEventTicketType;
+    ticketType: EventTicketType;
     quantity: number;
     priceEach: number;
     currency: OrderCurrency;

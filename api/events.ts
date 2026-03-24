@@ -821,6 +821,7 @@ export interface EventTicketType {
     totalFundsCollectedFiat: number;
     warning?: string;
     priceAmountForBTC?: number | null;
+    isHidden: boolean;
 }
 
 export type FiatCurrency = "USD" | "EUR" | "CAD" | "AUD" | "GBP";
