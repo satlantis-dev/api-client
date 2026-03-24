@@ -951,7 +951,7 @@ export class Client {
             getJwt,
         );
         this.deleteEventTicketType = deleteEventTicketType(rest_api_url, getJwt);
-        this.getEventTicketTypes = getEventTicketTypes(rest_api_url);
+        this.getEventTicketTypes = getEventTicketTypes(rest_api_url, getJwt);
         this.purchaseEventTicket = purchaseEventTicket(
             rest_api_url,
             getJwt,

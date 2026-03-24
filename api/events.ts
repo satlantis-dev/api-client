@@ -926,15 +926,23 @@ async (
     return handleResponse<{}>(response);
 };
 
-export const getEventTicketTypes = (urlArg: URL) =>
+/**
+ * Retrieve all ticket types for a calendar event.
+ * Requires JWT auth because hidden ticket types are only returned for event admins.
+ */
+export const getEventTicketTypes = (urlArg: URL, getJwt: func_GetJwt) =>
 async (
     eventId: number,
 ): Promise<GetEventTicketTypeResponse[] | null | Error> => {
     const url = copyURL(urlArg);
     url.pathname = `/events/${eventId}/ticket-types`;
 
+    const jwtToken = getJwt();
     const headers = new Headers();
     headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
 
     const response = await safeFetch(url, {
         method: "GET",
