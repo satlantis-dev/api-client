@@ -119,9 +119,9 @@ export enum UserTicketStatus {
 export interface UserTicketEventDetails {
     accountId: number;
     createdAt: Date;
-    code: string;
     id: number;
     status: UserTicketStatus; // Default value is TicketActive
+    code?: string;
     ticketTypeId: number;
     ticketTypeName: string;
 }
