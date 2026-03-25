@@ -86,6 +86,7 @@ export interface EventDetails {
     };
 
     userTicket?: UserTicketEventDetails;
+    userTickets?: UserTicketEventDetails[];
     isUnlisted: boolean;
     isHidingLocation?: boolean;
     isHidingAttendees?: boolean;
@@ -98,11 +99,20 @@ export interface EventDetails {
     };
 }
 
+export enum UserTicketStatus {
+    TicketActive = "active",
+    TicketUsed = "used",
+    TicketRefunded = "refunded",
+    TicketCanceled = "cancelled",
+    TicketReissued = "reissued",
+}
+
 export interface UserTicketEventDetails {
     accountId: number;
     createdAt: Date;
+    code: string;
     id: number;
-    status: string;
+    status: UserTicketStatus; // Default value is TicketActive
     ticketTypeId: number;
     ticketTypeName: string;
 }
@@ -725,7 +735,12 @@ async (args: {
         headers.set("Authorization", `Bearer ${jwtToken}`);
     }
 
-    const payload = { emails: args.emails, npubs: args.npubs, invitationMessage: args.invitationMessage, ticketTypeId: args.ticketTypeId };
+    const payload = {
+        emails: args.emails,
+        npubs: args.npubs,
+        invitationMessage: args.invitationMessage,
+        ticketTypeId: args.ticketTypeId,
+    };
     const response = await safeFetch(url, {
         method: "POST",
         headers,
