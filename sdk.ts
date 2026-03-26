@@ -298,6 +298,7 @@ import {
     purchaseEventTicket,
     removeTicketFromUser,
     saveRegistrationQuestions,
+    saveRsvpConfirmationMessage,
     unmarkCalendarEventAsFeatured,
     updateEventTicketStatus,
     updateEventTicketType,
@@ -440,6 +441,7 @@ export class Client {
     >;
     downloadCalendarEventIcsFile: ReturnType<typeof downloadCalendarEventIcsFile>;
     saveRegistrationQuestions: ReturnType<typeof saveRegistrationQuestions>;
+    saveRsvpConfirmationMessage: ReturnType<typeof saveRsvpConfirmationMessage>;
     unmarkCalendarEventAsFeatured: ReturnType<
         typeof unmarkCalendarEventAsFeatured
     >;
@@ -779,21 +781,21 @@ export class Client {
 
     /**
      *
-	secure.HandleFunc("/calendar/{calendarId}/community", rest.CreateCommunityFromCalendar).Methods("POST")
+    secure.HandleFunc("/calendar/{calendarId}/community", rest.CreateCommunityFromCalendar).Methods("POST")
 
-	// Members
-	secure.HandleFunc("/communities/{communityId}/members", rest.ListCommunityMembers).Methods("GET")
-	secure.HandleFunc("/communities/{communityId}/members", rest.AddMembersToCommunity).Methods("POST")
-	secure.HandleFunc("/communities/{communityId}/members", rest.RemoveMembersFromCommunity).Methods("DELETE")
+    // Members
+    secure.HandleFunc("/communities/{communityId}/members", rest.ListCommunityMembers).Methods("GET")
+    secure.HandleFunc("/communities/{communityId}/members", rest.AddMembersToCommunity).Methods("POST")
+    secure.HandleFunc("/communities/{communityId}/members", rest.RemoveMembersFromCommunity).Methods("DELETE")
 
-	// Newsletters
-	secure.HandleFunc("/communities/{communityId}/newsletters", rest.CreateCommunityNewsletter).Methods("POST")
-	secure.HandleFunc("/communities/{communityId}/newsletters/{newsletterId}", rest.UpdateCommunityNewsletter).Methods("PUT")
-	secure.HandleFunc("/communities/{communityId}/newsletters/{newsletterId}", rest.DeleteCommunityNewsletter).Methods("DELETE")
-	secure.HandleFunc("/communities/{communityId}/newsletters/{newsletterId}", rest.GetCommunityNewsletter).Methods("GET")
-	secure.HandleFunc("/communities/{communityId}/newsletters", rest.GetCommunityNewsletters).Methods("GET")
-	secure.HandleFunc("/communities/{communityId}/newsletters/{newsletterId}/preview", rest.PreviewCommunityNewsletter).Methods("POST")
-	secure.HandleFunc("/communities/{communityId}/newsletters/{newsletterId}/send", rest.SendCommunityNewsletter).Methods("POST")
+    // Newsletters
+    secure.HandleFunc("/communities/{communityId}/newsletters", rest.CreateCommunityNewsletter).Methods("POST")
+    secure.HandleFunc("/communities/{communityId}/newsletters/{newsletterId}", rest.UpdateCommunityNewsletter).Methods("PUT")
+    secure.HandleFunc("/communities/{communityId}/newsletters/{newsletterId}", rest.DeleteCommunityNewsletter).Methods("DELETE")
+    secure.HandleFunc("/communities/{communityId}/newsletters/{newsletterId}", rest.GetCommunityNewsletter).Methods("GET")
+    secure.HandleFunc("/communities/{communityId}/newsletters", rest.GetCommunityNewsletters).Methods("GET")
+    secure.HandleFunc("/communities/{communityId}/newsletters/{newsletterId}/preview", rest.PreviewCommunityNewsletter).Methods("POST")
+    secure.HandleFunc("/communities/{communityId}/newsletters/{newsletterId}/send", rest.SendCommunityNewsletter).Methods("POST")
     */
     // Community
     createCommunityFromCalendar: ReturnType<
@@ -932,6 +934,10 @@ export class Client {
             getJwt,
         );
         this.saveRegistrationQuestions = saveRegistrationQuestions(
+            rest_api_url,
+            getJwt,
+        );
+        this.saveRsvpConfirmationMessage = saveRsvpConfirmationMessage(
             rest_api_url,
             getJwt,
         );
@@ -2494,7 +2500,7 @@ export class Client {
                     await relay.close();
                 }
             }),
-        ).catch(() => {});
+        ).catch(() => { });
 
         return this.me;
     };
@@ -2770,8 +2776,8 @@ export class Client {
             noteType: args.image || args.hasVideo
                 ? NoteType.MEDIA
                 : args.qTag
-                ? NoteType.BASIC
-                : NoteType.BASIC,
+                    ? NoteType.BASIC
+                    : NoteType.BASIC,
             placeId: args.placeID,
         });
         return res;
