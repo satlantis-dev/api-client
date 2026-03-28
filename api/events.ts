@@ -906,6 +906,7 @@ export interface CreateTicketType {
     priceCurrency?: PriceCurrency | null;
     priceAmountForBTC?: number | null; // in cents, for scenario 5
     sellCurrencies?: SellCurrency[] | null;
+    isHidden?: boolean;
 }
 
 export const createEventTicketType = (urlArg: URL, getJwt: func_GetJwt) =>
