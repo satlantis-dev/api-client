@@ -1,5 +1,5 @@
 import { type NostrEvent, NostrKind, prepareNostrEvent, type Tag } from "@blowater/nostr-sdk";
-import type { func_GetJwt, func_GetNostrSigner } from "@satlantis/api-client";
+import type { func_GetJwt, func_GetNostrSigner, OrderCurrency } from "@satlantis/api-client";
 import { copyURL, generateUUID, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { AccountDTO } from "../models/account.ts";
@@ -175,19 +175,22 @@ export interface EventRsvpItem {
     about: string;
     nip05: string;
     ticket: GetEventRsvpTicket;
+    tickets: GetEventRsvpTicket[];
     registrationAnswers: any;
 }
 
 export interface GetEventRsvpTicket {
-    checkedInAt: null | Date;
-    code: string;
-    createdAt: string;
     id: number;
-    orderItemId: number;
+    code: string;
+    status: EventTicketStatus;
     orderId: number;
-    status: string;
-    ticketType: EventTicketType;
+    orderItemId: number;
     ticketTypeId: number;
+    ticketType: EventTicketType;
+    purchasePrice: number;
+    purchaseCurrency?: OrderCurrency;
+    createdAt: string;
+    checkedInAt: null | Date;
 }
 export interface EventRsvpsResponse {
     items: EventRsvpItem[];
@@ -231,43 +234,43 @@ export interface CalendarEventRSVPExtended extends CalendarEventRSVP {
 }
 
 export const getEventDetails = (urlArg: URL, getJwt: func_GetJwt) =>
-    async (
-        args: { eventId: string },
-    ): Promise<EventDetails | Error> => {
-        const url = copyURL(urlArg);
-        url.pathname = `/events/${args.eventId}`;
+async (
+    args: { eventId: string },
+): Promise<EventDetails | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/events/${args.eventId}`;
 
-        let headers;
-        const jwtToken = getJwt();
+    let headers;
+    const jwtToken = getJwt();
 
-        headers = new Headers();
-        headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
 
-        const response = await safeFetch(url, {
-            method: "GET",
-            headers,
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<EventDetails>(response);
-    };
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<EventDetails>(response);
+};
 
 export const getPublicTicketDetails = (urlArg: URL) =>
-    async (
-        args: { code: string },
-    ): Promise<PublicTicketDetails | Error> => {
-        const url = copyURL(urlArg);
-        url.pathname = `/tickets/public/${args.code}`;
+async (
+    args: { code: string },
+): Promise<PublicTicketDetails | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/tickets/public/${args.code}`;
 
-        const response = await safeFetch(url, {
-            method: "GET",
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<PublicTicketDetails>(response);
-    };
+    const response = await safeFetch(url, {
+        method: "GET",
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<PublicTicketDetails>(response);
+};
 
 export interface GetEventsArgs {
     destination?: string;
@@ -283,94 +286,94 @@ export interface GetEventsArgs {
 }
 
 export const getEvents = (urlArg: URL, getJwt?: () => string) =>
-    async (args: GetEventsArgs, options?: {
-        signal: AbortSignal;
-    }): Promise<EventDetails[] | Error> => {
-        const url = copyURL(urlArg);
-        url.pathname = `/events`;
-        Object.keys(args).forEach((key) => {
-            url.searchParams.set(key, (args as any)[key]);
-        });
+async (args: GetEventsArgs, options?: {
+    signal: AbortSignal;
+}): Promise<EventDetails[] | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/events`;
+    Object.keys(args).forEach((key) => {
+        url.searchParams.set(key, (args as any)[key]);
+    });
 
-        const headers = new Headers();
-        if (getJwt) {
-            const jwtToken = getJwt();
-            if (jwtToken !== "") {
-                headers.set("Authorization", `Bearer ${jwtToken}`);
-            }
-        }
-
-        const response = await safeFetch(url, {
-            method: "GET",
-            headers,
-            signal: options?.signal,
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<EventDetails[]>(response);
-    };
-
-export const getEventCalendars = (urlArg: URL) =>
-    async (
-        args: GetEventCalendarsArgs,
-    ): Promise<Calendar[] | Error> => {
-        const url = copyURL(urlArg);
-
-        url.pathname = `/events/${args.eventId}/calendars`;
-
-        const queryParams = { ...args };
-        delete queryParams.eventId;
-
-        Object.keys(queryParams).forEach((key) => {
-            if (!!(queryParams as any)[key]) {
-                url.searchParams.set(key, (queryParams as any)[key]);
-            }
-        });
-
-        const response = await safeFetch(url, {
-            method: "GET",
-        });
-
-        if (response instanceof Error) {
-            return response;
-        }
-
-        return handleResponse<Calendar[]>(response);
-    };
-
-export const getEventRsvps = (urlArg: URL, getJwt: func_GetJwt) =>
-    async (
-        args: GetEventRsvpsArgs,
-    ): Promise<EventRsvpsResponse | Error> => {
-        const url = copyURL(urlArg);
+    const headers = new Headers();
+    if (getJwt) {
         const jwtToken = getJwt();
-        let headers;
         if (jwtToken !== "") {
-            headers = new Headers();
             headers.set("Authorization", `Bearer ${jwtToken}`);
         }
+    }
 
-        url.pathname = `/secure/events/${args.eventId}/rsvps`;
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+        signal: options?.signal,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<EventDetails[]>(response);
+};
 
-        const { eventId: _eventId, options: _options, ...queryParams } = args;
-        for (const [key, value] of Object.entries(queryParams)) {
-            if (value === undefined || value === null || value === "") continue;
-            url.searchParams.set(key, String(value));
+export const getEventCalendars = (urlArg: URL) =>
+async (
+    args: GetEventCalendarsArgs,
+): Promise<Calendar[] | Error> => {
+    const url = copyURL(urlArg);
+
+    url.pathname = `/events/${args.eventId}/calendars`;
+
+    const queryParams = { ...args };
+    delete queryParams.eventId;
+
+    Object.keys(queryParams).forEach((key) => {
+        if (!!(queryParams as any)[key]) {
+            url.searchParams.set(key, (queryParams as any)[key]);
         }
+    });
 
-        const response = await safeFetch(url, {
-            method: "GET",
-            headers,
-            signal: args.options?.signal,
-        });
+    const response = await safeFetch(url, {
+        method: "GET",
+    });
 
-        if (response instanceof Error) {
-            return response;
-        }
+    if (response instanceof Error) {
+        return response;
+    }
 
-        return handleResponse<EventRsvpsResponse>(response);
-    };
+    return handleResponse<Calendar[]>(response);
+};
+
+export const getEventRsvps = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    args: GetEventRsvpsArgs,
+): Promise<EventRsvpsResponse | Error> => {
+    const url = copyURL(urlArg);
+    const jwtToken = getJwt();
+    let headers;
+    if (jwtToken !== "") {
+        headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    url.pathname = `/secure/events/${args.eventId}/rsvps`;
+
+    const { eventId: _eventId, options: _options, ...queryParams } = args;
+    for (const [key, value] of Object.entries(queryParams)) {
+        if (value === undefined || value === null || value === "") continue;
+        url.searchParams.set(key, String(value));
+    }
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+        signal: args.options?.signal,
+    });
+
+    if (response instanceof Error) {
+        return response;
+    }
+
+    return handleResponse<EventRsvpsResponse>(response);
+};
 
 export interface GetEventAttendeesArgs {
     eventId: string | number;
@@ -378,34 +381,34 @@ export interface GetEventAttendeesArgs {
 }
 
 export const getEventAttendees = (urlArg: URL, getJwt: func_GetJwt) =>
-    async (
-        args: GetEventAttendeesArgs,
-    ): Promise<AccountDTO[] | Error> => {
-        const url = copyURL(urlArg);
-        const jwtToken = getJwt();
-        let headers;
-        if (jwtToken !== "") {
-            headers = new Headers();
-            headers.set("Authorization", `Bearer ${jwtToken}`);
-        }
+async (
+    args: GetEventAttendeesArgs,
+): Promise<AccountDTO[] | Error> => {
+    const url = copyURL(urlArg);
+    const jwtToken = getJwt();
+    let headers;
+    if (jwtToken !== "") {
+        headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
 
-        url.pathname = `/secure/events/${args.eventId}/attendees`;
+    url.pathname = `/secure/events/${args.eventId}/attendees`;
 
-        if (args.status) {
-            url.searchParams.set("status", args.status);
-        }
+    if (args.status) {
+        url.searchParams.set("status", args.status);
+    }
 
-        const response = await safeFetch(url, {
-            method: "GET",
-            headers,
-        });
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
 
-        if (response instanceof Error) {
-            return response;
-        }
+    if (response instanceof Error) {
+        return response;
+    }
 
-        return handleResponse<AccountDTO[]>(response);
-    };
+    return handleResponse<AccountDTO[]>(response);
+};
 
 export interface UpdateRsvpStatusItem {
     id: number;
@@ -427,34 +430,34 @@ export interface UpdateRsvpStatusResponse {
 }
 
 export const updateRsvpStatus = (urlArg: URL, getJwt: func_GetJwt) =>
-    async (
-        items: UpdateRsvpStatusItem[],
-    ): Promise<UpdateRsvpStatusResponse | Error> => {
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/rsvps/status`;
+async (
+    items: UpdateRsvpStatusItem[],
+): Promise<UpdateRsvpStatusResponse | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/rsvps/status`;
 
-        const jwtToken = getJwt();
-        const headers = new Headers();
-        headers.set("Content-Type", "application/json");
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
 
-        if (jwtToken !== "") {
-            headers.set("Authorization", `Bearer ${jwtToken}`);
-        }
+    if (jwtToken !== "") {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
 
-        const payload: UpdateRsvpStatusRequest = { items };
+    const payload: UpdateRsvpStatusRequest = { items };
 
-        const response = await safeFetch(url, {
-            method: "POST",
-            headers,
-            body: JSON.stringify(payload),
-        });
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+    });
 
-        if (response instanceof Error) {
-            return response;
-        }
+    if (response instanceof Error) {
+        return response;
+    }
 
-        return handleResponse<UpdateRsvpStatusResponse>(response);
-    };
+    return handleResponse<UpdateRsvpStatusResponse>(response);
+};
 export interface GetRandomizedEventsArgs {
     placeId?: number;
     type?: number;
@@ -464,33 +467,33 @@ export interface GetRandomizedEventsArgs {
 
 export const getRandomizedEvents =
     (urlArg: URL, getJwt?: () => string) =>
-        async (args: GetRandomizedEventsArgs): Promise<EventDetails[] | Error> => {
-            const url = copyURL(urlArg);
-            url.pathname = `/getEventsRandomized`;
-            Object.keys(args).forEach((key) => {
-                if (!!(args as any)[key]) {
-                    url.searchParams.set(key, (args as any)[key]);
-                }
-            });
-
-            const headers = new Headers();
-
-            if (getJwt) {
-                const jwtToken = getJwt();
-                if (jwtToken !== "") {
-                    headers.set("Authorization", `Bearer ${jwtToken}`);
-                    headers.set("Content-Type", "application/json");
-                }
+    async (args: GetRandomizedEventsArgs): Promise<EventDetails[] | Error> => {
+        const url = copyURL(urlArg);
+        url.pathname = `/getEventsRandomized`;
+        Object.keys(args).forEach((key) => {
+            if (!!(args as any)[key]) {
+                url.searchParams.set(key, (args as any)[key]);
             }
-            const response = await safeFetch(url, {
-                method: "GET",
-                headers,
-            });
-            if (response instanceof Error) {
-                return response;
+        });
+
+        const headers = new Headers();
+
+        if (getJwt) {
+            const jwtToken = getJwt();
+            if (jwtToken !== "") {
+                headers.set("Authorization", `Bearer ${jwtToken}`);
+                headers.set("Content-Type", "application/json");
             }
-            return handleResponse<EventDetails[]>(response);
-        };
+        }
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<EventDetails[]>(response);
+    };
 
 export interface GetPopularEventsArgs {
     placeId?: number;
@@ -498,33 +501,33 @@ export interface GetPopularEventsArgs {
 
 export const getPopularEvents =
     (urlArg: URL, getJwt?: () => string) =>
-        async (args: GetPopularEventsArgs): Promise<EventDetails[] | Error> => {
-            const url = copyURL(urlArg);
-            url.pathname = `/getPopularEvents`;
-            Object.keys(args).forEach((key) => {
-                if (!!(args as any)[key]) {
-                    url.searchParams.set(key, (args as any)[key]);
-                }
-            });
-
-            const headers = new Headers();
-            if (getJwt) {
-                const jwtToken = getJwt();
-                if (jwtToken !== "") {
-                    headers.set("Authorization", `Bearer ${jwtToken}`);
-                    headers.set("Content-Type", "application/json");
-                }
+    async (args: GetPopularEventsArgs): Promise<EventDetails[] | Error> => {
+        const url = copyURL(urlArg);
+        url.pathname = `/getPopularEvents`;
+        Object.keys(args).forEach((key) => {
+            if (!!(args as any)[key]) {
+                url.searchParams.set(key, (args as any)[key]);
             }
+        });
 
-            const response = await safeFetch(url, {
-                method: "GET",
-                headers,
-            });
-            if (response instanceof Error) {
-                return response;
+        const headers = new Headers();
+        if (getJwt) {
+            const jwtToken = getJwt();
+            if (jwtToken !== "") {
+                headers.set("Authorization", `Bearer ${jwtToken}`);
+                headers.set("Content-Type", "application/json");
             }
-            return handleResponse<EventDetails[]>(response);
-        };
+        }
+
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<EventDetails[]>(response);
+    };
 
 export interface GetNewestEventsArgs {
     placeId?: number;
@@ -532,33 +535,33 @@ export interface GetNewestEventsArgs {
 
 export const getNewestEvents =
     (urlArg: URL, getJwt?: func_GetJwt) =>
-        async (args: GetNewestEventsArgs): Promise<EventDetails[] | Error> => {
-            const url = copyURL(urlArg);
-            url.pathname = `/getNewestEvents`;
-            Object.keys(args).forEach((key) => {
-                if (!!(args as any)[key]) {
-                    url.searchParams.set(key, (args as any)[key]);
-                }
-            });
-
-            const headers = new Headers();
-
-            if (getJwt) {
-                const jwtToken = getJwt();
-                if (jwtToken !== "") {
-                    headers.set("Authorization", `Bearer ${jwtToken}`);
-                    headers.set("Content-Type", "application/json");
-                }
+    async (args: GetNewestEventsArgs): Promise<EventDetails[] | Error> => {
+        const url = copyURL(urlArg);
+        url.pathname = `/getNewestEvents`;
+        Object.keys(args).forEach((key) => {
+            if (!!(args as any)[key]) {
+                url.searchParams.set(key, (args as any)[key]);
             }
-            const response = await safeFetch(url, {
-                method: "GET",
-                headers,
-            });
-            if (response instanceof Error) {
-                return response;
+        });
+
+        const headers = new Headers();
+
+        if (getJwt) {
+            const jwtToken = getJwt();
+            if (jwtToken !== "") {
+                headers.set("Authorization", `Bearer ${jwtToken}`);
+                headers.set("Content-Type", "application/json");
             }
-            return handleResponse<EventDetails[]>(response);
-        };
+        }
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<EventDetails[]>(response);
+    };
 
 export interface GetFeaturedEventsArgs {
     placeId?: number;
@@ -566,33 +569,33 @@ export interface GetFeaturedEventsArgs {
 
 export const getFeaturedEvents =
     (urlArg: URL, getJwt?: func_GetJwt) =>
-        async (args: GetFeaturedEventsArgs): Promise<EventDetails[] | Error> => {
-            const url = copyURL(urlArg);
-            url.pathname = `/getFeaturedEvents`;
-            Object.keys(args).forEach((key) => {
-                if (!!(args as any)[key]) {
-                    url.searchParams.set(key, (args as any)[key]);
-                }
-            });
-
-            const headers = new Headers();
-            if (getJwt) {
-                const jwtToken = getJwt();
-                if (jwtToken !== "") {
-                    headers.set("Authorization", `Bearer ${jwtToken}`);
-                    headers.set("Content-Type", "application/json");
-                }
+    async (args: GetFeaturedEventsArgs): Promise<EventDetails[] | Error> => {
+        const url = copyURL(urlArg);
+        url.pathname = `/getFeaturedEvents`;
+        Object.keys(args).forEach((key) => {
+            if (!!(args as any)[key]) {
+                url.searchParams.set(key, (args as any)[key]);
             }
+        });
 
-            const response = await safeFetch(url, {
-                method: "GET",
-                headers,
-            });
-            if (response instanceof Error) {
-                return response;
+        const headers = new Headers();
+        if (getJwt) {
+            const jwtToken = getJwt();
+            if (jwtToken !== "") {
+                headers.set("Authorization", `Bearer ${jwtToken}`);
+                headers.set("Content-Type", "application/json");
             }
-            return handleResponse<EventDetails[]>(response);
-        };
+        }
+
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<EventDetails[]>(response);
+    };
 
 export interface GetRecommendedEventsArgs {
     placeId?: number;
@@ -600,155 +603,155 @@ export interface GetRecommendedEventsArgs {
 
 export const getRecommendedEvents =
     (urlArg: URL, getJwt: func_GetJwt) =>
-        async (args: GetRecommendedEventsArgs): Promise<EventDetails[] | Error> => {
-            const url = copyURL(urlArg);
-            const jwtToken = getJwt();
-            let headers;
-            if (jwtToken !== "") {
-                headers = new Headers();
-                headers.set("Authorization", `Bearer ${jwtToken}`);
+    async (args: GetRecommendedEventsArgs): Promise<EventDetails[] | Error> => {
+        const url = copyURL(urlArg);
+        const jwtToken = getJwt();
+        let headers;
+        if (jwtToken !== "") {
+            headers = new Headers();
+            headers.set("Authorization", `Bearer ${jwtToken}`);
+        }
+        url.pathname = `/secure/getRecommendedEvents`;
+        Object.keys(args).forEach((key) => {
+            if (!!(args as any)[key]) {
+                url.searchParams.set(key, (args as any)[key]);
             }
-            url.pathname = `/secure/getRecommendedEvents`;
-            Object.keys(args).forEach((key) => {
-                if (!!(args as any)[key]) {
-                    url.searchParams.set(key, (args as any)[key]);
-                }
-            });
+        });
 
-            const response = await safeFetch(url, {
-                method: "GET",
-                headers,
-            });
-            if (response instanceof Error) {
-                return response;
-            }
-            return handleResponse<EventDetails[]>(response);
-        };
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<EventDetails[]>(response);
+    };
 
 export const saveRegistrationQuestions = (urlArg: URL, getJwt: func_GetJwt) =>
-    async (
-        eventId: number,
-        questions: RegistrationQuestion[],
-        options?: {
-            signal: AbortSignal;
-        },
-    ): Promise<{ success: boolean; message: string } | Error> => {
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/events/${eventId}/questions`;
+async (
+    eventId: number,
+    questions: RegistrationQuestion[],
+    options?: {
+        signal: AbortSignal;
+    },
+): Promise<{ success: boolean; message: string } | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/${eventId}/questions`;
 
-        const jwtToken = getJwt();
-        const headers = new Headers();
-        headers.set("Content-Type", "application/json");
-        if (jwtToken) {
-            headers.set("Authorization", `Bearer ${jwtToken}`);
-        }
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
 
-        const payload = { questions };
+    const payload = { questions };
 
-        const response = await safeFetch(url, {
-            method: "POST",
-            headers,
-            body: JSON.stringify(payload),
-            signal: options?.signal,
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<{
-            success: boolean;
-            message: string;
-        }>(response);
-    };
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+        signal: options?.signal,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{
+        success: boolean;
+        message: string;
+    }>(response);
+};
 
 export const saveRsvpConfirmationMessage = (urlArg: URL, getJwt: func_GetJwt) =>
-    async (
-        eventId: number,
-        payload: EventRsvpConfirmationMessage,
-        options?: {
-            signal: AbortSignal;
-        },
-    ): Promise<{ success: boolean; message: string } | Error> => {
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/events/${eventId}/confirmation-message`;
+async (
+    eventId: number,
+    payload: EventRsvpConfirmationMessage,
+    options?: {
+        signal: AbortSignal;
+    },
+): Promise<{ success: boolean; message: string } | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/${eventId}/confirmation-message`;
 
-        const jwtToken = getJwt();
-        const headers = new Headers();
-        headers.set("Content-Type", "application/json");
-        if (jwtToken) {
-            headers.set("Authorization", `Bearer ${jwtToken}`);
-        }
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
 
-        const response = await safeFetch(url, {
-            method: "PUT",
-            headers,
-            body: JSON.stringify(payload || {}),
-            signal: options?.signal,
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<{
-            success: boolean;
-            message: string;
-        }>(response);
-    };
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify(payload || {}),
+        signal: options?.signal,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{
+        success: boolean;
+        message: string;
+    }>(response);
+};
 
 export const markCalendarEventAsFeatured = (urlArg: URL, getJwt: func_GetJwt) =>
-    async (
-        eventId: number,
-    ): Promise<{ success: boolean; message: string } | Error> => {
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/markCalendarEventAsFeatured/${eventId}`;
+async (
+    eventId: number,
+): Promise<{ success: boolean; message: string } | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/markCalendarEventAsFeatured/${eventId}`;
 
-        const jwtToken = getJwt();
-        const headers = new Headers();
-        headers.set("Content-Type", "application/json");
-        if (jwtToken) {
-            headers.set("Authorization", `Bearer ${jwtToken}`);
-        }
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
 
-        const response = await safeFetch(url, {
-            method: "PUT",
-            headers,
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<{
-            success: boolean;
-            message: string;
-        }>(response);
-    };
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{
+        success: boolean;
+        message: string;
+    }>(response);
+};
 
 export const unmarkCalendarEventAsFeatured = (urlArg: URL, getJwt: func_GetJwt) =>
-    async (
-        eventId: number,
-    ): Promise<{ success: boolean; message: string } | Error> => {
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/unmarkCalendarEventAsFeatured/${eventId}`;
+async (
+    eventId: number,
+): Promise<{ success: boolean; message: string } | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/unmarkCalendarEventAsFeatured/${eventId}`;
 
-        const jwtToken = getJwt();
-        const headers = new Headers();
-        headers.set("Content-Type", "application/json");
-        if (jwtToken) {
-            headers.set("Authorization", `Bearer ${jwtToken}`);
-        }
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
 
-        const payload = { eventId };
+    const payload = { eventId };
 
-        const response = await safeFetch(url, {
-            method: "PUT",
-            headers,
-            body: JSON.stringify(payload),
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<{
-            success: boolean;
-            message: string;
-        }>(response);
-    };
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify(payload),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{
+        success: boolean;
+        message: string;
+    }>(response);
+};
 
 export interface InviteAttendeesResponse {
     emails?: Record<string, string | true>;
@@ -756,43 +759,43 @@ export interface InviteAttendeesResponse {
 }
 
 export const inviteAttendees = (urlArg: URL, getJwt: func_GetJwt) =>
-    async (args: {
-        eventId: number;
-        emails?: string[];
-        npubs?: string[];
-        invitationMessage?: string;
-        ticketTypeId?: number;
-        options?: {
-            signal: AbortSignal;
-        };
-    }): Promise<InviteAttendeesResponse | Error> => {
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/events/${args.eventId}/invite`;
-
-        const jwtToken = getJwt();
-        const headers = new Headers();
-        headers.set("Content-Type", "application/json");
-        if (jwtToken) {
-            headers.set("Authorization", `Bearer ${jwtToken}`);
-        }
-
-        const payload = {
-            emails: args.emails,
-            npubs: args.npubs,
-            invitationMessage: args.invitationMessage,
-            ticketTypeId: args.ticketTypeId,
-        };
-        const response = await safeFetch(url, {
-            method: "POST",
-            headers,
-            body: JSON.stringify(payload),
-            signal: args.options?.signal,
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<InviteAttendeesResponse>(response);
+async (args: {
+    eventId: number;
+    emails?: string[];
+    npubs?: string[];
+    invitationMessage?: string;
+    ticketTypeId?: number;
+    options?: {
+        signal: AbortSignal;
     };
+}): Promise<InviteAttendeesResponse | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/${args.eventId}/invite`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const payload = {
+        emails: args.emails,
+        npubs: args.npubs,
+        invitationMessage: args.invitationMessage,
+        ticketTypeId: args.ticketTypeId,
+    };
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+        signal: args.options?.signal,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<InviteAttendeesResponse>(response);
+};
 
 export enum EventTicketStatus {
     Active = "active",
@@ -807,30 +810,30 @@ export interface UpdateEventTicketStatusPayloadType {
 }
 
 export const updateEventTicketStatus = (urlArg: URL, getJwt: func_GetJwt) =>
-    async (
-        ticketId: number,
-        payload: UpdateEventTicketStatusPayloadType,
-    ): Promise<EventTicketType | Error> => {
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/tickets/${ticketId}/checkin`;
+async (
+    ticketId: number,
+    payload: UpdateEventTicketStatusPayloadType,
+): Promise<EventTicketType | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/tickets/${ticketId}/checkin`;
 
-        const jwtToken = getJwt();
-        const headers = new Headers();
-        headers.set("Content-Type", "application/json");
-        if (jwtToken) {
-            headers.set("Authorization", `Bearer ${jwtToken}`);
-        }
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
 
-        const response = await safeFetch(url, {
-            method: "PUT",
-            headers,
-            body: JSON.stringify(payload),
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<EventTicketType>(response);
-    };
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify(payload),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<EventTicketType>(response);
+};
 
 export type RegistrationQuestion = {
     label: string;
@@ -910,108 +913,108 @@ export interface CreateTicketType {
 }
 
 export const createEventTicketType = (urlArg: URL, getJwt: func_GetJwt) =>
-    async (
-        eventId: number,
-        payload: CreateTicketType,
-    ): Promise<EventTicketType | Error> => {
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/events/${eventId}/ticket-types`;
+async (
+    eventId: number,
+    payload: CreateTicketType,
+): Promise<EventTicketType | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/${eventId}/ticket-types`;
 
-        const jwtToken = getJwt();
-        const headers = new Headers();
-        headers.set("Content-Type", "application/json");
-        if (jwtToken) {
-            headers.set("Authorization", `Bearer ${jwtToken}`);
-        }
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
 
-        const response = await safeFetch(url, {
-            method: "POST",
-            headers,
-            body: JSON.stringify(payload),
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<EventTicketType>(response);
-    };
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<EventTicketType>(response);
+};
 
 export const updateEventTicketType = (urlArg: URL, getJwt: func_GetJwt) =>
-    async (
-        ticketTypeId: number,
-        payload: Partial<EventTicketType> | Omit<EventTicketType, "id" | "soldQuantity">,
-    ): Promise<EventTicketType | Error> => {
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/events/ticket-types/${ticketTypeId}`;
+async (
+    ticketTypeId: number,
+    payload: Partial<EventTicketType> | Omit<EventTicketType, "id" | "soldQuantity">,
+): Promise<EventTicketType | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/ticket-types/${ticketTypeId}`;
 
-        const jwtToken = getJwt();
-        const headers = new Headers();
-        headers.set("Content-Type", "application/json");
-        if (jwtToken) {
-            headers.set("Authorization", `Bearer ${jwtToken}`);
-        }
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
 
-        const response = await safeFetch(url, {
-            method: "PUT",
-            headers,
-            body: JSON.stringify(payload),
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<EventTicketType>(response);
-    };
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify(payload),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<EventTicketType>(response);
+};
 
 export const deleteEventTicketType = (urlArg: URL, getJwt: func_GetJwt) =>
-    async (
-        ticketTypeId: number,
-    ): Promise<{} | Error> => {
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/events/ticket-types/${ticketTypeId}`;
+async (
+    ticketTypeId: number,
+): Promise<{} | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/ticket-types/${ticketTypeId}`;
 
-        const jwtToken = getJwt();
-        const headers = new Headers();
-        headers.set("Content-Type", "application/json");
-        if (jwtToken) {
-            headers.set("Authorization", `Bearer ${jwtToken}`);
-        }
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
 
-        const response = await safeFetch(url, {
-            method: "DELETE",
-            headers,
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<{}>(response);
-    };
+    const response = await safeFetch(url, {
+        method: "DELETE",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{}>(response);
+};
 
 /**
  * Retrieve all ticket types for a calendar event.
  * Requires JWT auth because hidden ticket types are only returned for event admins.
  */
 export const getEventTicketTypes = (urlArg: URL, getJwt: func_GetJwt) =>
-    async (
-        eventId: number,
-    ): Promise<GetEventTicketTypeResponse[] | null | Error> => {
-        const url = copyURL(urlArg);
-        url.pathname = `/events/${eventId}/ticket-types`;
+async (
+    eventId: number,
+): Promise<GetEventTicketTypeResponse[] | null | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/events/${eventId}/ticket-types`;
 
-        const jwtToken = getJwt();
-        const headers = new Headers();
-        headers.set("Content-Type", "application/json");
-        if (jwtToken) {
-            headers.set("Authorization", `Bearer ${jwtToken}`);
-        }
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
 
-        const response = await safeFetch(url, {
-            method: "GET",
-            headers,
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<GetEventTicketTypeResponse[]>(response);
-    };
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<GetEventTicketTypeResponse[]>(response);
+};
 
 export interface EventTicketPurchasePayload {
     ticketTypeOrders: Array<{
@@ -1056,160 +1059,160 @@ export enum XPlatform {
 }
 export const purchaseEventTicket =
     (urlArg: URL, getJwt: func_GetJwt, getNostrSigner: func_GetNostrSigner) =>
-        async (
-            eventId: number,
-            payload: EventTicketPurchasePayload,
-            calendarEvent: {
-                accountId: number;
-                calendarEventId: number;
-                dtag: string;
-                pubkey: string;
-            },
-            xplatform?: XPlatform,
-        ): Promise<EventTicketPurchaseResponse | Error> => {
-            const url = copyURL(urlArg);
-            url.pathname = `/events/${eventId}/order`;
-
-            let isNostrAccount = null;
-
-            let signer = null;
-
-            signer = await getNostrSigner();
-            if (signer instanceof Error) {
-                isNostrAccount = false;
-                signer = null;
-            } else {
-                isNostrAccount = true;
-            }
-
-            const uuid = generateUUID();
-            const dTag = calendarEvent.dtag;
-            const aTag = `${NostrKind.Calendar_Time}:${calendarEvent.pubkey}:${dTag}`;
-            let event = null;
-
-            if (signer && isNostrAccount) {
-                event = await prepareNostrEvent(signer, {
-                    kind: 31925 as NostrKind,
-                    content: "",
-                    tags: [
-                        ["a", aTag],
-                        ["d", uuid],
-                        ["status", payload.rsvpData.status],
-                    ],
-                });
-            }
-
-            if (event instanceof Error) {
-                return event;
-            }
-
-            const jwtToken = getJwt();
-            const headers = new Headers();
-            headers.set("Content-Type", "application/json");
-
-            if (jwtToken) {
-                headers.set("Authorization", `Bearer ${jwtToken}`);
-            }
-
-            if (xplatform) {
-                headers.set("X-Platform", xplatform);
-            }
-
-            let eventRSVPData;
-            if (event && isNostrAccount) {
-                eventRSVPData = { ...payload.rsvpData, event };
-                payload.rsvpData = eventRSVPData;
-            }
-
-            const response = await safeFetch(url, {
-                method: "POST",
-                headers,
-                body: JSON.stringify(payload),
-            });
-            if (response instanceof Error) {
-                return response;
-            }
-            return handleResponse<EventTicketPurchaseResponse>(response);
-        };
-
-export const getEventTicketPaymentStatus = (urlArg: URL) =>
     async (
-        paymentId: number,
-    ): Promise<GetEventTicketStatusResponse | null | Error> => {
+        eventId: number,
+        payload: EventTicketPurchasePayload,
+        calendarEvent: {
+            accountId: number;
+            calendarEventId: number;
+            dtag: string;
+            pubkey: string;
+        },
+        xplatform?: XPlatform,
+    ): Promise<EventTicketPurchaseResponse | Error> => {
         const url = copyURL(urlArg);
-        url.pathname = `/payments/${paymentId}/status`;
+        url.pathname = `/events/${eventId}/order`;
 
-        const headers = new Headers();
-        headers.set("Content-Type", "application/json");
+        let isNostrAccount = null;
 
-        const response = await safeFetch(url, {
-            method: "GET",
-            headers,
-        });
-        if (response instanceof Error) {
-            return response;
+        let signer = null;
+
+        signer = await getNostrSigner();
+        if (signer instanceof Error) {
+            isNostrAccount = false;
+            signer = null;
+        } else {
+            isNostrAccount = true;
         }
-        return handleResponse<GetEventTicketStatusResponse>(response);
-    };
 
-export const assignTicketToRSVP = (urlArg: URL, getJwt: func_GetJwt) =>
-    async (
-        ticketTypeId: number,
-        rsvpId: number,
-    ): Promise<{ success: boolean; message: string } | Error> => {
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/rsvps/${rsvpId}`;
+        const uuid = generateUUID();
+        const dTag = calendarEvent.dtag;
+        const aTag = `${NostrKind.Calendar_Time}:${calendarEvent.pubkey}:${dTag}`;
+        let event = null;
+
+        if (signer && isNostrAccount) {
+            event = await prepareNostrEvent(signer, {
+                kind: 31925 as NostrKind,
+                content: "",
+                tags: [
+                    ["a", aTag],
+                    ["d", uuid],
+                    ["status", payload.rsvpData.status],
+                ],
+            });
+        }
+
+        if (event instanceof Error) {
+            return event;
+        }
 
         const jwtToken = getJwt();
         const headers = new Headers();
         headers.set("Content-Type", "application/json");
 
-        if (jwtToken !== "") {
+        if (jwtToken) {
             headers.set("Authorization", `Bearer ${jwtToken}`);
         }
-        let payload = {
-            ticketTypeId,
-        };
+
+        if (xplatform) {
+            headers.set("X-Platform", xplatform);
+        }
+
+        let eventRSVPData;
+        if (event && isNostrAccount) {
+            eventRSVPData = { ...payload.rsvpData, event };
+            payload.rsvpData = eventRSVPData;
+        }
 
         const response = await safeFetch(url, {
             method: "POST",
             headers,
             body: JSON.stringify(payload),
         });
-
         if (response instanceof Error) {
             return response;
         }
-
-        return handleResponse<{ success: boolean; message: string } | Error>(response);
+        return handleResponse<EventTicketPurchaseResponse>(response);
     };
+
+export const getEventTicketPaymentStatus = (urlArg: URL) =>
+async (
+    paymentId: number,
+): Promise<GetEventTicketStatusResponse | null | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/payments/${paymentId}/status`;
+
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<GetEventTicketStatusResponse>(response);
+};
+
+export const assignTicketToRSVP = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    ticketTypeId: number,
+    rsvpId: number,
+): Promise<{ success: boolean; message: string } | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/rsvps/${rsvpId}`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+
+    if (jwtToken !== "") {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+    let payload = {
+        ticketTypeId,
+    };
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+    });
+
+    if (response instanceof Error) {
+        return response;
+    }
+
+    return handleResponse<{ success: boolean; message: string } | Error>(response);
+};
 
 export const removeTicketFromUser = (urlArg: URL, getJwt: func_GetJwt) =>
-    async (
-        rsvpId: number,
-    ): Promise<{ success: boolean; message: string } | Error> => {
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/tickets/${rsvpId}`;
+async (
+    rsvpId: number,
+): Promise<{ success: boolean; message: string } | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/tickets/${rsvpId}`;
 
-        const jwtToken = getJwt();
-        const headers = new Headers();
-        headers.set("Content-Type", "application/json");
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
 
-        if (jwtToken !== "") {
-            headers.set("Authorization", `Bearer ${jwtToken}`);
-        }
+    if (jwtToken !== "") {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
 
-        const response = await safeFetch(url, {
-            method: "DELETE",
-            headers,
-        });
+    const response = await safeFetch(url, {
+        method: "DELETE",
+        headers,
+    });
 
-        if (response instanceof Error) {
-            return response;
-        }
+    if (response instanceof Error) {
+        return response;
+    }
 
-        return handleResponse<{ success: boolean; message: string } | Error>(response);
-    };
+    return handleResponse<{ success: boolean; message: string } | Error>(response);
+};
 
 export enum Currency {
     USD = "USD",
@@ -1245,28 +1248,28 @@ export interface EventFinancialsSummaryResponse {
 }
 
 export const getEventFinancialsSummary = (urlArg: URL, getJwt: func_GetJwt) =>
-    async (
-        eventId: string,
-    ): Promise<EventFinancialsSummaryResponse | null | Error> => {
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/events/${eventId}/financials/summary`;
+async (
+    eventId: string,
+): Promise<EventFinancialsSummaryResponse | null | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/${eventId}/financials/summary`;
 
-        const jwtToken = getJwt();
-        const headers = new Headers();
-        headers.set("Content-Type", "application/json");
-        if (jwtToken) {
-            headers.set("Authorization", `Bearer ${jwtToken}`);
-        }
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
 
-        const response = await safeFetch(url, {
-            method: "GET",
-            headers,
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<EventFinancialsSummaryResponse>(response);
-    };
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<EventFinancialsSummaryResponse>(response);
+};
 
 /**
  * Withdrawal status enum with
@@ -1308,28 +1311,28 @@ export interface EventTicketWithdrawalFeeResponse {
 }
 
 export const getEventFinancialsWithdrawalStatus = (urlArg: URL, getJwt: func_GetJwt) =>
-    async (
-        withdrawalId: number,
-    ): Promise<EventFinancialsWithdrawalResponse | null | Error> => {
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/events/financials/withdrawals/${withdrawalId}`;
+async (
+    withdrawalId: number,
+): Promise<EventFinancialsWithdrawalResponse | null | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/financials/withdrawals/${withdrawalId}`;
 
-        const jwtToken = getJwt();
-        const headers = new Headers();
-        headers.set("Content-Type", "application/json");
-        if (jwtToken) {
-            headers.set("Authorization", `Bearer ${jwtToken}`);
-        }
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
 
-        const response = await safeFetch(url, {
-            method: "GET",
-            headers,
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<EventFinancialsWithdrawalResponse>(response);
-    };
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<EventFinancialsWithdrawalResponse>(response);
+};
 
 export interface EventFinancialsWithdrawalFeeEstimationsResponse {
     fee: number;
@@ -1337,93 +1340,93 @@ export interface EventFinancialsWithdrawalFeeEstimationsResponse {
 }
 
 export const getEventFinancialsWithdrawalFeeEstimations = (urlArg: URL, getJwt: func_GetJwt) =>
-    async (
-        eventId: number,
-        lightningAddress: string,
-        amount: number,
-    ): Promise<EventFinancialsWithdrawalFeeEstimationsResponse | null | Error> => {
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/events/${eventId}/withdrawals/fee-estimations`;
-        url.searchParams.set("lightning_address", lightningAddress);
-        url.searchParams.set("amount", amount.toString());
+async (
+    eventId: number,
+    lightningAddress: string,
+    amount: number,
+): Promise<EventFinancialsWithdrawalFeeEstimationsResponse | null | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/${eventId}/withdrawals/fee-estimations`;
+    url.searchParams.set("lightning_address", lightningAddress);
+    url.searchParams.set("amount", amount.toString());
 
-        const jwtToken = getJwt();
-        const headers = new Headers();
-        headers.set("Content-Type", "application/json");
-        if (jwtToken) {
-            headers.set("Authorization", `Bearer ${jwtToken}`);
-        }
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
 
-        const response = await safeFetch(url, {
-            method: "GET",
-            headers,
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<EventFinancialsWithdrawalFeeEstimationsResponse>(response);
-    };
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<EventFinancialsWithdrawalFeeEstimationsResponse>(response);
+};
 
 export const getEventTicketWithdrawalFee = (urlArg: URL, getJwt: func_GetJwt) =>
-    async (
-        params: { eventId: number; lightningAddress: string; amount: number },
-    ): Promise<EventTicketWithdrawalFeeResponse | null | Error> => {
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/events/${params.eventId}/withdrawals/fee-estimations`;
+async (
+    params: { eventId: number; lightningAddress: string; amount: number },
+): Promise<EventTicketWithdrawalFeeResponse | null | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/${params.eventId}/withdrawals/fee-estimations`;
 
-        const jwtToken = getJwt();
-        const headers = new Headers();
-        headers.set("Content-Type", "application/json");
-        if (jwtToken) {
-            headers.set("Authorization", `Bearer ${jwtToken}`);
-        }
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
 
-        const queryString = `lightning_address=${params.lightningAddress}&amount=${params.amount}`;
-        const finalUrl = `${url.origin}${url.pathname}?${queryString}`;
+    const queryString = `lightning_address=${params.lightningAddress}&amount=${params.amount}`;
+    const finalUrl = `${url.origin}${url.pathname}?${queryString}`;
 
-        const response = await safeFetch(finalUrl, {
-            method: "GET",
-            headers,
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<EventTicketWithdrawalFeeResponse>(response);
-    };
+    const response = await safeFetch(finalUrl, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<EventTicketWithdrawalFeeResponse>(response);
+};
 
 export const postEventFinancialsWithdraw = (urlArg: URL, getJwt: func_GetJwt) =>
-    async (
-        params: {
-            eventId: number;
-            amount: number;
-            lightningAddress: string;
-        },
-    ): Promise<EventFinancialsWithdrawalResponse | Error> => {
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/events/${params.eventId}/financials/withdraw`;
+async (
+    params: {
+        eventId: number;
+        amount: number;
+        lightningAddress: string;
+    },
+): Promise<EventFinancialsWithdrawalResponse | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/${params.eventId}/financials/withdraw`;
 
-        const jwtToken = getJwt();
-        const headers = new Headers();
-        headers.set("Content-Type", "application/json");
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
 
-        if (jwtToken !== "") {
-            headers.set("Authorization", `Bearer ${jwtToken}`);
-        }
+    if (jwtToken !== "") {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
 
-        const { eventId, ...payload } = params;
+    const { eventId, ...payload } = params;
 
-        const response = await safeFetch(url, {
-            method: "POST",
-            headers,
-            body: JSON.stringify(payload),
-        });
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+    });
 
-        if (response instanceof Error) {
-            return response;
-        }
+    if (response instanceof Error) {
+        return response;
+    }
 
-        return handleResponse<EventFinancialsWithdrawalResponse>(response);
-    };
+    return handleResponse<EventFinancialsWithdrawalResponse>(response);
+};
 
 export interface UserEventsContactsResponse {
     contacts: AccountDTO[];
@@ -1525,26 +1528,26 @@ export const getEventUserFinancialTimeline = (urlArg: URL, getJwt: func_GetJwt) 
 };
 
 export const getCalendarEventTags = (urlArg: URL) =>
-    async (
-        search: string,
-    ) => {
-        const url = copyURL(urlArg);
-        url.pathname = `/events/tags`;
+async (
+    search: string,
+) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/events/tags`;
 
-        const headers = new Headers();
-        headers.set("Content-Type", "application/json");
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
 
-        url.searchParams.set("search", search);
+    url.searchParams.set("search", search);
 
-        const response = await safeFetch(url, {
-            method: "GET",
-            headers,
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<CalendarEventTag[]>(response);
-    };
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CalendarEventTag[]>(response);
+};
 
 /**
  * This endpoint uses AI inference which typically takes 3-5 seconds to return results.
@@ -1552,26 +1555,26 @@ export const getCalendarEventTags = (urlArg: URL) =>
  * The endpoint calls Gemini to obtain recommendation results.
  */
 export const getRecommendedCalendarEventTags = (urlArg: URL) =>
-    async (
-        eventInfo: string,
-    ) => {
-        const url = copyURL(urlArg);
-        url.pathname = `/events/tags/recommended`;
+async (
+    eventInfo: string,
+) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/events/tags/recommended`;
 
-        const headers = new Headers();
-        headers.set("Content-Type", "application/json");
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
 
-        url.searchParams.set("eventInfo", eventInfo);
+    url.searchParams.set("eventInfo", eventInfo);
 
-        const response = await safeFetch(url, {
-            method: "GET",
-            headers,
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<CalendarEventTag[]>(response);
-    };
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CalendarEventTag[]>(response);
+};
 
 export interface GenerateAiEventDescriptionPayload {
     prompt: string;
@@ -1592,60 +1595,60 @@ export interface GenerateAiEventDescriptionResponse {
 }
 
 export const generateAiEventDescription = (urlArg: URL, getJwt?: func_GetJwt) =>
-    async (
-        payload: GenerateAiEventDescriptionPayload,
-    ): Promise<GenerateAiEventDescriptionResponse | Error> => {
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/events/ai-description`;
+async (
+    payload: GenerateAiEventDescriptionPayload,
+): Promise<GenerateAiEventDescriptionResponse | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/ai-description`;
 
-        const headers = new Headers();
-        headers.set("Content-Type", "application/json");
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
 
-        if (getJwt) {
-            const jwtToken = getJwt();
-            if (jwtToken !== "") {
-                headers.set("Authorization", `Bearer ${jwtToken}`);
-            }
-        }
-
-        const response = await safeFetch(url, {
-            method: "POST",
-            headers,
-            body: JSON.stringify(payload),
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<GenerateAiEventDescriptionResponse>(response);
-    };
-
-export const createCalendarEventTag = (urlArg: URL, getJwt: func_GetJwt) =>
-    async (
-        tagName: string,
-    ) => {
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/events/tags`;
-
+    if (getJwt) {
         const jwtToken = getJwt();
-        const headers = new Headers();
-        headers.set("Content-Type", "application/json");
-
         if (jwtToken !== "") {
             headers.set("Authorization", `Bearer ${jwtToken}`);
         }
+    }
 
-        const payload = { name: tagName };
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<GenerateAiEventDescriptionResponse>(response);
+};
 
-        const response = await safeFetch(url, {
-            method: "POST",
-            headers,
-            body: JSON.stringify(payload),
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<CalendarEventTag>(response);
-    };
+export const createCalendarEventTag = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    tagName: string,
+) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/tags`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+
+    if (jwtToken !== "") {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const payload = { name: tagName };
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CalendarEventTag>(response);
+};
 
 export type GetAccountEventTIcketsArgs = {
     page?: number; // @default 1
@@ -1660,33 +1663,33 @@ export type GetAccountEventTicketResponse = {
 };
 
 export const getAccountEventTickets = (urlArg: URL, getJwt: func_GetJwt) =>
-    async (
-        args?: GetAccountEventTIcketsArgs,
-    ) => {
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/me/tickets`;
+async (
+    args?: GetAccountEventTIcketsArgs,
+) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/me/tickets`;
 
-        const jwtToken = getJwt();
-        const headers = new Headers();
+    const jwtToken = getJwt();
+    const headers = new Headers();
 
-        headers.set("Authorization", `Bearer ${jwtToken}`);
-        headers.set("Content-Type", "application/json");
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
 
-        if (args?.page) {
-            url.searchParams.set("page", args.page.toString());
-        }
-        if (args?.limit) {
-            url.searchParams.set("limit", args.limit.toString());
-        }
+    if (args?.page) {
+        url.searchParams.set("page", args.page.toString());
+    }
+    if (args?.limit) {
+        url.searchParams.set("limit", args.limit.toString());
+    }
 
-        const response = await safeFetch(url, {
-            method: "GET",
-            headers,
-        });
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
 
-        if (response instanceof Error) {
-            return response;
-        }
+    if (response instanceof Error) {
+        return response;
+    }
 
-        return handleResponse<GetAccountEventTicketResponse>(response);
-    };
+    return handleResponse<GetAccountEventTicketResponse>(response);
+};
