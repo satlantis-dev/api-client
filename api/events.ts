@@ -128,7 +128,7 @@ export interface UserTicketEventDetails {
 export interface PublicTicketDetails {
     id: number;
     code: string;
-    status: string;
+    status: UserTicketStatus;
     checkedInAt: string | null;
     createdAt: string;
     ticketType: {
@@ -259,7 +259,7 @@ async (
 export const getPublicTicketDetails = (urlArg: URL) =>
 async (
     args: { code: string },
-): Promise<PublicTicketDetails | Error> => {
+): Promise<PublicTicketDetails[] | Error> => {
     const url = copyURL(urlArg);
     url.pathname = `/tickets/public/${args.code}`;
 
@@ -269,7 +269,7 @@ async (
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<PublicTicketDetails>(response);
+    return handleResponse<PublicTicketDetails[]>(response);
 };
 
 export interface GetEventsArgs {
