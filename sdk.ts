@@ -264,6 +264,7 @@ import {
 import { mapUserToDestination } from "./api/location.ts";
 
 import {
+    addTicketToRsvp,
     assignTicketToRSVP,
     cancelEventTicket,
     changeTicketType,
@@ -461,6 +462,7 @@ export class Client {
     purchaseEventTicket: ReturnType<typeof purchaseEventTicket>;
     getEventTicketPaymentStatus: ReturnType<typeof getEventTicketPaymentStatus>;
     assignTicketToRSVP: ReturnType<typeof assignTicketToRSVP>;
+    addTicketToRsvp: ReturnType<typeof addTicketToRsvp>;
     removeTicketFromUser: ReturnType<typeof removeTicketFromUser>;
     getEventFinancialsSummary: ReturnType<typeof getEventFinancialsSummary>;
     getEventTicketWithdrawalFee: ReturnType<typeof getEventTicketWithdrawalFee>;
@@ -974,6 +976,7 @@ export class Client {
         );
         this.getEventTicketPaymentStatus = getEventTicketPaymentStatus(rest_api_url);
         this.assignTicketToRSVP = assignTicketToRSVP(rest_api_url, getJwt);
+        this.addTicketToRsvp = addTicketToRsvp(rest_api_url, getJwt);
         this.removeTicketFromUser = removeTicketFromUser(rest_api_url, getJwt);
         this.getEventFinancialsSummary = getEventFinancialsSummary(
             rest_api_url,

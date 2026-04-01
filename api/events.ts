@@ -1295,6 +1295,43 @@ async (
     return handleResponse<{ success: boolean; message: string } | Error>(response);
 };
 
+export type AddTicketToRsvpArgs = {
+    rsvpId: number;
+    ticketTypeId: number;
+};
+
+export type AddTicketToRsvpResponse = {
+    success: boolean;
+    message: string;
+};
+
+export const addTicketToRsvp = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    { rsvpId, ticketTypeId }: AddTicketToRsvpArgs,
+): Promise<AddTicketToRsvpResponse | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/rsvps/${rsvpId}/tickets`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ ticketTypeId }),
+    });
+
+    if (response instanceof Error) {
+        return response;
+    }
+
+    return handleResponse<AddTicketToRsvpResponse>(response);
+};
+
 export const removeTicketFromUser = (urlArg: URL, getJwt: func_GetJwt) =>
 async (
     rsvpId: number,
