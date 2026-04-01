@@ -906,6 +906,43 @@ async (
     return handleResponse<RefundEventTicketResponse>(response);
 };
 
+export type ChangeTicketTypeArgs = {
+    ticketId: number;
+    ticketTypeId: number;
+};
+
+export type ChangeTicketTypeResponse = {
+    success: boolean;
+    message: string;
+};
+
+export const changeTicketType = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    { ticketId, ticketTypeId }: ChangeTicketTypeArgs,
+): Promise<ChangeTicketTypeResponse | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/tickets/${ticketId}/type`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify({ ticketTypeId }),
+    });
+
+    if (response instanceof Error) {
+        return response;
+    }
+
+    return handleResponse<ChangeTicketTypeResponse>(response);
+};
+
 export type RegistrationQuestion = {
     label: string;
     required: boolean;
