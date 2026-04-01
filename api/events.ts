@@ -14,6 +14,7 @@ import type {
 import type { AccountEventTicket, CalendarEventTag, EventUserTimeline } from "../models/event.ts";
 import type { LocationDTO } from "../models/location.ts";
 import type { BoundingBox, PlaceEvent } from "../models/place.ts";
+import type { RefundOrderResponse } from "../models/order.ts";
 
 export enum RsvpStatus {
     Accepted = "accepted",
@@ -833,6 +834,76 @@ async (
         return response;
     }
     return handleResponse<EventTicketType>(response);
+};
+
+export type CancelEventTicketArgs = {
+    ticketId: number;
+};
+
+export type CancelEventTicketResponse = {
+    success: boolean;
+    message: string;
+};
+
+export const cancelEventTicket = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    { ticketId }: CancelEventTicketArgs,
+): Promise<CancelEventTicketResponse | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/tickets/${ticketId}/cancel`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+    });
+
+    if (response instanceof Error) {
+        return response;
+    }
+
+    return handleResponse<CancelEventTicketResponse>(response);
+};
+
+export type RefundEventTicketArgs = {
+    ticketId: number;
+    amount: number;
+    reason?: string;
+};
+
+export type RefundEventTicketResponse = RefundOrderResponse;
+
+export const refundEventTicket = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    { ticketId, amount, reason }: RefundEventTicketArgs,
+): Promise<RefundEventTicketResponse | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/tickets/${ticketId}/refund`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ amount, reason }),
+    });
+
+    if (response instanceof Error) {
+        return response;
+    }
+
+    return handleResponse<RefundEventTicketResponse>(response);
 };
 
 export type RegistrationQuestion = {

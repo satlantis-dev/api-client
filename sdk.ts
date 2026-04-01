@@ -265,6 +265,7 @@ import { mapUserToDestination } from "./api/location.ts";
 
 import {
     assignTicketToRSVP,
+    cancelEventTicket,
     createCalendarEventTag,
     createEventTicketType,
     deleteEventTicketType,
@@ -296,6 +297,7 @@ import {
     markCalendarEventAsFeatured,
     postEventFinancialsWithdraw,
     purchaseEventTicket,
+    refundEventTicket,
     removeTicketFromUser,
     saveRegistrationQuestions,
     saveRsvpConfirmationMessage,
@@ -450,6 +452,8 @@ export class Client {
     createEventTicketType: ReturnType<typeof createEventTicketType>;
     updateEventTicketType: ReturnType<typeof updateEventTicketType>;
     updateEventTicketStatus: ReturnType<typeof updateEventTicketStatus>;
+    cancelEventTicket: ReturnType<typeof cancelEventTicket>;
+    refundEventTicket: ReturnType<typeof refundEventTicket>;
     deleteEventTicketType: ReturnType<typeof deleteEventTicketType>;
     getEventTicketTypes: ReturnType<typeof getEventTicketTypes>;
     purchaseEventTicket: ReturnType<typeof purchaseEventTicket>;
@@ -956,6 +960,8 @@ export class Client {
             rest_api_url,
             getJwt,
         );
+        this.cancelEventTicket = cancelEventTicket(rest_api_url, getJwt);
+        this.refundEventTicket = refundEventTicket(rest_api_url, getJwt);
         this.deleteEventTicketType = deleteEventTicketType(rest_api_url, getJwt);
         this.getEventTicketTypes = getEventTicketTypes(rest_api_url, getJwt);
         this.purchaseEventTicket = purchaseEventTicket(
@@ -2500,7 +2506,7 @@ export class Client {
                     await relay.close();
                 }
             }),
-        ).catch(() => { });
+        ).catch(() => {});
 
         return this.me;
     };
@@ -2776,8 +2782,8 @@ export class Client {
             noteType: args.image || args.hasVideo
                 ? NoteType.MEDIA
                 : args.qTag
-                    ? NoteType.BASIC
-                    : NoteType.BASIC,
+                ? NoteType.BASIC
+                : NoteType.BASIC,
             placeId: args.placeID,
         });
         return res;
