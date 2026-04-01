@@ -175,7 +175,7 @@ export interface EventRsvpItem {
     about: string;
     nip05: string;
     ticket: GetEventRsvpTicket;
-    tickets: GetEventRsvpTicket[];
+    tickets?: GetEventRsvpTicket[];
     registrationAnswers: any;
 }
 
