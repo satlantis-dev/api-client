@@ -58,6 +58,7 @@ export const getSingleOrderHistory = (urlArg: URL, getJwt: func_GetJwt) => {
 export type RefundOrderArgs = {
     orderId: number;
     amount: number; // min 1
+    lightningAddress?: string; // required if payment method is lightning
     markAsNotGoing: boolean;
     reason?: string;
 };
