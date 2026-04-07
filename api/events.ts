@@ -969,6 +969,26 @@ export enum DescriptionOrientation {
     HORIZONTAL = "horizontal",
 }
 
+export interface PromotionInput {
+    name: string;
+    discountPercentage: number;
+    endDate?: string | null;
+    maxQuantity?: number | null;
+}
+
+export interface PromotionResponse {
+    id: number;
+    name: string;
+    discountPercentage: number;
+    endDate?: string;
+    maxQuantity?: number;
+    redeemedQuantity: number;
+    isActive: boolean;
+    isExpired: boolean;
+    remainingQuantity?: number;
+    endsInText?: string;
+}
+
 export interface EventTicketType {
     id: number;
     calendarEventId: number;
@@ -990,6 +1010,7 @@ export interface EventTicketType {
     warning?: string;
     priceAmountForBTC?: number | null;
     isHidden: boolean;
+    promotion?: PromotionResponse | null;
 }
 
 export type FiatCurrency = "USD" | "EUR" | "CAD" | "AUD" | "GBP";
@@ -1018,6 +1039,7 @@ export interface CreateTicketType {
     priceAmountForBTC?: number | null; // in cents, for scenario 5
     sellCurrencies?: SellCurrency[] | null;
     isHidden?: boolean;
+    promotion?: PromotionInput | null;
 }
 
 export const createEventTicketType = (urlArg: URL, getJwt: func_GetJwt) =>

@@ -9,6 +9,9 @@ export type EventOrderItemHistory = {
     priceEach: number;
     currency: string; // "BTC"
     status: OrderStatus; // "pending", "paid", "expired", "failed"
+    promotionName?: string;
+    discountPercent?: number;
+    originalPrice?: number;
 };
 
 export type EventPaymentHistory = {
