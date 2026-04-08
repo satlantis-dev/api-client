@@ -300,6 +300,7 @@ import {
     postEventFinancialsWithdraw,
     purchaseEventTicket,
     refundEventTicket,
+    refundTicketsInRsvp,
     removeTicketFromUser,
     saveRegistrationQuestions,
     saveRsvpConfirmationMessage,
@@ -464,6 +465,7 @@ export class Client {
     assignTicketToRSVP: ReturnType<typeof assignTicketToRSVP>;
     addTicketToRsvp: ReturnType<typeof addTicketToRsvp>;
     removeTicketFromUser: ReturnType<typeof removeTicketFromUser>;
+    refundTicketsInRsvp: ReturnType<typeof refundTicketsInRsvp>;
     getEventFinancialsSummary: ReturnType<typeof getEventFinancialsSummary>;
     getEventTicketWithdrawalFee: ReturnType<typeof getEventTicketWithdrawalFee>;
     getEventFinancialsWithdrawalStatus: ReturnType<
@@ -978,6 +980,7 @@ export class Client {
         this.assignTicketToRSVP = assignTicketToRSVP(rest_api_url, getJwt);
         this.addTicketToRsvp = addTicketToRsvp(rest_api_url, getJwt);
         this.removeTicketFromUser = removeTicketFromUser(rest_api_url, getJwt);
+        this.refundTicketsInRsvp = refundTicketsInRsvp(rest_api_url, getJwt);
         this.getEventFinancialsSummary = getEventFinancialsSummary(
             rest_api_url,
             getJwt,
