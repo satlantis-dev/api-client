@@ -135,6 +135,13 @@ export interface PublicTicketDetails {
     ticketType: {
         name: string;
         description: string;
+        priceCurrency: PriceCurrency | null;
+        priceAmount: number | null;
+        sellCurrencies?: SellCurrency[] | null;
+        priceSats: number | null;
+        priceFiat: number | null;
+        fiatCurrency?: string;
+        priceAmountForBTC?: number | null;
     };
     event: {
         id: number;
