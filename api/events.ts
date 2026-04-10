@@ -131,7 +131,9 @@ export interface PublicTicketDetails {
     code: string;
     status: UserTicketStatus;
     checkedInAt: string | null;
-    createdAt: string;
+    createdAt?: string;
+    purchasePrice?: number | null;
+    purchaseCurrency?: OrderCurrency | null;
     ticketType: {
         name: string;
         description: string;
