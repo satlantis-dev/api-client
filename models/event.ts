@@ -40,7 +40,7 @@ export type EventRefundHistory = {
     id: number;
     amount: number;
     status: RefundStatus;
-    refundMethod: "lightning" | "stripe";
+    refundMethod: "lightning" | "stripe" | "satlantis_wallet";
     lightningAddress?: string;
     lightningPreimage?: string;
     lightningPaymentHash?: string;
