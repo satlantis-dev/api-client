@@ -3,13 +3,15 @@ import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { Community, CommunityMember, CommunityNewsletter } from "../models/community.ts";
 
+export type CreateCommunityFromCalendarArgs = {
+    calendarId: number;
+}
+
 export const createCommunityFromCalendar = (
     urlArg: URL,
     getJwt: func_GetJwt,
 ) =>
-async (args: {
-    calendarId: number;
-}) => {
+async (args: CreateCommunityFromCalendarArgs) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
         return new Error("jwt token is empty");
@@ -30,12 +32,14 @@ async (args: {
     return handleResponse<Community>(response);
 };
 
+export type GetCommunityByIdArgs = {
+    communityId: number;
+}
+
 export const getCommunityById = (
     urlArg: URL,
 ) =>
-async (args: {
-    communityId: number;
-}) => {
+async (args: GetCommunityByIdArgs) => {
     const url = copyURL(urlArg);
     url.pathname = `/communities/${args.communityId}`;
     const response = await safeFetch(url, {
@@ -47,6 +51,11 @@ async (args: {
     return handleResponse<Community>(response);
 };
 
+export type ListCommunityMembersArgs = {
+    communityId: number;
+    order?: "date_desc" | "date_asc" | "num_events" | "revenue";
+}
+
 export type CommunityMemberExtended = CommunityMember & {
     numEvents: number;
     revenue: number;
@@ -56,10 +65,7 @@ export const listCommunityMembers = (
     urlArg: URL,
     getJwt: func_GetJwt,
 ) =>
-async (args: {
-    communityId: number;
-    order?: "date_desc" | "date_asc" | "num_events" | "revenue";
-}) => {
+async (args: ListCommunityMembersArgs) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
         return new Error("jwt token is empty");
@@ -83,14 +89,16 @@ async (args: {
     return handleResponse<CommunityMemberExtended[]>(response);
 };
 
+export type AddMembersToCommunityArgs = {
+    communityId: number;
+    accountIds: number[];
+}
+
 export const addMembersToCommunity = (
     urlArg: URL,
     getJwt: func_GetJwt,
 ) =>
-async (args: {
-    communityId: number;
-    accountIds: number[];
-}) => {
+async (args: AddMembersToCommunityArgs) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
         return new Error("jwt token is empty");
@@ -117,14 +125,16 @@ async (args: {
     }>(response);
 };
 
+export type RemoveMembersFromCommunityArgs = {
+    communityId: number;
+    memberIds: number[];
+}
+
 export const removeMembersFromCommunity = (
     urlArg: URL,
     getJwt: func_GetJwt,
 ) =>
-async (args: {
-    communityId: number;
-    memberIds: number[];
-}) => {
+async (args: RemoveMembersFromCommunityArgs) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
         return new Error("jwt token is empty");
@@ -151,16 +161,18 @@ async (args: {
     }>(response);
 };
 
-export const createCommunityNewsletter = (
-    urlArg: URL,
-    getJwt: func_GetJwt,
-) =>
-async (args: {
+export type CreateCommunityNewsletterArgs = {
     communityId: number;
     subject: string;
     contentHtml: string;
     contentJson?: Record<string, unknown>;
-}) => {
+}
+
+export const createCommunityNewsletter = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: CreateCommunityNewsletterArgs) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
         return new Error("jwt token is empty");
@@ -187,18 +199,20 @@ async (args: {
     return handleResponse<Community>(response);
 };
 
+export type UpdateCommunityNewsletterArgs = {
+    communityId: number;
+    newsletterId: number;
+    subject?: string;
+    contentJson?: Record<string, unknown>;
+    contentHtml?: string;
+    scheduledFor?: string;
+}
+
 export const updateCommunityNewsletter = (
     urlArg: URL,
     getJwt: func_GetJwt,
 ) =>
-async (args: {
-    communityId: number;
-    newsletterId: number;
-    subject?: string;
-    contentJson?: JSON;
-    contentHtml?: string;
-    scheduledFor?: string;
-}) => {
+async (args: UpdateCommunityNewsletterArgs) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
         return new Error("jwt token is empty");
@@ -228,14 +242,16 @@ async (args: {
     }>(response);
 };
 
+export type DeleteCommunityNewsletterArgs = {
+    communityId: number;
+    newsletterId: number;
+}
+
 export const deleteCommunityNewsletter = (
     urlArg: URL,
     getJwt: func_GetJwt,
 ) =>
-async (args: {
-    communityId: number;
-    newsletterId: number;
-}) => {
+async (args: DeleteCommunityNewsletterArgs) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
         return new Error("jwt token is empty");
@@ -258,14 +274,16 @@ async (args: {
     }>(response);
 };
 
+export type GetCommunityNewsletterArgs = {
+    communityId: number;
+    newsletterId: number;
+}
+
 export const getCommunityNewsletter = (
     urlArg: URL,
     getJwt: func_GetJwt,
 ) =>
-async (args: {
-    communityId: number;
-    newsletterId: number;
-}) => {
+async (args: GetCommunityNewsletterArgs) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
         return new Error("jwt token is empty");
@@ -286,13 +304,15 @@ async (args: {
     return handleResponse<CommunityNewsletter>(response);
 };
 
+export type GetCommunityNewslettersArgs = {
+    communityId: number;
+}
+
 export const getCommunityNewsletters = (
     urlArg: URL,
     getJwt: func_GetJwt,
 ) =>
-async (args: {
-    communityId: number;
-}) => {
+async (args: GetCommunityNewslettersArgs) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
         return new Error("jwt token is empty");
@@ -313,15 +333,17 @@ async (args: {
     return handleResponse<CommunityNewsletter[]>(response);
 };
 
+export type PreviewCommunityNewsletterArgs = {
+    communityId: number;
+    newsletterId: number;
+    email: string;
+}
+
 export const previewCommunityNewsletter = (
     urlArg: URL,
     getJwt: func_GetJwt,
 ) =>
-async (args: {
-    communityId: number;
-    newsletterId: number;
-    email: string;
-}) => {
+async (args: PreviewCommunityNewsletterArgs) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
         return new Error("jwt token is empty");
@@ -345,14 +367,16 @@ async (args: {
     return handleResponse<string>(response);
 };
 
+export type SendCommunityNewsletterArgs = {
+    communityId: number;
+    newsletterId: number;
+}
+
 export const sendCommunityNewsletter = (
     urlArg: URL,
     getJwt: func_GetJwt,
 ) =>
-async (args: {
-    communityId: number;
-    newsletterId: number;
-}) => {
+async (args: SendCommunityNewsletterArgs) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
         return new Error("jwt token is empty");
