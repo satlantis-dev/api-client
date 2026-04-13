@@ -30,6 +30,23 @@ async (args: {
     return handleResponse<Community>(response);
 };
 
+export const getCommunityById = (
+    urlArg: URL,
+) =>
+async (args: {
+    communityId: number;
+}) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/communities/${args.communityId}`;
+    const response = await safeFetch(url, {
+        method: "GET",
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<Community>(response);
+};
+
 export type CommunityMemberExtended = CommunityMember & {
     numEvents: number;
     revenue: number;

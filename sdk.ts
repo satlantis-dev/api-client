@@ -344,6 +344,7 @@ import {
     createCommunityFromCalendar,
     createCommunityNewsletter,
     deleteCommunityNewsletter,
+    getCommunityById,
     getCommunityNewsletter,
     getCommunityNewsletters,
     listCommunityMembers,
@@ -811,6 +812,7 @@ export class Client {
     createCommunityFromCalendar: ReturnType<
         typeof createCommunityFromCalendar
     >;
+    getCommunityById: ReturnType<typeof getCommunityById>;
     listCommunityMembers: ReturnType<typeof listCommunityMembers>;
     addMembersToCommunity: ReturnType<typeof addMembersToCommunity>;
     removeMembersFromCommunity: ReturnType<typeof removeMembersFromCommunity>;
@@ -1381,6 +1383,7 @@ export class Client {
             rest_api_url,
             getJwt,
         );
+        this.getCommunityById = getCommunityById(rest_api_url);
         this.listCommunityMembers = listCommunityMembers(rest_api_url, getJwt);
         this.addMembersToCommunity = addMembersToCommunity(
             rest_api_url,
