@@ -69,6 +69,90 @@ export type EventOrderPaymentHistory = {
     lightningAddress?: string;
 };
 
+export type GuestTimelineEntryType =
+    | "rsvp_status_change"
+    | "payment_inbound"
+    | "payment_outbound"
+    | "ticket_added"
+    | "ticket_removed"
+    | "communication"
+    | "check_in";
+
+export type RSVPStatusChangeData = {
+    status: RsvpStatus;
+};
+
+export type PaymentInboundData = {
+    orderId: number;
+    amount: number;
+    currency: string;
+    paymentMethod: PaymentMethod | "lightning";
+    status?: PaymentStatus;
+    ticketTypeName?: string;
+    lightningInvoice?: string;
+    lightningPaymentHash?: string;
+    lightningPreimage?: string;
+    cardBrand?: string;
+    cardLast4?: string;
+};
+
+export type PaymentOutboundData = {
+    orderId: number;
+    refundId: number;
+    amount: number;
+    fee?: number;
+    currency: string;
+    status?: RefundStatus;
+    refundMethod: "lightning" | "stripe" | "satlantis_wallet";
+    lightningAddress?: string;
+    lightningPaymentHash?: string;
+    lightningPreimage?: string;
+    stripeRefundId?: string;
+};
+
+export type TicketAddedData = {
+    ticketId: number;
+    ticketCode: string;
+    ticketTypeId: number;
+    ticketTypeName: string;
+    orderId?: number;
+};
+
+export type TicketRemovedData = {
+    ticketId: number;
+    ticketCode: string;
+    ticketTypeId: number;
+    ticketTypeName: string;
+    reason?: string;
+};
+
+export type CommunicationData = {
+    channels?: string[];
+    emailSubject?: string;
+};
+
+export type CheckInData = {
+    ticketId: number;
+    ticketCode: string;
+    ticketTypeName: string;
+};
+
+export type TimelineData = {
+    rsvpStatusChange?: RSVPStatusChangeData;
+    paymentInbound?: PaymentInboundData;
+    paymentOutbound?: PaymentOutboundData;
+    ticketAdded?: TicketAddedData;
+    ticketRemoved?: TicketRemovedData;
+    communication?: CommunicationData;
+    checkIn?: CheckInData;
+};
+
+export type GuestTimelineEntry = {
+    type: GuestTimelineEntryType;
+    timestamp: string;
+    data: TimelineData;
+};
+
 export type EventUserTimeline = {
     eventId: number;
     accountId: number;
@@ -80,6 +164,7 @@ export type EventUserTimeline = {
     netSpent: number;
     currency: string; // "BTC"
     lightningAddress?: string; // Refunding lightning address entered when purchasing a ticket.
+    timeline?: GuestTimelineEntry[];
 };
 
 export type GoogleWalletData = {
