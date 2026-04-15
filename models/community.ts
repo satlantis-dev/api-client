@@ -1,4 +1,4 @@
-import type { AccountDTO } from "@satlantis/api-client";
+import type { AccountDTO, SearchAccountDTO } from "@satlantis/api-client";
 import type { Calendar } from "./calendar.ts";
 
 export type Community = {
@@ -11,7 +11,7 @@ export type Community = {
     banner?: string;
     newsletters?: CommunityNewsletter[];
     members?: CommunityMember[];
-    sampleMembers: CommunityMember[]; // a sample top-N subset (ranked by follower count)
+    sampleMembers: SearchAccountDTO[]; // a sample top-N subset (ranked by follower count)
     memberCount?: number;
     tiers?: CommunityMembershipTier[];
     calendars?: Calendar[];
