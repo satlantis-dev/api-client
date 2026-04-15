@@ -1,4 +1,4 @@
-import type { CalendarEvent, func_GetJwt } from "@satlantis/api-client";
+import type { Calendar, CalendarEvent, func_GetJwt } from "@satlantis/api-client";
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { Community, CommunityMember, CommunityNewsletter } from "../models/community.ts";
@@ -420,5 +420,5 @@ async (args: GetCommunityCalendarEventsArgs) => {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<CalendarEvent[]>(response);
+    return handleResponse<Calendar[]>(response);
 };
