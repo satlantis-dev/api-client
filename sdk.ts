@@ -345,6 +345,7 @@ import {
     createCommunityNewsletter,
     deleteCommunityNewsletter,
     getCommunityById,
+    getCommunityCalendarEvents,
     getCommunityNewsletter,
     getCommunityNewsletters,
     listCommunityMembers,
@@ -833,6 +834,7 @@ export class Client {
         typeof previewCommunityNewsletter
     >;
     sendCommunityNewsletter: ReturnType<typeof sendCommunityNewsletter>;
+    getCommunityCalendarEvents: ReturnType<typeof getCommunityCalendarEvents>;
 
     private constructor(
         public readonly rest_api_url: URL,
@@ -1421,6 +1423,7 @@ export class Client {
             rest_api_url,
             getJwt,
         );
+        this.getCommunityCalendarEvents = getCommunityCalendarEvents(rest_api_url);
     }
 
     static New(args: {

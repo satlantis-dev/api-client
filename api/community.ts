@@ -1,11 +1,11 @@
-import type { func_GetJwt } from "@satlantis/api-client";
+import type { CalendarEvent, func_GetJwt } from "@satlantis/api-client";
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { Community, CommunityMember, CommunityNewsletter } from "../models/community.ts";
 
 export type CreateCommunityFromCalendarArgs = {
     calendarId: number;
-}
+};
 
 export const createCommunityFromCalendar = (
     urlArg: URL,
@@ -34,7 +34,7 @@ async (args: CreateCommunityFromCalendarArgs) => {
 
 export type GetCommunityByIdArgs = {
     communityId: number;
-}
+};
 
 export const getCommunityById = (
     urlArg: URL,
@@ -54,7 +54,7 @@ async (args: GetCommunityByIdArgs) => {
 export type ListCommunityMembersArgs = {
     communityId: number;
     order?: "date_desc" | "date_asc" | "num_events" | "revenue";
-}
+};
 
 export type CommunityMemberExtended = CommunityMember & {
     numEvents: number;
@@ -92,7 +92,7 @@ async (args: ListCommunityMembersArgs) => {
 export type AddMembersToCommunityArgs = {
     communityId: number;
     accountIds: number[];
-}
+};
 
 export const addMembersToCommunity = (
     urlArg: URL,
@@ -128,7 +128,7 @@ async (args: AddMembersToCommunityArgs) => {
 export type RemoveMembersFromCommunityArgs = {
     communityId: number;
     memberIds: number[];
-}
+};
 
 export const removeMembersFromCommunity = (
     urlArg: URL,
@@ -166,7 +166,7 @@ export type CreateCommunityNewsletterArgs = {
     subject: string;
     contentHtml: string;
     contentJson?: Record<string, unknown>;
-}
+};
 
 export const createCommunityNewsletter = (
     urlArg: URL,
@@ -206,7 +206,7 @@ export type UpdateCommunityNewsletterArgs = {
     contentJson?: Record<string, unknown>;
     contentHtml?: string;
     scheduledFor?: string;
-}
+};
 
 export const updateCommunityNewsletter = (
     urlArg: URL,
@@ -245,7 +245,7 @@ async (args: UpdateCommunityNewsletterArgs) => {
 export type DeleteCommunityNewsletterArgs = {
     communityId: number;
     newsletterId: number;
-}
+};
 
 export const deleteCommunityNewsletter = (
     urlArg: URL,
@@ -277,7 +277,7 @@ async (args: DeleteCommunityNewsletterArgs) => {
 export type GetCommunityNewsletterArgs = {
     communityId: number;
     newsletterId: number;
-}
+};
 
 export const getCommunityNewsletter = (
     urlArg: URL,
@@ -306,7 +306,7 @@ async (args: GetCommunityNewsletterArgs) => {
 
 export type GetCommunityNewslettersArgs = {
     communityId: number;
-}
+};
 
 export const getCommunityNewsletters = (
     urlArg: URL,
@@ -337,7 +337,7 @@ export type PreviewCommunityNewsletterArgs = {
     communityId: number;
     newsletterId: number;
     email: string;
-}
+};
 
 export const previewCommunityNewsletter = (
     urlArg: URL,
@@ -370,7 +370,7 @@ async (args: PreviewCommunityNewsletterArgs) => {
 export type SendCommunityNewsletterArgs = {
     communityId: number;
     newsletterId: number;
-}
+};
 
 export const sendCommunityNewsletter = (
     urlArg: URL,
@@ -397,4 +397,28 @@ async (args: SendCommunityNewsletterArgs) => {
     return handleResponse<{
         status: string;
     }>(response);
+};
+
+export type GetCommunityCalendarEventsArgs = {
+    communityId: number;
+    period?: "past" | "upcoming" | "all";
+};
+
+export const getCommunityCalendarEvents = (
+    urlArg: URL,
+) =>
+async (args: GetCommunityCalendarEventsArgs) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/calendars/events`;
+    if (args.period) {
+        url.searchParams.set("period", args.period);
+    }
+
+    const response = await safeFetch(url, {
+        method: "GET",
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CalendarEvent[]>(response);
 };
