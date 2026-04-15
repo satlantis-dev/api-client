@@ -11,6 +11,7 @@ export type Community = {
     banner?: string;
     newsletters?: CommunityNewsletter[];
     members?: CommunityMember[];
+    sampleMembers: CommunityMember[]; // a sample top-N subset (ranked by follower count)
     memberCount?: number;
     tiers?: CommunityMembershipTier[];
     calendars?: Calendar[];
