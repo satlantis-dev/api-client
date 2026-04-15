@@ -6,12 +6,42 @@ export type Community = {
     accountId: number;
     account?: AccountDTO;
     name: string;
+    bio?: string;
     description?: string;
     banner?: string;
     newsletters?: CommunityNewsletter[];
     members?: CommunityMember[];
+    memberCount?: number;
+    tiers?: CommunityMembershipTier[];
     calendars?: Calendar[];
+    faq?: CommunityFAQ[];
+    gallery?: CommunityGalleryImage[];
+    socialLinks: Record<string, unknown>;
 };
+
+export type CommunityFAQ = {
+    question: string;
+    answer: string;
+};
+
+export interface CommunityGalleryImage {
+    id: number;
+    communityId: number;
+    url: string;
+    rank: number;
+    createdAt: string;
+}
+
+export interface CommunityMembershipTier {
+    id: number;
+    communityId: number;
+    community?: Community;
+    name: string;
+    description?: string;
+    rank: number;
+    createdAt: string;
+    updatedAt: string;
+}
 
 export enum NewsletterStatus {
     DRAFT = "draft",
