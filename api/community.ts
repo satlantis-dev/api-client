@@ -409,7 +409,7 @@ export const getCommunityCalendarEvents = (
 ) =>
 async (args: GetCommunityCalendarEventsArgs) => {
     const url = copyURL(urlArg);
-    url.pathname = `/secure/communities/${args.communityId}/calendars/events`;
+    url.pathname = `/communities/${args.communityId}/calendars/events`;
     if (args.period) {
         url.searchParams.set("period", args.period);
     }
