@@ -19,15 +19,16 @@ export type Community = {
     members?: CommunityMember[];
     newsletters?: CommunityNewsletter[];
     sampleMembers: SearchAccountDTO[]; // a sample top-N subset (ranked by follower count)
+    logo?: string;
 };
 
 export type CommunityTheme = {
-    id: number
+    id: number;
     name: string;
-    backgroundColor: string
-    foregroundColor: string
-    rank?: number
-}
+    backgroundColor: string;
+    foregroundColor: string;
+    rank?: number;
+};
 
 export type CommunityFAQ = {
     question: string;
