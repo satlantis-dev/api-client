@@ -3,22 +3,31 @@ import type { Calendar } from "./calendar.ts";
 
 export type Community = {
     id: number;
-    accountId: number;
-    account?: AccountDTO;
     name: string;
     bio?: string;
     description?: string;
     banner?: string;
-    newsletters?: CommunityNewsletter[];
-    members?: CommunityMember[];
-    sampleMembers: SearchAccountDTO[]; // a sample top-N subset (ranked by follower count)
+    accountId: number;
+    account?: AccountDTO;
+    faq?: CommunityFAQ[];
+    socialLinks: Record<string, unknown>;
     memberCount?: number;
     tiers?: CommunityMembershipTier[];
-    calendars?: Calendar[];
-    faq?: CommunityFAQ[];
     gallery?: CommunityGalleryImage[];
-    socialLinks: Record<string, unknown>;
+    calendars?: Calendar[];
+    theme?: CommunityTheme;
+    members?: CommunityMember[];
+    newsletters?: CommunityNewsletter[];
+    sampleMembers: SearchAccountDTO[]; // a sample top-N subset (ranked by follower count)
 };
+
+export type CommunityTheme = {
+    id: number
+    name: string;
+    backgroundColor: string
+    foregroundColor: string
+    rank?: number
+}
 
 export type CommunityFAQ = {
     question: string;
