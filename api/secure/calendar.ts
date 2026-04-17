@@ -1218,6 +1218,10 @@ export const isSubscribedToCalendar =
         }>(response);
     };
 
+/**
+ * Get calendar subscribers
+ * Retrieve all subscribers of a calendar. Requires edit permission on the calendar.
+ */
 export const getCalendarSubscribers =
     (urlArg: URL, getJwt: () => string) =>
     async (args: { calendarId: number }): Promise<AccountDTO[] | Error> => {
@@ -1227,7 +1231,7 @@ export const getCalendarSubscribers =
         }
 
         const url = copyURL(urlArg);
-        url.pathname = `/secure/user/calendar/${args.calendarId}/subscribers`;
+        url.pathname = `/secure/calendar/${args.calendarId}/subscribers`;
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
         const response = await safeFetch(url, {
