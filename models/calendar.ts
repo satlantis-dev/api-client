@@ -105,6 +105,7 @@ export type CalendarEvent = {
     isOrganizer: boolean;
     accountStripeConnectId?: number | null;
     contactEmail?: string;
+    isOnline?: boolean;
 };
 
 export type PlaceCalendarEvent = {

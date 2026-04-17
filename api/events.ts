@@ -99,6 +99,7 @@ export interface EventDetails {
     isUnlisted: boolean;
     isHidingLocation?: boolean;
     isHidingAttendees?: boolean;
+    isOnline?: boolean;
     accountStripeConnectId?: number;
     contactEmail?: string;
     multipleTicketsPurchaseAllowedAt?: string | null;

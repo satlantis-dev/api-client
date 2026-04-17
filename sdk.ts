@@ -1614,6 +1614,7 @@ export class Client {
         isUnlisted?: boolean;
         isHidingAttendees?: boolean;
         isHidingLocation?: boolean;
+        isOnline?: boolean;
         contactEmail?: string;
         multipleTicketsPurchaseAllowed?: boolean;
     }) => {
@@ -1711,6 +1712,7 @@ export class Client {
             event,
             isHidingAttendees: args.isHidingAttendees ?? false,
             isHidingLocation: args.isHidingLocation ?? false,
+            isOnline: args.isOnline ?? false,
         });
         if (res instanceof Error) {
             return res;
@@ -1751,6 +1753,7 @@ export class Client {
         gatedEvent?: boolean;
         isHidingAttendees?: boolean;
         isUnlisted?: boolean;
+        isOnline?: boolean;
         contactEmail?: string;
         multipleTicketsPurchaseAllowed?: boolean;
     }) => {
@@ -1847,6 +1850,7 @@ export class Client {
             event,
             isHidingAttendees: args.isHidingAttendees,
             isUnlisted: args.isUnlisted,
+            isOnline: args.isOnline ?? false,
         });
         if (res instanceof Error) {
             return res;

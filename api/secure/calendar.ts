@@ -33,6 +33,7 @@ export interface PlaceCalendarEventPost {
     isUnlisted?: boolean;
     isHidingAttendees?: boolean;
     isHidingLocation?: boolean;
+    isOnline?: boolean;
 }
 
 interface EmailEventCohost {
@@ -53,6 +54,7 @@ export interface PlaceCalendarEventPut {
     isHidingAttendees?: boolean;
     isHidingLocation?: boolean;
     isUnlisted?: boolean;
+    isOnline?: boolean;
 }
 
 export interface RespondCalendarEventCohostInvitationPut {
