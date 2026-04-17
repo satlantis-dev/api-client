@@ -1189,6 +1189,12 @@ export interface EventTicketPurchaseResponse {
     failedAt: Date | null;
     stripePublishableKey?: string;
     stripeClientSecret?: string;
+    tickets?: Array<{
+        code: string;
+        id: number;
+        status: string;
+        ticketTypeName: string;
+    }>;
 }
 
 export type GetEventTicketStatusResponse = EventTicketPurchaseResponse;
