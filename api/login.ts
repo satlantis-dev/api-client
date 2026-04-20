@@ -52,6 +52,23 @@ export const authApple = (urlArg: URL) => async (args: { code: string; id_token:
 };
 
 /**
+ * POST /auth/whop
+ */
+export const authWhop =
+    (urlArg: URL) => async (args: { code: string; state: string; redirectUri: string }) => {
+        const url = copyURL(urlArg);
+        url.pathname = `/auth/whop`;
+        const response = await safeFetch(url, {
+            method: "POST",
+            body: JSON.stringify(args),
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<{ token: string; account: Account }>(response);
+    };
+
+/**
  * POST /auth/google
  */
 export const authGoogle = (urlArg: URL) => async (args: { id_token: string }) => {

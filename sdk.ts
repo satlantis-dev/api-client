@@ -54,7 +54,7 @@ import {
     suggestLocation,
     updateLocation,
 } from "./api/location.ts";
-import { authApple, authGoogle, loginNostr } from "./api/login.ts";
+import { authApple, authGoogle, authWhop, loginNostr } from "./api/login.ts";
 import {
     buildGlobalFeed,
     getNote,
@@ -649,6 +649,7 @@ export class Client {
     verifyOTP: ReturnType<typeof verifyOTP>;
     authApple: ReturnType<typeof authApple>;
     authGoogle: ReturnType<typeof authGoogle>;
+    authWhop: ReturnType<typeof authWhop>;
     sendEventSignup: ReturnType<typeof sendEventSignup>;
 
     /////////////////
@@ -1254,6 +1255,7 @@ export class Client {
         this.verifyOTP = verifyOTP(this.rest_api_url);
         this.authApple = authApple(this.rest_api_url);
         this.authGoogle = authGoogle(this.rest_api_url);
+        this.authWhop = authWhop(this.rest_api_url);
         this.sendEventSignup = sendEventSignup(this.rest_api_url);
 
         //
