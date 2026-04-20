@@ -320,7 +320,7 @@ import {
     getWalletExchangeRate,
     sendPayment,
 } from "./api/secure/wallet.ts";
-import { getTimezoneInfo } from "./api/base.ts";
+import { getAllThemes, getTimezoneInfo } from "./api/base.ts";
 import { getVanityPathMapping } from "./api/vanity.ts";
 import {
     getRefundFeeEstimation,
@@ -366,6 +366,7 @@ export class Client {
     private places = new Map<number | string, Place>();
 
     getTimezoneInfo: ReturnType<typeof getTimezoneInfo>;
+    getAllThemes: ReturnType<typeof getAllThemes>;
 
     // Onboarding
     getUserOnboardingProfile: ReturnType<typeof getUserOnboardingProfile>;
@@ -844,6 +845,7 @@ export class Client {
         public readonly getNostrSigner: func_GetNostrSigner,
     ) {
         this.getTimezoneInfo = getTimezoneInfo(rest_api_url);
+        this.getAllThemes = getAllThemes(rest_api_url);
 
         this.getUserOnboardingProfile = getUserOnboardingProfile(
             rest_api_url,

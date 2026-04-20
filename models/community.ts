@@ -87,3 +87,11 @@ export type CommunityMember = {
     createdAt: string;
     updatedAt: string;
 };
+
+export type Theme = {
+    id: number;
+    name: string;
+    backgroundColor: string;
+    foregroundColor: string;
+    rank?: number;
+};
