@@ -4,13 +4,16 @@ import type { Calendar } from "./calendar.ts";
 export type Community = {
     id: number;
     name: string;
-    bio?: string;
+    bio?: string; // shown in the public view
+    blurb?: string; // shown in the member view
+    notice?: string; // shown in the member view, not returned in the public view
     description?: string;
     banner?: string;
     accountId: number;
     account?: AccountDTO;
     faq?: CommunityFAQ[];
     socialLinks: Record<string, unknown>;
+    chatLinks?: Record<string, unknown>; // shown in the member view, not returned in the public view
     memberCount?: number;
     tiers?: CommunityMembershipTier[];
     gallery?: CommunityGalleryImage[];
@@ -84,8 +87,15 @@ export type CommunityMember = {
     community?: Community;
     accountId: number;
     account: AccountDTO;
+    tierId?: number | null;
+    isCommunityAdmin?: boolean;
     createdAt: string;
     updatedAt: string;
+};
+
+export type CommunityUserPermission = CommunityMember & {
+    tierId?: number | null;
+    isCommunityAdmin: boolean;
 };
 
 export type Theme = {

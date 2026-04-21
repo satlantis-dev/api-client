@@ -1,7 +1,12 @@
 import type { Calendar, CalendarEvent, func_GetJwt } from "@satlantis/api-client";
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
-import type { Community, CommunityMember, CommunityNewsletter } from "../models/community.ts";
+import type {
+    Community,
+    CommunityMember,
+    CommunityNewsletter,
+    CommunityUserPermission,
+} from "../models/community.ts";
 
 export type CreateCommunityFromCalendarArgs = {
     calendarId: number;
@@ -38,17 +43,53 @@ export type GetCommunityByIdArgs = {
 
 export const getCommunityById = (
     urlArg: URL,
+    getJwt: func_GetJwt,
 ) =>
 async (args: GetCommunityByIdArgs) => {
     const url = copyURL(urlArg);
     url.pathname = `/communities/${args.communityId}`;
+    const headers = new Headers();
+    const jwtToken = getJwt();
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
     const response = await safeFetch(url, {
         method: "GET",
+        headers,
     });
     if (response instanceof Error) {
         return response;
     }
     return handleResponse<Community>(response);
+};
+
+export type GetCommunityUserPermissionArgs = {
+    communityId: number;
+};
+
+export const getCommunityUserPermission = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: GetCommunityUserPermissionArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/user/permissions/communities/${args.communityId}`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityUserPermission>(response);
 };
 
 export type ListCommunityMembersArgs = {
