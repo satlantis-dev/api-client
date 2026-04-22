@@ -496,3 +496,27 @@ async (args: GetCommunityCalendarEventsArgs) => {
     }
     return handleResponse<Calendar[]>(response);
 };
+
+export type GetCommunityEventsArgs = {
+    communityId: number;
+    period?: "past" | "upcoming" | "all";
+};
+
+export const getCommunityEvents = (
+    urlArg: URL,
+) =>
+async (args: GetCommunityEventsArgs) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/communities/${args.communityId}/events`;
+    if (args.period) {
+        url.searchParams.set("period", args.period);
+    }
+
+    const response = await safeFetch(url, {
+        method: "GET",
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CalendarEvent[]>(response);
+};
