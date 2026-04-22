@@ -349,6 +349,7 @@ import {
     getCommunityNewsletter,
     getCommunityNewsletters,
     getCommunityUserPermission,
+    listCommunityAdmins,
     listCommunityMembers,
     previewCommunityNewsletter,
     removeMembersFromCommunity,
@@ -802,6 +803,7 @@ export class Client {
     secure.HandleFunc("/communities/{communityId}/members", rest.ListCommunityMembers).Methods("GET")
     secure.HandleFunc("/communities/{communityId}/members", rest.AddMembersToCommunity).Methods("POST")
     secure.HandleFunc("/communities/{communityId}/members", rest.RemoveMembersFromCommunity).Methods("DELETE")
+    secure.HandleFunc("/communities/{communityId}/admins", rest.ListCommunityAdmins).Methods("GET")
 
     // Newsletters
     secure.HandleFunc("/communities/{communityId}/newsletters", rest.CreateCommunityNewsletter).Methods("POST")
@@ -818,6 +820,7 @@ export class Client {
     >;
     getCommunityById: ReturnType<typeof getCommunityById>;
     getCommunityUserPermission: ReturnType<typeof getCommunityUserPermission>;
+    listCommunityAdmins: ReturnType<typeof listCommunityAdmins>;
     listCommunityMembers: ReturnType<typeof listCommunityMembers>;
     addMembersToCommunity: ReturnType<typeof addMembersToCommunity>;
     removeMembersFromCommunity: ReturnType<typeof removeMembersFromCommunity>;
@@ -1393,6 +1396,7 @@ export class Client {
         );
         this.getCommunityById = getCommunityById(rest_api_url, getJwt);
         this.getCommunityUserPermission = getCommunityUserPermission(rest_api_url, getJwt);
+        this.listCommunityAdmins = listCommunityAdmins(rest_api_url, getJwt);
         this.listCommunityMembers = listCommunityMembers(rest_api_url, getJwt);
         this.addMembersToCommunity = addMembersToCommunity(
             rest_api_url,

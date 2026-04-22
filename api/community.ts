@@ -102,6 +102,11 @@ export type CommunityMemberExtended = CommunityMember & {
     revenue: number;
 };
 
+export type ListCommunityAdminsArgs = {
+    communityId: number;
+    order?: "date_desc" | "date_asc" | "num_events" | "revenue";
+};
+
 export const listCommunityMembers = (
     urlArg: URL,
     getJwt: func_GetJwt,
@@ -113,6 +118,34 @@ async (args: ListCommunityMembersArgs) => {
     }
     const url = copyURL(urlArg);
     url.pathname = `/secure/communities/${args.communityId}/members`;
+    if (args.order) {
+        url.searchParams.set("order", args.order);
+    }
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityMemberExtended[]>(response);
+};
+
+export const listCommunityAdmins = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: ListCommunityAdminsArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/admins`;
     if (args.order) {
         url.searchParams.set("order", args.order);
     }
