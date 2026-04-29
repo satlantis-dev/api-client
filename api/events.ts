@@ -1189,6 +1189,7 @@ export interface EventTicketPurchaseResponse {
     failedAt: Date | null;
     stripePublishableKey?: string;
     stripeClientSecret?: string;
+    stripeAccountId?: string;
     tickets?: Array<{
         code: string;
         id: number;
