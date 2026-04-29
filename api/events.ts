@@ -15,11 +15,6 @@ import type { AccountEventTicket, CalendarEventTag, EventUserTimeline } from "..
 import type { LocationDTO } from "../models/location.ts";
 import type { BoundingBox, PlaceEvent } from "../models/place.ts";
 import type { RefundOrderResponse } from "../models/order.ts";
-import type {
-    CalendarEventCoupon,
-    CreateCouponPayload,
-    GetEventCouponsResponse,
-} from "../models/ticketing.ts";
 
 export enum RsvpStatus {
     Accepted = "accepted",
@@ -1919,102 +1914,4 @@ async (
     }
 
     return handleResponse<GetAccountEventTicketResponse>(response);
-};
-
-export const getEventCoupons = (urlArg: URL, getJwt: func_GetJwt) =>
-async (
-    eventId: number,
-): Promise<GetEventCouponsResponse | Error> => {
-    const url = copyURL(urlArg);
-    url.pathname = `/secure/events/${eventId}/coupons`;
-
-    const jwtToken = getJwt();
-    const headers = new Headers();
-    headers.set("Content-Type", "application/json");
-    if (jwtToken) {
-        headers.set("Authorization", `Bearer ${jwtToken}`);
-    }
-
-    const response = await safeFetch(url, {
-        method: "GET",
-        headers,
-    });
-    if (response instanceof Error) {
-        return response;
-    }
-    return handleResponse<GetEventCouponsResponse>(response);
-};
-
-export const createEventCoupon = (urlArg: URL, getJwt: func_GetJwt) =>
-async (
-    payload: CreateCouponPayload,
-): Promise<CalendarEventCoupon | Error> => {
-    const url = copyURL(urlArg);
-    url.pathname = `/secure/coupons`;
-
-    const jwtToken = getJwt();
-    const headers = new Headers();
-    headers.set("Content-Type", "application/json");
-    if (jwtToken) {
-        headers.set("Authorization", `Bearer ${jwtToken}`);
-    }
-
-    const response = await safeFetch(url, {
-        method: "POST",
-        headers,
-        body: JSON.stringify(payload),
-    });
-    if (response instanceof Error) {
-        return response;
-    }
-    return handleResponse<CalendarEventCoupon>(response);
-};
-
-export const updateEventCoupon = (urlArg: URL, getJwt: func_GetJwt) =>
-async (
-    couponId: number,
-    payload: Partial<CreateCouponPayload>,
-): Promise<CalendarEventCoupon | Error> => {
-    const url = copyURL(urlArg);
-    url.pathname = `/secure/coupons/${couponId}`;
-
-    const jwtToken = getJwt();
-    const headers = new Headers();
-    headers.set("Content-Type", "application/json");
-    if (jwtToken) {
-        headers.set("Authorization", `Bearer ${jwtToken}`);
-    }
-
-    const response = await safeFetch(url, {
-        method: "PUT",
-        headers,
-        body: JSON.stringify(payload),
-    });
-    if (response instanceof Error) {
-        return response;
-    }
-    return handleResponse<CalendarEventCoupon>(response);
-};
-
-export const deleteEventCoupon = (urlArg: URL, getJwt: func_GetJwt) =>
-async (
-    couponId: number,
-): Promise<void | Error> => {
-    const url = copyURL(urlArg);
-    url.pathname = `/secure/coupons/${couponId}`;
-
-    const jwtToken = getJwt();
-    const headers = new Headers();
-    headers.set("Content-Type", "application/json");
-    if (jwtToken) {
-        headers.set("Authorization", `Bearer ${jwtToken}`);
-    }
-
-    const response = await safeFetch(url, {
-        method: "DELETE",
-        headers,
-    });
-    if (response instanceof Error) {
-        return response;
-    }
 };

@@ -111,24 +111,6 @@ export type CalendarEventTicketOrderRefund = {
     metadata?: Record<string, unknown>;
 };
 
-export type CreateCouponPayload = {
-    calendarEventId?: number;
-    calendarId?: number;
-    code: string;
-    description?: string | null;
-    discountAmount?: number | null;
-    discountCurrency?: string | null;
-    discountPercent?: number | null;
-    discountType: CouponDiscountType;
-    endsAt?: string | null;
-    isActive?: boolean;
-    isSingleUse?: boolean;
-    maxRedemptions?: number | null;
-    scope: CouponScope;
-    startsAt?: string | null;
-    ticketTypeIds?: number[] | null;
-};
-
 export type CalendarEventCoupon = {
     id: number;
     scope: CouponScope;
@@ -149,10 +131,4 @@ export type CalendarEventCoupon = {
     isActive: boolean;
     createdAt: string;
     updatedAt: string;
-};
-
-export type GetEventCouponsResponse = {
-    active: CalendarEventCoupon[];
-    inactive: CalendarEventCoupon[];
-    deleted: CalendarEventCoupon[];
 };

@@ -269,16 +269,13 @@ import {
     cancelEventTicket,
     changeTicketType,
     createCalendarEventTag,
-    createEventCoupon,
     createEventTicketType,
-    deleteEventCoupon,
     deleteEventTicketType,
     generateAiEventDescription,
     getAccountEventTickets,
     getCalendarEventTags,
     getEventAttendees,
     getEventCalendars,
-    getEventCoupons,
     getEventDetails,
     getEventFinancialsSummary,
     getEventFinancialsWithdrawalFeeEstimations,
@@ -308,7 +305,6 @@ import {
     saveRegistrationQuestions,
     saveRsvpConfirmationMessage,
     unmarkCalendarEventAsFeatured,
-    updateEventCoupon,
     updateEventTicketStatus,
     updateEventTicketType,
     updateRsvpStatus,
@@ -462,10 +458,6 @@ export class Client {
     >;
     markCalendarEventAsFeatured: ReturnType<typeof markCalendarEventAsFeatured>;
     inviteAttendees: ReturnType<typeof inviteAttendees>;
-    createEventCoupon: ReturnType<typeof createEventCoupon>;
-    updateEventCoupon: ReturnType<typeof updateEventCoupon>;
-    deleteEventCoupon: ReturnType<typeof deleteEventCoupon>;
-    getEventCoupons: ReturnType<typeof getEventCoupons>;
     createEventTicketType: ReturnType<typeof createEventTicketType>;
     updateEventTicketType: ReturnType<typeof updateEventTicketType>;
     updateEventTicketStatus: ReturnType<typeof updateEventTicketStatus>;
@@ -982,10 +974,6 @@ export class Client {
             getJwt,
         );
         this.inviteAttendees = inviteAttendees(rest_api_url, getJwt);
-        this.createEventCoupon = createEventCoupon(rest_api_url, getJwt);
-        this.updateEventCoupon = updateEventCoupon(rest_api_url, getJwt);
-        this.deleteEventCoupon = deleteEventCoupon(rest_api_url, getJwt);
-        this.getEventCoupons = getEventCoupons(rest_api_url, getJwt);
         this.createEventTicketType = createEventTicketType(rest_api_url, getJwt);
         this.updateEventTicketType = updateEventTicketType(rest_api_url, getJwt);
         this.updateEventTicketStatus = updateEventTicketStatus(
