@@ -345,6 +345,7 @@ import {
 } from "./api/stripe.ts";
 import {
     addMembersToCommunity,
+    createCommunity,
     createCommunityFromCalendar,
     createCommunityNewsletter,
     deleteCommunityNewsletter,
@@ -824,6 +825,7 @@ export class Client {
     secure.HandleFunc("/communities/{communityId}/newsletters/{newsletterId}/send", rest.SendCommunityNewsletter).Methods("POST")
     */
     // Community
+    createCommunity: ReturnType<typeof createCommunity>;
     createCommunityFromCalendar: ReturnType<
         typeof createCommunityFromCalendar
     >;
@@ -1404,6 +1406,7 @@ export class Client {
         this.linkStripeAccountToEvent = linkStripeAccountToEvent(rest_api_url, getJwt);
 
         // Community
+        this.createCommunity = createCommunity(rest_api_url, getJwt);
         this.createCommunityFromCalendar = createCommunityFromCalendar(
             rest_api_url,
             getJwt,
