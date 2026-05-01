@@ -17,7 +17,8 @@ import type { BoundingBox, PlaceEvent } from "../models/place.ts";
 import type { RefundOrderResponse } from "../models/order.ts";
 import type {
     CalendarEventCoupon,
-    CouponDiscountType,
+    CouponPreviewPayload,
+    CouponPreviewResponse,
     CreateCouponPayload,
     GetEventCouponsResponse,
 } from "../models/ticketing.ts";
@@ -1180,9 +1181,9 @@ export interface EventTicketPurchasePayload {
         registrationAnswers: any;
         event?: NostrEvent<NostrKind, Tag>;
     };
+    couponCode?: string;
     email: string;
     name: string;
-    couponCode?: string;
 }
 
 export interface EventTicketPurchaseResponse {
@@ -1230,19 +1231,6 @@ export interface CouponPreviewInput {
     couponCode: string;
     ticketTypeOrders: EventTicketPurchasePayload["ticketTypeOrders"];
     email?: string;
-}
-
-export interface CouponPreviewResponse {
-    valid: boolean;
-    errorCode?: CouponErrorCode;
-    error?: string;
-    couponCode?: string;
-    discountType?: CouponDiscountType;
-    totalDiscount?: number;
-    finalTotal?: number;
-    originalTotal?: number;
-    currency?: OrderCurrency;
-    perItemDiscounts?: CouponPreviewItemDiscount[];
 }
 
 export type GetEventTicketStatusResponse = EventTicketPurchaseResponse;
@@ -1328,33 +1316,6 @@ export const purchaseEventTicket =
         }
         return handleResponse<EventTicketPurchaseResponse>(response);
     };
-
-export const previewEventCoupon = (urlArg: URL, getJwt: func_GetJwt) =>
-async (
-    eventId: number,
-    input: CouponPreviewInput,
-): Promise<CouponPreviewResponse | Error> => {
-    const url = copyURL(urlArg);
-    url.pathname = `/events/${eventId}/coupon/preview`;
-
-    const headers = new Headers();
-    headers.set("Content-Type", "application/json");
-
-    const jwtToken = getJwt();
-    if (jwtToken) {
-        headers.set("Authorization", `Bearer ${jwtToken}`);
-    }
-
-    const response = await safeFetch(url, {
-        method: "POST",
-        headers,
-        body: JSON.stringify(input),
-    });
-    if (response instanceof Error) {
-        return response;
-    }
-    return handleResponse<CouponPreviewResponse>(response);
-};
 
 export const getEventTicketPaymentStatus = (urlArg: URL) =>
 async (
@@ -2086,4 +2047,51 @@ async (
     if (response instanceof Error) {
         return response;
     }
+};
+
+export const getEventCouponByCode = (urlArg: URL) =>
+async (
+    eventId: number,
+    couponCode: string,
+): Promise<CalendarEventCoupon | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/events/${eventId}/coupons/${couponCode}`;
+
+    const response = await safeFetch(url, {
+        method: "GET",
+    });
+
+    if (response instanceof Error) {
+        return response;
+    }
+
+    return handleResponse<CalendarEventCoupon>(response);
+};
+
+export const previewEventCoupon = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    eventId: number,
+    payload: CouponPreviewPayload,
+): Promise<CouponPreviewResponse | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/events/${eventId}/coupon/preview`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+    });
+
+    if (response instanceof Error) {
+        return response;
+    }
+
+    return handleResponse<CouponPreviewResponse>(response);
 };

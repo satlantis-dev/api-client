@@ -156,3 +156,34 @@ export type GetEventCouponsResponse = {
     inactive: CalendarEventCoupon[];
     deleted: CalendarEventCoupon[];
 };
+
+export type CouponPreviewOrder = {
+    paymentCurrency: string;
+    priceFiat?: number | null;
+    priceSats?: number | null;
+    quantity: number;
+    ticketTypeId: number;
+};
+
+export type CouponPreviewPayload = {
+    couponCode: string;
+    ticketTypeOrders: CouponPreviewOrder[];
+    email?: string | null;
+};
+
+export type CouponPreviewResponse = {
+    couponCode: string;
+    currency: string;
+    discountType: string;
+    error?: string;
+    errorCode?: string;
+    finalTotal: number;
+    originalTotal: number;
+    perItemDiscounts: {
+        discount: number;
+        discountPercent: number;
+        ticketTypeId: number;
+    }[];
+    totalDiscount: number;
+    valid: boolean;
+};
