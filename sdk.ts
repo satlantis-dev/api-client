@@ -480,7 +480,6 @@ export class Client {
     deleteEventTicketType: ReturnType<typeof deleteEventTicketType>;
     getEventTicketTypes: ReturnType<typeof getEventTicketTypes>;
     purchaseEventTicket: ReturnType<typeof purchaseEventTicket>;
-    previewEventCoupon: ReturnType<typeof previewEventCoupon>;
     getEventTicketPaymentStatus: ReturnType<typeof getEventTicketPaymentStatus>;
     assignTicketToRSVP: ReturnType<typeof assignTicketToRSVP>;
     addTicketToRsvp: ReturnType<typeof addTicketToRsvp>;
@@ -1011,7 +1010,6 @@ export class Client {
             getJwt,
             getNostrSigner,
         );
-        this.previewEventCoupon = previewEventCoupon(rest_api_url, getJwt);
         this.getEventTicketPaymentStatus = getEventTicketPaymentStatus(rest_api_url);
         this.assignTicketToRSVP = assignTicketToRSVP(rest_api_url, getJwt);
         this.addTicketToRsvp = addTicketToRsvp(rest_api_url, getJwt);
