@@ -166,6 +166,9 @@ export interface PublicTicketDetails {
         name: string;
         email: string;
     };
+    couponCode?: string;
+    couponDiscountAmount?: number;
+    couponDiscountPercent?: number;
 }
 
 export interface EventDetailsPLace {
