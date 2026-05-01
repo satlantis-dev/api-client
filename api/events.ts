@@ -17,6 +17,7 @@ import type { BoundingBox, PlaceEvent } from "../models/place.ts";
 import type { RefundOrderResponse } from "../models/order.ts";
 import type {
     CalendarEventCoupon,
+    CouponDiscountType,
     CreateCouponPayload,
     GetEventCouponsResponse,
 } from "../models/ticketing.ts";
@@ -1178,6 +1179,7 @@ export interface EventTicketPurchasePayload {
     };
     email: string;
     name: string;
+    couponCode?: string;
 }
 
 export interface EventTicketPurchaseResponse {
@@ -1195,12 +1197,49 @@ export interface EventTicketPurchaseResponse {
     stripePublishableKey?: string;
     stripeClientSecret?: string;
     stripeAccountId?: string;
+    couponCode?: string | null;
+    couponDiscountAmount?: number | null;
     tickets?: Array<{
         code: string;
         id: number;
         status: string;
         ticketTypeName: string;
     }>;
+}
+
+export type CouponErrorCode =
+    | "invalid_characters"
+    | "invalid_coupon"
+    | "expired_coupon"
+    | "already_used"
+    | "limit_exhausted"
+    | "not_applicable"
+    | "currency_mismatch"
+    | "internal_error";
+
+export interface CouponPreviewItemDiscount {
+    ticketTypeId: number;
+    discount: number;
+    discountPercent?: number;
+}
+
+export interface CouponPreviewInput {
+    couponCode: string;
+    ticketTypeOrders: EventTicketPurchasePayload["ticketTypeOrders"];
+    email?: string;
+}
+
+export interface CouponPreviewResponse {
+    valid: boolean;
+    errorCode?: CouponErrorCode;
+    error?: string;
+    couponCode?: string;
+    discountType?: CouponDiscountType;
+    totalDiscount?: number;
+    finalTotal?: number;
+    originalTotal?: number;
+    currency?: OrderCurrency;
+    perItemDiscounts?: CouponPreviewItemDiscount[];
 }
 
 export type GetEventTicketStatusResponse = EventTicketPurchaseResponse;
@@ -1286,6 +1325,33 @@ export const purchaseEventTicket =
         }
         return handleResponse<EventTicketPurchaseResponse>(response);
     };
+
+export const previewEventCoupon = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    eventId: number,
+    input: CouponPreviewInput,
+): Promise<CouponPreviewResponse | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/events/${eventId}/coupon/preview`;
+
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+
+    const jwtToken = getJwt();
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(input),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CouponPreviewResponse>(response);
+};
 
 export const getEventTicketPaymentStatus = (urlArg: URL) =>
 async (
