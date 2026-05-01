@@ -278,6 +278,7 @@ import {
     getCalendarEventTags,
     getEventAttendees,
     getEventCalendars,
+    getEventCouponByCode,
     getEventCoupons,
     getEventDetails,
     getEventFinancialsSummary,
@@ -301,6 +302,7 @@ import {
     inviteAttendees,
     markCalendarEventAsFeatured,
     postEventFinancialsWithdraw,
+    previewEventCoupon,
     purchaseEventTicket,
     refundEventTicket,
     refundTicketsInRsvp,
@@ -345,6 +347,7 @@ import {
 } from "./api/stripe.ts";
 import {
     addMembersToCommunity,
+    createCommunity,
     createCommunityFromCalendar,
     createCommunityNewsletter,
     deleteCommunityNewsletter,
@@ -465,7 +468,9 @@ export class Client {
     createEventCoupon: ReturnType<typeof createEventCoupon>;
     updateEventCoupon: ReturnType<typeof updateEventCoupon>;
     deleteEventCoupon: ReturnType<typeof deleteEventCoupon>;
+    getEventCouponByCode: ReturnType<typeof getEventCouponByCode>;
     getEventCoupons: ReturnType<typeof getEventCoupons>;
+    previewEventCoupon: ReturnType<typeof previewEventCoupon>;
     createEventTicketType: ReturnType<typeof createEventTicketType>;
     updateEventTicketType: ReturnType<typeof updateEventTicketType>;
     updateEventTicketStatus: ReturnType<typeof updateEventTicketStatus>;
@@ -475,6 +480,7 @@ export class Client {
     deleteEventTicketType: ReturnType<typeof deleteEventTicketType>;
     getEventTicketTypes: ReturnType<typeof getEventTicketTypes>;
     purchaseEventTicket: ReturnType<typeof purchaseEventTicket>;
+    previewEventCoupon: ReturnType<typeof previewEventCoupon>;
     getEventTicketPaymentStatus: ReturnType<typeof getEventTicketPaymentStatus>;
     assignTicketToRSVP: ReturnType<typeof assignTicketToRSVP>;
     addTicketToRsvp: ReturnType<typeof addTicketToRsvp>;
@@ -824,6 +830,7 @@ export class Client {
     secure.HandleFunc("/communities/{communityId}/newsletters/{newsletterId}/send", rest.SendCommunityNewsletter).Methods("POST")
     */
     // Community
+    createCommunity: ReturnType<typeof createCommunity>;
     createCommunityFromCalendar: ReturnType<
         typeof createCommunityFromCalendar
     >;
@@ -985,7 +992,9 @@ export class Client {
         this.createEventCoupon = createEventCoupon(rest_api_url, getJwt);
         this.updateEventCoupon = updateEventCoupon(rest_api_url, getJwt);
         this.deleteEventCoupon = deleteEventCoupon(rest_api_url, getJwt);
+        this.getEventCouponByCode = getEventCouponByCode(rest_api_url);
         this.getEventCoupons = getEventCoupons(rest_api_url, getJwt);
+        this.previewEventCoupon = previewEventCoupon(rest_api_url, getJwt);
         this.createEventTicketType = createEventTicketType(rest_api_url, getJwt);
         this.updateEventTicketType = updateEventTicketType(rest_api_url, getJwt);
         this.updateEventTicketStatus = updateEventTicketStatus(
@@ -1002,6 +1011,7 @@ export class Client {
             getJwt,
             getNostrSigner,
         );
+        this.previewEventCoupon = previewEventCoupon(rest_api_url, getJwt);
         this.getEventTicketPaymentStatus = getEventTicketPaymentStatus(rest_api_url);
         this.assignTicketToRSVP = assignTicketToRSVP(rest_api_url, getJwt);
         this.addTicketToRsvp = addTicketToRsvp(rest_api_url, getJwt);
@@ -1404,6 +1414,7 @@ export class Client {
         this.linkStripeAccountToEvent = linkStripeAccountToEvent(rest_api_url, getJwt);
 
         // Community
+        this.createCommunity = createCommunity(rest_api_url, getJwt);
         this.createCommunityFromCalendar = createCommunityFromCalendar(
             rest_api_url,
             getJwt,

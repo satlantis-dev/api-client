@@ -11,7 +11,6 @@ import type {
 export type CreateCommunityFromCalendarArgs = {
     calendarId: number;
 };
-
 export const createCommunityFromCalendar = (
     urlArg: URL,
     getJwt: func_GetJwt,
@@ -519,4 +518,39 @@ async (args: GetCommunityEventsArgs) => {
         return response;
     }
     return handleResponse<CalendarEvent[]>(response);
+};
+
+export type CreateCommunityArgs = {
+    name: string;
+    description?: string;
+    themeId?: number;
+    logo?: string;
+    banner?: string;
+};
+
+export const createCommunity = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: CreateCommunityArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(args),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<Community>(response);
 };

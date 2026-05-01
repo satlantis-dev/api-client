@@ -12,6 +12,10 @@ export type EventOrderItemHistory = {
     promotionName?: string;
     discountPercent?: number;
     originalPrice?: number;
+    couponId?: number;
+    couponCode?: string;
+    couponDiscountAmount?: number;
+    couponDiscountPercent?: number;
 };
 
 export type EventPaymentHistory = {
