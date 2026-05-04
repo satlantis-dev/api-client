@@ -98,6 +98,7 @@ export type CalendarEvent = {
     title: string;
     venue?: Location;
     type: CalendarEventType;
+    typeId?: number;
     url: string;
     website: string;
     googleId?: string;
