@@ -1652,6 +1652,7 @@ export class Client {
         isOnline?: boolean;
         contactEmail?: string;
         multipleTicketsPurchaseAllowed?: boolean;
+        currency?: string;
     }) => {
         const jwtToken = this.getJwt();
         if (jwtToken == "") {
@@ -1728,6 +1729,10 @@ export class Client {
             tags.push(["rsvp_waitlist_enabled", "true"]);
         } else {
             tags.push(["rsvp_waitlist_enabled", "false"]);
+        }
+
+        if (args.currency) {
+            tags.push(["currency", args.currency]);
         }
 
         const event = await prepareNostrEvent(signer, {
@@ -1791,6 +1796,7 @@ export class Client {
         isOnline?: boolean;
         contactEmail?: string;
         multipleTicketsPurchaseAllowed?: boolean;
+        currency?: string;
     }) => {
         const jwtToken = this.getJwt();
         if (jwtToken == "") {
@@ -1866,6 +1872,10 @@ export class Client {
             tags.push(["rsvp_waitlist_enabled", "true"]);
         } else {
             tags.push(["rsvp_waitlist_enabled", "false"]);
+        }
+
+        if (args.currency) {
+            tags.push(["currency", args.currency]);
         }
 
         const event = await prepareNostrEvent(signer, {
