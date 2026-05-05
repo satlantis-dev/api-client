@@ -59,6 +59,7 @@ export interface EventDetails {
     image: string;
     calendarEventTags: CalendarEventTag[];
     location?: string;
+    locationClarification?: string | null;
     kind: number;
     knownAttendees?: AccountDTO[];
     sampleAttendees?: AccountDTO[];

@@ -86,6 +86,7 @@ export type CalendarEvent = {
     sampleAttendees?: AccountDTO[];
     attendeeCount?: number;
     location?: string;
+    locationClarification?: string | null;
     nostrId: string;
     notes: CalendarEventNote[];
     pubkey: string;

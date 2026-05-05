@@ -1631,6 +1631,7 @@ export class Client {
         timezone: string;
         geoHash: string;
         location: string;
+        locationClarification?: string;
         cohosts: string;
         venue: string;
         calendarEventTags: string;
@@ -1709,6 +1710,10 @@ export class Client {
             tags.push(["location", args.location]);
         }
 
+        if (args.locationClarification) {
+            tags.push(["location_clarification", args.locationClarification]);
+        }
+
         if (args.googleMapsUri) {
             tags.push(["googleMapsUri", args.googleMapsUri]);
         }
@@ -1775,6 +1780,7 @@ export class Client {
         timezone: string;
         geoHash: string;
         location: string;
+        locationClarification?: string;
         placeId: number | undefined;
         summary: string;
         website: string;
@@ -1850,6 +1856,10 @@ export class Client {
         }
         if (args.location) {
             tags.push(["location", args.location]);
+        }
+
+        if (args.locationClarification) {
+            tags.push(["location_clarification", args.locationClarification]);
         }
 
         if (args.googleMapsUri) {
