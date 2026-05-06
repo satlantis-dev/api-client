@@ -792,6 +792,7 @@ export type CreateCalendarRequest = {
     slug?: string;
     banner?: string;
     placeId?: number;
+    communityId?: number;
 };
 
 export const createCalendar = (urlArg: URL, getJwt: () => string) => async (args: CreateCalendarRequest) => {
