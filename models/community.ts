@@ -1,5 +1,6 @@
 import type { AccountDTO, SearchAccountDTO } from "@satlantis/api-client";
 import type { Calendar } from "./calendar.ts";
+import type { OrderCurrency } from "./ticketing.ts";
 
 export type Community = {
     id: number;
@@ -52,6 +53,14 @@ export interface CommunityMembershipTier {
     community?: Community;
     name: string;
     description?: string;
+    blurb?: string;
+    buttonText?: string;
+    registrationQuestions?: Record<string, unknown>;
+    isGated: boolean;
+    isPaid: boolean;
+    currency?: OrderCurrency | null;
+    monthlyAmount?: number | null;
+    yearlyAmount?: number | null;
     rank: number;
     createdAt: string;
     updatedAt: string;

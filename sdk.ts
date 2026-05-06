@@ -349,7 +349,9 @@ import {
     addMembersToCommunity,
     createCommunity,
     createCommunityFromCalendar,
+    createCommunityMembershipTier,
     createCommunityNewsletter,
+    deleteCommunityMembershipTier,
     deleteCommunityNewsletter,
     getCommunityById,
     getCommunityCalendarEvents,
@@ -362,6 +364,7 @@ import {
     previewCommunityNewsletter,
     removeMembersFromCommunity,
     sendCommunityNewsletter,
+    updateCommunityMembershipTier,
     updateCommunityNewsletter,
 } from "./api/community.ts";
 
@@ -858,6 +861,15 @@ export class Client {
     sendCommunityNewsletter: ReturnType<typeof sendCommunityNewsletter>;
     getCommunityCalendarEvents: ReturnType<typeof getCommunityCalendarEvents>;
     getCommunityEvents: ReturnType<typeof getCommunityEvents>;
+    createCommunityMembershipTier: ReturnType<
+        typeof createCommunityMembershipTier
+    >;
+    updateCommunityMembershipTier: ReturnType<
+        typeof updateCommunityMembershipTier
+    >;
+    deleteCommunityMembershipTier: ReturnType<
+        typeof deleteCommunityMembershipTier
+    >;
 
     private constructor(
         public readonly rest_api_url: URL,
@@ -1459,6 +1471,18 @@ export class Client {
         );
         this.getCommunityCalendarEvents = getCommunityCalendarEvents(rest_api_url);
         this.getCommunityEvents = getCommunityEvents(rest_api_url);
+        this.createCommunityMembershipTier = createCommunityMembershipTier(
+            rest_api_url,
+            getJwt,
+        );
+        this.updateCommunityMembershipTier = updateCommunityMembershipTier(
+            rest_api_url,
+            getJwt,
+        );
+        this.deleteCommunityMembershipTier = deleteCommunityMembershipTier(
+            rest_api_url,
+            getJwt,
+        );
     }
 
     static New(args: {

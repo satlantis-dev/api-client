@@ -4,9 +4,11 @@ import { safeFetch } from "../helpers/safe-fetch.ts";
 import type {
     Community,
     CommunityMember,
+    CommunityMembershipTier,
     CommunityNewsletter,
     CommunityUserPermission,
 } from "../models/community.ts";
+import type { OrderCurrency } from "../models/ticketing.ts";
 
 export type CreateCommunityFromCalendarArgs = {
     calendarId: number;
@@ -553,4 +555,115 @@ async (args: CreateCommunityArgs) => {
         return response;
     }
     return handleResponse<Community>(response);
+};
+
+export type MembershipTierPayload = {
+    name: string;
+    description?: string;
+    blurb?: string;
+    buttonText?: string;
+    registrationQuestions?: Record<string, unknown>;
+    isGated?: boolean;
+    isPaid?: boolean;
+    currency?: OrderCurrency;
+    monthlyAmount?: number;
+    yearlyAmount?: number;
+    rank?: number;
+};
+
+export type CreateCommunityMembershipTierArgs = MembershipTierPayload & {
+    communityId: number;
+};
+
+export const createCommunityMembershipTier = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: CreateCommunityMembershipTierArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/tiers`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const { communityId: _communityId, ...payload } = args;
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityMembershipTier>(response);
+};
+
+export type UpdateCommunityMembershipTierArgs = Partial<MembershipTierPayload> & {
+    communityId: number;
+    tierId: number;
+};
+
+export const updateCommunityMembershipTier = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: UpdateCommunityMembershipTierArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/tiers/${args.tierId}`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const { communityId: _communityId, tierId: _tierId, ...payload } = args;
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify(payload),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityMembershipTier>(response);
+};
+
+export type DeleteCommunityMembershipTierArgs = {
+    communityId: number;
+    tierId: number;
+};
+
+export const deleteCommunityMembershipTier = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: DeleteCommunityMembershipTierArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/tiers/${args.tierId}`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "DELETE",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{ message: string }>(response);
 };
