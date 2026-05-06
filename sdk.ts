@@ -346,7 +346,10 @@ import {
     setDefaultStripeAccount,
 } from "./api/stripe.ts";
 import {
+    acceptCommunityMembershipRequest,
     addMembersToCommunity,
+    cancelCommunityMembershipRequest,
+    cancelPendingMembershipSubscription,
     createCommunity,
     createCommunityFromCalendar,
     createCommunityMembershipTier,
@@ -356,14 +359,20 @@ import {
     getCommunityById,
     getCommunityCalendarEvents,
     getCommunityEvents,
+    getCommunityMembershipRequests,
     getCommunityNewsletter,
     getCommunityNewsletters,
     getCommunityUserPermission,
+    getUserCommunityMembershipRequests,
+    getUserCommunityMemberships,
     listCommunityAdmins,
     listCommunityMembers,
+    modifyActiveMembershipSubscription,
     previewCommunityNewsletter,
+    rejectCommunityMembershipRequest,
     removeMembersFromCommunity,
     sendCommunityNewsletter,
+    submitCommunityMembershipRequest,
     updateCommunityMembershipTier,
     updateCommunityNewsletter,
 } from "./api/community.ts";
@@ -869,6 +878,33 @@ export class Client {
     >;
     deleteCommunityMembershipTier: ReturnType<
         typeof deleteCommunityMembershipTier
+    >;
+    submitCommunityMembershipRequest: ReturnType<
+        typeof submitCommunityMembershipRequest
+    >;
+    getCommunityMembershipRequests: ReturnType<
+        typeof getCommunityMembershipRequests
+    >;
+    acceptCommunityMembershipRequest: ReturnType<
+        typeof acceptCommunityMembershipRequest
+    >;
+    rejectCommunityMembershipRequest: ReturnType<
+        typeof rejectCommunityMembershipRequest
+    >;
+    cancelCommunityMembershipRequest: ReturnType<
+        typeof cancelCommunityMembershipRequest
+    >;
+    modifyActiveMembershipSubscription: ReturnType<
+        typeof modifyActiveMembershipSubscription
+    >;
+    cancelPendingMembershipSubscription: ReturnType<
+        typeof cancelPendingMembershipSubscription
+    >;
+    getUserCommunityMembershipRequests: ReturnType<
+        typeof getUserCommunityMembershipRequests
+    >;
+    getUserCommunityMemberships: ReturnType<
+        typeof getUserCommunityMemberships
     >;
 
     private constructor(
@@ -1480,6 +1516,42 @@ export class Client {
             getJwt,
         );
         this.deleteCommunityMembershipTier = deleteCommunityMembershipTier(
+            rest_api_url,
+            getJwt,
+        );
+        this.submitCommunityMembershipRequest = submitCommunityMembershipRequest(
+            rest_api_url,
+            getJwt,
+        );
+        this.getCommunityMembershipRequests = getCommunityMembershipRequests(
+            rest_api_url,
+            getJwt,
+        );
+        this.acceptCommunityMembershipRequest = acceptCommunityMembershipRequest(
+            rest_api_url,
+            getJwt,
+        );
+        this.rejectCommunityMembershipRequest = rejectCommunityMembershipRequest(
+            rest_api_url,
+            getJwt,
+        );
+        this.cancelCommunityMembershipRequest = cancelCommunityMembershipRequest(
+            rest_api_url,
+            getJwt,
+        );
+        this.modifyActiveMembershipSubscription = modifyActiveMembershipSubscription(
+            rest_api_url,
+            getJwt,
+        );
+        this.cancelPendingMembershipSubscription = cancelPendingMembershipSubscription(
+            rest_api_url,
+            getJwt,
+        );
+        this.getUserCommunityMembershipRequests = getUserCommunityMembershipRequests(
+            rest_api_url,
+            getJwt,
+        );
+        this.getUserCommunityMemberships = getUserCommunityMemberships(
             rest_api_url,
             getJwt,
         );

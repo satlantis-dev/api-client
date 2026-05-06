@@ -1,9 +1,15 @@
 import type { Calendar, CalendarEvent, func_GetJwt } from "@satlantis/api-client";
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
+import type { PaymentMethod } from "../models/order.ts";
 import type {
     Community,
     CommunityMember,
+    CommunityMembershipPeriod,
+    CommunityMembershipRequest,
+    CommunityMembershipRequestStatus,
+    CommunityMembershipSubscription,
+    CommunityMembershipSubscriptionChange,
     CommunityMembershipTier,
     CommunityNewsletter,
     CommunityUserPermission,
@@ -666,4 +672,269 @@ async (args: DeleteCommunityMembershipTierArgs) => {
         return response;
     }
     return handleResponse<{ message: string }>(response);
+};
+
+/////////////////////////// Membership Requests ///////////////////////////
+
+export type SubmitCommunityMembershipRequestArgs = {
+    communityId: number;
+    tierId: number;
+    registrationAnswers?: Record<string, unknown>;
+    // Required when the requested tier is paid.
+    period?: CommunityMembershipPeriod;
+    paymentMethod?: PaymentMethod;
+};
+
+export type SubmitCommunityMembershipRequestResponse = {
+    request: CommunityMembershipRequest;
+    subscription?: CommunityMembershipSubscription;
+    subscriptionChange?: CommunityMembershipSubscriptionChange;
+};
+
+export const submitCommunityMembershipRequest = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: SubmitCommunityMembershipRequestArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/requests`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+            tierId: args.tierId,
+            registrationAnswers: args.registrationAnswers,
+            period: args.period,
+            paymentMethod: args.paymentMethod,
+        }),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<SubmitCommunityMembershipRequestResponse>(response);
+};
+
+export type GetCommunityMembershipRequestsArgs = {
+    communityId: number;
+    status?: CommunityMembershipRequestStatus;
+};
+
+export const getCommunityMembershipRequests = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: GetCommunityMembershipRequestsArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/requests`;
+    if (args.status) {
+        url.searchParams.set("status", args.status);
+    }
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityMembershipRequest[]>(response);
+};
+
+type ReviewCommunityMembershipRequestArgs = {
+    communityId: number;
+    requestId: number;
+    notes?: string;
+};
+
+export type AcceptCommunityMembershipRequestArgs = ReviewCommunityMembershipRequestArgs;
+export type RejectCommunityMembershipRequestArgs = ReviewCommunityMembershipRequestArgs;
+export type CancelCommunityMembershipRequestArgs = ReviewCommunityMembershipRequestArgs;
+
+const reviewCommunityMembershipRequest = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+    method: "PUT" | "DELETE",
+    action: "accept" | "reject" | "cancel",
+) =>
+async (args: ReviewCommunityMembershipRequestArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = action === "cancel"
+        ? `/secure/communities/${args.communityId}/requests/${args.requestId}`
+        : `/secure/communities/${args.communityId}/requests/${args.requestId}/${action}`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const response = await safeFetch(url, {
+        method,
+        headers,
+        body: JSON.stringify({ notes: args.notes }),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityMembershipRequest>(response);
+};
+
+export const acceptCommunityMembershipRequest = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) => reviewCommunityMembershipRequest(urlArg, getJwt, "PUT", "accept");
+
+export const rejectCommunityMembershipRequest = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) => reviewCommunityMembershipRequest(urlArg, getJwt, "PUT", "reject");
+
+export const cancelCommunityMembershipRequest = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) => reviewCommunityMembershipRequest(urlArg, getJwt, "DELETE", "cancel");
+
+/////////////////////////// Membership Subscriptions ///////////////////////////
+
+export type ModifyActiveMembershipSubscriptionArgs = {
+    communityId: number;
+    subscriptionId: number;
+    period?: CommunityMembershipPeriod;
+    cancelAtPeriodEnd?: boolean;
+    paymentMethod?: PaymentMethod;
+};
+
+export const modifyActiveMembershipSubscription = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: ModifyActiveMembershipSubscriptionArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/subscriptions/${args.subscriptionId}`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify({
+            period: args.period,
+            cancelAtPeriodEnd: args.cancelAtPeriodEnd,
+            paymentMethod: args.paymentMethod,
+        }),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityMembershipSubscription>(response);
+};
+
+export type CancelPendingMembershipSubscriptionArgs = {
+    communityId: number;
+    subscriptionId: number;
+};
+
+export const cancelPendingMembershipSubscription = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: CancelPendingMembershipSubscriptionArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/subscriptions/${args.subscriptionId}`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "DELETE",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityMembershipSubscription>(response);
+};
+
+/////////////////////////// User-scoped reads ///////////////////////////
+
+export type GetUserCommunityMembershipRequestsArgs = {
+    communityId: number;
+};
+
+export const getUserCommunityMembershipRequests = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: GetUserCommunityMembershipRequestsArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/user/communities/${args.communityId}/requests`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityMembershipRequest[]>(response);
+};
+
+export const getUserCommunityMemberships = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async () => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/user/communities/members`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityMember[]>(response);
 };

@@ -1,5 +1,6 @@
 import type { AccountDTO, SearchAccountDTO } from "@satlantis/api-client";
 import type { Calendar } from "./calendar.ts";
+import type { PaymentMethod } from "./order.ts";
 import type { OrderCurrency } from "./ticketing.ts";
 
 export type Community = {
@@ -113,4 +114,71 @@ export type Theme = {
     backgroundColor: string;
     foregroundColor: string;
     rank?: number;
+};
+
+export enum CommunityMembershipPeriod {
+    MONTHLY = "monthly",
+    ANNUAL = "annual",
+}
+
+export enum CommunityMembershipRequestStatus {
+    PENDING = "pending",
+    ACCEPTED = "accepted",
+    REJECTED = "rejected",
+    CANCELLED = "cancelled",
+    IMPLEMENTED = "implemented",
+}
+
+export enum CommunityMembershipSubscriptionStatus {
+    PENDING_APPROVAL = "pending_approval",
+    PENDING_PAYMENT = "pending_payment",
+    ACTIVE = "active",
+    CANCELLED = "cancelled",
+    EXPIRED = "expired",
+}
+
+export type CommunityMembershipRequest = {
+    id: number;
+    communityId: number;
+    accountId: number;
+    account?: AccountDTO;
+    currentTierId?: number | null;
+    currentTier?: CommunityMembershipTier | null;
+    requestedTierId: number;
+    requestedTier?: CommunityMembershipTier | null;
+    status: CommunityMembershipRequestStatus;
+    registrationAnswers?: Record<string, unknown> | null;
+    period?: CommunityMembershipPeriod | null;
+    paymentMethod?: PaymentMethod | null;
+    reviewedByAccountId?: number | null;
+    reviewedByAccount?: AccountDTO | null;
+    reviewNotes?: string | null;
+    reviewedAt?: string | null;
+    createdAt: string;
+    updatedAt: string;
+};
+
+export type CommunityMembershipSubscription = {
+    id: number;
+    communityId: number;
+    accountId: number;
+    tierId: number;
+    status: CommunityMembershipSubscriptionStatus;
+    period: CommunityMembershipPeriod;
+    paymentMethod?: PaymentMethod | null;
+    cancelAtPeriodEnd?: boolean;
+    currentPeriodStart?: string | null;
+    currentPeriodEnd?: string | null;
+    createdAt: string;
+    updatedAt: string;
+};
+
+export type CommunityMembershipSubscriptionChange = {
+    id: number;
+    subscriptionId: number;
+    period?: CommunityMembershipPeriod | null;
+    paymentMethod?: PaymentMethod | null;
+    effectiveAt?: string | null;
+    createdAt: string;
+    updatedAt: string;
 };
