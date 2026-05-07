@@ -179,9 +179,11 @@ export type CouponPreviewResponse = {
     errorCode?: string;
     finalTotal: number;
     originalTotal: number;
+    promotionDiscount?: number;
     perItemDiscounts: {
         discount: number;
         discountPercent: number;
+        discountedQty: number;
         ticketTypeId: number;
     }[];
     totalDiscount: number;
