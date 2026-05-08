@@ -4,6 +4,7 @@ import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { PaymentMethod } from "../models/order.ts";
 import type {
     Community,
+    CommunityFAQ,
     CommunityMember,
     CommunityMembershipPeriod,
     CommunityMembershipRequest,
@@ -530,10 +531,16 @@ async (args: GetCommunityEventsArgs) => {
 
 export type CreateCommunityArgs = {
     name: string;
+    bio?: string;
+    blurb?: string;
     description?: string;
+    banner?: string;
+    notice?: string;
+    faq?: CommunityFAQ[];
+    socialLinks?: Record<string, unknown>;
+    chatLinks?: Record<string, unknown>;
     themeId?: number;
     logo?: string;
-    banner?: string;
 };
 
 export const createCommunity = (
