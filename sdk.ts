@@ -373,6 +373,7 @@ import {
     removeMembersFromCommunity,
     sendCommunityNewsletter,
     submitCommunityMembershipRequest,
+    updateCommunity,
     updateCommunityMembershipTier,
     updateCommunityNewsletter,
 } from "./api/community.ts";
@@ -842,6 +843,7 @@ export class Client {
     */
     // Community
     createCommunity: ReturnType<typeof createCommunity>;
+    updateCommunity: ReturnType<typeof updateCommunity>;
     createCommunityFromCalendar: ReturnType<
         typeof createCommunityFromCalendar
     >;
@@ -1461,6 +1463,7 @@ export class Client {
 
         // Community
         this.createCommunity = createCommunity(rest_api_url, getJwt);
+        this.updateCommunity = updateCommunity(rest_api_url, getJwt);
         this.createCommunityFromCalendar = createCommunityFromCalendar(
             rest_api_url,
             getJwt,

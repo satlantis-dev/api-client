@@ -570,6 +570,50 @@ async (args: CreateCommunityArgs) => {
     return handleResponse<Community>(response);
 };
 
+export type UpdateCommunityArgs = {
+    communityId: number;
+    name?: string;
+    bio?: string;
+    blurb?: string;
+    description?: string;
+    banner?: string;
+    notice?: string;
+    faq?: CommunityFAQ[];
+    socialLinks?: Record<string, string>;
+    chatLinks?: Record<string, string>;
+    themeId?: number;
+    logo?: string;
+    whopId?: string;
+};
+
+export const updateCommunity = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: UpdateCommunityArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const { communityId, ...body } = args;
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${communityId}`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify(body),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<Community>(response);
+};
+
 export type MembershipTierPayload = {
     name: string;
     description?: string;
