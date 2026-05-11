@@ -171,6 +171,66 @@ async (args: ListCommunityAdminsArgs) => {
     return handleResponse<CommunityMemberExtended[]>(response);
 };
 
+export type SetMemberAdminArgs = {
+    communityId: number;
+    memberId: number;
+};
+
+export const setMemberAdmin = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: SetMemberAdminArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/members/${args.memberId}/admin`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<string>(response);
+};
+
+export type UnsetMemberAdminArgs = {
+    communityId: number;
+    memberId: number;
+};
+
+export const unsetMemberAdmin = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: UnsetMemberAdminArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/members/${args.memberId}/unadmin`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<string>(response);
+};
+
 export type AddMembersToCommunityArgs = {
     communityId: number;
     accountIds: number[];

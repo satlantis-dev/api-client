@@ -372,7 +372,9 @@ import {
     rejectCommunityMembershipRequest,
     removeMembersFromCommunity,
     sendCommunityNewsletter,
+    setMemberAdmin,
     submitCommunityMembershipRequest,
+    unsetMemberAdmin,
     updateCommunity,
     updateCommunityMembershipTier,
     updateCommunityNewsletter,
@@ -853,6 +855,8 @@ export class Client {
     listCommunityMembers: ReturnType<typeof listCommunityMembers>;
     addMembersToCommunity: ReturnType<typeof addMembersToCommunity>;
     removeMembersFromCommunity: ReturnType<typeof removeMembersFromCommunity>;
+    setMemberAdmin: ReturnType<typeof setMemberAdmin>;
+    unsetMemberAdmin: ReturnType<typeof unsetMemberAdmin>;
     createCommunityNewsletter: ReturnType<
         typeof createCommunityNewsletter
     >;
@@ -1480,6 +1484,8 @@ export class Client {
             rest_api_url,
             getJwt,
         );
+        this.setMemberAdmin = setMemberAdmin(rest_api_url, getJwt);
+        this.unsetMemberAdmin = unsetMemberAdmin(rest_api_url, getJwt);
         this.createCommunityNewsletter = createCommunityNewsletter(
             rest_api_url,
             getJwt,
