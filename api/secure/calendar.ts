@@ -785,6 +785,24 @@ export const getCalendarsByAccount = (urlArg: URL) => async (args: GetCalendarsB
     return handleResponse<Calendar[]>(response);
 };
 
+export const getUserCalendars = (urlArg: URL, getJwt: func_GetJwt) => async () => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/user/calendars`;
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, { method: "GET", headers });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<Calendar[]>(response);
+};
+
 export type CreateCalendarRequest = {
     name: string;
     isPublic: boolean;

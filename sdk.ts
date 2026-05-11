@@ -162,6 +162,7 @@ import {
     getNewestCalendars,
     getPopularCalendars,
     getRecommendedCalendars,
+    getUserCalendars,
     getUserCalendarSubscriptions,
     GetUserEventsFromCalendar,
     GetUserPaymentsFromCalendar,
@@ -365,6 +366,7 @@ import {
     getCommunityUserPermission,
     getUserCommunityMembershipRequests,
     getUserCommunityMemberships,
+    linkCalendarToCommunity,
     listCommunityAdmins,
     listCommunityMembers,
     modifyActiveMembershipSubscription,
@@ -374,6 +376,7 @@ import {
     sendCommunityNewsletter,
     setMemberAdmin,
     submitCommunityMembershipRequest,
+    unlinkCalendarFromCommunity,
     unsetMemberAdmin,
     updateCommunity,
     updateCommunityMembershipTier,
@@ -580,6 +583,7 @@ export class Client {
         typeof sendCohostEmailInviteToCalendarEvent
     >;
     getCalendarsByAccount: ReturnType<typeof getCalendarsByAccount>;
+    getUserCalendars: ReturnType<typeof getUserCalendars>;
     getEventsByAccount: ReturnType<typeof getEventsByAccount>;
     getAllUserEvents: ReturnType<typeof getAllUserEvents>;
     createAccount: ReturnType<typeof createAccount>;
@@ -857,6 +861,8 @@ export class Client {
     removeMembersFromCommunity: ReturnType<typeof removeMembersFromCommunity>;
     setMemberAdmin: ReturnType<typeof setMemberAdmin>;
     unsetMemberAdmin: ReturnType<typeof unsetMemberAdmin>;
+    linkCalendarToCommunity: ReturnType<typeof linkCalendarToCommunity>;
+    unlinkCalendarFromCommunity: ReturnType<typeof unlinkCalendarFromCommunity>;
     createCommunityNewsletter: ReturnType<
         typeof createCommunityNewsletter
     >;
@@ -1172,6 +1178,7 @@ export class Client {
             getJwt,
         );
         this.getCalendarsByAccount = getCalendarsByAccount(rest_api_url);
+        this.getUserCalendars = getUserCalendars(rest_api_url, getJwt);
         this.getEventsByAccount = getEventsByAccount(rest_api_url, getJwt);
         this.getAllUserEvents = getAllUserEvents(rest_api_url, getJwt);
         this.createAccount = createAccount(rest_api_url);
@@ -1486,6 +1493,14 @@ export class Client {
         );
         this.setMemberAdmin = setMemberAdmin(rest_api_url, getJwt);
         this.unsetMemberAdmin = unsetMemberAdmin(rest_api_url, getJwt);
+        this.linkCalendarToCommunity = linkCalendarToCommunity(
+            rest_api_url,
+            getJwt,
+        );
+        this.unlinkCalendarFromCommunity = unlinkCalendarFromCommunity(
+            rest_api_url,
+            getJwt,
+        );
         this.createCommunityNewsletter = createCommunityNewsletter(
             rest_api_url,
             getJwt,
