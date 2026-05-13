@@ -348,19 +348,23 @@ import {
 } from "./api/stripe.ts";
 import {
     acceptCommunityMembershipRequest,
+    addCommunityGalleryImage,
     addMembersToCommunity,
+    addProspectsToCommunity,
     cancelCommunityMembershipRequest,
-    cancelPendingMembershipSubscription,
     createCommunity,
     createCommunityFromCalendar,
     createCommunityMembershipTier,
     createCommunityNewsletter,
+    deleteCommunity,
     deleteCommunityMembershipTier,
     deleteCommunityNewsletter,
     getCommunityById,
     getCommunityCalendarEvents,
     getCommunityEvents,
+    getCommunityGalleryImages,
     getCommunityMembershipRequests,
+    getCommunityMembershipTiers,
     getCommunityNewsletter,
     getCommunityNewsletters,
     getCommunityUserPermission,
@@ -369,18 +373,23 @@ import {
     linkCalendarToCommunity,
     listCommunityAdmins,
     listCommunityMembers,
+    listCommunityProspects,
     modifyActiveMembershipSubscription,
     previewCommunityNewsletter,
     rejectCommunityMembershipRequest,
+    removeCommunityGalleryImage,
     removeMembersFromCommunity,
+    searchCommunities,
     sendCommunityNewsletter,
     setMemberAdmin,
     submitCommunityMembershipRequest,
     unlinkCalendarFromCommunity,
     unsetMemberAdmin,
     updateCommunity,
+    updateCommunityGalleryImageRank,
     updateCommunityMembershipTier,
     updateCommunityNewsletter,
+    updateMemberships,
 } from "./api/community.ts";
 
 export type func_GetNostrSigner = () => Promise<(Signer & Encrypter) | Error>;
@@ -850,6 +859,8 @@ export class Client {
     // Community
     createCommunity: ReturnType<typeof createCommunity>;
     updateCommunity: ReturnType<typeof updateCommunity>;
+    deleteCommunity: ReturnType<typeof deleteCommunity>;
+    searchCommunities: ReturnType<typeof searchCommunities>;
     createCommunityFromCalendar: ReturnType<
         typeof createCommunityFromCalendar
     >;
@@ -859,10 +870,19 @@ export class Client {
     listCommunityMembers: ReturnType<typeof listCommunityMembers>;
     addMembersToCommunity: ReturnType<typeof addMembersToCommunity>;
     removeMembersFromCommunity: ReturnType<typeof removeMembersFromCommunity>;
+    updateMemberships: ReturnType<typeof updateMemberships>;
+    listCommunityProspects: ReturnType<typeof listCommunityProspects>;
+    addProspectsToCommunity: ReturnType<typeof addProspectsToCommunity>;
     setMemberAdmin: ReturnType<typeof setMemberAdmin>;
     unsetMemberAdmin: ReturnType<typeof unsetMemberAdmin>;
     linkCalendarToCommunity: ReturnType<typeof linkCalendarToCommunity>;
     unlinkCalendarFromCommunity: ReturnType<typeof unlinkCalendarFromCommunity>;
+    addCommunityGalleryImage: ReturnType<typeof addCommunityGalleryImage>;
+    updateCommunityGalleryImageRank: ReturnType<
+        typeof updateCommunityGalleryImageRank
+    >;
+    removeCommunityGalleryImage: ReturnType<typeof removeCommunityGalleryImage>;
+    getCommunityGalleryImages: ReturnType<typeof getCommunityGalleryImages>;
     createCommunityNewsletter: ReturnType<
         typeof createCommunityNewsletter
     >;
@@ -891,6 +911,9 @@ export class Client {
     deleteCommunityMembershipTier: ReturnType<
         typeof deleteCommunityMembershipTier
     >;
+    getCommunityMembershipTiers: ReturnType<
+        typeof getCommunityMembershipTiers
+    >;
     submitCommunityMembershipRequest: ReturnType<
         typeof submitCommunityMembershipRequest
     >;
@@ -908,9 +931,6 @@ export class Client {
     >;
     modifyActiveMembershipSubscription: ReturnType<
         typeof modifyActiveMembershipSubscription
-    >;
-    cancelPendingMembershipSubscription: ReturnType<
-        typeof cancelPendingMembershipSubscription
     >;
     getUserCommunityMembershipRequests: ReturnType<
         typeof getUserCommunityMembershipRequests
@@ -1475,6 +1495,8 @@ export class Client {
         // Community
         this.createCommunity = createCommunity(rest_api_url, getJwt);
         this.updateCommunity = updateCommunity(rest_api_url, getJwt);
+        this.deleteCommunity = deleteCommunity(rest_api_url, getJwt);
+        this.searchCommunities = searchCommunities(rest_api_url, getJwt);
         this.createCommunityFromCalendar = createCommunityFromCalendar(
             rest_api_url,
             getJwt,
@@ -1491,6 +1513,15 @@ export class Client {
             rest_api_url,
             getJwt,
         );
+        this.updateMemberships = updateMemberships(rest_api_url, getJwt);
+        this.listCommunityProspects = listCommunityProspects(
+            rest_api_url,
+            getJwt,
+        );
+        this.addProspectsToCommunity = addProspectsToCommunity(
+            rest_api_url,
+            getJwt,
+        );
         this.setMemberAdmin = setMemberAdmin(rest_api_url, getJwt);
         this.unsetMemberAdmin = unsetMemberAdmin(rest_api_url, getJwt);
         this.linkCalendarToCommunity = linkCalendarToCommunity(
@@ -1498,6 +1529,22 @@ export class Client {
             getJwt,
         );
         this.unlinkCalendarFromCommunity = unlinkCalendarFromCommunity(
+            rest_api_url,
+            getJwt,
+        );
+        this.addCommunityGalleryImage = addCommunityGalleryImage(
+            rest_api_url,
+            getJwt,
+        );
+        this.updateCommunityGalleryImageRank = updateCommunityGalleryImageRank(
+            rest_api_url,
+            getJwt,
+        );
+        this.removeCommunityGalleryImage = removeCommunityGalleryImage(
+            rest_api_url,
+            getJwt,
+        );
+        this.getCommunityGalleryImages = getCommunityGalleryImages(
             rest_api_url,
             getJwt,
         );
@@ -1543,6 +1590,10 @@ export class Client {
             rest_api_url,
             getJwt,
         );
+        this.getCommunityMembershipTiers = getCommunityMembershipTiers(
+            rest_api_url,
+            getJwt,
+        );
         this.submitCommunityMembershipRequest = submitCommunityMembershipRequest(
             rest_api_url,
             getJwt,
@@ -1564,10 +1615,6 @@ export class Client {
             getJwt,
         );
         this.modifyActiveMembershipSubscription = modifyActiveMembershipSubscription(
-            rest_api_url,
-            getJwt,
-        );
-        this.cancelPendingMembershipSubscription = cancelPendingMembershipSubscription(
             rest_api_url,
             getJwt,
         );

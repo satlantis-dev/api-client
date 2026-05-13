@@ -5,6 +5,7 @@ import type { PaymentMethod } from "../models/order.ts";
 import type {
     Community,
     CommunityFAQ,
+    CommunityGalleryImage,
     CommunityMember,
     CommunityMembershipPeriod,
     CommunityMembershipRequest,
@@ -1024,36 +1025,6 @@ async (args: ModifyActiveMembershipSubscriptionArgs) => {
     return handleResponse<CommunityMembershipSubscription>(response);
 };
 
-export type CancelPendingMembershipSubscriptionArgs = {
-    communityId: number;
-    subscriptionId: number;
-};
-
-export const cancelPendingMembershipSubscription = (
-    urlArg: URL,
-    getJwt: func_GetJwt,
-) =>
-async (args: CancelPendingMembershipSubscriptionArgs) => {
-    const jwtToken = getJwt();
-    if (jwtToken == "") {
-        return new Error("jwt token is empty");
-    }
-    const url = copyURL(urlArg);
-    url.pathname = `/secure/communities/${args.communityId}/subscriptions/${args.subscriptionId}`;
-
-    const headers = new Headers();
-    headers.set("Authorization", `Bearer ${jwtToken}`);
-
-    const response = await safeFetch(url, {
-        method: "DELETE",
-        headers,
-    });
-    if (response instanceof Error) {
-        return response;
-    }
-    return handleResponse<CommunityMembershipSubscription>(response);
-};
-
 /////////////////////////// User-scoped reads ///////////////////////////
 
 export type GetUserCommunityMembershipRequestsArgs = {
@@ -1103,6 +1074,352 @@ async () => {
     const response = await safeFetch(url, {
         method: "GET",
         headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityMember[]>(response);
+};
+
+/////////////////////////// Community CRUD (delete) ///////////////////////////
+
+export type DeleteCommunityArgs = {
+    communityId: number;
+};
+
+export const deleteCommunity = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: DeleteCommunityArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "DELETE",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<string>(response);
+};
+
+/////////////////////////// Community discovery ///////////////////////////
+
+export type SearchCommunitiesArgs = {
+    search?: string;
+    whopId?: string;
+};
+
+export const searchCommunities = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: SearchCommunitiesArgs) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/communities`;
+    if (args.search) {
+        url.searchParams.set("search", args.search);
+    }
+    if (args.whopId) {
+        url.searchParams.set("whopId", args.whopId);
+    }
+
+    const headers = new Headers();
+    const jwtToken = getJwt();
+    if (jwtToken != "") {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<Community[]>(response);
+};
+
+/////////////////////////// Membership tiers (read) ///////////////////////////
+
+export type CommunityMembershipTierExtended = CommunityMembershipTier & {
+    memberCount: number;
+};
+
+export type GetCommunityMembershipTiersArgs = {
+    communityId: number;
+};
+
+export const getCommunityMembershipTiers = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: GetCommunityMembershipTiersArgs) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/communities/${args.communityId}/tiers`;
+
+    const headers = new Headers();
+    const jwtToken = getJwt();
+    if (jwtToken != "") {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityMembershipTierExtended[]>(response);
+};
+
+/////////////////////////// Community gallery ///////////////////////////
+
+export type AddCommunityGalleryImageArgs = {
+    communityId: number;
+    url: string;
+    rank?: number;
+};
+
+export const addCommunityGalleryImage = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: AddCommunityGalleryImageArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/images`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+            url: args.url,
+            rank: args.rank,
+        }),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityGalleryImage>(response);
+};
+
+export type UpdateCommunityGalleryImageRankArgs = {
+    communityId: number;
+    imageId: number;
+    rank: number;
+};
+
+export const updateCommunityGalleryImageRank = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: UpdateCommunityGalleryImageRankArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/images/${args.imageId}`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify({
+            rank: args.rank,
+        }),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityGalleryImage>(response);
+};
+
+export type RemoveCommunityGalleryImageArgs = {
+    communityId: number;
+    imageId: number;
+};
+
+export const removeCommunityGalleryImage = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: RemoveCommunityGalleryImageArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/images/${args.imageId}`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "DELETE",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<string>(response);
+};
+
+export type GetCommunityGalleryImagesArgs = {
+    communityId: number;
+};
+
+export const getCommunityGalleryImages = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: GetCommunityGalleryImagesArgs) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/communities/${args.communityId}/images`;
+
+    const headers = new Headers();
+    const jwtToken = getJwt();
+    if (jwtToken != "") {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityGalleryImage[]>(response);
+};
+
+/////////////////////////// Community prospects ///////////////////////////
+
+export type AddProspectsToCommunityArgs = {
+    communityId: number;
+    accountIds: number[];
+};
+
+export const addProspectsToCommunity = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: AddProspectsToCommunityArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/prospects`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+            accountIds: args.accountIds,
+        }),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityMember[]>(response);
+};
+
+export type ListCommunityProspectsArgs = {
+    communityId: number;
+    order?: "date_desc" | "date_asc" | "num_events" | "revenue";
+    search?: string;
+};
+
+export const listCommunityProspects = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: ListCommunityProspectsArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/prospects`;
+    if (args.order) {
+        url.searchParams.set("order", args.order);
+    }
+    if (args.search) {
+        url.searchParams.set("search", args.search);
+    }
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityMemberExtended[]>(response);
+};
+
+/////////////////////////// Bulk member updates ///////////////////////////
+
+export type UpdateMembershipsArgs = {
+    communityId: number;
+    accountIds: number[];
+    upgradeTierId?: number;
+    extendUntil?: string;
+};
+
+export const updateMemberships = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: UpdateMembershipsArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/members`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify({
+            accountIds: args.accountIds,
+            upgradeTierId: args.upgradeTierId,
+            extendUntil: args.extendUntil,
+        }),
     });
     if (response instanceof Error) {
         return response;
