@@ -843,6 +843,7 @@ export type EditCalendarRequest = {
     slug?: string;
     banner?: string;
     placeId?: number;
+    communityId?: number
 };
 
 export type EditCalendarArgs = {
