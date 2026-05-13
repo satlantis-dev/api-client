@@ -896,13 +896,14 @@ export type RefundEventTicketArgs = {
     ticketId: number;
     amount: number;
     reason?: string;
+    lightningAddress?: string;
 };
 
 export type RefundEventTicketResponse = RefundOrderResponse;
 
 export const refundEventTicket = (urlArg: URL, getJwt: func_GetJwt) =>
 async (
-    { ticketId, amount, reason }: RefundEventTicketArgs,
+    { ticketId, amount, reason, lightningAddress }: RefundEventTicketArgs,
 ): Promise<RefundEventTicketResponse | Error> => {
     const url = copyURL(urlArg);
     url.pathname = `/secure/tickets/${ticketId}/refund`;
@@ -917,7 +918,7 @@ async (
     const response = await safeFetch(url, {
         method: "POST",
         headers,
-        body: JSON.stringify({ amount, reason }),
+        body: JSON.stringify({ amount, reason, lightningAddress }),
     });
 
     if (response instanceof Error) {

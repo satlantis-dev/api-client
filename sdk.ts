@@ -359,6 +359,7 @@ import {
     deleteCommunity,
     deleteCommunityMembershipTier,
     deleteCommunityNewsletter,
+    getCommunities,
     getCommunityById,
     getCommunityCalendarEvents,
     getCommunityEvents,
@@ -864,6 +865,7 @@ export class Client {
     createCommunityFromCalendar: ReturnType<
         typeof createCommunityFromCalendar
     >;
+    getCommunities: ReturnType<typeof getCommunities>;
     getCommunityById: ReturnType<typeof getCommunityById>;
     getCommunityUserPermission: ReturnType<typeof getCommunityUserPermission>;
     listCommunityAdmins: ReturnType<typeof listCommunityAdmins>;
@@ -1501,6 +1503,7 @@ export class Client {
             rest_api_url,
             getJwt,
         );
+        this.getCommunities = getCommunities(rest_api_url, getJwt);
         this.getCommunityById = getCommunityById(rest_api_url, getJwt);
         this.getCommunityUserPermission = getCommunityUserPermission(rest_api_url, getJwt);
         this.listCommunityAdmins = listCommunityAdmins(rest_api_url, getJwt);
