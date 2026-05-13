@@ -541,6 +541,35 @@ export type CreateCommunityArgs = {
     chatLinks?: Record<string, unknown>;
     themeId?: number;
     logo?: string;
+    whopId?: string;
+};
+
+export type GetCommunitiesArgs = {
+    whopId?: string;
+};
+
+export const getCommunities = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: GetCommunitiesArgs): Promise<Community[] | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/communities`;
+    if (args.whopId) url.searchParams.set("whopId", args.whopId);
+
+    const headers = new Headers();
+    const jwtToken = getJwt();
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, { method: "GET", headers });
+    if (response instanceof Error) return response;
+
+    const result = await handleResponse<Community[] | Community>(response);
+    if (result instanceof Error) return result;
+
+    return Array.isArray(result) ? result : [result];
 };
 
 export const createCommunity = (

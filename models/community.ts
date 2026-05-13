@@ -25,6 +25,7 @@ export type Community = {
     newsletters?: CommunityNewsletter[];
     sampleMembers: SearchAccountDTO[]; // a sample top-N subset (ranked by follower count)
     logo?: string;
+    whopId?: string;
 };
 
 export type CommunityTheme = {
