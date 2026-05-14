@@ -609,6 +609,7 @@ export type GetCommunityCalendarEventsArgs = {
 
 export const getCommunityCalendarEvents = (
     urlArg: URL,
+    getJwt: func_GetJwt,
 ) =>
 async (args: GetCommunityCalendarEventsArgs) => {
     const url = copyURL(urlArg);
@@ -617,8 +618,15 @@ async (args: GetCommunityCalendarEventsArgs) => {
         url.searchParams.set("period", args.period);
     }
 
+    const headers = new Headers();
+    const jwtToken = getJwt();
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
     const response = await safeFetch(url, {
         method: "GET",
+        headers,
     });
     if (response instanceof Error) {
         return response;

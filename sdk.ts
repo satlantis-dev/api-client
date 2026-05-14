@@ -1579,7 +1579,7 @@ export class Client {
             rest_api_url,
             getJwt,
         );
-        this.getCommunityCalendarEvents = getCommunityCalendarEvents(rest_api_url);
+        this.getCommunityCalendarEvents = getCommunityCalendarEvents(rest_api_url, getJwt);
         this.getCommunityEvents = getCommunityEvents(rest_api_url);
         this.createCommunityMembershipTier = createCommunityMembershipTier(
             rest_api_url,
