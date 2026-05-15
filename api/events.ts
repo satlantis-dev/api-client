@@ -1189,7 +1189,7 @@ export interface EventTicketPurchasePayload {
 }
 
 export interface EventTicketPurchaseResponse {
-    paymentId: number;
+    paymentId: string;
     orderId: number;
     paymentHash: string;
     paymentRequest: string;
@@ -1321,7 +1321,7 @@ export const purchaseEventTicket =
 
 export const getEventTicketPaymentStatus = (urlArg: URL) =>
 async (
-    paymentId: number,
+    paymentId: string,
 ): Promise<GetEventTicketStatusResponse | null | Error> => {
     const url = copyURL(urlArg);
     url.pathname = `/payments/${paymentId}/status`;
