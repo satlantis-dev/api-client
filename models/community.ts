@@ -60,6 +60,7 @@ export interface CommunityMembershipTier {
     registrationQuestions?: Record<string, unknown>;
     isGated: boolean;
     isPaid: boolean;
+    isRecommended: boolean;
     currency?: OrderCurrency | null;
     monthlyAmount?: number | null;
     yearlyAmount?: number | null;

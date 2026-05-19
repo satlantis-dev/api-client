@@ -780,6 +780,7 @@ export type MembershipTierPayload = {
     registrationQuestions?: Record<string, unknown>;
     isGated?: boolean;
     isPaid?: boolean;
+    isRecommended?: boolean;
     currency?: OrderCurrency;
     monthlyAmount?: number;
     yearlyAmount?: number;
