@@ -196,6 +196,7 @@ export interface EventRsvpItem {
     registrationTime: string;
     about: string;
     nip05: string;
+    lightningAddress?: string;
     ticket: GetEventRsvpTicket;
     tickets?: GetEventRsvpTicket[];
     registrationAnswers: any;
