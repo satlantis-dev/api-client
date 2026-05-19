@@ -99,7 +99,18 @@ export type CommunityMember = {
     accountId: number;
     account: AccountDTO;
     tierId?: number | null;
+    tier?: CommunityMembershipTier | null;
+    openSubscriptions?: CommunityMembershipSubscription[] | null;
+    openRequests?: CommunityMembershipRequest[] | null;
+    registrationAnswers?: Record<string, unknown> | null;
+    startDate?: string | null;
+    expiryDate?: string | null;
+    isExpired?: boolean;
+    isBanned?: boolean;
     isCommunityAdmin?: boolean;
+    adminInvitationReceivedAt?: string | null;
+    adminInvitationAcceptedAt?: string | null;
+    adminInvitationDeclinedAt?: string | null;
     createdAt: string;
     updatedAt: string;
 };
