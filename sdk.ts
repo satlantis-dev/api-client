@@ -348,6 +348,7 @@ import {
 } from "./api/stripe.ts";
 import {
     acceptCommunityMembershipRequest,
+    acceptCommunityAdminInvitation,
     addCommunityGalleryImage,
     addMembersToCommunity,
     addProspectsToCommunity,
@@ -359,6 +360,7 @@ import {
     deleteCommunity,
     deleteCommunityMembershipTier,
     deleteCommunityNewsletter,
+    declineCommunityAdminInvitation,
     getCommunities,
     getCommunityById,
     getCommunityCalendarEvents,
@@ -371,6 +373,7 @@ import {
     getCommunityUserPermission,
     getUserCommunityMembershipRequests,
     getUserCommunityMemberships,
+    inviteCommunityAdmin,
     linkCalendarToCommunity,
     listCommunityAdmins,
     listCommunityMembers,
@@ -869,6 +872,9 @@ export class Client {
     getCommunityById: ReturnType<typeof getCommunityById>;
     getCommunityUserPermission: ReturnType<typeof getCommunityUserPermission>;
     listCommunityAdmins: ReturnType<typeof listCommunityAdmins>;
+    inviteCommunityAdmin: ReturnType<typeof inviteCommunityAdmin>;
+    acceptCommunityAdminInvitation: ReturnType<typeof acceptCommunityAdminInvitation>;
+    declineCommunityAdminInvitation: ReturnType<typeof declineCommunityAdminInvitation>;
     listCommunityMembers: ReturnType<typeof listCommunityMembers>;
     addMembersToCommunity: ReturnType<typeof addMembersToCommunity>;
     removeMembersFromCommunity: ReturnType<typeof removeMembersFromCommunity>;
@@ -1507,6 +1513,9 @@ export class Client {
         this.getCommunityById = getCommunityById(rest_api_url, getJwt);
         this.getCommunityUserPermission = getCommunityUserPermission(rest_api_url, getJwt);
         this.listCommunityAdmins = listCommunityAdmins(rest_api_url, getJwt);
+        this.inviteCommunityAdmin = inviteCommunityAdmin(rest_api_url, getJwt);
+        this.acceptCommunityAdminInvitation = acceptCommunityAdminInvitation(rest_api_url, getJwt);
+        this.declineCommunityAdminInvitation = declineCommunityAdminInvitation(rest_api_url, getJwt);
         this.listCommunityMembers = listCommunityMembers(rest_api_url, getJwt);
         this.addMembersToCommunity = addMembersToCommunity(
             rest_api_url,

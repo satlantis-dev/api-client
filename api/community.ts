@@ -116,6 +116,16 @@ export type ListCommunityAdminsArgs = {
     order?: "date_desc" | "date_asc" | "num_events" | "revenue";
 };
 
+export type InviteCommunityAdminArgs = {
+    communityId: number;
+    inviteeId?: number;
+    inviteeEmail?: string;
+};
+
+export type RespondCommunityAdminInvitationArgs = {
+    communityId: number;
+};
+
 export const listCommunityMembers = (
     urlArg: URL,
     getJwt: func_GetJwt,
@@ -170,6 +180,87 @@ async (args: ListCommunityAdminsArgs) => {
         return response;
     }
     return handleResponse<CommunityMemberExtended[]>(response);
+};
+
+export const inviteCommunityAdmin = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: InviteCommunityAdminArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/admins/invite`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const body = args.inviteeEmail
+        ? { inviteeEmail: args.inviteeEmail }
+        : { inviteeId: args.inviteeId };
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(body),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{ message: string }>(response);
+};
+
+export const acceptCommunityAdminInvitation = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: RespondCommunityAdminInvitationArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/admins/accept-invitation`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{ message: string }>(response);
+};
+
+export const declineCommunityAdminInvitation = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: RespondCommunityAdminInvitationArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/admins/decline-invitation`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{ message: string }>(response);
 };
 
 export type LinkCalendarToCommunityArgs = {
