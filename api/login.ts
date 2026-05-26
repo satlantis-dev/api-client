@@ -3,6 +3,21 @@ import { NostrKind, prepareNostrEvent, type Signer } from "@blowater/nostr-sdk";
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { Account, Kind0MetaData } from "../models/account.ts";
+import type { Community } from "../models/community.ts";
+
+export type WhopMembershipNonmatch = {
+    membership_id: string;
+    company_id: string;
+    company_title: string;
+    product_id: string;
+    product_title: string;
+};
+
+export type WhopAuthInfo = {
+    communities: Community[];
+    admin_nonmatched: WhopMembershipNonmatch[];
+    member_nonmatched: WhopMembershipNonmatch[];
+};
 
 /**
  * @unstable The signature is subject to change
@@ -64,7 +79,7 @@ export const authWhop = (urlArg: URL) => async (args: { access_token: string }) 
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{ token: string; account: Account }>(response);
+    return handleResponse<{ token: string; account: Account; isNewAccount?: boolean; whop?: WhopAuthInfo }>(response);
 };
 
 /**
