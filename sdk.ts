@@ -295,6 +295,7 @@ import {
     getFeaturedEvents,
     getNewestEvents,
     getPopularEvents,
+    getPublicEventRsvps,
     getPublicTicketDetails,
     getRandomizedEvents,
     getRecommendedCalendarEventTags,
@@ -347,8 +348,8 @@ import {
     setDefaultStripeAccount,
 } from "./api/stripe.ts";
 import {
-    acceptCommunityMembershipRequest,
     acceptCommunityAdminInvitation,
+    acceptCommunityMembershipRequest,
     addCommunityGalleryImage,
     addMembersToCommunity,
     addProspectsToCommunity,
@@ -357,10 +358,10 @@ import {
     createCommunityFromCalendar,
     createCommunityMembershipTier,
     createCommunityNewsletter,
+    declineCommunityAdminInvitation,
     deleteCommunity,
     deleteCommunityMembershipTier,
     deleteCommunityNewsletter,
-    declineCommunityAdminInvitation,
     getCommunities,
     getCommunityById,
     getCommunityCalendarEvents,
@@ -449,6 +450,7 @@ export class Client {
     getEventCalendars: ReturnType<typeof getEventCalendars>;
     getEventRsvps: ReturnType<typeof getEventRsvps>;
     getEventAttendees: ReturnType<typeof getEventAttendees>;
+    getPublicEventRsvps: ReturnType<typeof getPublicEventRsvps>;
     updateRsvpStatus: ReturnType<typeof updateRsvpStatus>;
     getAccountEventTickets: ReturnType<typeof getAccountEventTickets>;
     getRandomizedEvents: ReturnType<typeof getRandomizedEvents>;
@@ -990,6 +992,7 @@ export class Client {
         this.getEventCalendars = getEventCalendars(rest_api_url);
         this.getEventRsvps = getEventRsvps(rest_api_url, getJwt);
         this.getEventAttendees = getEventAttendees(rest_api_url, getJwt);
+        this.getPublicEventRsvps = getPublicEventRsvps(rest_api_url);
         this.updateRsvpStatus = updateRsvpStatus(rest_api_url, getJwt);
         this.getAccountEventTickets = getAccountEventTickets(rest_api_url, getJwt);
         this.getRandomizedEvents = getRandomizedEvents(rest_api_url, getJwt);

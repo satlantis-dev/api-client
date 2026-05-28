@@ -115,6 +115,17 @@ export interface EventDetails {
         isValid: boolean;
         reason?: string;
     };
+    guestListCounters?: {
+        going: number;
+        notGoing: number;
+        pending: number;
+        waitlisted: number;
+    };
+    userRsvp?: {
+        id: number;
+        accountId: number;
+        status: string;
+    };
 }
 
 export enum UserTicketStatus {
@@ -396,6 +407,60 @@ async (
     }
 
     return handleResponse<EventRsvpsResponse>(response);
+};
+
+export interface PublicEventRsvpItem {
+    id: number;
+    accountId: number;
+    account: AccountDTO;
+    calendarEventId: number;
+    status: "accepted" | "tentative" | "declined" | "waitlisted" | "requested" | "rejected" | "invited";
+    createdAt: string;
+    acceptedAt?: string;
+    rejectedAt?: string;
+    invitationMessage?: string;
+    registrationAnswers: any;
+}
+
+export interface PublicEventRsvpsResponse {
+    items: PublicEventRsvpItem[];
+    total: number;
+    page: number;
+    limit: number;
+}
+
+export interface GetPublicEventRsvpsArgs {
+    eventId: string | number;
+    page: number;
+    limit: number;
+    sort_by?: "followers_count" | "rsvp_date" | "name" | "status";
+    sort_order?: "asc" | "desc";
+    status?: string;
+}
+
+export const getPublicEventRsvps = (urlArg: URL) =>
+async (
+    args: GetPublicEventRsvpsArgs,
+): Promise<PublicEventRsvpsResponse | Error> => {
+    const url = copyURL(urlArg);
+
+    url.pathname = `/events/${args.eventId}/rsvps`;
+
+    const { eventId: _eventId, ...queryParams } = args;
+    for (const [key, value] of Object.entries(queryParams)) {
+        if (value === undefined || value === null || value === "") continue;
+        url.searchParams.set(key, String(value));
+    }
+
+    const response = await safeFetch(url, {
+        method: "GET",
+    });
+
+    if (response instanceof Error) {
+        return response;
+    }
+
+    return handleResponse<PublicEventRsvpsResponse>(response);
 };
 
 export interface GetEventAttendeesArgs {
