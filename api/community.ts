@@ -198,9 +198,7 @@ async (args: InviteCommunityAdminArgs) => {
     headers.set("Authorization", `Bearer ${jwtToken}`);
     headers.set("Content-Type", "application/json");
 
-    const body = args.inviteeEmail
-        ? { inviteeEmail: args.inviteeEmail }
-        : { inviteeId: args.inviteeId };
+    const body = args.inviteeEmail ? { inviteeEmail: args.inviteeEmail } : { inviteeId: args.inviteeId };
 
     const response = await safeFetch(url, {
         method: "POST",
