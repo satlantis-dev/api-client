@@ -109,6 +109,7 @@ import {
     unblockAccount,
     unmuteAccount,
     updateAccount,
+    setEmailAndSendOTP,
     updateAccountEmail,
     updateAccountFollowingList,
     updateAdditionalPictures,
@@ -693,6 +694,7 @@ export class Client {
     initiatePasswordReset: ReturnType<typeof initiatePasswordReset>;
     resetPassword: ReturnType<typeof resetPassword>;
     resendEmailVerification: ReturnType<typeof resendEmailVerification>;
+    setEmailAndSendOTP: ReturnType<typeof setEmailAndSendOTP>;
     updateAccountEmail: ReturnType<typeof updateAccountEmail>;
     verifyEmail: ReturnType<typeof verifyEmail>;
     sendOTP: ReturnType<typeof sendOTP>;
@@ -1359,6 +1361,7 @@ export class Client {
             this.rest_api_url,
             getJwt,
         );
+        this.setEmailAndSendOTP = setEmailAndSendOTP(this.rest_api_url, getJwt);
         this.updateAccountEmail = updateAccountEmail(this.rest_api_url, getJwt);
         this.verifyEmail = verifyEmail(this.rest_api_url);
         this.createInterests = createInterests(this.rest_api_url, this.getJwt);

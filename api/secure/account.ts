@@ -602,6 +602,27 @@ export function getUserFollowers(urlArg: URL, getJwt: func_GetJwt) {
     };
 }
 
+// SAT-5092: set email on account (e.g. Nostr users) and trigger OTP verification.
+// Uses PUT /secure/user/account/email with method:"otp" to send an OTP instead of the default link-in-email flow.
+export const setEmailAndSendOTP = (urlArg: URL, getJwt: func_GetJwt) => async (args: { email: string }) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/user/account/email`;
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+    const response = await safeFetch(url, {
+        method: "PUT",
+        body: JSON.stringify({ email: args.email, method: "otp" }),
+        headers,
+    });
+    if (response instanceof Error) return response;
+    return handleResponse<{ success: boolean; token: string; message: string; is_new_account: boolean }>(response);
+};
+
 export const updateAccountEmail = (urlArg: URL, getJwt: func_GetJwt) => async (args: { email: string }) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
