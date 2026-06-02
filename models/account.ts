@@ -78,6 +78,16 @@ export type AccountDTO = {
     email: string;
 };
 
+/**
+ * An account in a following list, optionally enriched with the user's Satlantis
+ * wallet lightning address. Mirrors the backend `shared.FollowingAccountDTO`.
+ * `lightningAddress` is only present when the followings request opts in via
+ * `include_lightning` / `only_with_lightning`.
+ */
+export type FollowingAccountDTO = AccountDTO & {
+    lightningAddress?: string;
+};
+
 export type AccountMiniDTO = {
     id: number;
     username: string;

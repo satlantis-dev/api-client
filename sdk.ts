@@ -320,14 +320,19 @@ import {
 } from "./api/events.ts";
 
 import {
+    createLightningContact,
     createReceiveInvoice,
     decodeInvoice,
+    deleteLightningContact,
     estimatePaymentFee,
+    getLightningContact,
+    getLightningContacts,
     getTransactionDetails,
     getTransactionHistory,
     getWallet,
     getWalletExchangeRate,
     sendPayment,
+    updateLightningContact,
 } from "./api/secure/wallet.ts";
 import { getAllThemes, getTimezoneInfo } from "./api/base.ts";
 import { getVanityPathMapping } from "./api/vanity.ts";
@@ -639,6 +644,11 @@ export class Client {
     getTransactionDetails: ReturnType<typeof getTransactionDetails>;
     decodeInvoice: ReturnType<typeof decodeInvoice>;
     getWalletExchangeRate: ReturnType<typeof getWalletExchangeRate>;
+    getLightningContacts: ReturnType<typeof getLightningContacts>;
+    createLightningContact: ReturnType<typeof createLightningContact>;
+    getLightningContact: ReturnType<typeof getLightningContact>;
+    updateLightningContact: ReturnType<typeof updateLightningContact>;
+    deleteLightningContact: ReturnType<typeof deleteLightningContact>;
 
     // Location
     getLocationsWithinBoundingBox: ReturnType<
@@ -1250,6 +1260,11 @@ export class Client {
         this.getTransactionDetails = getTransactionDetails(rest_api_url, getJwt);
         this.decodeInvoice = decodeInvoice(rest_api_url, getJwt);
         this.getWalletExchangeRate = getWalletExchangeRate(rest_api_url, getJwt);
+        this.getLightningContacts = getLightningContacts(rest_api_url, getJwt);
+        this.createLightningContact = createLightningContact(rest_api_url, getJwt);
+        this.getLightningContact = getLightningContact(rest_api_url, getJwt);
+        this.updateLightningContact = updateLightningContact(rest_api_url, getJwt);
+        this.deleteLightningContact = deleteLightningContact(rest_api_url, getJwt);
 
         // Location
         this.getLocationsWithinBoundingBox = getLocationsWithinBoundingBox(
@@ -3202,6 +3217,8 @@ export class Client {
         npub: string;
         page: number;
         limit: number;
+        includeLightning?: boolean;
+        onlyWithLightning?: boolean;
     }) => {
         const response = await this._getAccountFollowings(args);
         if (response instanceof Error) {

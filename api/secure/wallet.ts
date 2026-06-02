@@ -258,3 +258,102 @@ export const getWalletExchangeRate =
         });
         return response instanceof Error ? response : handleResponse<ExchangeRateResponse>(response);
     };
+
+// --- Lightning Contacts ---
+
+/**
+ * The Satlantis account a contact resolves to when its lightning address belongs
+ * to a Satlantis wallet. Field casing mirrors the backend JSON exactly — note
+ * `display_name` is snake_case while `npub` / `pubKey` are camelCase.
+ */
+export interface LightningContactAccount {
+    id: number;
+    username: string;
+    display_name: string;
+    name: string;
+    nip05: string;
+    picture: string;
+    npub: string;
+    pubKey: string;
+}
+
+export interface LightningContactDTO {
+    id: number;
+    name: string;
+    lightningAddress: string;
+    /** Set by the backend when the lightning address belongs to a Satlantis wallet. */
+    contactAccountId?: number;
+    /** Preloaded mini profile of the linked Satlantis account, when one exists. */
+    contactAccount?: LightningContactAccount;
+    metadata?: Record<string, unknown>;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface LightningContactPayload {
+    name: string;
+    lightningAddress: string;
+    metadata?: Record<string, unknown>;
+}
+
+export const getLightningContacts =
+    (urlArg: URL, getJwt: func_GetJwt) => async (): Promise<LightningContactDTO[] | Error> => {
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/wallet/contacts`;
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers: getHeaders(getJwt),
+        });
+        return response instanceof Error ? response : handleResponse<LightningContactDTO[]>(response);
+    };
+
+export const createLightningContact = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    payload: LightningContactPayload,
+): Promise<LightningContactDTO | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/wallet/contacts`;
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers: getHeaders(getJwt),
+        body: JSON.stringify(payload),
+    });
+    return response instanceof Error ? response : handleResponse<LightningContactDTO>(response);
+};
+
+export const getLightningContact =
+    (urlArg: URL, getJwt: func_GetJwt) => async (id: number): Promise<LightningContactDTO | Error> => {
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/wallet/contacts/${id}`;
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers: getHeaders(getJwt),
+        });
+        return response instanceof Error ? response : handleResponse<LightningContactDTO>(response);
+    };
+
+export const updateLightningContact = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    id: number,
+    payload: LightningContactPayload,
+): Promise<LightningContactDTO | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/wallet/contacts/${id}`;
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers: getHeaders(getJwt),
+        body: JSON.stringify(payload),
+    });
+    return response instanceof Error ? response : handleResponse<LightningContactDTO>(response);
+};
+
+export const deleteLightningContact =
+    (urlArg: URL, getJwt: func_GetJwt) => async (id: number): Promise<{ message: string } | Error> => {
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/wallet/contacts/${id}`;
+        const response = await safeFetch(url, {
+            method: "DELETE",
+            headers: getHeaders(getJwt),
+        });
+        return response instanceof Error ? response : handleResponse<{ message: string }>(response);
+    };

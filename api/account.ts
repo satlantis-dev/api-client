@@ -1,6 +1,6 @@
 import { ApiError, copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
-import type { Account, AccountDTO } from "../models/account.ts";
+import type { Account, AccountDTO, FollowingAccountDTO } from "../models/account.ts";
 import type { Activity } from "../models/activity.ts";
 import { type CalendarEvent, CalendarEventPeriod, type func_GetJwt, type SearchAccountDTO } from "../sdk.ts";
 import { type AnswerType, RsvpStatus } from "./events.ts";
@@ -36,18 +36,32 @@ export const getAccount =
         }
     };
 
-export const getAccountFollowings =
-    (urlArg: URL) => async (args: { npub: string; page: number; limit: number }) => {
-        const url = copyURL(urlArg);
-        url.pathname = `/account/${args.npub}/following`;
-        url.searchParams.append("limit", JSON.stringify(args.limit));
-        url.searchParams.append("page", JSON.stringify(args.page));
-        const response = await safeFetch(url);
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<AccountDTO[]>(response);
-    };
+export const getAccountFollowings = (urlArg: URL) =>
+async (args: {
+    npub: string;
+    page: number;
+    limit: number;
+    /** Include each following's Satlantis wallet lightning address (if any). */
+    includeLightning?: boolean;
+    /** Return only followings that have a Satlantis wallet lightning address. */
+    onlyWithLightning?: boolean;
+}) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/account/${args.npub}/following`;
+    url.searchParams.append("limit", JSON.stringify(args.limit));
+    url.searchParams.append("page", JSON.stringify(args.page));
+    if (args.includeLightning) {
+        url.searchParams.append("include_lightning", "true");
+    }
+    if (args.onlyWithLightning) {
+        url.searchParams.append("only_with_lightning", "true");
+    }
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<FollowingAccountDTO[]>(response);
+};
 
 export const getAccountFollowers =
     (urlArg: URL) => async (args: { npub: string; page: number; limit: number }) => {
