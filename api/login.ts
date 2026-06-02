@@ -46,6 +46,7 @@ export const loginNostr = (urlArg: URL) => async (signer: Signer, metadata?: Kin
     return handleResponse<{
         token: string;
         account: Account;
+        canSignNostrEvent: boolean;
     }>(response);
 };
 
@@ -63,7 +64,7 @@ export const authApple = (urlArg: URL) => async (args: { code: string; id_token:
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{ token: string; account: Account; isNewAccount: boolean }>(response);
+    return handleResponse<{ token: string; account: Account; isNewAccount: boolean; canSignNostrEvent: boolean }>(response);
 };
 
 /**
@@ -79,7 +80,7 @@ export const authWhop = (urlArg: URL) => async (args: { access_token: string }) 
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{ token: string; account: Account; isNewAccount?: boolean; whop?: WhopAuthInfo }>(response);
+    return handleResponse<{ token: string; account: Account; isNewAccount?: boolean; whop?: WhopAuthInfo; canSignNostrEvent: boolean }>(response);
 };
 
 /**
@@ -95,5 +96,5 @@ export const authGoogle = (urlArg: URL) => async (args: { id_token: string }) =>
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{ token: string; account: Account; isNewAccount: boolean }>(response);
+    return handleResponse<{ token: string; account: Account; isNewAccount: boolean; canSignNostrEvent: boolean }>(response);
 };

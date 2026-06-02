@@ -72,7 +72,7 @@ export const login = (urlArg: URL) => async (args: { username: string; password:
     if (response instanceof Error) {
         return response;
     }
-    const result = await handleResponse<{ account: Account; token: string }>(
+    const result = await handleResponse<{ account: Account; token: string; canSignNostrEvent: boolean }>(
         response,
     );
     if (result instanceof ApiError) {
@@ -164,7 +164,7 @@ export const verifyEmail = (urlArg: URL) => async (args: { token: string }) => {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{ success: boolean; account: Account; token: string }>(
+    return handleResponse<{ success: boolean; account: Account; token: string; canSignNostrEvent: boolean }>(
         response,
     );
 };
@@ -366,6 +366,7 @@ export const verifyOTP = (urlArg: URL) => async (args: { token: string; otp: str
         message: string; // e.g. OTP verification successful
         success: boolean;
         token: string; // JWT token that can be used as auth token
+        canSignNostrEvent: boolean;
         accountRsvpAnswers?: {
             answers: {
                 label: string;
