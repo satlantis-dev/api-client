@@ -334,6 +334,17 @@ import {
     sendPayment,
     updateLightningContact,
 } from "./api/secure/wallet.ts";
+import {
+    createEventReceiveInvoice,
+    decodeEventInvoice,
+    estimateEventPaymentFee,
+    getEventTransactionDetails,
+    getEventTransactionHistory,
+    getEventWallet,
+    getEventWallets,
+    sendEventPayment,
+    updateEventWalletLightningAddress,
+} from "./api/secure/event_wallet.ts";
 import { getAllThemes, getTimezoneInfo } from "./api/base.ts";
 import { getVanityPathMapping } from "./api/vanity.ts";
 import {
@@ -649,6 +660,17 @@ export class Client {
     getLightningContact: ReturnType<typeof getLightningContact>;
     updateLightningContact: ReturnType<typeof updateLightningContact>;
     deleteLightningContact: ReturnType<typeof deleteLightningContact>;
+
+    // Event Wallet
+    getEventWallets: ReturnType<typeof getEventWallets>;
+    getEventWallet: ReturnType<typeof getEventWallet>;
+    createEventReceiveInvoice: ReturnType<typeof createEventReceiveInvoice>;
+    sendEventPayment: ReturnType<typeof sendEventPayment>;
+    estimateEventPaymentFee: ReturnType<typeof estimateEventPaymentFee>;
+    getEventTransactionHistory: ReturnType<typeof getEventTransactionHistory>;
+    getEventTransactionDetails: ReturnType<typeof getEventTransactionDetails>;
+    decodeEventInvoice: ReturnType<typeof decodeEventInvoice>;
+    updateEventWalletLightningAddress: ReturnType<typeof updateEventWalletLightningAddress>;
 
     // Location
     getLocationsWithinBoundingBox: ReturnType<
@@ -1265,6 +1287,17 @@ export class Client {
         this.getLightningContact = getLightningContact(rest_api_url, getJwt);
         this.updateLightningContact = updateLightningContact(rest_api_url, getJwt);
         this.deleteLightningContact = deleteLightningContact(rest_api_url, getJwt);
+
+        // Event Wallet
+        this.getEventWallets = getEventWallets(rest_api_url, getJwt);
+        this.getEventWallet = getEventWallet(rest_api_url, getJwt);
+        this.createEventReceiveInvoice = createEventReceiveInvoice(rest_api_url, getJwt);
+        this.sendEventPayment = sendEventPayment(rest_api_url, getJwt);
+        this.estimateEventPaymentFee = estimateEventPaymentFee(rest_api_url, getJwt);
+        this.getEventTransactionHistory = getEventTransactionHistory(rest_api_url, getJwt);
+        this.getEventTransactionDetails = getEventTransactionDetails(rest_api_url, getJwt);
+        this.decodeEventInvoice = decodeEventInvoice(rest_api_url, getJwt);
+        this.updateEventWalletLightningAddress = updateEventWalletLightningAddress(rest_api_url, getJwt);
 
         // Location
         this.getLocationsWithinBoundingBox = getLocationsWithinBoundingBox(
