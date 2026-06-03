@@ -135,13 +135,23 @@ async (
     return response instanceof Error ? response : handleResponse<TransactionHistoryResponse>(response);
 };
 
+/**
+ * Event-wallet histories interleave regular wallet transactions with ticket
+ * purchases (`source: "ticket"`), whose `id` is a ticket ORDER id from a
+ * different table. Pass `isPurchase: true` for those rows so the backend
+ * resolves the id against ticket orders instead of wallet transactions.
+ */
 export const getEventTransactionDetails = (urlArg: URL, getJwt: func_GetJwt) =>
 async (
     eventId: number,
     txId: number,
+    isPurchase = false,
 ): Promise<TransactionDetails | null | Error> => {
     const url = copyURL(urlArg);
     url.pathname = `/secure/events/${eventId}/wallet/transactions/${txId}`;
+    if (isPurchase) {
+        url.searchParams.set("is_purchase", "true");
+    }
     const response = await safeFetch(url, {
         method: "GET",
         headers: getHeaders(getJwt),

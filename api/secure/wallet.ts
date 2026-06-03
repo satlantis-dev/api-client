@@ -72,6 +72,29 @@ export interface FeeEstimateResponse {
     lightningAddressInfo?: LightningAddressInfo;
 }
 
+export type TransactionSource = "wallet" | "ticket";
+
+/** One ticket-type line within a ticket purchase. */
+export interface TicketPurchaseItem {
+    ticketTypeId: number;
+    ticketTypeName: string;
+    quantity: number;
+    priceEach: number; // SATS
+}
+
+/**
+ * Ticket-purchase info attached to event-wallet transactions whose `source` is
+ * `"ticket"`. For those rows the transaction `id` is the ticket ORDER id, not a
+ * wallet transaction id — fetch details via getEventTransactionDetails with
+ * `isPurchase: true` or the backend will look up the wrong table.
+ */
+export interface TicketPurchaseSummary {
+    orderId: number;
+    orderCode: string;
+    totalQuantity: number;
+    items: TicketPurchaseItem[];
+}
+
 export interface Transaction {
     id: number;
     type: TransactionType;
@@ -88,6 +111,11 @@ export interface Transaction {
     memo: string;
     status: TransactionStatus;
     timestamp: string;
+    // Event-wallet histories only: "wallet" for regular transactions, "ticket"
+    // for ticket purchases (where `id` is the ticket order id). Absent on the
+    // personal wallet's rows.
+    source?: TransactionSource;
+    ticket?: TicketPurchaseSummary | null;
 }
 
 export interface TransactionDetails extends Transaction {
