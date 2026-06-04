@@ -70,7 +70,11 @@ export const authApple = (urlArg: URL) => async (args: { code: string; id_token:
 /**
  * POST /auth/whop
  */
-export const authWhop = (urlArg: URL) => async (args: { access_token: string }) => {
+export type AuthWhopArgs =
+    | { access_token: string; refresh_token?: string }
+    | { iframe_token: string };
+
+export const authWhop = (urlArg: URL) => async (args: AuthWhopArgs) => {
     const url = copyURL(urlArg);
     url.pathname = `/auth/whop`;
     const response = await safeFetch(url, {
