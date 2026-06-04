@@ -637,7 +637,7 @@ export const deletePlaceCalendarEventById =
 export type EventRegistrationAnswer = {
     label: string;
     answerType: AnswerType;
-    answer?: string | boolean;
+    answer?: string | boolean | string[];
 };
 
 export type PostCalendarEventRSVPArgs = {

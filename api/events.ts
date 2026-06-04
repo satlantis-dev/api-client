@@ -1050,6 +1050,8 @@ export enum AnswerType {
     X = "x",
     Facebook = "facebook",
     LinkedIn = "linkedin",
+    SingleSelect = "single-select",
+    MultiSelect = "multi-select",
 }
 
 export enum DescriptionOrientation {

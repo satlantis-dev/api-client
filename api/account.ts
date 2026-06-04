@@ -339,7 +339,7 @@ async (args: {
         answers: {
             label: string;
             answerType: AnswerType;
-            answer: string | boolean;
+            answer: string | boolean | string[];
         }[];
     };
 }) => {
@@ -385,7 +385,7 @@ export const verifyOTP = (urlArg: URL) => async (args: { token: string; otp: str
             answers: {
                 label: string;
                 answerType: AnswerType;
-                answer?: string | boolean;
+                answer?: string | boolean | string[];
             }[];
         };
     }>(response);
