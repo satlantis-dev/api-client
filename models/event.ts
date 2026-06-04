@@ -7,6 +7,7 @@ export type EventOrderItemHistory = {
     ticketType: EventTicketType & { calendarEventId: number };
     quantity: number;
     priceEach: number;
+    payWhatYouWantAmount?: number | null;
     currency: string; // "BTC"
     status: OrderStatus; // "pending", "paid", "expired", "failed"
     promotionName?: string;

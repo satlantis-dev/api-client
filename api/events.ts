@@ -1082,6 +1082,7 @@ export interface EventTicketType {
     calendarEventId: number;
     name: string;
     description: string;
+    payWhatYouWant?: boolean;
     priceCurrency: PriceCurrency | null;
     priceAmount: number | null;
     sellCurrencies?: SellCurrency[] | null;
@@ -1118,6 +1119,7 @@ export interface CreateTicketType {
     maxCapacity: number | null;
     sellStartDate: string;
     sellEndDate: string;
+    payWhatYouWant?: boolean;
     // Native pricing (scenarios 0-3)
     priceSats?: number | null;
     priceFiat?: number | null; // in cents
@@ -1238,9 +1240,10 @@ export interface EventTicketPurchasePayload {
     ticketTypeOrders: Array<{
         ticketTypeId: number;
         quantity: number;
-        priceFiat?: number;
+        priceFiat?: number | null;
         paymentCurrency?: string; // "BTC" or "USD"
-        priceSats?: number;
+        priceSats?: number | null;
+        payWhatYouWantAmount?: number;
     }>;
     rsvpData: {
         lightningAddress?: string;

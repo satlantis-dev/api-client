@@ -159,6 +159,7 @@ export type GetEventCouponsResponse = {
 
 export type CouponPreviewOrder = {
     paymentCurrency: string;
+    payWhatYouWantAmount?: number | null;
     priceFiat?: number | null;
     priceSats?: number | null;
     quantity: number;
