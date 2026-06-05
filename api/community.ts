@@ -116,6 +116,12 @@ export type ListCommunityAdminsArgs = {
     order?: "date_desc" | "date_asc" | "num_events" | "revenue";
 };
 
+export type ListCommunityAdminsResponse = {
+    admins: CommunityMemberExtended[];
+    invited: CommunityMemberExtended[];
+    declined: CommunityMemberExtended[];
+};
+
 export type InviteCommunityAdminArgs = {
     communityId: number;
     inviteeId?: number;
@@ -179,7 +185,7 @@ async (args: ListCommunityAdminsArgs) => {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<CommunityMemberExtended[]>(response);
+    return handleResponse<ListCommunityAdminsResponse>(response);
 };
 
 export const inviteCommunityAdmin = (
