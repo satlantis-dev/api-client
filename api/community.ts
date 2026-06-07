@@ -1,4 +1,5 @@
 import type { Calendar, CalendarEvent, func_GetJwt } from "@satlantis/api-client";
+import type { SearchAccountDTO } from "../models/account.ts";
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { PaymentMethod } from "../models/order.ts";
@@ -728,6 +729,19 @@ async (args: GetCommunityCalendarEventsArgs) => {
     }
     return handleResponse<Calendar[]>(response);
 };
+
+export type GetPublicCommunityAdminsArgs = {
+    communityId: number;
+};
+
+export const getPublicCommunityAdmins = (urlArg: URL) =>
+    async (args: GetPublicCommunityAdminsArgs) => {
+        const url = copyURL(urlArg);
+        url.pathname = `/communities/${args.communityId}/admins`;
+        const response = await safeFetch(url, { method: "GET" });
+        if (response instanceof Error) return response;
+        return handleResponse<SearchAccountDTO[]>(response);
+    };
 
 export type GetCommunityEventsArgs = {
     communityId: number;

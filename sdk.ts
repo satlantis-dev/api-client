@@ -389,6 +389,7 @@ import {
     getCommunityNewsletter,
     getCommunityNewsletters,
     getCommunityUserPermission,
+    getPublicCommunityAdmins,
     getUserCommunityMembershipRequests,
     getUserCommunityMemberships,
     inviteCommunityAdmin,
@@ -907,6 +908,7 @@ export class Client {
     getCommunities: ReturnType<typeof getCommunities>;
     getCommunityById: ReturnType<typeof getCommunityById>;
     getCommunityUserPermission: ReturnType<typeof getCommunityUserPermission>;
+    getPublicCommunityAdmins: ReturnType<typeof getPublicCommunityAdmins>;
     listCommunityAdmins: ReturnType<typeof listCommunityAdmins>;
     inviteCommunityAdmin: ReturnType<typeof inviteCommunityAdmin>;
     acceptCommunityAdminInvitation: ReturnType<typeof acceptCommunityAdminInvitation>;
@@ -1566,6 +1568,7 @@ export class Client {
         this.getCommunities = getCommunities(rest_api_url, getJwt);
         this.getCommunityById = getCommunityById(rest_api_url, getJwt);
         this.getCommunityUserPermission = getCommunityUserPermission(rest_api_url, getJwt);
+        this.getPublicCommunityAdmins = getPublicCommunityAdmins(rest_api_url);
         this.listCommunityAdmins = listCommunityAdmins(rest_api_url, getJwt);
         this.inviteCommunityAdmin = inviteCommunityAdmin(rest_api_url, getJwt);
         this.acceptCommunityAdminInvitation = acceptCommunityAdminInvitation(rest_api_url, getJwt);
