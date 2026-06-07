@@ -620,16 +620,7 @@ export const setEmailAndSendOTP = (urlArg: URL, getJwt: func_GetJwt) => async (a
         headers,
     });
     if (response instanceof Error) return response;
-    const result = await handleResponse<{
-        status?: string;
-        success?: boolean;
-        token: string;
-        message: string;
-        is_new_account: boolean;
-    }>(response);
-    if (result instanceof Error) return result;
-    // Backend returns { status: "success" } — normalise to { success: boolean } for callers.
-    return { ...result, success: result.success ?? result.status === 'success' };
+    return handleResponse<{ status: string; token: string; message: string; is_new_account: boolean }>(response);
 };
 
 export const updateAccountEmail = (urlArg: URL, getJwt: func_GetJwt) => async (args: { email: string }) => {
