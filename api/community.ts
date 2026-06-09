@@ -1,5 +1,5 @@
 import type { Calendar, CalendarEvent, func_GetJwt } from "@satlantis/api-client";
-import type { SearchAccountDTO } from "../models/account.ts";
+import type { AccountSearchDTO, SearchAccountDTO } from "../models/account.ts";
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { PaymentMethod } from "../models/order.ts";
@@ -1572,4 +1572,81 @@ async (args: UpdateMembershipsArgs) => {
         return response;
     }
     return handleResponse<CommunityMember[]>(response);
+};
+
+export type InviteCommunityMembersArgs = {
+    communityId: number;
+    accountIds?: number[];
+    emails?: string[];
+};
+
+export type CommunityInvitationResult = {
+    invited: AccountSearchDTO[];
+    alreadyMembers: AccountSearchDTO[];
+    alreadyInvited: AccountSearchDTO[];
+    failed: AccountSearchDTO[];
+};
+
+export const inviteCommunityMembers = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: InviteCommunityMembersArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/invitations`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+            accountIds: args.accountIds,
+            emails: args.emails,
+        }),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityInvitationResult>(response);
+};
+
+export type InviteCommunityMembersCSVArgs = {
+    communityId: number;
+    file: File;
+};
+
+export const inviteCommunityMembersCSV = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: InviteCommunityMembersCSVArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/invitations/csv`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const formData = new FormData();
+    formData.append("file", args.file);
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: formData,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityInvitationResult>(response);
 };
