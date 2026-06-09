@@ -106,10 +106,10 @@ import {
     reportContent,
     resendEmailVerification,
     saveDeviceInfo,
+    setEmailAndSendOTP,
     unblockAccount,
     unmuteAccount,
     updateAccount,
-    setEmailAndSendOTP,
     updateAccountEmail,
     updateAccountFollowingList,
     updateAdditionalPictures,
@@ -173,7 +173,6 @@ import {
     inviteContributorToCalendar,
     isSubscribedToCalendar,
     markCalendarAsFeatured,
-    postCalendarEventAnnouncement,
     postCalendarEventAnnouncementV2,
     postCalendarEventNote,
     postCalendarEventRSVP,
@@ -484,9 +483,6 @@ export class Client {
     deletePlaceCalendarEventById: ReturnType<typeof deletePlaceCalendarEventById>;
     postCalendarEventRSVP: ReturnType<typeof postCalendarEventRSVP>;
     postPlaceCalendarEvent: ReturnType<typeof postPlaceCalendarEvent>;
-    postCalendarEventAnnouncement: ReturnType<
-        typeof postCalendarEventAnnouncement
-    >;
     postCalendarEventAnnouncementV2: ReturnType<
         typeof postCalendarEventAnnouncementV2
     >;
@@ -1064,10 +1060,6 @@ export class Client {
             rest_api_url,
             getJwt,
             getNostrSigner,
-        );
-        this.postCalendarEventAnnouncement = postCalendarEventAnnouncement(
-            rest_api_url,
-            getJwt,
         );
         this.postCalendarEventAnnouncementV2 = postCalendarEventAnnouncementV2(
             rest_api_url,
@@ -2219,40 +2211,6 @@ export class Client {
             });
             return res;
         }
-    };
-
-    createCalendarEventAnnouncement = async (args: {
-        calendarEventId: number;
-        calendarEventATag: string;
-        content: string;
-    }) => {
-        const jwtToken = this.getJwt();
-        if (jwtToken == "") {
-            return new Error("jwt token is empty");
-        }
-
-        const signer = await this.getNostrSigner();
-        if (signer instanceof Error) {
-            return signer;
-        }
-
-        const event = await prepareNostrEvent(signer, {
-            kind: NostrKind.TEXT_NOTE,
-            content: args.content,
-            tags: [["a", args.calendarEventATag]],
-        });
-        if (event instanceof Error) {
-            return event;
-        }
-
-        const res = await this.postCalendarEventAnnouncement({
-            calendarEventId: args.calendarEventId,
-            event,
-        });
-        if (res instanceof Error) {
-            return res;
-        }
-        return { postResult: res, event };
     };
 
     createCalendarEventNote = async (args: {

@@ -391,32 +391,6 @@ export const respondCalendarEventCohostInvitation =
         return handleResponse<PlaceCalendarEvent>(response);
     };
 
-export const postCalendarEventAnnouncement =
-    (urlArg: URL, getJwt: () => string) => async (args: CalendarEventNotePost) => {
-        const jwtToken = getJwt();
-        if (jwtToken == "") {
-            return new Error("jwt token is empty");
-        }
-
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/createCalendarEventAnnouncement`;
-
-        const headers = new Headers();
-        headers.set("Authorization", `Bearer ${jwtToken}`);
-
-        const body = JSON.stringify(args);
-
-        const response = await safeFetch(url, {
-            method: "POST",
-            body,
-            headers,
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse<CalendarEventNote>(response);
-    };
-
 export const postCalendarEventAnnouncementV2 = (urlArg: URL, getJwt: () => string) =>
 async (args: {
     calendarEventId: number;
