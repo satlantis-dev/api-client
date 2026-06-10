@@ -426,7 +426,12 @@ async (args: AddMembersToCommunityArgs) => {
 
 export type RemoveMembersFromCommunityArgs = {
     communityId: number;
-    memberIds: number[];
+    accountIds: number[];
+    // "remove" (default) soft-deletes the record; "prospect" strips the tier
+    // but keeps the record; "ban" soft-deletes and sets isBanned = true.
+    // Non-managers may only remove themselves: accountIds must contain
+    // exactly their own account ID.
+    mode?: "remove" | "prospect" | "ban";
 };
 
 export const removeMembersFromCommunity = (
@@ -449,7 +454,8 @@ async (args: RemoveMembersFromCommunityArgs) => {
         method: "DELETE",
         headers,
         body: JSON.stringify({
-            memberIds: args.memberIds,
+            accountIds: args.accountIds,
+            ...(args.mode ? { mode: args.mode } : {}),
         }),
     });
     if (response instanceof Error) {
