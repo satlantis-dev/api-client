@@ -364,6 +364,12 @@ import {
     setDefaultStripeAccount,
 } from "./api/stripe.ts";
 import {
+    connectCommunityStripeAccount,
+    getCommunityStripeStatus,
+    linkStripeAccountToCommunity,
+    unlinkStripeAccountFromCommunity,
+} from "./api/community_stripe.ts";
+import {
     acceptCommunityAdminInvitation,
     acceptCommunityMembershipRequest,
     addCommunityGalleryImage,
@@ -875,6 +881,12 @@ export class Client {
     getAllStripeAccounts: ReturnType<typeof getAllStripeAccounts>;
     setDefaultStripeAccount: ReturnType<typeof setDefaultStripeAccount>;
     linkStripeAccountToEvent: ReturnType<typeof linkStripeAccountToEvent>;
+
+    // Community Stripe
+    getCommunityStripeStatus: ReturnType<typeof getCommunityStripeStatus>;
+    connectCommunityStripeAccount: ReturnType<typeof connectCommunityStripeAccount>;
+    linkStripeAccountToCommunity: ReturnType<typeof linkStripeAccountToCommunity>;
+    unlinkStripeAccountFromCommunity: ReturnType<typeof unlinkStripeAccountFromCommunity>;
 
     /**
      *
@@ -1551,6 +1563,15 @@ export class Client {
         this.getAllStripeAccounts = getAllStripeAccounts(rest_api_url, getJwt);
         this.setDefaultStripeAccount = setDefaultStripeAccount(rest_api_url, getJwt);
         this.linkStripeAccountToEvent = linkStripeAccountToEvent(rest_api_url, getJwt);
+
+        // Community Stripe
+        this.getCommunityStripeStatus = getCommunityStripeStatus(rest_api_url, getJwt);
+        this.connectCommunityStripeAccount = connectCommunityStripeAccount(rest_api_url, getJwt);
+        this.linkStripeAccountToCommunity = linkStripeAccountToCommunity(rest_api_url, getJwt);
+        this.unlinkStripeAccountFromCommunity = unlinkStripeAccountFromCommunity(
+            rest_api_url,
+            getJwt,
+        );
 
         // Community
         this.createCommunity = createCommunity(rest_api_url, getJwt);
