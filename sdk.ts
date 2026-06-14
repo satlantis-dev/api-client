@@ -413,6 +413,7 @@ import {
     sendCommunityNewsletter,
     setMemberAdmin,
     submitCommunityMembershipRequest,
+    startMembershipSubscriptionCardSetup,
     unlinkCalendarFromCommunity,
     unsetMemberAdmin,
     updateCommunity,
@@ -989,6 +990,9 @@ export class Client {
     >;
     modifyActiveMembershipSubscription: ReturnType<
         typeof modifyActiveMembershipSubscription
+    >;
+    startMembershipSubscriptionCardSetup: ReturnType<
+        typeof startMembershipSubscriptionCardSetup
     >;
     getUserCommunityMembershipRequests: ReturnType<
         typeof getUserCommunityMembershipRequests
@@ -1706,6 +1710,8 @@ export class Client {
             rest_api_url,
             getJwt,
         );
+        this.startMembershipSubscriptionCardSetup =
+            startMembershipSubscriptionCardSetup(rest_api_url, getJwt);
         this.getUserCommunityMembershipRequests = getUserCommunityMembershipRequests(
             rest_api_url,
             getJwt,

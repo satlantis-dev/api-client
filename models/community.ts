@@ -146,6 +146,7 @@ export enum CommunityMembershipSubscriptionStatus {
     PENDING_APPROVAL = "pending_approval",
     PENDING_PAYMENT = "pending_payment",
     ACTIVE = "active",
+    PAST_DUE = "past_due",
     CANCELLED = "cancelled",
     EXPIRED = "expired",
 }
@@ -182,6 +183,7 @@ export type CommunityMembershipSubscription = {
     cancelAtPeriodEnd?: boolean;
     currentPeriodStart?: string | null;
     currentPeriodEnd?: string | null;
+    metadata?: Record<string, unknown> | null;
     createdAt: string;
     updatedAt: string;
 };

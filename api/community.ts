@@ -1010,10 +1010,20 @@ export type SubmitCommunityMembershipRequestArgs = {
     paymentMethod?: PaymentMethod;
 };
 
+export type MembershipCardSetup = {
+    subscriptionId: number;
+    clientSecret: string;
+    setupIntentId: string;
+    stripeCustomerId: string;
+    stripeConnectAccountId: string;
+    stripePublishableKey: string;
+};
+
 export type SubmitCommunityMembershipRequestResponse = {
     request: CommunityMembershipRequest;
     subscription?: CommunityMembershipSubscription;
     subscriptionChange?: CommunityMembershipSubscriptionChange;
+    cardSetup?: MembershipCardSetup;
 };
 
 export const submitCommunityMembershipRequest = (
@@ -1176,6 +1186,38 @@ async (args: ModifyActiveMembershipSubscriptionArgs) => {
         return response;
     }
     return handleResponse<CommunityMembershipSubscription>(response);
+};
+
+export type StartMembershipCardSetupArgs = {
+    communityId: number;
+    subscriptionId: number;
+};
+
+export const startMembershipSubscriptionCardSetup = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: StartMembershipCardSetupArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname =
+        `/secure/communities/${args.communityId}/subscriptions/${args.subscriptionId}/setup-intent`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<MembershipCardSetup>(response);
 };
 
 /////////////////////////// User-scoped reads ///////////////////////////
