@@ -64,6 +64,7 @@ export interface CommunityMembershipTier {
     currency?: OrderCurrency | null;
     monthlyAmount?: number | null;
     yearlyAmount?: number | null;
+    trialDays?: number | null;
     rank: number;
     createdAt: string;
     updatedAt: string;
