@@ -740,14 +740,13 @@ export type GetPublicCommunityAdminsArgs = {
     communityId: number;
 };
 
-export const getPublicCommunityAdmins = (urlArg: URL) =>
-    async (args: GetPublicCommunityAdminsArgs) => {
-        const url = copyURL(urlArg);
-        url.pathname = `/communities/${args.communityId}/admins`;
-        const response = await safeFetch(url, { method: "GET" });
-        if (response instanceof Error) return response;
-        return handleResponse<SearchAccountDTO[]>(response);
-    };
+export const getPublicCommunityAdmins = (urlArg: URL) => async (args: GetPublicCommunityAdminsArgs) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/communities/${args.communityId}/admins`;
+    const response = await safeFetch(url, { method: "GET" });
+    if (response instanceof Error) return response;
+    return handleResponse<SearchAccountDTO[]>(response);
+};
 
 export type GetCommunityEventsArgs = {
     communityId: number;

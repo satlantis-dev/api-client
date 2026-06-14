@@ -620,7 +620,9 @@ export const setEmailAndSendOTP = (urlArg: URL, getJwt: func_GetJwt) => async (a
         headers,
     });
     if (response instanceof Error) return response;
-    return handleResponse<{ status: string; token: string; message: string; is_new_account: boolean }>(response);
+    return handleResponse<{ status: string; token: string; message: string; is_new_account: boolean }>(
+        response,
+    );
 };
 
 export const updateAccountEmail = (urlArg: URL, getJwt: func_GetJwt) => async (args: { email: string }) => {

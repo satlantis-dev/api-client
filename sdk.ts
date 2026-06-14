@@ -412,8 +412,8 @@ import {
     searchCommunities,
     sendCommunityNewsletter,
     setMemberAdmin,
-    submitCommunityMembershipRequest,
     startMembershipSubscriptionCardSetup,
+    submitCommunityMembershipRequest,
     unlinkCalendarFromCommunity,
     unsetMemberAdmin,
     updateCommunity,
@@ -1710,8 +1710,10 @@ export class Client {
             rest_api_url,
             getJwt,
         );
-        this.startMembershipSubscriptionCardSetup =
-            startMembershipSubscriptionCardSetup(rest_api_url, getJwt);
+        this.startMembershipSubscriptionCardSetup = startMembershipSubscriptionCardSetup(
+            rest_api_url,
+            getJwt,
+        );
         this.getUserCommunityMembershipRequests = getUserCommunityMembershipRequests(
             rest_api_url,
             getJwt,
