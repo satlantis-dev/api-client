@@ -158,7 +158,7 @@ function buildNostrConnectURI(
 export function createNip46Session(options: Nip46Options): Nip46Session {
     const localSigner = InMemoryAccountContext.Generate();
     const secret = randomString(12);
-    const relays = options.relays.length > 0 ? options.relays : ["wss://relay.primal.net"];
+    const relays = options.relays.length > 0 ? options.relays : ["wss://nrs.primal.net"];
 
     const pool = new ConnectionPool({ signer: localSigner });
     const pendingRequests = new Map<string, PendingRequest>();
