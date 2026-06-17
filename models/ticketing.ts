@@ -9,6 +9,7 @@ export enum OrderCurrency {
     CAD = "CAD",
     GBP = "GBP",
     AUD = "AUD",
+    NZD = "NZD",
 }
 
 export enum CouponDiscountType {
