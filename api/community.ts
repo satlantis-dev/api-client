@@ -4,6 +4,7 @@ import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { PaymentMethod } from "../models/order.ts";
 import type {
+    AccountCommunityRole,
     Community,
     CommunityFAQ,
     CommunityGalleryImage,
@@ -118,9 +119,9 @@ export type ListCommunityAdminsArgs = {
 };
 
 export type ListCommunityAdminsResponse = {
-    admins: CommunityMemberExtended[];
-    invited: CommunityMemberExtended[];
-    declined: CommunityMemberExtended[];
+    admins: AccountCommunityRole[];
+    invited: AccountCommunityRole[];
+    declined: AccountCommunityRole[];
 };
 
 export type InviteCommunityAdminArgs = {

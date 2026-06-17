@@ -122,6 +122,24 @@ export type CommunityUserPermission = CommunityMember & {
     isCommunityAdmin: boolean;
 };
 
+// Community organizer roles live in the `account_community_roles` table,
+// separate from membership. Only "admin" is supported initially; more role
+// types can be added here as the backend grows them.
+export type AccountCommunityRoleType = "admin";
+
+export type AccountCommunityRole = {
+    accountId: number;
+    account: AccountDTO;
+    communityId: number;
+    community?: Community;
+    type: AccountCommunityRoleType;
+    invitationReceivedAt?: string | null;
+    invitationAcceptedAt?: string | null;
+    invitationDeclinedAt?: string | null;
+    createdAt: string;
+    updatedAt: string;
+};
+
 export type Theme = {
     id: number;
     name: string;
