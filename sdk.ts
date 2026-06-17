@@ -376,6 +376,7 @@ import {
     addMembersToCommunity,
     addProspectsToCommunity,
     cancelCommunityMembershipRequest,
+    changeCommunityCurrency,
     createCommunity,
     createCommunityFromCalendar,
     createCommunityMembershipTier,
@@ -911,6 +912,7 @@ export class Client {
     // Community
     createCommunity: ReturnType<typeof createCommunity>;
     updateCommunity: ReturnType<typeof updateCommunity>;
+    changeCommunityCurrency: ReturnType<typeof changeCommunityCurrency>;
     deleteCommunity: ReturnType<typeof deleteCommunity>;
     searchCommunities: ReturnType<typeof searchCommunities>;
     createCommunityFromCalendar: ReturnType<
@@ -1580,6 +1582,7 @@ export class Client {
         // Community
         this.createCommunity = createCommunity(rest_api_url, getJwt);
         this.updateCommunity = updateCommunity(rest_api_url, getJwt);
+        this.changeCommunityCurrency = changeCommunityCurrency(rest_api_url, getJwt);
         this.deleteCommunity = deleteCommunity(rest_api_url, getJwt);
         this.searchCommunities = searchCommunities(rest_api_url, getJwt);
         this.createCommunityFromCalendar = createCommunityFromCalendar(

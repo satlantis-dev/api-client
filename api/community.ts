@@ -887,6 +887,42 @@ async (args: UpdateCommunityArgs) => {
     return handleResponse<Community>(response);
 };
 
+export type ChangeCommunityCurrencyArgs = {
+    communityId: number;
+    currency: OrderCurrency;
+};
+
+// Changes a community's currency. The backend converts all paid tier amounts from the
+// old currency to the new one at the current exchange rate. Rejected with 403 once a
+// paid membership transaction exists for the community (currency is then locked).
+// Returns an empty object on success (204).
+export const changeCommunityCurrency = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: ChangeCommunityCurrencyArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/currency`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify({ currency: args.currency }),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<Record<string, never>>(response);
+};
+
 export type MembershipTierPayload = {
     name: string;
     description?: string;
