@@ -26,6 +26,9 @@ export type Community = {
     sampleMembers: SearchAccountDTO[]; // a sample top-N subset (ranked by follower count)
     logo?: string;
     whopId?: string;
+    // Community-level currency (USD default). Source of truth for all paid tier pricing;
+    // tiers no longer store their own currency. Changed via changeCommunityCurrency.
+    currency?: OrderCurrency | null;
 };
 
 export type CommunityTheme = {
