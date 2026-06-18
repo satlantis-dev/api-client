@@ -1104,7 +1104,7 @@ export interface EventTicketType {
     promotion?: PromotionResponse | null;
 }
 
-export type FiatCurrency = "USD" | "EUR" | "CAD" | "AUD" | "GBP";
+export type FiatCurrency = "USD" | "EUR" | "CAD" | "AUD" | "GBP" | "NZD";
 export type PriceCurrency = "BTC" | FiatCurrency;
 export type SellCurrency = "BTC" | FiatCurrency;
 
@@ -1550,6 +1550,7 @@ export enum Currency {
     CAD = "CAD",
     AUD = "AUD",
     GBP = "GBP",
+    NZD = "NZD",
     BTC = "BTC",
 }
 
