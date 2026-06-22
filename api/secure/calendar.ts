@@ -36,15 +36,28 @@ export interface PlaceCalendarEventPost {
     isOnline?: boolean;
 }
 
-interface EmailEventCohost {
-    email: string;
-    displayName: string;
-    picture: string;
-}
+/**
+ * A single cohost invitation entry.
+ *
+ * Each entry must supply EITHER `email` OR `npub` — never both.
+ *
+ * - email: account is created if none exists for the email; invitee
+ *   receives a magic-link invitation email.
+ * - npub: account must already exist. If the invitee's `firstSeen` is
+ *   null the invitation is auto-accepted and a Nostr DM with app
+ *   download instructions is sent; otherwise an in-app notification is
+ *   created for manual acceptance.
+ *
+ * `displayName` / `picture` are used by the email branch when a new
+ * account is created for the invitee.
+ */
+export type CalendarEventCohostInvite =
+    | { email: string; displayName: string; picture: string }
+    | { npub: string; displayName: string; picture: string };
 
 export interface PlaceCalendarEventInviteCohostViaEmail {
     calendarEventId: number;
-    cohosts: EmailEventCohost[];
+    cohosts: CalendarEventCohostInvite[];
 }
 
 export interface PlaceCalendarEventPut {
@@ -131,6 +144,36 @@ export const sendCohostEmailInviteToCalendarEvent =
             return response;
         }
         return handleResponse<PlaceCalendarEvent>(response);
+    };
+
+/**
+ * Removes a cohost from a calendar event.
+ *
+ * `cohostId` is the id on the Cohost record (the row id), not the
+ * cohost's accountId.
+ */
+export const removeCohostFromCalendarEvent =
+    (urlArg: URL, getJwt: () => string) =>
+    async (args: { calendarEventId: number; cohostId: number }): Promise<void | Error> => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/${args.calendarEventId}/cohosts/${args.cohostId}`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const response = await safeFetch(url, {
+            method: "DELETE",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return;
     };
 
 export const deleteCalendarEventNote = (urlArg: URL, getJwt: () => string) =>

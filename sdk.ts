@@ -188,6 +188,7 @@ import {
     searchCalendars,
     sendAnnouncementPreview,
     sendCohostEmailInviteToCalendarEvent,
+    removeCohostFromCalendarEvent,
     setOfficialCalendarToEvent,
     submitEventToCalendar,
     subscribeToCalendar,
@@ -621,6 +622,7 @@ export class Client {
     sendCohostEmailInviteToCalendarEvent: ReturnType<
         typeof sendCohostEmailInviteToCalendarEvent
     >;
+    removeCohostFromCalendarEvent: ReturnType<typeof removeCohostFromCalendarEvent>;
     getCalendarsByAccount: ReturnType<typeof getCalendarsByAccount>;
     getUserCalendars: ReturnType<typeof getUserCalendars>;
     getEventsByAccount: ReturnType<typeof getEventsByAccount>;
@@ -1255,6 +1257,10 @@ export class Client {
         this.getAccountsBySearch = getAccountsBySearch(rest_api_url, getJwt);
         this.searchAccountViaEmail = searchAccountViaEmail(rest_api_url, getJwt);
         this.sendCohostEmailInviteToCalendarEvent = sendCohostEmailInviteToCalendarEvent(
+            rest_api_url,
+            getJwt,
+        );
+        this.removeCohostFromCalendarEvent = removeCohostFromCalendarEvent(
             rest_api_url,
             getJwt,
         );
