@@ -180,6 +180,8 @@ import {
     putAnnouncementContent as putAnnouncementContent,
     putUpdateCalendarEvent,
     relistCalendarEvent,
+    removeCalendarEventCohost,
+    removeCohostFromCalendarEvent,
     removeContributorFromCalendar,
     removeEventFromCalendar,
     republishAnnouncement,
@@ -188,7 +190,6 @@ import {
     searchCalendars,
     sendAnnouncementPreview,
     sendCohostEmailInviteToCalendarEvent,
-    removeCohostFromCalendarEvent,
     setOfficialCalendarToEvent,
     submitEventToCalendar,
     subscribeToCalendar,
@@ -198,6 +199,7 @@ import {
     unmarkCalendarAsFeatured,
     unsetOfficialCalendarFromEvent,
     unsubscribeFromCalendar,
+    updateCalendarEventCohostRole,
     updateCalendarEventDraft,
 } from "./api/secure/calendar.ts";
 import { followPubkeys, getFollowingPubkeys, getInterestsOf, unfollowPubkeys } from "./nostr-helpers.ts";
@@ -293,6 +295,7 @@ import {
     getEventTicketTypes,
     getEventTicketWithdrawalFee,
     getEventUserFinancialTimeline,
+    getEventUserPermission,
     getFeaturedEvents,
     getNewestEvents,
     getPopularEvents,
@@ -477,6 +480,7 @@ export class Client {
     getEvents: ReturnType<typeof getEvents>;
     getEventCalendars: ReturnType<typeof getEventCalendars>;
     getEventRsvps: ReturnType<typeof getEventRsvps>;
+    getEventUserPermission: ReturnType<typeof getEventUserPermission>;
     getEventAttendees: ReturnType<typeof getEventAttendees>;
     getPublicEventRsvps: ReturnType<typeof getPublicEventRsvps>;
     updateRsvpStatus: ReturnType<typeof updateRsvpStatus>;
@@ -509,6 +513,12 @@ export class Client {
     unhideLocationCalendarEvent: ReturnType<typeof unhideLocationCalendarEvent>;
     respondCalendarEventCohostInvitation: ReturnType<
         typeof respondCalendarEventCohostInvitation
+    >;
+    updateCalendarEventCohostRole: ReturnType<
+        typeof updateCalendarEventCohostRole
+    >;
+    removeCalendarEventCohost: ReturnType<
+        typeof removeCalendarEventCohost
     >;
     getAccountCalendarEvents: ReturnType<typeof getAccountCalendarEvents>;
     getCalendarEventTypes: ReturnType<typeof getCalendarEventTypes>;
@@ -1047,6 +1057,7 @@ export class Client {
         this.getEvents = getEvents(rest_api_url, getJwt);
         this.getEventCalendars = getEventCalendars(rest_api_url);
         this.getEventRsvps = getEventRsvps(rest_api_url, getJwt);
+        this.getEventUserPermission = getEventUserPermission(rest_api_url, getJwt);
         this.getEventAttendees = getEventAttendees(rest_api_url, getJwt);
         this.getPublicEventRsvps = getPublicEventRsvps(rest_api_url);
         this.updateRsvpStatus = updateRsvpStatus(rest_api_url, getJwt);
@@ -1101,6 +1112,14 @@ export class Client {
         this.hideLocationCalendarEvent = hideLocationCalendarEvent(rest_api_url, getJwt);
         this.unhideLocationCalendarEvent = unhideLocationCalendarEvent(rest_api_url, getJwt);
         this.respondCalendarEventCohostInvitation = respondCalendarEventCohostInvitation(
+            rest_api_url,
+            getJwt,
+        );
+        this.updateCalendarEventCohostRole = updateCalendarEventCohostRole(
+            rest_api_url,
+            getJwt,
+        );
+        this.removeCalendarEventCohost = removeCalendarEventCohost(
             rest_api_url,
             getJwt,
         );
@@ -1904,7 +1923,7 @@ export class Client {
         geoHash: string;
         location: string;
         locationClarification?: string;
-        cohosts: string;
+        cohosts?: string;
         venue: string;
         calendarEventTags: string;
         placeId: number | undefined;
@@ -1948,7 +1967,6 @@ export class Client {
             ["g", args.geoHash],
             ["summary", args.summary],
             ["url", args.url],
-            ["cohosts", args.cohosts],
             ["calendar_event_tags", args.calendarEventTags ?? ""],
             [
                 "autoFollowHosts",
@@ -1973,6 +1991,10 @@ export class Client {
 
         if (args.placeATag) {
             tags.push(["placeATag", args.placeATag]);
+        }
+
+        if (args.cohosts) {
+            tags.push(["cohosts", args.cohosts]);
         }
 
         if (args.venue) {
@@ -2057,7 +2079,7 @@ export class Client {
         summary: string;
         website: string;
         // todo: use RFC3339 / ISO8601 format
-        cohosts: string;
+        cohosts?: string;
         venue: string;
         calendarEventTags: string;
         googleMapsUri: string;
@@ -2098,7 +2120,6 @@ export class Client {
             ["g", args.geoHash],
             ["summary", args.summary],
             ["url", args.url],
-            ["cohosts", args.cohosts],
             ["calendar_event_tags", args.calendarEventTags ?? ""],
             ["website", args.website],
             [
@@ -2121,6 +2142,10 @@ export class Client {
 
         if (args.placeATag) {
             tags.push(["placeATag", args.placeATag]);
+        }
+
+        if (args.cohosts) {
+            tags.push(["cohosts", args.cohosts]);
         }
 
         if (args.venue) {

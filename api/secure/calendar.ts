@@ -24,6 +24,7 @@ import type { AccountDTO } from "../../models/account.ts";
 import type { CalendarEventTag } from "../../models/event.ts";
 import { createSecureUrl } from "../../helpers/util.ts";
 import type { CalendarEventTicketOrderPayment } from "../../models/ticketing.ts";
+import type { CalendarEventCohostRole } from "../../models/calendar.ts";
 
 // https://github.com/satlantis-dev/api/blob/dev/shared/models.go#L17
 export interface PlaceCalendarEventPost {
@@ -52,8 +53,8 @@ export interface PlaceCalendarEventPost {
  * account is created for the invitee.
  */
 export type CalendarEventCohostInvite =
-    | { email: string; displayName: string; picture: string }
-    | { npub: string; displayName: string; picture: string };
+    | { email: string; displayName: string; picture: string; type?: CalendarEventCohostRole }
+    | { npub: string; displayName: string; picture: string; type?: CalendarEventCohostRole };
 
 export interface PlaceCalendarEventInviteCohostViaEmail {
     calendarEventId: number;
@@ -73,6 +74,17 @@ export interface PlaceCalendarEventPut {
 export interface RespondCalendarEventCohostInvitationPut {
     calendarEventId: number;
     action: "accept" | "decline";
+}
+
+export interface UpdateCalendarEventCohostRolePut {
+    calendarEventId: number;
+    cohostId: number;
+    type: CalendarEventCohostRole;
+}
+
+export interface RemoveCalendarEventCohostDelete {
+    calendarEventId: number;
+    cohostId: number;
 }
 
 export interface PlaceCalendarEventDelete {
@@ -132,12 +144,38 @@ export const sendCohostEmailInviteToCalendarEvent =
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
+        headers.set("Content-Type", "application/json");
 
         const body = JSON.stringify(args.cohosts);
 
         const response = await safeFetch(url, {
             method: "POST",
             body,
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<PlaceCalendarEvent>(response);
+    };
+
+export const updateCalendarEventCohostRole =
+    (urlArg: URL, getJwt: () => string) => async (args: UpdateCalendarEventCohostRolePut) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/${args.calendarEventId}/cohosts/${args.cohostId}/role`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        headers.set("Content-Type", "application/json");
+
+        const response = await safeFetch(url, {
+            method: "PUT",
+            body: JSON.stringify({ type: args.type }),
             headers,
         });
         if (response instanceof Error) {
@@ -175,6 +213,8 @@ export const removeCohostFromCalendarEvent =
         }
         return;
     };
+
+export const removeCalendarEventCohost = removeCohostFromCalendarEvent;
 
 export const deleteCalendarEventNote = (urlArg: URL, getJwt: () => string) =>
 async (args: {

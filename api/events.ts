@@ -35,6 +35,12 @@ export enum RsvpStatus {
 
 export type RsvpStatusType = `${RsvpStatus}`;
 
+export type EventUserRole = "admin" | "staff" | "attendee" | "none";
+
+export interface EventUserPermissionResponse {
+    role: EventUserRole;
+}
+
 export interface EventRsvpConfirmationMessage {
     title?: string;
     body?: string;
@@ -407,6 +413,32 @@ async (
     }
 
     return handleResponse<EventRsvpsResponse>(response);
+};
+
+export const getEventUserPermission = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    args: { eventId: number },
+): Promise<EventUserPermissionResponse | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/user/permissions/events/${args.eventId}`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+
+    if (response instanceof Error) {
+        return response;
+    }
+
+    return handleResponse<EventUserPermissionResponse>(response);
 };
 
 export interface PublicEventRsvpItem {
