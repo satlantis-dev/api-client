@@ -46,6 +46,8 @@ export type EventInterest = {
     name: string;
 };
 
+export type CalendarEventCohostRole = "admin" | "staff";
+
 export type Cohost = {
     account: AccountDTO;
     accountId: number;
@@ -55,6 +57,8 @@ export type Cohost = {
     id: number;
     invitationAcceptedAt: string | null;
     invitationDeclinedAt: string | null;
+    role?: CalendarEventCohostRole;
+    type?: CalendarEventCohostRole;
     updatedAt: string;
 };
 export type CalendarEvent = {
