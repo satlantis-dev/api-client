@@ -408,6 +408,7 @@ import {
     linkCalendarToCommunity,
     listCommunityAdmins,
     listCommunityMembers,
+    listCommunityMembersAndProspects,
     listCommunityProspects,
     modifyActiveMembershipSubscription,
     previewCommunityNewsletter,
@@ -941,6 +942,9 @@ export class Client {
     inviteCommunityMembersCSV: ReturnType<typeof inviteCommunityMembersCSV>;
     declineCommunityAdminInvitation: ReturnType<typeof declineCommunityAdminInvitation>;
     listCommunityMembers: ReturnType<typeof listCommunityMembers>;
+    listCommunityMembersAndProspects: ReturnType<
+        typeof listCommunityMembersAndProspects
+    >;
     addMembersToCommunity: ReturnType<typeof addMembersToCommunity>;
     removeMembersFromCommunity: ReturnType<typeof removeMembersFromCommunity>;
     updateMemberships: ReturnType<typeof updateMemberships>;
@@ -1625,6 +1629,8 @@ export class Client {
         this.inviteCommunityMembersCSV = inviteCommunityMembersCSV(rest_api_url, getJwt);
         this.declineCommunityAdminInvitation = declineCommunityAdminInvitation(rest_api_url, getJwt);
         this.listCommunityMembers = listCommunityMembers(rest_api_url, getJwt);
+        this.listCommunityMembersAndProspects =
+            listCommunityMembersAndProspects(rest_api_url, getJwt);
         this.addMembersToCommunity = addMembersToCommunity(
             rest_api_url,
             getJwt,

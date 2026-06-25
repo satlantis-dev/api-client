@@ -162,6 +162,47 @@ async (args: ListCommunityMembersArgs) => {
     return handleResponse<CommunityMemberExtended[]>(response);
 };
 
+export type ListCommunityMembersAndProspectsArgs = {
+    communityId: number;
+    order?: "date_desc" | "date_asc" | "num_events" | "revenue";
+    search?: string;
+};
+
+// Returns members and prospects in a single call. Members carry a non-null
+// `tierId`; prospects have `tierId == null` (same discriminator the backend
+// uses to split the two). Lets the People tab load once and switch tabs
+// without refetching.
+export const listCommunityMembersAndProspects = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: ListCommunityMembersAndProspectsArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/members-and-prospects`;
+    if (args.order) {
+        url.searchParams.set("order", args.order);
+    }
+    if (args.search) {
+        url.searchParams.set("search", args.search);
+    }
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityMemberExtended[]>(response);
+};
+
 export const listCommunityAdmins = (
     urlArg: URL,
     getJwt: func_GetJwt,
