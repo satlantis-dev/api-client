@@ -1299,6 +1299,45 @@ async (args: StartMembershipCardSetupArgs) => {
     return handleResponse<MembershipCardSetup>(response);
 };
 
+export type MembershipLightningInvoice = {
+    subscriptionId: number;
+    paymentRequest: string;
+    paymentHash: string;
+    amountSats: number;
+};
+
+export type StartMembershipLightningInvoiceArgs = {
+    communityId: number;
+    subscriptionId: number;
+};
+
+export const startMembershipSubscriptionLightningInvoice = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: StartMembershipLightningInvoiceArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname =
+        `/secure/communities/${args.communityId}/subscriptions/${args.subscriptionId}/lightning-invoice`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<MembershipLightningInvoice>(response);
+};
+
 /////////////////////////// User-scoped reads ///////////////////////////
 
 export type GetUserCommunityMembershipRequestsArgs = {

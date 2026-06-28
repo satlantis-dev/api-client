@@ -419,6 +419,7 @@ import {
     sendCommunityNewsletter,
     setMemberAdmin,
     startMembershipSubscriptionCardSetup,
+    startMembershipSubscriptionLightningInvoice,
     submitCommunityMembershipRequest,
     unlinkCalendarFromCommunity,
     unsetMemberAdmin,
@@ -1011,6 +1012,9 @@ export class Client {
     >;
     startMembershipSubscriptionCardSetup: ReturnType<
         typeof startMembershipSubscriptionCardSetup
+    >;
+    startMembershipSubscriptionLightningInvoice: ReturnType<
+        typeof startMembershipSubscriptionLightningInvoice
     >;
     getUserCommunityMembershipRequests: ReturnType<
         typeof getUserCommunityMembershipRequests
@@ -1629,8 +1633,7 @@ export class Client {
         this.inviteCommunityMembersCSV = inviteCommunityMembersCSV(rest_api_url, getJwt);
         this.declineCommunityAdminInvitation = declineCommunityAdminInvitation(rest_api_url, getJwt);
         this.listCommunityMembers = listCommunityMembers(rest_api_url, getJwt);
-        this.listCommunityMembersAndProspects =
-            listCommunityMembersAndProspects(rest_api_url, getJwt);
+        this.listCommunityMembersAndProspects = listCommunityMembersAndProspects(rest_api_url, getJwt);
         this.addMembersToCommunity = addMembersToCommunity(
             rest_api_url,
             getJwt,
@@ -1745,6 +1748,10 @@ export class Client {
             getJwt,
         );
         this.startMembershipSubscriptionCardSetup = startMembershipSubscriptionCardSetup(
+            rest_api_url,
+            getJwt,
+        );
+        this.startMembershipSubscriptionLightningInvoice = startMembershipSubscriptionLightningInvoice(
             rest_api_url,
             getJwt,
         );
