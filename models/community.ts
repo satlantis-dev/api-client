@@ -29,6 +29,10 @@ export type Community = {
     // Community-level currency (USD default). Source of truth for all paid tier pricing;
     // tiers no longer store their own currency. Changed via changeCommunityCurrency.
     currency?: OrderCurrency | null;
+    // Payment methods the community accepts, independent of the pricing currency.
+    // "lightning" => accepts BTC even when currency is fiat; "stripe" => accepts fiat
+    // even when currency is BTC. Defaults to ["stripe"] (["lightning"] for BTC currency).
+    paymentMethods?: PaymentMethod[];
 };
 
 export type CommunityTheme = {

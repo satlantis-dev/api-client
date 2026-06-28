@@ -827,6 +827,7 @@ export type CreateCommunityArgs = {
     themeId?: number;
     logo?: string;
     whopId?: string;
+    paymentMethods?: PaymentMethod[];
 };
 
 export type GetCommunitiesArgs = {
@@ -898,6 +899,7 @@ export type UpdateCommunityArgs = {
     themeId?: number;
     logo?: string;
     whopId?: string;
+    paymentMethods?: PaymentMethod[];
 };
 
 export const updateCommunity = (
