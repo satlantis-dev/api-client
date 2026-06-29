@@ -27,17 +27,19 @@ async function getReplaceableEvent(
     const events = await relay.newSub(subID, {
         authors: [pubkey.hex],
         kinds: [kind],
-        limit: 1,
     });
     if (events instanceof Error) {
         return events;
     }
 
-    let result: NostrEvent | Error | undefined;
+    let result: Error | undefined;
+    let latestEvent: NostrEvent | undefined;
     for await (const msg of events.chan) {
         if (msg.type == "EVENT") {
-            result = msg.event;
-            break;
+            if (!latestEvent || msg.event.created_at > latestEvent.created_at) {
+                latestEvent = msg.event;
+            }
+            continue;
         }
         if (msg.type == "NOTICE") {
             result = new Error(msg.note);
@@ -52,7 +54,7 @@ async function getReplaceableEvent(
     if (err instanceof Error && result == undefined) {
         return err;
     }
-    return result;
+    return result || latestEvent;
 }
 
 export async function getContactList(satlantis_relay: string, pubKey: string | PublicKey) {
