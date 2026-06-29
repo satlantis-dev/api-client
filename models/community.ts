@@ -120,6 +120,7 @@ export type CommunityMember = {
     adminInvitationReceivedAt?: string | null;
     adminInvitationAcceptedAt?: string | null;
     adminInvitationDeclinedAt?: string | null;
+    isInvited?: boolean | null;
     createdAt: string;
     updatedAt: string;
 };
