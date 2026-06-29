@@ -24,7 +24,7 @@ import type { AccountDTO } from "../../models/account.ts";
 import type { CalendarEventTag } from "../../models/event.ts";
 import { createSecureUrl } from "../../helpers/util.ts";
 import type { CalendarEventTicketOrderPayment } from "../../models/ticketing.ts";
-import type { CalendarEventCohostRole } from "../../models/calendar.ts";
+import type { CalendarEventCohostRole, Cohost } from "../../models/calendar.ts";
 
 // https://github.com/satlantis-dev/api/blob/dev/shared/models.go#L17
 export interface PlaceCalendarEventPost {
@@ -59,6 +59,11 @@ export type CalendarEventCohostInvite =
 export interface PlaceCalendarEventInviteCohostViaEmail {
     calendarEventId: number;
     cohosts: CalendarEventCohostInvite[];
+}
+
+export interface CalendarEventCohostsByRole {
+    admin?: Cohost[];
+    staff?: Cohost[];
 }
 
 export interface PlaceCalendarEventPut {
@@ -157,6 +162,30 @@ export const sendCohostEmailInviteToCalendarEvent =
             return response;
         }
         return handleResponse<PlaceCalendarEvent>(response);
+    };
+
+export const getCalendarEventCohosts =
+    (urlArg: URL, getJwt: () => string) =>
+    async (args: { calendarEventId: number }): Promise<Cohost[] | CalendarEventCohostsByRole | Error> => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/${args.calendarEventId}/cohosts`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<Cohost[] | CalendarEventCohostsByRole>(response);
     };
 
 export const updateCalendarEventCohostRole =

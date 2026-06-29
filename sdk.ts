@@ -167,6 +167,7 @@ import {
     getUserCalendarSubscriptions,
     GetUserEventsFromCalendar,
     GetUserPaymentsFromCalendar,
+    getCalendarEventCohosts,
     hideAttendeesCalendarEvent,
     hideLocationCalendarEvent,
     importEventFromUrl,
@@ -631,6 +632,7 @@ export class Client {
     private _getAccountFollowers: ReturnType<typeof getAccountFollowers>;
     getAccountsBySearch: ReturnType<typeof getAccountsBySearch>;
     searchAccountViaEmail: ReturnType<typeof searchAccountViaEmail>;
+    getCalendarEventCohosts: ReturnType<typeof getCalendarEventCohosts>;
     sendCohostEmailInviteToCalendarEvent: ReturnType<
         typeof sendCohostEmailInviteToCalendarEvent
     >;
@@ -1283,6 +1285,7 @@ export class Client {
         this._getAccountFollowers = getAccountFollowers(rest_api_url);
         this.getAccountsBySearch = getAccountsBySearch(rest_api_url, getJwt);
         this.searchAccountViaEmail = searchAccountViaEmail(rest_api_url, getJwt);
+        this.getCalendarEventCohosts = getCalendarEventCohosts(rest_api_url, getJwt);
         this.sendCohostEmailInviteToCalendarEvent = sendCohostEmailInviteToCalendarEvent(
             rest_api_url,
             getJwt,
