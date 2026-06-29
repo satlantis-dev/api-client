@@ -3,6 +3,7 @@ import {
     NostrKind,
     prepareNostrEvent,
     PublicKey,
+    type NostrEvent,
     type Signer,
     SingleRelayConnection,
     type Tag,
@@ -10,6 +11,49 @@ import {
 import type { Client } from "./sdk.ts";
 
 const Kind_PlaceFollowList = 10016;
+let replaceableSubCounter = 0;
+
+function replaceableSubId(pubkey: PublicKey, kind: NostrKind) {
+    replaceableSubCounter = (replaceableSubCounter + 1) % 46_656;
+    return `rp:${kind}:${pubkey.hex.slice(0, 8)}:${replaceableSubCounter.toString(36)}`;
+}
+
+async function getReplaceableEvent(
+    relay: SingleRelayConnection,
+    pubkey: PublicKey,
+    kind: NostrKind,
+): Promise<NostrEvent | Error | undefined> {
+    const subID = replaceableSubId(pubkey, kind);
+    const events = await relay.newSub(subID, {
+        authors: [pubkey.hex],
+        kinds: [kind],
+        limit: 1,
+    });
+    if (events instanceof Error) {
+        return events;
+    }
+
+    let result: NostrEvent | Error | undefined;
+    for await (const msg of events.chan) {
+        if (msg.type == "EVENT") {
+            result = msg.event;
+            break;
+        }
+        if (msg.type == "NOTICE") {
+            result = new Error(msg.note);
+            break;
+        }
+        if (msg.type == "EOSE") {
+            break;
+        }
+    }
+
+    const err = await relay.closeSub(subID);
+    if (err instanceof Error && result == undefined) {
+        return err;
+    }
+    return result;
+}
 
 export async function getContactList(satlantis_relay: string, pubKey: string | PublicKey) {
     let pub: PublicKey;
@@ -28,7 +72,7 @@ export async function getContactList(satlantis_relay: string, pubKey: string | P
         if (relay instanceof Error) {
             return relay;
         }
-        event = await relay.getReplaceableEvent(pub, NostrKind.CONTACTS);
+        event = await getReplaceableEvent(relay, pub, NostrKind.CONTACTS);
     }
 
     await relay.close();
@@ -161,14 +205,14 @@ export async function getPlaceFollowList(satlantis_relay_url: string, pubKey: st
         if (pubkey instanceof Error) {
             return pubkey;
         }
-        event = relay.getReplaceableEvent(pubkey, Kind_PlaceFollowList as NostrKind);
+        event = await getReplaceableEvent(relay, pubkey, Kind_PlaceFollowList as NostrKind);
     }
     await relay.close();
     return event;
 }
 
 export const getInterestsOf = async (relay: SingleRelayConnection, pubkey: PublicKey) => {
-    const event = await relay.getReplaceableEvent(pubkey, NostrKind.Interests);
+    const event = await getReplaceableEvent(relay, pubkey, NostrKind.Interests);
     if (event instanceof Error) {
         return event;
     }
@@ -203,7 +247,7 @@ async function get_kind3_ContactList(relay: SingleRelayConnection, pubKey: strin
     } else {
         pub = pubKey;
     }
-    return await relay.getReplaceableEvent(pub, NostrKind.CONTACTS);
+    return await getReplaceableEvent(relay, pub, NostrKind.CONTACTS);
 }
 
 export async function prepareLocationSetEvent(signer: Signer) {
