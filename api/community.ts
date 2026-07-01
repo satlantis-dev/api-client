@@ -2,13 +2,14 @@ import type { Calendar, CalendarEvent, func_GetJwt } from "@satlantis/api-client
 import type { AccountSearchDTO, SearchAccountDTO } from "../models/account.ts";
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
-import type { PaymentMethod } from "../models/order.ts";
+import type { PaymentMethod, PaymentStatus } from "../models/order.ts";
 import type {
     AccountCommunityRole,
     Community,
     CommunityFAQ,
     CommunityGalleryImage,
     CommunityMember,
+    CommunityMembershipPayment,
     CommunityMembershipPeriod,
     CommunityMembershipRequest,
     CommunityMembershipRequestStatus,
@@ -1336,6 +1337,40 @@ async (args: StartMembershipLightningInvoiceArgs) => {
         return response;
     }
     return handleResponse<MembershipLightningInvoice>(response);
+};
+
+export type GetMembershipSubscriptionPaymentsArgs = {
+    communityId: number;
+    subscriptionId: number;
+    status?: PaymentStatus;
+};
+
+export const getMembershipSubscriptionPayments = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: GetMembershipSubscriptionPaymentsArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/subscriptions/${args.subscriptionId}/payments`;
+    if (args.status) {
+        url.searchParams.set("status", args.status);
+    }
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityMembershipPayment[]>(response);
 };
 
 /////////////////////////// User-scoped reads ///////////////////////////

@@ -151,6 +151,7 @@ import {
     GetAccountPaymentsFromCalendar,
     getAccountRolesForCalendar,
     getCalendarByID,
+    getCalendarEventCohosts,
     getCalendarEventDraftById,
     getCalendarEventDrafts,
     getCalendarsByAccount,
@@ -167,7 +168,6 @@ import {
     getUserCalendarSubscriptions,
     GetUserEventsFromCalendar,
     GetUserPaymentsFromCalendar,
-    getCalendarEventCohosts,
     hideAttendeesCalendarEvent,
     hideLocationCalendarEvent,
     importEventFromUrl,
@@ -400,6 +400,7 @@ import {
     getCommunityNewsletter,
     getCommunityNewsletters,
     getCommunityUserPermission,
+    getMembershipSubscriptionPayments,
     getPublicCommunityAdmins,
     getUserCommunityMembershipRequests,
     getUserCommunityMemberships,
@@ -1017,6 +1018,9 @@ export class Client {
     >;
     startMembershipSubscriptionLightningInvoice: ReturnType<
         typeof startMembershipSubscriptionLightningInvoice
+    >;
+    getMembershipSubscriptionPayments: ReturnType<
+        typeof getMembershipSubscriptionPayments
     >;
     getUserCommunityMembershipRequests: ReturnType<
         typeof getUserCommunityMembershipRequests
@@ -1755,6 +1759,10 @@ export class Client {
             getJwt,
         );
         this.startMembershipSubscriptionLightningInvoice = startMembershipSubscriptionLightningInvoice(
+            rest_api_url,
+            getJwt,
+        );
+        this.getMembershipSubscriptionPayments = getMembershipSubscriptionPayments(
             rest_api_url,
             getJwt,
         );

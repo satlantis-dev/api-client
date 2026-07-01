@@ -1,6 +1,6 @@
 import type { AccountDTO, SearchAccountDTO } from "@satlantis/api-client";
 import type { Calendar } from "./calendar.ts";
-import type { PaymentMethod } from "./order.ts";
+import type { PaymentMethod, PaymentStatus } from "./order.ts";
 import type { OrderCurrency } from "./ticketing.ts";
 
 export type Community = {
@@ -211,6 +211,10 @@ export type CommunityMembershipSubscription = {
     currentPeriodStart?: string | null;
     currentPeriodEnd?: string | null;
     metadata?: Record<string, unknown> | null;
+    cardLast4?: string;
+    cardBrand?: string;
+    cardExpMonth?: number;
+    cardExpYear?: number;
     createdAt: string;
     updatedAt: string;
 };
@@ -221,6 +225,20 @@ export type CommunityMembershipSubscriptionChange = {
     period?: CommunityMembershipPeriod | null;
     paymentMethod?: PaymentMethod | null;
     effectiveAt?: string | null;
+    createdAt: string;
+    updatedAt: string;
+};
+
+export type CommunityMembershipPayment = {
+    id: number;
+    subscriptionId: number;
+    paymentMethod?: PaymentMethod | null;
+    status: PaymentStatus;
+    amount: number;
+    currency: OrderCurrency;
+    cardLast4?: string;
+    cardBrand?: string;
+    paidAt?: string;
     createdAt: string;
     updatedAt: string;
 };
