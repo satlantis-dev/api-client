@@ -421,59 +421,33 @@ async (args: UnlinkCalendarFromCommunityArgs) => {
     return handleResponse<string>(response);
 };
 
-export type SetMemberAdminArgs = {
+export type RemoveCommunityAdminsArgs = {
     communityId: number;
-    memberId: number;
+    accountIds: number[];
 };
 
-export const setMemberAdmin = (
+export const removeCommunityAdmins = (
     urlArg: URL,
     getJwt: func_GetJwt,
 ) =>
-async (args: SetMemberAdminArgs) => {
+async (args: RemoveCommunityAdminsArgs) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
         return new Error("jwt token is empty");
     }
     const url = copyURL(urlArg);
-    url.pathname = `/secure/communities/${args.communityId}/members/${args.memberId}/admin`;
+    url.pathname = `/secure/communities/${args.communityId}/admins`;
 
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
 
     const response = await safeFetch(url, {
-        method: "PUT",
+        method: "DELETE",
         headers,
-    });
-    if (response instanceof Error) {
-        return response;
-    }
-    return handleResponse<string>(response);
-};
-
-export type UnsetMemberAdminArgs = {
-    communityId: number;
-    memberId: number;
-};
-
-export const unsetMemberAdmin = (
-    urlArg: URL,
-    getJwt: func_GetJwt,
-) =>
-async (args: UnsetMemberAdminArgs) => {
-    const jwtToken = getJwt();
-    if (jwtToken == "") {
-        return new Error("jwt token is empty");
-    }
-    const url = copyURL(urlArg);
-    url.pathname = `/secure/communities/${args.communityId}/members/${args.memberId}/unadmin`;
-
-    const headers = new Headers();
-    headers.set("Authorization", `Bearer ${jwtToken}`);
-
-    const response = await safeFetch(url, {
-        method: "PUT",
-        headers,
+        body: JSON.stringify({
+            accountIds: args.accountIds,
+        }),
     });
     if (response instanceof Error) {
         return response;

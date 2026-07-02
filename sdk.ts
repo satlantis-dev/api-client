@@ -416,16 +416,15 @@ import {
     modifyActiveMembershipSubscription,
     previewCommunityNewsletter,
     rejectCommunityMembershipRequest,
+    removeCommunityAdmins,
     removeCommunityGalleryImage,
     removeMembersFromCommunity,
     searchCommunities,
     sendCommunityNewsletter,
-    setMemberAdmin,
     startMembershipSubscriptionCardSetup,
     startMembershipSubscriptionLightningInvoice,
     submitCommunityMembershipRequest,
     unlinkCalendarFromCommunity,
-    unsetMemberAdmin,
     updateCommunity,
     updateCommunityGalleryImageRank,
     updateCommunityMembershipTier,
@@ -956,8 +955,7 @@ export class Client {
     updateMemberships: ReturnType<typeof updateMemberships>;
     listCommunityProspects: ReturnType<typeof listCommunityProspects>;
     addProspectsToCommunity: ReturnType<typeof addProspectsToCommunity>;
-    setMemberAdmin: ReturnType<typeof setMemberAdmin>;
-    unsetMemberAdmin: ReturnType<typeof unsetMemberAdmin>;
+    removeCommunityAdmins: ReturnType<typeof removeCommunityAdmins>;
     linkCalendarToCommunity: ReturnType<typeof linkCalendarToCommunity>;
     unlinkCalendarFromCommunity: ReturnType<typeof unlinkCalendarFromCommunity>;
     addCommunityGalleryImage: ReturnType<typeof addCommunityGalleryImage>;
@@ -1661,8 +1659,10 @@ export class Client {
             rest_api_url,
             getJwt,
         );
-        this.setMemberAdmin = setMemberAdmin(rest_api_url, getJwt);
-        this.unsetMemberAdmin = unsetMemberAdmin(rest_api_url, getJwt);
+        this.removeCommunityAdmins = removeCommunityAdmins(
+            rest_api_url,
+            getJwt,
+        );
         this.linkCalendarToCommunity = linkCalendarToCommunity(
             rest_api_url,
             getJwt,
