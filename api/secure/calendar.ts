@@ -294,6 +294,39 @@ export const postPlaceCalendarEvent =
         return handleResponse<PlaceCalendarEvent>(response);
     };
 
+/**
+ * Create an event, add it to the calendar, and set that calendar as the
+ * event's official calendar in one call. Requires edit permission on the
+ * calendar (owner or contributor).
+ */
+export const createEventInCalendar =
+    (urlArg: URL, getJwt: () => string) =>
+    async (args: PlaceCalendarEventPost & { calendarId: number }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/calendar/${args.calendarId}/events`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const { calendarId: _calendarId, ...eventInput } = args;
+        const body = JSON.stringify(eventInput);
+
+        const response = await safeFetch(url, {
+            method: "POST",
+            body,
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<PlaceCalendarEvent>(response);
+    };
+
 export const putUpdateCalendarEvent =
     (urlArg: URL, getJwt: () => string) => async (args: PlaceCalendarEventPut) => {
         const jwtToken = getJwt();

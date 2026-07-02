@@ -136,6 +136,7 @@ import {
     approveEventSubmission,
     createCalendar,
     createCalendarEventDraft,
+    createEventInCalendar,
     declineEventSubmission,
     declineInvitationToCalendar,
     deleteAnnouncement,
@@ -503,6 +504,7 @@ export class Client {
     deletePlaceCalendarEventById: ReturnType<typeof deletePlaceCalendarEventById>;
     postCalendarEventRSVP: ReturnType<typeof postCalendarEventRSVP>;
     postPlaceCalendarEvent: ReturnType<typeof postPlaceCalendarEvent>;
+    createEventInCalendar: ReturnType<typeof createEventInCalendar>;
     postCalendarEventAnnouncementV2: ReturnType<
         typeof postCalendarEventAnnouncementV2
     >;
@@ -1111,6 +1113,7 @@ export class Client {
         );
 
         this.postPlaceCalendarEvent = postPlaceCalendarEvent(rest_api_url, getJwt);
+        this.createEventInCalendar = createEventInCalendar(rest_api_url, getJwt);
         this.postCalendarEventRSVP = postCalendarEventRSVP(
             rest_api_url,
             getJwt,
@@ -1956,6 +1959,10 @@ export class Client {
 
     // Calendar Event
     createCalendarEvent = async (args: {
+        // When set, the event is created via POST /secure/calendar/{calendarId}/events,
+        // which also adds it to the calendar and sets it as the event's official
+        // calendar. Requires edit permission on the calendar.
+        calendarId?: number;
         description: string;
         placeATag: string | undefined;
         calendarEventType: string;
@@ -2090,7 +2097,7 @@ export class Client {
             return event;
         }
 
-        const res = await this.postPlaceCalendarEvent({
+        const eventInput = {
             ...(args.placeId && { placeId: args.placeId }), // Only include if placeId exists
             ...(args.isUnlisted !== undefined && { isUnlisted: args.isUnlisted }),
             ...(args.contactEmail !== undefined && { contactEmail: args.contactEmail }),
@@ -2098,7 +2105,10 @@ export class Client {
             isHidingAttendees: args.isHidingAttendees ?? false,
             isHidingLocation: args.isHidingLocation ?? false,
             isOnline: args.isOnline ?? false,
-        });
+        };
+        const res = args.calendarId !== undefined
+            ? await this.createEventInCalendar({ ...eventInput, calendarId: args.calendarId })
+            : await this.postPlaceCalendarEvent(eventInput);
         if (res instanceof Error) {
             return res;
         }
