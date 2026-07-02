@@ -204,6 +204,56 @@ async (args: ListCommunityMembersAndProspectsArgs) => {
     return handleResponse<CommunityMemberExtended[]>(response);
 };
 
+export type ListCommunityMembersMiniArgs = {
+    communityId: number;
+    page?: number;
+    limit?: number;
+};
+
+export type ListCommunityMembersMiniResponse = {
+    members: CommunityMember[];
+    pagination: {
+        page: number;
+        limit: number;
+        total: number;
+        totalPages: number;
+    };
+};
+
+// Member-accessible variant of listCommunityMembers: any authenticated member
+// or admin of the community may call it. Returns fewer fields (no
+// numEvents/revenue), paginated, sorted by last updated.
+export const listCommunityMembersMini = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: ListCommunityMembersMiniArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/members-mini`;
+    if (args.page) {
+        url.searchParams.set("page", String(args.page));
+    }
+    if (args.limit) {
+        url.searchParams.set("limit", String(args.limit));
+    }
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<ListCommunityMembersMiniResponse>(response);
+};
+
 export const listCommunityAdmins = (
     urlArg: URL,
     getJwt: func_GetJwt,

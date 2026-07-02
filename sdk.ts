@@ -411,6 +411,7 @@ import {
     listCommunityAdmins,
     listCommunityMembers,
     listCommunityMembersAndProspects,
+    listCommunityMembersMini,
     listCommunityProspects,
     modifyActiveMembershipSubscription,
     previewCommunityNewsletter,
@@ -949,6 +950,7 @@ export class Client {
     listCommunityMembersAndProspects: ReturnType<
         typeof listCommunityMembersAndProspects
     >;
+    listCommunityMembersMini: ReturnType<typeof listCommunityMembersMini>;
     addMembersToCommunity: ReturnType<typeof addMembersToCommunity>;
     removeMembersFromCommunity: ReturnType<typeof removeMembersFromCommunity>;
     updateMemberships: ReturnType<typeof updateMemberships>;
@@ -1641,6 +1643,7 @@ export class Client {
         this.declineCommunityAdminInvitation = declineCommunityAdminInvitation(rest_api_url, getJwt);
         this.listCommunityMembers = listCommunityMembers(rest_api_url, getJwt);
         this.listCommunityMembersAndProspects = listCommunityMembersAndProspects(rest_api_url, getJwt);
+        this.listCommunityMembersMini = listCommunityMembersMini(rest_api_url, getJwt);
         this.addMembersToCommunity = addMembersToCommunity(
             rest_api_url,
             getJwt,
