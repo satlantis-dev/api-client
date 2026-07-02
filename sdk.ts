@@ -394,12 +394,14 @@ import {
     getCommunityById,
     getCommunityCalendarEvents,
     getCommunityEvents,
+    getCommunityFinancialTransactions,
     getCommunityGalleryImages,
     getCommunityMembershipRequests,
     getCommunityMembershipTiers,
     getCommunityNewsletter,
     getCommunityNewsletters,
     getCommunityUserPermission,
+    getMembershipSubscription,
     getMembershipSubscriptionPayments,
     getPublicCommunityAdmins,
     getUserCommunityMembershipRequests,
@@ -1019,8 +1021,14 @@ export class Client {
     startMembershipSubscriptionLightningInvoice: ReturnType<
         typeof startMembershipSubscriptionLightningInvoice
     >;
+    getMembershipSubscription: ReturnType<
+        typeof getMembershipSubscription
+    >;
     getMembershipSubscriptionPayments: ReturnType<
         typeof getMembershipSubscriptionPayments
+    >;
+    getCommunityFinancialTransactions: ReturnType<
+        typeof getCommunityFinancialTransactions
     >;
     getUserCommunityMembershipRequests: ReturnType<
         typeof getUserCommunityMembershipRequests
@@ -1765,7 +1773,15 @@ export class Client {
             rest_api_url,
             getJwt,
         );
+        this.getMembershipSubscription = getMembershipSubscription(
+            rest_api_url,
+            getJwt,
+        );
         this.getMembershipSubscriptionPayments = getMembershipSubscriptionPayments(
+            rest_api_url,
+            getJwt,
+        );
+        this.getCommunityFinancialTransactions = getCommunityFinancialTransactions(
             rest_api_url,
             getJwt,
         );

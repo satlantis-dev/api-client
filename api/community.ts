@@ -7,6 +7,7 @@ import type {
     AccountCommunityRole,
     Community,
     CommunityFAQ,
+    CommunityFinancialTransactionsResponse,
     CommunityGalleryImage,
     CommunityMember,
     CommunityMembershipPayment,
@@ -15,6 +16,7 @@ import type {
     CommunityMembershipRequestStatus,
     CommunityMembershipSubscription,
     CommunityMembershipSubscriptionChange,
+    CommunityMembershipSubscriptionDetail,
     CommunityMembershipTier,
     CommunityNewsletter,
     CommunityUserPermission,
@@ -1395,6 +1397,77 @@ async (args: GetMembershipSubscriptionPaymentsArgs) => {
         return response;
     }
     return handleResponse<CommunityMembershipPayment[]>(response);
+};
+
+export type GetMembershipSubscriptionArgs = {
+    communityId: number;
+    subscriptionId: number;
+};
+
+export const getMembershipSubscription = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: GetMembershipSubscriptionArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/communities/${args.communityId}/subscriptions/${args.subscriptionId}`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityMembershipSubscriptionDetail>(response);
+};
+
+export type GetCommunityFinancialTransactionsArgs = {
+    communityId: number;
+    page?: number;
+    limit?: number;
+    status?: PaymentStatus[];
+};
+
+export const getCommunityFinancialTransactions = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: GetCommunityFinancialTransactionsArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/financials/transactions`;
+    if (args.page) {
+        url.searchParams.set("page", String(args.page));
+    }
+    if (args.limit) {
+        url.searchParams.set("limit", String(args.limit));
+    }
+    if (args.status && args.status.length > 0) {
+        url.searchParams.set("status", args.status.join(","));
+    }
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityFinancialTransactionsResponse>(response);
 };
 
 /////////////////////////// User-scoped reads ///////////////////////////

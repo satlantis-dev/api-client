@@ -1,6 +1,6 @@
 import type { AccountDTO, SearchAccountDTO } from "@satlantis/api-client";
 import type { Calendar } from "./calendar.ts";
-import type { PaymentMethod, PaymentStatus } from "./order.ts";
+import type { PaymentMethod, PaymentStatus, RefundStatus } from "./order.ts";
 import type { OrderCurrency } from "./ticketing.ts";
 
 export type Community = {
@@ -241,4 +241,56 @@ export type CommunityMembershipPayment = {
     paidAt?: string;
     createdAt: string;
     updatedAt: string;
+};
+
+export type CommunityMembershipRefund = {
+    id: number;
+    paymentId: number;
+    amount: number;
+    currency: OrderCurrency;
+    fee?: number;
+    reason?: string;
+    refundMethod?: string;
+    status: RefundStatus;
+    processedAt?: string;
+    failedAt?: string;
+    failureReason?: string;
+    createdAt: string;
+};
+
+// Subscription with its relations (buyer identity, tier) populated, as returned
+// by GET /communities/{id}/subscriptions/{subscriptionId}. Relation fields are
+// optional because the backend only fills the ones it preloads.
+export type CommunityMembershipSubscriptionDetail =
+    & CommunityMembershipSubscription
+    & {
+        account?: AccountDTO | null;
+        member?: CommunityMember | null;
+        tier?: CommunityMembershipTier | null;
+    };
+
+// Payment as returned by GET /secure/communities/{id}/financials/transactions.
+export type CommunityFinancialTransactionPayment = CommunityMembershipPayment & {
+    subscription?: CommunityMembershipSubscriptionDetail | null;
+    refunds?: CommunityMembershipRefund[] | null;
+};
+
+export type CommunityFinancialTransactionKind = "payment" | "refund";
+
+export type CommunityFinancialTransaction = {
+    type: CommunityFinancialTransactionKind;
+    timestamp: string;
+    payment?: CommunityFinancialTransactionPayment | null;
+    refund?:
+        | (CommunityMembershipRefund & {
+            payment?: CommunityFinancialTransactionPayment | null;
+        })
+        | null;
+};
+
+export type CommunityFinancialTransactionsResponse = {
+    page: number;
+    limit: number;
+    total: number;
+    transactions: CommunityFinancialTransaction[];
 };
