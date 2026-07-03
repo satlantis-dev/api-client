@@ -339,6 +339,7 @@ import {
     updateLightningContact,
 } from "./api/secure/wallet.ts";
 import {
+    bulkSendEventPayment,
     createEventReceiveInvoice,
     decodeEventInvoice,
     estimateEventPaymentFee,
@@ -692,6 +693,7 @@ export class Client {
     getEventWallet: ReturnType<typeof getEventWallet>;
     createEventReceiveInvoice: ReturnType<typeof createEventReceiveInvoice>;
     sendEventPayment: ReturnType<typeof sendEventPayment>;
+    bulkSendEventPayment: ReturnType<typeof bulkSendEventPayment>;
     estimateEventPaymentFee: ReturnType<typeof estimateEventPaymentFee>;
     getEventTransactionHistory: ReturnType<typeof getEventTransactionHistory>;
     getEventTransactionDetails: ReturnType<typeof getEventTransactionDetails>;
@@ -1357,6 +1359,7 @@ export class Client {
         this.getEventWallet = getEventWallet(rest_api_url, getJwt);
         this.createEventReceiveInvoice = createEventReceiveInvoice(rest_api_url, getJwt);
         this.sendEventPayment = sendEventPayment(rest_api_url, getJwt);
+        this.bulkSendEventPayment = bulkSendEventPayment(rest_api_url, getJwt);
         this.estimateEventPaymentFee = estimateEventPaymentFee(rest_api_url, getJwt);
         this.getEventTransactionHistory = getEventTransactionHistory(rest_api_url, getJwt);
         this.getEventTransactionDetails = getEventTransactionDetails(rest_api_url, getJwt);

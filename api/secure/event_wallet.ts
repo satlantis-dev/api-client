@@ -5,6 +5,7 @@ import type {
     DecodeInvoiceResponse,
     FeeEstimateResponse,
     ReceiveInvoiceResponse,
+    Recipient,
     SendPaymentResponse,
     TransactionDetails,
     TransactionHistoryResponse,
@@ -98,6 +99,59 @@ async (
         body: JSON.stringify({ destination, amount, memo }),
     });
     return response instanceof Error ? response : handleResponse<SendPaymentResponse>(response);
+};
+
+export type BulkSendResultStatus = "completed" | "pending" | "failed" | "already_paid";
+
+export interface BulkSendResult {
+    accountId: number;
+    success: boolean;
+    status: BulkSendResultStatus;
+    transactionId?: number;
+    recipient?: Recipient;
+    paymentHash?: string;
+    failureReason?: string;
+}
+
+export interface BulkSendPaymentResponse {
+    totalRecipients: number;
+    totalSucceeded: number;
+    totalFailed: number;
+    amountPerRecipient: number;
+    totalAmount: number;
+    totalFee: number;
+    results: BulkSendResult[];
+}
+
+/**
+ * Sends a uniform `amount` of sats from the event's wallet to every account in
+ * `accountIds`. Returns HTTP 200 with one `BulkSendResult` per recipient even on
+ * partial failure — only batch-level problems (malformed body, >50 recipients,
+ * missing wallet) come back as an Error. `already_paid` results count as
+ * successes: key success off `result.success`, not `status`. `recipient` is
+ * absent when the account wasn't found.
+ *
+ * The server rejects more than 50 recipients per request — chunk larger
+ * selections into sequential calls that REUSE the same `idempotencyKey` (max 64
+ * chars). The server keeps a per-key ledger and records recipients before
+ * paying, so retries with the same key can never double-pay.
+ */
+export const bulkSendEventPayment = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    eventId: number,
+    accountIds: number[],
+    amount: number,
+    idempotencyKey: string,
+    memo?: string,
+): Promise<BulkSendPaymentResponse | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/${eventId}/wallet/bulk-send`;
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers: getHeaders(getJwt),
+        body: JSON.stringify({ accountIds, amount, memo, idempotencyKey }),
+    });
+    return response instanceof Error ? response : handleResponse<BulkSendPaymentResponse>(response);
 };
 
 export const estimateEventPaymentFee = (urlArg: URL, getJwt: func_GetJwt) =>

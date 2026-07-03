@@ -246,13 +246,15 @@ export interface EventRsvpsResponse {
 
 export interface GetEventRsvpsArgs {
     eventId?: string;
-    status?: string;
+    /** Multiple values are serialized as CSV — the backend splits on comma. */
+    status?: string | string[];
     page: number;
     limit: number;
     sort_by?: string;
     sort_order?: string;
     search?: string;
-    ticket_type_id?: string;
+    /** Multiple values are serialized as CSV — the backend splits on comma. */
+    ticket_type_id?: string | string[];
     options?: {
         signal: AbortSignal;
     };
@@ -399,6 +401,7 @@ async (
     const { eventId: _eventId, options: _options, ...queryParams } = args;
     for (const [key, value] of Object.entries(queryParams)) {
         if (value === undefined || value === null || value === "") continue;
+        if (Array.isArray(value) && value.length === 0) continue;
         url.searchParams.set(key, String(value));
     }
 
