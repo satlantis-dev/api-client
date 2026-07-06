@@ -36,6 +36,23 @@ export const getAccount =
         }
     };
 
+/**
+ * Look up an account via the public `GET /account/{input}` endpoint, where
+ * `input` is any unique identifier the backend accepts: npub, email, or
+ * numeric account ID. Returns the full AccountDTO (including its canonical
+ * `email`) or an Error when no account matches (404).
+ */
+export const getAccountDTO =
+    (urlArg: URL) => async (args: { input: string }): Promise<AccountDTO | Error> => {
+        const url = copyURL(urlArg);
+        url.pathname = `/account/${encodeURIComponent(args.input)}`;
+        const response = await safeFetch(url);
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<AccountDTO>(response);
+    };
+
 export const getAccountFollowings = (urlArg: URL) =>
 async (args: {
     npub: string;

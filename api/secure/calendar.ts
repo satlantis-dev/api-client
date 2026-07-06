@@ -112,6 +112,11 @@ export const getEventById = (urlArg: URL) => async (args: { id: number }) => {
     return handleResponse<CalendarEvent>(response);
 };
 
+/**
+ * @deprecated The backing endpoint (`GET /secure/events/cohosts`) is obsolete.
+ * Use `getAccountDTO` (public `GET /account/{input}`, input = npub/email/id)
+ * instead — it returns the full AccountDTO including the account's email.
+ */
 export const searchAccountViaEmail =
     (urlArg: URL, getJwt: () => string) =>
     async (args: { email: string }): Promise<SearchAccountDTO | Error> => {

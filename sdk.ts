@@ -19,6 +19,7 @@ import {
     getAccountActivities,
     getAccountById,
     getAccountCalendarEvents,
+    getAccountDTO,
     getAccountFollowers,
     getAccountFollowings,
     getAllUserEvents,
@@ -637,6 +638,7 @@ export class Client {
     private _getAccountFollowings: ReturnType<typeof getAccountFollowings>;
     private _getAccountFollowers: ReturnType<typeof getAccountFollowers>;
     getAccountsBySearch: ReturnType<typeof getAccountsBySearch>;
+    getAccountDTO: ReturnType<typeof getAccountDTO>;
     searchAccountViaEmail: ReturnType<typeof searchAccountViaEmail>;
     getCalendarEventCohosts: ReturnType<typeof getCalendarEventCohosts>;
     sendCohostEmailInviteToCalendarEvent: ReturnType<
@@ -1301,6 +1303,7 @@ export class Client {
         this._getAccountFollowings = getAccountFollowings(rest_api_url);
         this._getAccountFollowers = getAccountFollowers(rest_api_url);
         this.getAccountsBySearch = getAccountsBySearch(rest_api_url, getJwt);
+        this.getAccountDTO = getAccountDTO(rest_api_url);
         this.searchAccountViaEmail = searchAccountViaEmail(rest_api_url, getJwt);
         this.getCalendarEventCohosts = getCalendarEventCohosts(rest_api_url, getJwt);
         this.sendCohostEmailInviteToCalendarEvent = sendCohostEmailInviteToCalendarEvent(
