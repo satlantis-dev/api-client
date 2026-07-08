@@ -169,6 +169,13 @@ export enum CommunityMembershipRequestStatus {
     IMPLEMENTED = "implemented",
 }
 
+export enum CommunityMembershipRequestType {
+    NEW = "new",
+    UPGRADE = "upgrade",
+    DOWNGRADE = "downgrade",
+    PERIOD_CHANGE = "period_change",
+}
+
 export enum CommunityMembershipSubscriptionStatus {
     PENDING_APPROVAL = "pending_approval",
     PENDING_PAYMENT = "pending_payment",
@@ -183,6 +190,7 @@ export type CommunityMembershipRequest = {
     communityId: number;
     accountId: number;
     account?: AccountDTO;
+    type?: CommunityMembershipRequestType;
     currentTierId?: number | null;
     currentTier?: CommunityMembershipTier | null;
     requestedTierId: number;
