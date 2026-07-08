@@ -922,6 +922,39 @@ async (args: {
     return handleResponse<InviteAttendeesResponse>(response);
 };
 
+export const sendInviteAttendeesPreview = (urlArg: URL, getJwt: func_GetJwt) =>
+async (args: {
+    eventId: number;
+    email: string;
+    emailSubject?: string;
+    invitationMessage?: string;
+}): Promise<{} | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/${args.eventId}/invite/preview`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const payload = {
+        email: args.email,
+        emailSubject: args.emailSubject,
+        invitationMessage: args.invitationMessage,
+    };
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{}>(response);
+};
+
 export enum EventTicketStatus {
     Active = "active",
     Used = "used",

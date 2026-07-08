@@ -318,6 +318,7 @@ import {
     removeTicketFromUser,
     saveRegistrationQuestions,
     saveRsvpConfirmationMessage,
+    sendInviteAttendeesPreview,
     unmarkCalendarEventAsFeatured,
     updateEventCoupon,
     updateEventTicketStatus,
@@ -543,6 +544,7 @@ export class Client {
     >;
     markCalendarEventAsFeatured: ReturnType<typeof markCalendarEventAsFeatured>;
     inviteAttendees: ReturnType<typeof inviteAttendees>;
+    sendInviteAttendeesPreview: ReturnType<typeof sendInviteAttendeesPreview>;
     createEventCoupon: ReturnType<typeof createEventCoupon>;
     updateEventCoupon: ReturnType<typeof updateEventCoupon>;
     deleteEventCoupon: ReturnType<typeof deleteEventCoupon>;
@@ -1179,6 +1181,7 @@ export class Client {
             getJwt,
         );
         this.inviteAttendees = inviteAttendees(rest_api_url, getJwt);
+        this.sendInviteAttendeesPreview = sendInviteAttendeesPreview(rest_api_url, getJwt);
         this.createEventCoupon = createEventCoupon(rest_api_url, getJwt);
         this.updateEventCoupon = updateEventCoupon(rest_api_url, getJwt);
         this.deleteEventCoupon = deleteEventCoupon(rest_api_url, getJwt);
