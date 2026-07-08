@@ -886,6 +886,7 @@ async (args: {
     eventId: number;
     emails?: string[];
     npubs?: string[];
+    emailSubject?: string;
     invitationMessage?: string;
     ticketTypeId?: number;
     options?: {
@@ -905,6 +906,7 @@ async (args: {
     const payload = {
         emails: args.emails,
         npubs: args.npubs,
+        emailSubject: args.emailSubject,
         invitationMessage: args.invitationMessage,
         ticketTypeId: args.ticketTypeId,
     };
