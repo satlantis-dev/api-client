@@ -307,3 +307,17 @@ export type CommunityFinancialTransactionsResponse = {
     total: number;
     transactions: CommunityFinancialTransaction[];
 };
+
+// Payment annotated with its subscription's tier name, as returned by
+// GET /secure/user/communities/{communityId}/payments. tierName is "" when
+// the backend can't resolve the tier.
+export type CommunityMembershipPaymentWithTier = CommunityMembershipPayment & {
+    tierName: string;
+};
+
+export type UserCommunityMembershipPaymentsResponse = {
+    page: number;
+    limit: number;
+    total: number;
+    payments: CommunityMembershipPaymentWithTier[];
+};

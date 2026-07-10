@@ -20,6 +20,7 @@ import type {
     CommunityMembershipTier,
     CommunityNewsletter,
     CommunityUserPermission,
+    UserCommunityMembershipPaymentsResponse,
 } from "../models/community.ts";
 import type { OrderCurrency } from "../models/ticketing.ts";
 
@@ -1397,6 +1398,50 @@ async (args: GetMembershipSubscriptionPaymentsArgs) => {
         return response;
     }
     return handleResponse<CommunityMembershipPayment[]>(response);
+};
+
+export type GetUserCommunityMembershipPaymentsArgs = {
+    communityId: number;
+    page?: number;
+    limit?: number;
+    status?: PaymentStatus[];
+};
+
+// Payments made by the caller across ALL of their membership subscriptions
+// for the community (the subscription-scoped endpoint resets on plan change).
+export const getUserCommunityMembershipPayments = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: GetUserCommunityMembershipPaymentsArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/user/communities/${args.communityId}/payments`;
+    if (args.page) {
+        url.searchParams.set("page", String(args.page));
+    }
+    if (args.limit) {
+        url.searchParams.set("limit", String(args.limit));
+    }
+    for (const status of args.status ?? []) {
+        // The handler reads repeated ?status= params; it does NOT split commas.
+        url.searchParams.append("status", status);
+    }
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<UserCommunityMembershipPaymentsResponse>(response);
 };
 
 export type GetMembershipSubscriptionArgs = {

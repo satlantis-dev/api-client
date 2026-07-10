@@ -408,6 +408,7 @@ import {
     getMembershipSubscription,
     getMembershipSubscriptionPayments,
     getPublicCommunityAdmins,
+    getUserCommunityMembershipPayments,
     getUserCommunityMembershipRequests,
     getUserCommunityMemberships,
     inviteCommunityAdmin,
@@ -1034,6 +1035,9 @@ export class Client {
     >;
     getMembershipSubscriptionPayments: ReturnType<
         typeof getMembershipSubscriptionPayments
+    >;
+    getUserCommunityMembershipPayments: ReturnType<
+        typeof getUserCommunityMembershipPayments
     >;
     getCommunityFinancialTransactions: ReturnType<
         typeof getCommunityFinancialTransactions
@@ -1790,6 +1794,10 @@ export class Client {
             getJwt,
         );
         this.getMembershipSubscriptionPayments = getMembershipSubscriptionPayments(
+            rest_api_url,
+            getJwt,
+        );
+        this.getUserCommunityMembershipPayments = getUserCommunityMembershipPayments(
             rest_api_url,
             getJwt,
         );
