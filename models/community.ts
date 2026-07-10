@@ -294,6 +294,11 @@ export type CommunityFinancialTransaction = {
             payment?: CommunityFinancialTransactionPayment | null;
         })
         | null;
+    // Resolved server-side from the payment's subscription (displayName →
+    // name → nip05 → username → shortened npub). Empty string when the
+    // backend can't resolve them; absent on pre-2026-07-10 deploys.
+    tierName?: string;
+    accountName?: string;
 };
 
 export type CommunityFinancialTransactionsResponse = {
