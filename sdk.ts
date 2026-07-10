@@ -1257,7 +1257,7 @@ export class Client {
         this.deleteCalendarEventDraft = deleteCalendarEventDraft(rest_api_url, getJwt);
 
         // Calendars
-        this.getCalendarByID = getCalendarByID(rest_api_url);
+        this.getCalendarByID = getCalendarByID(rest_api_url, getJwt);
         this.createCalendar = createCalendar(rest_api_url, getJwt);
         this.editCalendar = editCalendar(rest_api_url, getJwt);
         this.deleteCalendar = deleteCalendar(rest_api_url, getJwt);
@@ -1293,7 +1293,7 @@ export class Client {
         );
         this.searchCalendars = searchCalendars(rest_api_url);
         this.getCalendarsRandomized = getCalendarsRandomized(rest_api_url);
-        this.getEventsFromCalendar = getEventsFromCalendar(rest_api_url);
+        this.getEventsFromCalendar = getEventsFromCalendar(rest_api_url, getJwt);
         this.deleteCalendarEventNote = deleteCalendarEventNote(rest_api_url, getJwt);
         this.inviteContributorToCalendar = inviteContributorToCalendar(rest_api_url, getJwt);
         this.removeContributorFromCalendar = removeContributorFromCalendar(rest_api_url, getJwt);

@@ -305,8 +305,7 @@ export const postPlaceCalendarEvent =
  * calendar (owner or contributor).
  */
 export const createEventInCalendar =
-    (urlArg: URL, getJwt: () => string) =>
-    async (args: PlaceCalendarEventPost & { calendarId: number }) => {
+    (urlArg: URL, getJwt: () => string) => async (args: PlaceCalendarEventPost & { calendarId: number }) => {
         const jwtToken = getJwt();
         if (jwtToken == "") {
             return new Error("jwt token is empty");
@@ -882,10 +881,21 @@ export type GetCalendarByIdArgs = {
     id: number;
 };
 
-export const getCalendarByID = (urlArg: URL) => async (args: GetCalendarByIdArgs) => {
+export const getCalendarByID = (urlArg: URL, getJwt: func_GetJwt) => async (args: GetCalendarByIdArgs) => {
     const url = copyURL(urlArg);
     url.pathname = `/calendar/${args.id}`;
-    const response = await safeFetch(url);
+
+    // Optional auth: private calendars are only visible to permitted accounts
+    const headers = new Headers();
+    const jwtToken = getJwt();
+    if (jwtToken != "") {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
     if (response instanceof Error) {
         return response;
     }
@@ -1688,7 +1698,7 @@ export function getCalendarsRandomized(urlArg: URL) {
     };
 }
 
-export function getEventsFromCalendar(urlArg: URL) {
+export function getEventsFromCalendar(urlArg: URL, getJwt: func_GetJwt) {
     return async (args: {
         calendarId: number;
         period?: "upcoming" | "past";
@@ -1708,7 +1718,17 @@ export function getEventsFromCalendar(urlArg: URL) {
             url.searchParams.set("period", args.period);
         }
 
-        const response = await safeFetch(url);
+        // Optional auth: private calendars are only visible to permitted accounts
+        const headers = new Headers();
+        const jwtToken = getJwt();
+        if (jwtToken != "") {
+            headers.set("Authorization", `Bearer ${jwtToken}`);
+        }
+
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
 
         if (response instanceof Error) return response;
         return handleResponse<CalendarEvent[]>(response);
