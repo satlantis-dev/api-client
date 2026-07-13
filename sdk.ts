@@ -398,8 +398,10 @@ import {
     getCommunityById,
     getCommunityCalendarEvents,
     getCommunityEvents,
+    getCommunityFinancialSummary,
     getCommunityFinancialTransactions,
     getCommunityGalleryImages,
+    getCommunityMemberTransactions,
     getCommunityMembershipRequests,
     getCommunityMembershipTiers,
     getCommunityNewsletter,
@@ -1039,8 +1041,14 @@ export class Client {
     getUserCommunityMembershipPayments: ReturnType<
         typeof getUserCommunityMembershipPayments
     >;
+    getCommunityFinancialSummary: ReturnType<
+        typeof getCommunityFinancialSummary
+    >;
     getCommunityFinancialTransactions: ReturnType<
         typeof getCommunityFinancialTransactions
+    >;
+    getCommunityMemberTransactions: ReturnType<
+        typeof getCommunityMemberTransactions
     >;
     getUserCommunityMembershipRequests: ReturnType<
         typeof getUserCommunityMembershipRequests
@@ -1801,7 +1809,15 @@ export class Client {
             rest_api_url,
             getJwt,
         );
+        this.getCommunityFinancialSummary = getCommunityFinancialSummary(
+            rest_api_url,
+            getJwt,
+        );
         this.getCommunityFinancialTransactions = getCommunityFinancialTransactions(
+            rest_api_url,
+            getJwt,
+        );
+        this.getCommunityMemberTransactions = getCommunityMemberTransactions(
             rest_api_url,
             getJwt,
         );

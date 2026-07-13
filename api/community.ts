@@ -7,6 +7,7 @@ import type {
     AccountCommunityRole,
     Community,
     CommunityFAQ,
+    CommunityFinancialSummary,
     CommunityFinancialTransactionsResponse,
     CommunityGalleryImage,
     CommunityMember,
@@ -1242,17 +1243,20 @@ async (args: ReviewCommunityMembershipRequestArgs) => {
 export const acceptCommunityMembershipRequest = (
     urlArg: URL,
     getJwt: func_GetJwt,
-) => reviewCommunityMembershipRequest(urlArg, getJwt, "PUT", "accept");
+): (args: AcceptCommunityMembershipRequestArgs) => Promise<CommunityMembershipRequest | Error> =>
+    reviewCommunityMembershipRequest(urlArg, getJwt, "PUT", "accept");
 
 export const rejectCommunityMembershipRequest = (
     urlArg: URL,
     getJwt: func_GetJwt,
-) => reviewCommunityMembershipRequest(urlArg, getJwt, "PUT", "reject");
+): (args: RejectCommunityMembershipRequestArgs) => Promise<CommunityMembershipRequest | Error> =>
+    reviewCommunityMembershipRequest(urlArg, getJwt, "PUT", "reject");
 
 export const cancelCommunityMembershipRequest = (
     urlArg: URL,
     getJwt: func_GetJwt,
-) => reviewCommunityMembershipRequest(urlArg, getJwt, "DELETE", "cancel");
+): (args: CancelCommunityMembershipRequestArgs) => Promise<CommunityMembershipRequest | Error> =>
+    reviewCommunityMembershipRequest(urlArg, getJwt, "DELETE", "cancel");
 
 /////////////////////////// Membership Subscriptions ///////////////////////////
 
@@ -1513,6 +1517,83 @@ async (args: GetCommunityFinancialTransactionsArgs) => {
         return response;
     }
     return handleResponse<CommunityFinancialTransactionsResponse>(response);
+};
+
+export type GetCommunityMemberTransactionsArgs = {
+    communityId: number;
+    memberId: number;
+    page?: number;
+    limit?: number;
+    status?: PaymentStatus[];
+};
+
+// Membership payment history (payments and refunds, newest first) for a single
+// member across all their subscriptions. Caller must be a community admin or
+// the member themselves. Same item shape as the financial transactions list,
+// including the denormalized tierName/accountName.
+export const getCommunityMemberTransactions = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: GetCommunityMemberTransactionsArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/members/${args.memberId}/transactions`;
+    if (args.page) {
+        url.searchParams.set("page", String(args.page));
+    }
+    if (args.limit) {
+        url.searchParams.set("limit", String(args.limit));
+    }
+    for (const status of args.status ?? []) {
+        url.searchParams.append("status", status);
+    }
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityFinancialTransactionsResponse>(response);
+};
+
+export type GetCommunityFinancialSummaryArgs = {
+    communityId: number;
+};
+
+// Financial summary (MRR, earnings, per-tier and per-month stats). Monetary
+// values are in the community's master currency's smallest unit.
+export const getCommunityFinancialSummary = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: GetCommunityFinancialSummaryArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/financials/summary`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityFinancialSummary>(response);
 };
 
 /////////////////////////// User-scoped reads ///////////////////////////

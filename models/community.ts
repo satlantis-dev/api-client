@@ -246,6 +246,8 @@ export type CommunityMembershipPayment = {
     currency: OrderCurrency;
     cardLast4?: string;
     cardBrand?: string;
+    lightningPreimage?: string;
+    stripePaymentIntentId?: string;
     paidAt?: string;
     createdAt: string;
     updatedAt: string;
@@ -259,6 +261,7 @@ export type CommunityMembershipRefund = {
     fee?: number;
     reason?: string;
     refundMethod?: string;
+    lightningPreimage?: string;
     status: RefundStatus;
     processedAt?: string;
     failedAt?: string;
@@ -306,6 +309,38 @@ export type CommunityFinancialTransactionsResponse = {
     limit: number;
     total: number;
     transactions: CommunityFinancialTransaction[];
+};
+
+// GET /secure/communities/{id}/financials/summary. All monetary values are in
+// the community's master currency's smallest unit (cents / sats) at the
+// current exchange rate; `currency` names that master currency.
+export type CommunityTierStats = {
+    tierId: number;
+    name: string;
+    rank: number;
+    members: number;
+    mrr: number;
+    totalEarnings: number;
+    totalBTCEarnings: number;
+};
+
+export type CommunityMonthlyStats = {
+    month: string; // "YYYY-MM"
+    revenue: number;
+    btcEarnings: number;
+    activeSubscriptions: number;
+    terminatedSubscriptions: number;
+};
+
+export type CommunityFinancialSummary = {
+    currency: OrderCurrency;
+    mrr: number;
+    totalEarnings: number;
+    totalBTCEarnings: number;
+    activeSubscriptions: number;
+    terminatedSubscriptions: number;
+    tierStats?: CommunityTierStats[] | null;
+    monthlyStats?: CommunityMonthlyStats[] | null;
 };
 
 // Payment annotated with its subscription's tier name, as returned by
