@@ -74,7 +74,7 @@ export const authApple = (urlArg: URL) => async (args: { code: string; id_token:
  */
 export type AuthWhopArgs =
     | { access_token: string; refresh_token?: string; iframe_token?: string }
-    | { iframe_token: string };
+    | { iframe_token: string; company_id?: string; experience_id?: string };
 
 export const authWhop = (urlArg: URL) => async (args: AuthWhopArgs) => {
     const url = copyURL(urlArg);
