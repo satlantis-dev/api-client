@@ -1753,6 +1753,7 @@ export function getEventsFromCalendarPaginated(urlArg: URL, getJwt: func_GetJwt)
         period?: "upcoming" | "past";
         start_date?: string; // 'YYYY-MM-DD' format (overrides period)
         end_date?: string; // 'YYYY-MM-DD' format (overrides period)
+        search?: string; // filters events by title/summary
         page?: number; // default 1
         limit?: number; // default 10
     }) => {
@@ -1767,6 +1768,9 @@ export function getEventsFromCalendarPaginated(urlArg: URL, getJwt: func_GetJwt)
         }
         if (args.period) {
             url.searchParams.set("period", args.period);
+        }
+        if (args.search) {
+            url.searchParams.set("search", args.search);
         }
         if (args.page) {
             url.searchParams.set("page", args.page.toString());
