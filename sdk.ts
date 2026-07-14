@@ -161,6 +161,7 @@ import {
     getCalendarSubscribers,
     getEventById,
     getEventsFromCalendar,
+    getEventsFromCalendarPaginated,
     getEventSubmissions,
     getFeaturedCalendars,
     getNewestCalendars,
@@ -619,6 +620,7 @@ export class Client {
     searchCalendars: ReturnType<typeof searchCalendars>;
     getCalendarsRandomized: ReturnType<typeof getCalendarsRandomized>;
     getEventsFromCalendar: ReturnType<typeof getEventsFromCalendar>;
+    getEventsFromCalendarPaginated: ReturnType<typeof getEventsFromCalendarPaginated>;
     deleteCalendarEventNote: ReturnType<typeof deleteCalendarEventNote>;
 
     // Calendar Event Drafts
@@ -1306,6 +1308,7 @@ export class Client {
         this.searchCalendars = searchCalendars(rest_api_url);
         this.getCalendarsRandomized = getCalendarsRandomized(rest_api_url);
         this.getEventsFromCalendar = getEventsFromCalendar(rest_api_url, getJwt);
+        this.getEventsFromCalendarPaginated = getEventsFromCalendarPaginated(rest_api_url, getJwt);
         this.deleteCalendarEventNote = deleteCalendarEventNote(rest_api_url, getJwt);
         this.inviteContributorToCalendar = inviteContributorToCalendar(rest_api_url, getJwt);
         this.removeContributorFromCalendar = removeContributorFromCalendar(rest_api_url, getJwt);

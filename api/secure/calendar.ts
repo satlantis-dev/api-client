@@ -1735,6 +1735,63 @@ export function getEventsFromCalendar(urlArg: URL, getJwt: func_GetJwt) {
     };
 }
 
+export interface PaginationInfo {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+}
+
+export interface PaginatedCalendarEvents {
+    events: CalendarEvent[];
+    pagination: PaginationInfo;
+}
+
+export function getEventsFromCalendarPaginated(urlArg: URL, getJwt: func_GetJwt) {
+    return async (args: {
+        calendarId: number;
+        period?: "upcoming" | "past";
+        start_date?: string; // 'YYYY-MM-DD' format (overrides period)
+        end_date?: string; // 'YYYY-MM-DD' format (overrides period)
+        page?: number; // default 1
+        limit?: number; // default 10
+    }) => {
+        const url = copyURL(urlArg);
+        url.pathname = `/calendar/${args.calendarId}/events/paginated`;
+
+        if (args.start_date) {
+            url.searchParams.set("start_date", args.start_date);
+        }
+        if (args.end_date) {
+            url.searchParams.set("end_date", args.end_date);
+        }
+        if (args.period) {
+            url.searchParams.set("period", args.period);
+        }
+        if (args.page) {
+            url.searchParams.set("page", args.page.toString());
+        }
+        if (args.limit) {
+            url.searchParams.set("limit", args.limit.toString());
+        }
+
+        // Optional auth: private calendars are only visible to permitted accounts
+        const headers = new Headers();
+        const jwtToken = getJwt();
+        if (jwtToken != "") {
+            headers.set("Authorization", `Bearer ${jwtToken}`);
+        }
+
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+
+        if (response instanceof Error) return response;
+        return handleResponse<PaginatedCalendarEvents>(response);
+    };
+}
+
 // Calendar Event Draft Types
 export interface CalendarEventDraft {
     id: number;
