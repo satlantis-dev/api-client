@@ -1950,8 +1950,10 @@ export const inviteContributorToCalendar = (
 ) =>
 async (args: {
     calendarId: number;
-    contributorId: number;
-}) => {
+} & (
+    | { contributorId: number; contributorEmail?: never }
+    | { contributorEmail: string; contributorId?: never }
+)) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
         return new Error("jwt token is empty");
@@ -1963,9 +1965,11 @@ async (args: {
     headers.set("Authorization", `Bearer ${jwtToken}`);
     headers.set("Content-Type", "application/json");
 
-    const body = JSON.stringify({
-        contributorId: args.contributorId,
-    });
+    const body = JSON.stringify(
+        args.contributorEmail !== undefined
+            ? { contributorEmail: args.contributorEmail }
+            : { contributorId: args.contributorId },
+    );
 
     const response = await safeFetch(url, {
         method: "POST",
