@@ -331,6 +331,82 @@ export const createEventInCalendar =
         return handleResponse<PlaceCalendarEvent>(response);
     };
 
+export interface UpdateEventInCalendarArgs {
+    calendarId: number;
+    eventId: number;
+    featured?: boolean;
+    membersOnly?: boolean;
+    tierIdsOnly?: number[];
+}
+
+/**
+ * Set an event's visibility within a calendar: restrict it to community
+ * members and/or specific membership tiers (and/or mark it featured).
+ * Requires edit permission on the calendar. Omitted fields are left
+ * unchanged. Backend: PUT /secure/calendar/{calendarId}/event/{id}
+ * (EventCalendarSettingsPayload); returns 204 No Content.
+ */
+export const updateEventInCalendar =
+    (urlArg: URL, getJwt: () => string) => async (args: UpdateEventInCalendarArgs) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/calendar/${args.calendarId}/event/${args.eventId}`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        headers.set("Content-Type", "application/json");
+
+        const body = JSON.stringify({
+            featured: args.featured,
+            membersOnly: args.membersOnly,
+            tierIdsOnly: args.tierIdsOnly,
+        });
+
+        const response = await safeFetch(url, { method: "PUT", body, headers });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<Record<string, never>>(response);
+    };
+
+export interface EventInCalendarSettings {
+    calendarId: number;
+    calendarEventId: number;
+    featured: boolean;
+    membersOnly: boolean;
+    tierIdsOnly?: number[];
+}
+
+/**
+ * Get an event's visibility settings within a calendar (featured /
+ * membersOnly / tierIdsOnly — the current values behind
+ * updateEventInCalendar). Requires edit permission on the calendar.
+ * Backend: GET /secure/calendar/{calendarId}/event/{id}.
+ */
+export const getEventInCalendarSettings =
+    (urlArg: URL, getJwt: () => string) => async (args: { calendarId: number; eventId: number }) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/calendar/${args.calendarId}/event/${args.eventId}`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const response = await safeFetch(url, { method: "GET", headers });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<EventInCalendarSettings>(response);
+    };
+
 export const putUpdateCalendarEvent =
     (urlArg: URL, getJwt: () => string) => async (args: PlaceCalendarEventPut) => {
         const jwtToken = getJwt();
@@ -1948,12 +2024,16 @@ export const inviteContributorToCalendar = (
     urlArg: URL,
     getJwt: func_GetJwt,
 ) =>
-async (args: {
-    calendarId: number;
-} & (
-    | { contributorId: number; contributorEmail?: never }
-    | { contributorEmail: string; contributorId?: never }
-)) => {
+async (
+    args:
+        & {
+            calendarId: number;
+        }
+        & (
+            | { contributorId: number; contributorEmail?: never }
+            | { contributorEmail: string; contributorId?: never }
+        ),
+) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
         return new Error("jwt token is empty");

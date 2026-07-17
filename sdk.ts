@@ -160,6 +160,7 @@ import {
     getCalendarsRandomized,
     getCalendarSubscribers,
     getEventById,
+    getEventInCalendarSettings,
     getEventsFromCalendar,
     getEventsFromCalendarPaginated,
     getEventSubmissions,
@@ -205,6 +206,7 @@ import {
     unsubscribeFromCalendar,
     updateCalendarEventCohostRole,
     updateCalendarEventDraft,
+    updateEventInCalendar,
 } from "./api/secure/calendar.ts";
 import { followPubkeys, getFollowingPubkeys, getInterestsOf, unfollowPubkeys } from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
@@ -402,9 +404,9 @@ import {
     getCommunityFinancialSummary,
     getCommunityFinancialTransactions,
     getCommunityGalleryImages,
-    getCommunityMemberTransactions,
     getCommunityMembershipRequests,
     getCommunityMembershipTiers,
+    getCommunityMemberTransactions,
     getCommunityNewsletter,
     getCommunityNewsletters,
     getCommunityUserPermission,
@@ -511,6 +513,8 @@ export class Client {
     postCalendarEventRSVP: ReturnType<typeof postCalendarEventRSVP>;
     postPlaceCalendarEvent: ReturnType<typeof postPlaceCalendarEvent>;
     createEventInCalendar: ReturnType<typeof createEventInCalendar>;
+    updateEventInCalendar: ReturnType<typeof updateEventInCalendar>;
+    getEventInCalendarSettings: ReturnType<typeof getEventInCalendarSettings>;
     postCalendarEventAnnouncementV2: ReturnType<
         typeof postCalendarEventAnnouncementV2
     >;
@@ -1132,6 +1136,8 @@ export class Client {
 
         this.postPlaceCalendarEvent = postPlaceCalendarEvent(rest_api_url, getJwt);
         this.createEventInCalendar = createEventInCalendar(rest_api_url, getJwt);
+        this.updateEventInCalendar = updateEventInCalendar(rest_api_url, getJwt);
+        this.getEventInCalendarSettings = getEventInCalendarSettings(rest_api_url, getJwt);
         this.postCalendarEventRSVP = postCalendarEventRSVP(
             rest_api_url,
             getJwt,
