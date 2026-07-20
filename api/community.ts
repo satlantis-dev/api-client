@@ -1925,6 +1925,9 @@ export type ListCommunityProspectsArgs = {
     communityId: number;
     order?: "date_desc" | "date_asc" | "num_events" | "revenue";
     search?: string;
+    // Restrict to prospects with an accepted RSVP for this event. The event must
+    // belong to a calendar of this community.
+    eventId?: number;
 };
 
 export const listCommunityProspects = (
@@ -1943,6 +1946,9 @@ async (args: ListCommunityProspectsArgs) => {
     }
     if (args.search) {
         url.searchParams.set("search", args.search);
+    }
+    if (args.eventId != null) {
+        url.searchParams.set("eventId", String(args.eventId));
     }
 
     const headers = new Headers();
