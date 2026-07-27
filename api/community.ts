@@ -13,6 +13,7 @@ import type {
     CommunityMember,
     CommunityMembershipPayment,
     CommunityMembershipPeriod,
+    CommunityMembershipRefund,
     CommunityMembershipRequest,
     CommunityMembershipRequestStatus,
     CommunityMembershipSubscription,
@@ -1402,6 +1403,97 @@ async (args: GetMembershipSubscriptionPaymentsArgs) => {
         return response;
     }
     return handleResponse<CommunityMembershipPayment[]>(response);
+};
+
+export type CreateMembershipSubscriptionRefundArgs = {
+    communityId: number;
+    subscriptionId: number;
+    paymentId: number;
+    amount: number;
+    reason?: string;
+    // Provided → refund pays this address; omitted/null → credited to the
+    // member's Satlantis wallet.
+    lightningAddress?: string | null;
+};
+
+// Issues a lightning refund against a paid membership payment. Lightning
+// payments only — the backend rejects refunds on Stripe payments. Caller must
+// be a community admin. Returns the created (initially pending) refund.
+export const createMembershipSubscriptionRefund = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: CreateMembershipSubscriptionRefundArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname =
+        `/secure/communities/${args.communityId}/subscriptions/${args.subscriptionId}/payments/${args.paymentId}/refunds`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+            amount: args.amount,
+            reason: args.reason,
+            lightningAddress: args.lightningAddress,
+        }),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityMembershipRefund>(response);
+};
+
+export type MembershipRefundFeeEstimationArgs = {
+    communityId: number;
+    subscriptionId: number;
+    paymentId: number;
+    amount: number;
+    lightningAddress?: string;
+};
+
+export type MembershipRefundFeeEstimationResponse = {
+    fee: number;
+    maxRefundableAmount: number;
+};
+
+// Estimated lightning network fee for a refund of `amount` sats, optionally to a
+// specific destination address. Same shape as the events refund estimation.
+export const getMembershipSubscriptionRefundFeeEstimation = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: MembershipRefundFeeEstimationArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname =
+        `/secure/communities/${args.communityId}/subscriptions/${args.subscriptionId}/payments/${args.paymentId}/refunds/fee-estimation`;
+    url.searchParams.set("amount", String(args.amount));
+    if (args.lightningAddress) {
+        url.searchParams.set("lightning_address", args.lightningAddress);
+    }
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<MembershipRefundFeeEstimationResponse>(response);
 };
 
 export type GetUserCommunityMembershipPaymentsArgs = {

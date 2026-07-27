@@ -391,6 +391,7 @@ import {
     changeCommunityCurrency,
     createCommunity,
     createCommunityFromCalendar,
+    createMembershipSubscriptionRefund,
     createCommunityMembershipTier,
     createCommunityNewsletter,
     declineCommunityAdminInvitation,
@@ -412,6 +413,7 @@ import {
     getCommunityUserPermission,
     getMembershipSubscription,
     getMembershipSubscriptionPayments,
+    getMembershipSubscriptionRefundFeeEstimation,
     getPublicCommunityAdmins,
     getUserCommunityMembershipPayments,
     getUserCommunityMembershipRequests,
@@ -1043,6 +1045,12 @@ export class Client {
     >;
     getMembershipSubscriptionPayments: ReturnType<
         typeof getMembershipSubscriptionPayments
+    >;
+    createMembershipSubscriptionRefund: ReturnType<
+        typeof createMembershipSubscriptionRefund
+    >;
+    getMembershipSubscriptionRefundFeeEstimation: ReturnType<
+        typeof getMembershipSubscriptionRefundFeeEstimation
     >;
     getUserCommunityMembershipPayments: ReturnType<
         typeof getUserCommunityMembershipPayments
@@ -1811,6 +1819,14 @@ export class Client {
             getJwt,
         );
         this.getMembershipSubscriptionPayments = getMembershipSubscriptionPayments(
+            rest_api_url,
+            getJwt,
+        );
+        this.createMembershipSubscriptionRefund = createMembershipSubscriptionRefund(
+            rest_api_url,
+            getJwt,
+        );
+        this.getMembershipSubscriptionRefundFeeEstimation = getMembershipSubscriptionRefundFeeEstimation(
             rest_api_url,
             getJwt,
         );
