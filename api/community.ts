@@ -747,6 +747,13 @@ async (args: PreviewCommunityNewsletterArgs) => {
 export type SendCommunityNewsletterArgs = {
     communityId: number;
     newsletterId: number;
+    /**
+     * Membership tier IDs to send to; 0 selects prospects (members with no
+     * tier). Omitted entirely means "all members with an assigned tier,
+     * excluding prospects" — the server-side default. An empty array is
+     * rejected by the server with 400.
+     */
+    audience?: number[];
 };
 
 export const sendCommunityNewsletter = (
@@ -764,15 +771,64 @@ async (args: SendCommunityNewsletterArgs) => {
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
+    // Only attach a body when an audience is supplied: existing callers send
+    // no body at all and the server treats that as "all members with a tier".
+    let body: string | undefined;
+    if (args.audience !== undefined) {
+        headers.set("Content-Type", "application/json");
+        body = JSON.stringify({ audience: args.audience });
+    }
+
     const response = await safeFetch(url, {
         method: "POST",
         headers,
+        body,
     });
     if (response instanceof Error) {
         return response;
     }
     return handleResponse<{
         status: string;
+    }>(response);
+};
+
+export type GetCommunityNewsletterAudienceSizeArgs = {
+    communityId: number;
+    /**
+     * Membership tier IDs to count; 0 selects prospects. Serialized as a
+     * repeated `tierId` query param. Omitted or empty means "all members with
+     * an assigned tier, excluding prospects" — matching the send default.
+     */
+    tierIds?: number[];
+};
+
+export const getCommunityNewsletterAudienceSize = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: GetCommunityNewsletterAudienceSizeArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/newsletters/audience-size`;
+    for (const tierId of args.tierIds ?? []) {
+        url.searchParams.append("tierId", String(tierId));
+    }
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<{
+        audienceSize: number;
     }>(response);
 };
 

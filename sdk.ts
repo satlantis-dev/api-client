@@ -409,6 +409,7 @@ import {
     getCommunityMembershipTiers,
     getCommunityMemberTransactions,
     getCommunityNewsletter,
+    getCommunityNewsletterAudienceSize,
     getCommunityNewsletters,
     getCommunityUserPermission,
     getMembershipSubscription,
@@ -997,6 +998,9 @@ export class Client {
     getCommunityNewsletter: ReturnType<typeof getCommunityNewsletter>;
     getCommunityNewsletters: ReturnType<
         typeof getCommunityNewsletters
+    >;
+    getCommunityNewsletterAudienceSize: ReturnType<
+        typeof getCommunityNewsletterAudienceSize
     >;
     previewCommunityNewsletter: ReturnType<
         typeof previewCommunityNewsletter
@@ -1753,6 +1757,10 @@ export class Client {
             getJwt,
         );
         this.getCommunityNewsletters = getCommunityNewsletters(
+            rest_api_url,
+            getJwt,
+        );
+        this.getCommunityNewsletterAudienceSize = getCommunityNewsletterAudienceSize(
             rest_api_url,
             getJwt,
         );
