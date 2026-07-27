@@ -330,6 +330,12 @@ export type CommunityMonthlyStats = {
     btcEarnings: number;
     activeSubscriptions: number;
     terminatedSubscriptions: number;
+    // Revenue-weighted churn for the month as a fraction (0..1):
+    // terminatedRevenue / (activeRevenue + terminatedRevenue), where each
+    // subscription contributes its recurring plan value (monthly amount, or
+    // 1/12th of an annual one). 0 when there's no plan revenue to attribute.
+    // Absent on deploys predating SAT-5471.
+    churnRate?: number;
 };
 
 export type CommunityFinancialSummary = {
