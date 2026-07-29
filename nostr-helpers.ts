@@ -1,9 +1,9 @@
 import {
     getTags,
+    type NostrEvent,
     NostrKind,
     prepareNostrEvent,
     PublicKey,
-    type NostrEvent,
     type Signer,
     SingleRelayConnection,
     type Tag,
@@ -11,7 +11,118 @@ import {
 import type { Client } from "./sdk.ts";
 
 const Kind_PlaceFollowList = 10016;
+const FOLLOWING_LIST_LIMIT = 1_000_000;
 let replaceableSubCounter = 0;
+const followingMutationLocks = new WeakMap<Client, Promise<void>>();
+
+async function withFollowingMutationLock<T>(
+    apiClient: Client,
+    operation: () => Promise<T | Error>,
+): Promise<T | Error> {
+    const previousOperation = followingMutationLocks.get(apiClient) ?? Promise.resolve();
+    let releaseCurrentOperation!: () => void;
+    const currentOperation = new Promise<void>((resolve) => {
+        releaseCurrentOperation = resolve;
+    });
+    const lock = previousOperation.catch(() => undefined).then(() => currentOperation);
+    followingMutationLocks.set(apiClient, lock);
+
+    await previousOperation.catch(() => undefined);
+    try {
+        return await operation();
+    } catch (cause) {
+        return cause instanceof Error
+            ? cause
+            : new Error("Unexpected error while updating the following list", { cause });
+    } finally {
+        releaseCurrentOperation();
+        if (followingMutationLocks.get(apiClient) === lock) {
+            followingMutationLocks.delete(apiClient);
+        }
+    }
+}
+
+async function getFollowingBaseline(apiClient: Client, signer: Signer): Promise<Set<string> | Error> {
+    // The PUT endpoint replaces the complete contact list. Build that list from
+    // the backend source of truth and fail closed if it cannot prove completeness.
+    const npub = signer.publicKey.bech32();
+    const [followings, account] = await Promise.all([
+        apiClient.getAccountFollowings({
+            npub,
+            page: 0,
+            limit: FOLLOWING_LIST_LIMIT,
+        }),
+        apiClient.getAccount({ npub }),
+    ]);
+
+    if (followings instanceof Error) {
+        return new Error("Could not load the current following list from the backend", {
+            cause: followings,
+        });
+    }
+    if (account instanceof Error) {
+        return new Error("Could not verify the current following count with the backend", {
+            cause: account,
+        });
+    }
+
+    const baseline = new Set<string>();
+    for (const following of followings) {
+        const pubkey = PublicKey.FromHex(following.pubKey);
+        if (pubkey instanceof Error) {
+            return new Error(`The backend returned an invalid following pubkey: ${following.pubKey}`, {
+                cause: pubkey,
+            });
+        }
+        baseline.add(pubkey.hex);
+    }
+
+    if (
+        account.followingCount != undefined &&
+        baseline.size < account.followingCount
+    ) {
+        return new Error(
+            `Refusing to update an incomplete following list: loaded ${baseline.size} of ${account.followingCount}`,
+        );
+    }
+
+    return baseline;
+}
+
+async function updateFollowingPubkeys(
+    apiClient: Client,
+    mutate: (followings: Set<string>) => boolean,
+) {
+    return withFollowingMutationLock(apiClient, async () => {
+        const signer = await apiClient.getNostrSigner();
+        if (signer instanceof Error) {
+            return signer;
+        }
+
+        const followings = await getFollowingBaseline(apiClient, signer);
+        if (followings instanceof Error) {
+            return followings;
+        }
+
+        const changed = mutate(followings);
+        if (!changed) {
+            return true;
+        }
+
+        const tags: Tag[] = Array.from(followings, (pubkey) => ["p", pubkey]);
+        const event = await prepareNostrEvent(signer, {
+            kind: NostrKind.CONTACTS,
+            content: "",
+            tags,
+        });
+        if (event instanceof Error) {
+            return event;
+        }
+
+        // @ts-ignore: use private
+        return await apiClient.updateAccountFollowingList({ event });
+    });
+}
 
 function replaceableSubId(pubkey: PublicKey, kind: NostrKind) {
     replaceableSubCounter = (replaceableSubCounter + 1) % 46_656;
@@ -82,101 +193,34 @@ export async function getContactList(satlantis_relay: string, pubKey: string | P
 }
 
 export async function followPubkeys(
-    satlantis_relay_url: string,
+    _satlantis_relay_url: string,
     toFollow: PublicKey[],
     apiClient: Client,
 ) {
-    const me = await apiClient.getNostrSigner();
-    if (me instanceof Error) {
-        return me;
-    }
-
-    const followEvent = await getContactList(satlantis_relay_url, me.publicKey);
-    if (followEvent instanceof Error) {
-        return followEvent;
-    }
-
-    const follows = new Set<string>();
-    if (followEvent) {
-        for (const p of getTags(followEvent).p) {
-            follows.add(p);
+    return updateFollowingPubkeys(apiClient, (followings) => {
+        let changed = false;
+        for (const pubkey of toFollow) {
+            if (!followings.has(pubkey.hex)) {
+                followings.add(pubkey.hex);
+                changed = true;
+            }
         }
-    }
-    for (const pub of toFollow) {
-        follows.add(pub.hex);
-    }
-
-    const tags: Tag[] = [];
-    for (const p of follows) {
-        tags.push(["p", p]);
-    }
-
-    const new_event = await prepareNostrEvent(me, {
-        kind: NostrKind.CONTACTS,
-        content: "",
-        tags,
+        return changed;
     });
-    if (new_event instanceof Error) {
-        return new_event;
-    }
-
-    // @ts-ignore: use private
-    const ok = await apiClient.updateAccountFollowingList({ event: new_event });
-    if (ok instanceof Error) {
-        return ok;
-    }
-
-    return ok;
 }
 
 export async function unfollowPubkeys(
-    satlantis_relay_url: string,
+    _satlantis_relay_url: string,
     toUnfollow: PublicKey[],
     apiClient: Client,
 ) {
-    const me = await apiClient.getNostrSigner();
-    if (me instanceof Error) {
-        return me;
-    }
-
-    const followEvent = await getContactList(satlantis_relay_url, me.publicKey);
-    if (followEvent instanceof Error) {
-        return followEvent;
-    }
-
-    const follows = new Set<string>();
-    if (followEvent) {
-        for (const p of getTags(followEvent).p) {
-            follows.add(p);
+    return updateFollowingPubkeys(apiClient, (followings) => {
+        let changed = false;
+        for (const pubkey of toUnfollow) {
+            changed = followings.delete(pubkey.hex) || changed;
         }
-    }
-
-    // Remove all pubkeys that need to be unfollowed
-    for (const pub of toUnfollow) {
-        follows.delete(pub.hex);
-    }
-
-    const tags: Tag[] = [];
-    for (const p of follows) {
-        tags.push(["p", p]);
-    }
-
-    const new_event = await prepareNostrEvent(me, {
-        kind: NostrKind.CONTACTS,
-        content: "",
-        tags,
+        return changed;
     });
-    if (new_event instanceof Error) {
-        return new_event;
-    }
-
-    // @ts-ignore: use private
-    const ok = await apiClient.updateAccountFollowingList({ event: new_event });
-    if (ok instanceof Error) {
-        return ok;
-    }
-
-    return ok;
 }
 
 export async function isUserAFollowingUserB(satlantis_relay_url: string, a: string, b: string) {

@@ -2731,34 +2731,7 @@ export class Client {
     };
 
     unfollowPubkey = async (pubkeyToUnfollow: PublicKey) => {
-        const signer = await this.getNostrSigner();
-        if (signer instanceof Error) {
-            return signer;
-        }
-        {
-            const followingKeys = await this.getMyFollowingPubkeys();
-            if (followingKeys instanceof Error) {
-                return followingKeys;
-            }
-
-            // remove pubkey in tags
-            followingKeys.delete(pubkeyToUnfollow.hex);
-            const tags: Tag[] = Array.from(followingKeys).map((p) => ["p", p]);
-            const new_event = await prepareNostrEvent(signer, {
-                kind: NostrKind.CONTACTS,
-                content: "",
-                tags,
-            });
-            if (new_event instanceof Error) {
-                return new_event;
-            }
-
-            const ok = await this.updateAccountFollowingList({ event: new_event });
-            if (ok instanceof Error) {
-                return ok;
-            }
-            return ok;
-        }
+        return this.unfollowPubkeys([pubkeyToUnfollow]);
     };
 
     submitAmbassadorApplication = async (args: {
