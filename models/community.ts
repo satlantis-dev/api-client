@@ -349,6 +349,25 @@ export type CommunityFinancialSummary = {
     monthlyStats?: CommunityMonthlyStats[] | null;
 };
 
+// The community's lightning wallet, as returned by
+// GET /secure/communities/{communityId}/wallet. `balance` is in sats and is
+// the spendable balance refunds are drawn from — distinct from
+// CommunityFinancialSummary.totalBTCEarnings, which is cumulative earnings.
+// The endpoint is owner-gated (community owner or Satlantis platform admin),
+// so a community admin who is not the owner gets a 403 here even though the
+// refund endpoints accept them.
+export type CommunityWalletInfo = {
+    id: number;
+    communityId: number;
+    communityName: string;
+    communityLogo: string;
+    balance: number;
+    balanceUsd?: number | null;
+    lightningAddress?: string | null;
+    currency: string;
+    createdAt: string;
+};
+
 // Payment annotated with its subscription's tier name, as returned by
 // GET /secure/user/communities/{communityId}/payments. tierName is "" when
 // the backend can't resolve the tier.

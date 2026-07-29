@@ -391,9 +391,9 @@ import {
     changeCommunityCurrency,
     createCommunity,
     createCommunityFromCalendar,
-    createMembershipSubscriptionRefund,
     createCommunityMembershipTier,
     createCommunityNewsletter,
+    createMembershipSubscriptionRefund,
     declineCommunityAdminInvitation,
     deleteCommunity,
     deleteCommunityMembershipTier,
@@ -412,6 +412,7 @@ import {
     getCommunityNewsletterAudienceSize,
     getCommunityNewsletters,
     getCommunityUserPermission,
+    getCommunityWallet,
     getMembershipSubscription,
     getMembershipSubscriptionPayments,
     getMembershipSubscriptionRefundFeeEstimation,
@@ -1059,6 +1060,7 @@ export class Client {
     getUserCommunityMembershipPayments: ReturnType<
         typeof getUserCommunityMembershipPayments
     >;
+    getCommunityWallet: ReturnType<typeof getCommunityWallet>;
     getCommunityFinancialSummary: ReturnType<
         typeof getCommunityFinancialSummary
     >;
@@ -1842,6 +1844,7 @@ export class Client {
             rest_api_url,
             getJwt,
         );
+        this.getCommunityWallet = getCommunityWallet(rest_api_url, getJwt);
         this.getCommunityFinancialSummary = getCommunityFinancialSummary(
             rest_api_url,
             getJwt,

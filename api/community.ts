@@ -22,6 +22,7 @@ import type {
     CommunityMembershipTier,
     CommunityNewsletter,
     CommunityUserPermission,
+    CommunityWalletInfo,
     UserCommunityMembershipPaymentsResponse,
 } from "../models/community.ts";
 import type { OrderCurrency } from "../models/ticketing.ts";
@@ -1711,6 +1712,39 @@ async (args: GetCommunityMemberTransactionsArgs) => {
         return response;
     }
     return handleResponse<CommunityFinancialTransactionsResponse>(response);
+};
+
+export type GetCommunityWalletArgs = {
+    communityId: number;
+};
+
+// The community's lightning wallet, creating one if it doesn't exist yet.
+// Owner-gated: a community admin who is not the owner gets a 403, so callers
+// that only need the balance as a convenience should tolerate failure rather
+// than block on it.
+export const getCommunityWallet = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: GetCommunityWalletArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/wallet`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityWalletInfo>(response);
 };
 
 export type GetCommunityFinancialSummaryArgs = {
