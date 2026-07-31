@@ -6,6 +6,7 @@ import type { PaymentMethod, PaymentStatus } from "../models/order.ts";
 import type {
     AccountCommunityRole,
     Community,
+    CommunityDTO,
     CommunityFAQ,
     CommunityFinancialSummary,
     CommunityFinancialTransactionsResponse,
@@ -1868,8 +1869,22 @@ async (args: DeleteCommunityArgs) => {
 /////////////////////////// Community discovery ///////////////////////////
 
 export type SearchCommunitiesArgs = {
+    /** Fuzzy term. The backend 400s below 3 characters. */
     search?: string;
+    /** Exact Whop ID. The backend 400s below 15 characters. */
     whopId?: string;
+    page?: number;
+    /** Defaults to 10 server-side. */
+    limit?: number;
+};
+
+/** Returned unconditionally, including for unpaged `whopId` lookups. */
+export type SearchCommunitiesResponse = {
+    communities: CommunityDTO[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
 };
 
 export const searchCommunities = (
@@ -1885,6 +1900,12 @@ async (args: SearchCommunitiesArgs) => {
     if (args.whopId) {
         url.searchParams.set("whopId", args.whopId);
     }
+    if (args.page != undefined) {
+        url.searchParams.set("page", String(args.page));
+    }
+    if (args.limit != undefined) {
+        url.searchParams.set("limit", String(args.limit));
+    }
 
     const headers = new Headers();
     const jwtToken = getJwt();
@@ -1899,7 +1920,7 @@ async (args: SearchCommunitiesArgs) => {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<Community[]>(response);
+    return handleResponse<SearchCommunitiesResponse>(response);
 };
 
 /////////////////////////// Membership tiers (read) ///////////////////////////

@@ -35,6 +35,24 @@ export type Community = {
     paymentMethods?: PaymentMethod[];
 };
 
+/**
+ * The trimmed community shape the discovery endpoints return. Strictly narrower
+ * than `Community` — every field absent here is `undefined` at runtime.
+ */
+export type CommunityDTO = {
+    id: number;
+    accountId: number;
+    name: string;
+    bio?: string;
+    description?: string;
+    banner?: string;
+    logo?: string;
+    memberCount: number | null;
+    calendars?: Calendar[];
+    whopId?: string;
+    createdAt: string;
+};
+
 export type CommunityTheme = {
     id: number;
     name: string;
