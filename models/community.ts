@@ -26,6 +26,10 @@ export type Community = {
     sampleMembers: SearchAccountDTO[]; // a sample top-N subset (ranked by follower count)
     logo?: string;
     whopId?: string;
+    // Curated by Satlantis staff via mark/unmarkCommunityAsFeatured; drives the
+    // Featured Communities carousel. Present on GET /communities/{id} (the
+    // response embeds the full model) but absent from the discovery DTO below.
+    featured?: boolean;
     // Community-level currency (USD default). Source of truth for all paid tier pricing;
     // tiers no longer store their own currency. Changed via changeCommunityCurrency.
     currency?: OrderCurrency | null;

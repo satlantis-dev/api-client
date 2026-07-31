@@ -429,6 +429,7 @@ import {
     listCommunityMembersAndProspects,
     listCommunityMembersMini,
     listCommunityProspects,
+    markCommunityAsFeatured,
     modifyActiveMembershipSubscription,
     previewCommunityNewsletter,
     rejectCommunityMembershipRequest,
@@ -441,6 +442,7 @@ import {
     startMembershipSubscriptionLightningInvoice,
     submitCommunityMembershipRequest,
     unlinkCalendarFromCommunity,
+    unmarkCommunityAsFeatured,
     updateCommunity,
     updateCommunityGalleryImageRank,
     updateCommunityMembershipTier,
@@ -981,6 +983,8 @@ export class Client {
     removeCommunityAdmins: ReturnType<typeof removeCommunityAdmins>;
     linkCalendarToCommunity: ReturnType<typeof linkCalendarToCommunity>;
     unlinkCalendarFromCommunity: ReturnType<typeof unlinkCalendarFromCommunity>;
+    markCommunityAsFeatured: ReturnType<typeof markCommunityAsFeatured>;
+    unmarkCommunityAsFeatured: ReturnType<typeof unmarkCommunityAsFeatured>;
     addCommunityGalleryImage: ReturnType<typeof addCommunityGalleryImage>;
     updateCommunityGalleryImageRank: ReturnType<
         typeof updateCommunityGalleryImageRank
@@ -1723,6 +1727,14 @@ export class Client {
             getJwt,
         );
         this.unlinkCalendarFromCommunity = unlinkCalendarFromCommunity(
+            rest_api_url,
+            getJwt,
+        );
+        this.markCommunityAsFeatured = markCommunityAsFeatured(
+            rest_api_url,
+            getJwt,
+        );
+        this.unmarkCommunityAsFeatured = unmarkCommunityAsFeatured(
             rest_api_url,
             getJwt,
         );

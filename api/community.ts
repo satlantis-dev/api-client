@@ -428,6 +428,66 @@ async (args: UnlinkCalendarFromCommunityArgs) => {
     return handleResponse<string>(response);
 };
 
+export type MarkCommunityAsFeaturedArgs = {
+    communityId: number;
+};
+
+// Satlantis-staff only (the backend gates on account.isAdmin, not on community
+// admin). Responds 204 with no body, so handleResponse yields {}.
+export const markCommunityAsFeatured = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: MarkCommunityAsFeaturedArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/mark-featured`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse(response);
+};
+
+export type UnmarkCommunityAsFeaturedArgs = {
+    communityId: number;
+};
+
+export const unmarkCommunityAsFeatured = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: UnmarkCommunityAsFeaturedArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/unmark-featured`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse(response);
+};
+
 export type RemoveCommunityAdminsArgs = {
     communityId: number;
     accountIds: number[];
