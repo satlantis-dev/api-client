@@ -1928,6 +1928,34 @@ async (args: DeleteCommunityArgs) => {
 
 /////////////////////////// Community discovery ///////////////////////////
 
+/**
+ * Communities flagged as featured. Public, capped at 20 server-side, and
+ * shuffled on every request — the order is not stable across calls.
+ */
+export const getFeaturedCommunities = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async () => {
+    const url = copyURL(urlArg);
+    url.pathname = `/communities/featured`;
+
+    const headers = new Headers();
+    const jwtToken = getJwt();
+    if (jwtToken != "") {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityDTO[]>(response);
+};
+
 export type SearchCommunitiesArgs = {
     /** Fuzzy term. The backend 400s below 3 characters. */
     search?: string;
