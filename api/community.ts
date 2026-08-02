@@ -1958,6 +1958,34 @@ async () => {
 };
 
 /**
+ * The most recently created communities. Public, ordered `createdAt` descending
+ * and capped at 20 server-side. Communities with no members are included.
+ */
+export const getNewestCommunities = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async () => {
+    const url = copyURL(urlArg);
+    url.pathname = `/communities/newest`;
+
+    const headers = new Headers();
+    const jwtToken = getJwt();
+    if (jwtToken != "") {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityDTO[]>(response);
+};
+
+/**
  * Every community the authenticated account owns, is an accepted admin of, or
  * holds a membership tier in — each annotated with its highest role. The server
  * deduplicates and sorts by role (owner, admin, member) then newest first, so

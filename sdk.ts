@@ -417,6 +417,7 @@ import {
     getMembershipSubscription,
     getMembershipSubscriptionPayments,
     getMembershipSubscriptionRefundFeeEstimation,
+    getNewestCommunities,
     getPublicCommunityAdmins,
     getUserCommunities,
     getUserCommunityMembershipPayments,
@@ -960,6 +961,7 @@ export class Client {
     deleteCommunity: ReturnType<typeof deleteCommunity>;
     searchCommunities: ReturnType<typeof searchCommunities>;
     getFeaturedCommunities: ReturnType<typeof getFeaturedCommunities>;
+    getNewestCommunities: ReturnType<typeof getNewestCommunities>;
     getUserCommunities: ReturnType<typeof getUserCommunities>;
     createCommunityFromCalendar: ReturnType<
         typeof createCommunityFromCalendar
@@ -1689,6 +1691,7 @@ export class Client {
         this.deleteCommunity = deleteCommunity(rest_api_url, getJwt);
         this.searchCommunities = searchCommunities(rest_api_url, getJwt);
         this.getFeaturedCommunities = getFeaturedCommunities(rest_api_url, getJwt);
+        this.getNewestCommunities = getNewestCommunities(rest_api_url, getJwt);
         this.getUserCommunities = getUserCommunities(rest_api_url, getJwt);
         this.createCommunityFromCalendar = createCommunityFromCalendar(
             rest_api_url,
