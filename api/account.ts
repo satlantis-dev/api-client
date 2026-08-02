@@ -3,7 +3,7 @@ import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { Account, AccountDTO, FollowingAccountDTO } from "../models/account.ts";
 import type { Activity } from "../models/activity.ts";
 import { type CalendarEvent, CalendarEventPeriod, type func_GetJwt, type SearchAccountDTO } from "../sdk.ts";
-import { type AnswerType, RsvpStatus } from "./events.ts";
+import { type AnswerType, type RsvpStatus } from "./events.ts";
 
 export const getAccount =
     (urlArg: URL, getJwt: func_GetJwt) => async (args: { npub?: string; username?: string }) => {
@@ -200,10 +200,21 @@ export const verifyEmail = (urlArg: URL) => async (args: { token: string }) => {
     );
 };
 
+// The events endpoints accept `rsvp` as a comma-separated list, and treat a list
+// containing "accepted" as also matching events the account organizes or co-hosts.
+export type RsvpStatusFilter = RsvpStatus | RsvpStatus[];
+
+const serializeRsvpStatuses = (rsvp: RsvpStatusFilter): string | undefined => {
+    if (!Array.isArray(rsvp)) {
+        return rsvp.toString();
+    }
+    return rsvp.length > 0 ? rsvp.join(",") : undefined;
+};
+
 export type GetAccountCalendarEventsArgs = {
     npub: string;
     period?: CalendarEventPeriod;
-    rsvp?: RsvpStatus;
+    rsvp?: RsvpStatusFilter;
     isOrganizer?: boolean;
     page?: number;
     limit?: number;
@@ -220,8 +231,10 @@ export const getAccountCalendarEvents = (urlArg: URL) => async (args: GetAccount
     }
 
     if (args.rsvp) {
-        const rsvp = args.rsvp ?? RsvpStatus.Accepted;
-        url.searchParams.set("rsvp", rsvp.toString());
+        const rsvp = serializeRsvpStatuses(args.rsvp);
+        if (rsvp) {
+            url.searchParams.set("rsvp", rsvp);
+        }
     }
 
     if (args.page && args.limit) {
@@ -280,7 +293,7 @@ export const getAllUserEvents = (urlArg: URL, getJwt?: () => string) =>
 async (args: {
     period?: CalendarEventPeriod;
     isOrganizer?: boolean;
-    rsvp?: RsvpStatus;
+    rsvp?: RsvpStatusFilter;
     page?: number;
     limit?: number;
 }) => {
@@ -312,8 +325,10 @@ async (args: {
     if (args.rsvp) {
         // if args.isOrganizer is false, or is not present (falsy value for condition check)
         // set rsvp status parameter
-        const rsvp = args.rsvp ?? RsvpStatus.Accepted;
-        url.searchParams.set("rsvp", rsvp.toString());
+        const rsvp = serializeRsvpStatuses(args.rsvp);
+        if (rsvp) {
+            url.searchParams.set("rsvp", rsvp);
+        }
     }
 
     const response = await safeFetch(url, { headers });
