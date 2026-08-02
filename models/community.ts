@@ -57,6 +57,17 @@ export type CommunityDTO = {
     createdAt: string;
 };
 
+/** The querying account's relationship to a community, highest first. */
+export type CommunityRole = "owner" | "admin" | "member";
+
+/**
+ * A `CommunityDTO` annotated with the querying account's role. Returned only by
+ * the authenticated `/secure/user/communities` endpoint.
+ */
+export type UserCommunity = CommunityDTO & {
+    role: CommunityRole;
+};
+
 export type CommunityTheme = {
     id: number;
     name: string;

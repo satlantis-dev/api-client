@@ -24,6 +24,7 @@ import type {
     CommunityNewsletter,
     CommunityUserPermission,
     CommunityWalletInfo,
+    UserCommunity,
     UserCommunityMembershipPaymentsResponse,
 } from "../models/community.ts";
 import type { OrderCurrency } from "../models/ticketing.ts";
@@ -1954,6 +1955,38 @@ async () => {
         return response;
     }
     return handleResponse<CommunityDTO[]>(response);
+};
+
+/**
+ * Every community the authenticated account owns, is an accepted admin of, or
+ * holds a membership tier in — each annotated with its highest role. The server
+ * deduplicates and sorts by role (owner, admin, member) then newest first, so
+ * the response order is the render order. Not paginated; `[]` when there are
+ * none.
+ */
+export const getUserCommunities = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async () => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/user/communities`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<UserCommunity[]>(response);
 };
 
 export type SearchCommunitiesArgs = {
