@@ -1344,6 +1344,12 @@ export interface EventTicketPurchaseResponse {
     stripePublishableKey?: string;
     stripeClientSecret?: string;
     stripeAccountId?: string;
+    /**
+     * Set only for PayWay payments. The key is **absent** for Stripe and
+     * Lightning — it is never `"stripe"` — so branch on `=== "payway"` and
+     * never on `!== "stripe"`.
+     */
+    paymentProvider?: "payway";
     couponCode?: string | null;
     couponDiscountAmount?: number | null;
     tickets?: Array<{

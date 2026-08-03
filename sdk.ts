@@ -375,6 +375,7 @@ import {
     linkStripeAccountToEvent,
     setDefaultStripeAccount,
 } from "./api/stripe.ts";
+import { paywayFinalize, paywayStep1, paywayStep3, paywayVoidOrder } from "./api/payway.ts";
 import {
     connectCommunityStripeAccount,
     getCommunityStripeStatus,
@@ -928,6 +929,12 @@ export class Client {
     getAllStripeAccounts: ReturnType<typeof getAllStripeAccounts>;
     setDefaultStripeAccount: ReturnType<typeof setDefaultStripeAccount>;
     linkStripeAccountToEvent: ReturnType<typeof linkStripeAccountToEvent>;
+
+    // PayWay
+    paywayStep1: ReturnType<typeof paywayStep1>;
+    paywayStep3: ReturnType<typeof paywayStep3>;
+    paywayFinalize: ReturnType<typeof paywayFinalize>;
+    paywayVoidOrder: ReturnType<typeof paywayVoidOrder>;
 
     // Community Stripe
     getCommunityStripeStatus: ReturnType<typeof getCommunityStripeStatus>;
@@ -1674,6 +1681,12 @@ export class Client {
         this.getAllStripeAccounts = getAllStripeAccounts(rest_api_url, getJwt);
         this.setDefaultStripeAccount = setDefaultStripeAccount(rest_api_url, getJwt);
         this.linkStripeAccountToEvent = linkStripeAccountToEvent(rest_api_url, getJwt);
+
+        // PayWay — step1/step3/finalize are public; the order code is the capability.
+        this.paywayStep1 = paywayStep1(rest_api_url);
+        this.paywayStep3 = paywayStep3(rest_api_url);
+        this.paywayFinalize = paywayFinalize(rest_api_url);
+        this.paywayVoidOrder = paywayVoidOrder(rest_api_url, getJwt);
 
         // Community Stripe
         this.getCommunityStripeStatus = getCommunityStripeStatus(rest_api_url, getJwt);
