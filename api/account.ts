@@ -296,6 +296,7 @@ async (args: {
     rsvp?: RsvpStatusFilter;
     page?: number;
     limit?: number;
+    excludeCalendarId?: number;
 }) => {
     const url = copyURL(urlArg);
     url.pathname = `/secure/user/events`;
@@ -329,6 +330,12 @@ async (args: {
         if (rsvp) {
             url.searchParams.set("rsvp", rsvp);
         }
+    }
+
+    // Filters out events already associated with this calendar, so the "submit event"
+    // flow doesn't offer events that are already on the calendar.
+    if (args.excludeCalendarId !== undefined) {
+        url.searchParams.set("excludeCalendarId", args.excludeCalendarId.toString());
     }
 
     const response = await safeFetch(url, { headers });
