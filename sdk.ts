@@ -10,6 +10,7 @@ import {
     type Signer,
     SingleRelayConnection,
     type Tag,
+    verifyEvent,
 } from "@blowater/nostr-sdk";
 
 import {
@@ -115,7 +116,7 @@ import {
     updateAccountFollowingList,
     updateAdditionalPictures,
 } from "./api/secure/account.ts";
-import { getSystemBanners, getSystemVersion } from "./api/system.ts";
+import { getCommunityBanners, getSystemBanners, getSystemVersion } from "./api/system.ts";
 import { deletePlaceGalleryImage, postPlaceGalleryImage, updatePlace } from "./api/secure/place.ts";
 import { deleteNote, postNote, postReaction, recordNotesAsSeen } from "./api/secure/note.ts";
 import { getNotifications } from "./api/secure/notification.ts";
@@ -457,6 +458,12 @@ import {
 export type func_GetNostrSigner = () => Promise<(Signer & Encrypter) | Error>;
 export type func_GetJwt = () => string;
 
+export type RelayKind0Metadata = {
+    relayUrl: string;
+    event: NostrEvent<NostrKind.META_DATA>;
+    metadata: Kind0MetaData;
+};
+
 export class Client {
     // Caches
     private me: UserResolver | undefined = undefined;
@@ -682,6 +689,7 @@ export class Client {
     getAccountActivities: ReturnType<typeof getAccountActivities>;
     getUserActivities: ReturnType<typeof getUserActivities>;
     updateAdditionalPictures: ReturnType<typeof updateAdditionalPictures>;
+    getCommunityBanners: ReturnType<typeof getCommunityBanners>;
     getSystemBanners: ReturnType<typeof getSystemBanners>;
     getSystemVersion: ReturnType<typeof getSystemVersion>;
 
@@ -1394,6 +1402,7 @@ export class Client {
             rest_api_url,
             getJwt,
         );
+        this.getCommunityBanners = getCommunityBanners(rest_api_url);
         this.getSystemBanners = getSystemBanners(rest_api_url);
         this.getSystemVersion = getSystemVersion(rest_api_url);
 
@@ -3419,50 +3428,115 @@ export class Client {
         return response;
     };
 
+    fetchMetadataEventsFromRelay = async (args: {
+        relayUrl: string;
+        limit: number;
+        since: Date;
+        pubkey: PublicKey;
+        timeoutMs?: number;
+    }): Promise<RelayKind0Metadata[] | Error> => {
+        const metadataEvents: RelayKind0Metadata[] = [];
+
+        // Establish a connection to the relay
+        const relay = SingleRelayConnection.New(args.relayUrl, { log: false });
+        if (relay instanceof Error) {
+            return relay;
+        }
+
+        let timeoutId: ReturnType<typeof setTimeout> | undefined;
+        try {
+            const fetchEvents = async (): Promise<Error | undefined> => {
+                // newSub also waits for a connecting WebSocket. Keep it inside the
+                // timeout so one stalled relay can never block the whole login.
+                const stream = await relay.newSub("fetchMetadata", {
+                    authors: [args.pubkey.hex],
+                    kinds: [0],
+                    limit: args.limit,
+                    since: Math.floor(args.since.valueOf() / 1000),
+                });
+
+                if (stream instanceof Error) {
+                    return stream;
+                }
+
+                // Process every returned event. Relays do not guarantee that the
+                // first event in a subscription is the latest replaceable event.
+                for await (const msg of stream.chan) {
+                    if (msg.type === "EOSE") {
+                        break;
+                    } else if (msg.type === "EVENT") {
+                        const event = msg.event;
+                        if (
+                            event.kind !== NostrKind.META_DATA ||
+                            event.pubkey !== args.pubkey.hex ||
+                            !(await verifyEvent(event))
+                        ) {
+                            continue;
+                        }
+
+                        try {
+                            const raw = JSON.parse(event.content) as Record<string, unknown>;
+                            const metadata = normalizeKind0MetaData(raw);
+                            metadataEvents.push({
+                                relayUrl: args.relayUrl,
+                                event: event as NostrEvent<NostrKind.META_DATA>,
+                                metadata,
+                            });
+                        } catch (error) {
+                            console.warn(`Invalid kind 0 metadata from ${args.relayUrl}`, error);
+                        }
+                    } else if (msg.type === "NOTICE") {
+                        console.warn(msg.note);
+                    }
+                }
+                return undefined;
+            };
+
+            if (args.timeoutMs && args.timeoutMs > 0) {
+                const timeoutPromise = new Promise<"timeout">((resolve) => {
+                    timeoutId = setTimeout(() => resolve("timeout"), args.timeoutMs);
+                });
+                const fetchResult = await Promise.race([fetchEvents(), timeoutPromise]);
+                if (fetchResult instanceof Error) {
+                    return fetchResult;
+                }
+            } else {
+                const fetchResult = await fetchEvents();
+                if (fetchResult instanceof Error) {
+                    return fetchResult;
+                }
+            }
+        } catch (error) {
+            return error instanceof Error
+                ? error
+                : new Error(`Could not read metadata from ${args.relayUrl}`);
+        } finally {
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+            }
+            try {
+                // Force close avoids waiting for a relay that is itself stuck while
+                // login continues with metadata from the other relays.
+                await relay.close(true);
+            } catch {
+                // Metadata relays are best-effort and must never block login.
+            }
+        }
+
+        return metadataEvents;
+    };
+
     fetchMetadataFromRelay = async (args: {
         relayUrl: string;
         limit: number;
         since: Date;
         pubkey: PublicKey;
     }): Promise<Kind0MetaData[] | Error> => {
-        const metadataList: Kind0MetaData[] = [];
-
-        // Establish a connection to the relay
-        const relay = SingleRelayConnection.New(args.relayUrl, { log: true });
-        if (relay instanceof Error) {
-            return relay;
+        const result = await this.fetchMetadataEventsFromRelay(args);
+        if (result instanceof Error) {
+            return result;
         }
-
-        // Open a subscription stream on the relay
-        const stream = await relay.newSub("fetchMetadata", {
-            authors: [args.pubkey.hex],
-            kinds: [0],
-            limit: args.limit,
-            since: Math.floor(args.since.valueOf() / 1000),
-        });
-
-        if (stream instanceof Error) {
-            await relay.close();
-            return stream;
-        }
-
-        // Process each message in the stream
-        for await (const msg of stream.chan) {
-            if (msg.type === "EOSE") {
-                break;
-            } else if (msg.type === "EVENT") {
-                const raw = JSON.parse(msg.event.content);
-                const metadata = normalizeKind0MetaData(raw);
-                metadataList.push(metadata);
-            } else if (msg.type === "NOTICE") {
-                console.warn(msg.note);
-            }
-        }
-
-        // Close the relay connection
-        await relay.close();
-
-        return metadataList;
+        return result.map(({ metadata }) => metadata);
     };
 
     postLocationGalleryImage = async (args: {

@@ -165,27 +165,56 @@ export function createNip46Session(options: Nip46Options): Nip46Session {
 
     let closed = false;
     let remoteSignerPubkey = "";
+    let resolveSetup!: () => void;
+    const setupDone = new Promise<void>((resolve) => {
+        resolveSetup = resolve;
+    });
+    let connectTimeoutId: ReturnType<typeof setTimeout> | undefined;
+    let rejectConnect: ((error: Error) => void) | undefined;
+    let closePromise: Promise<void> | undefined;
 
     const signerPromise = (async (): Promise<NostrAccountContext | Error> => {
-        const relayErrors = await pool.addRelayURLs(relays);
-        if (relayErrors && relayErrors.length === relays.length) {
-            return relayErrors[0];
-        }
+        const setupResult = await (async () => {
+            try {
+                // Register the subscription before connecting relays. ConnectionPool
+                // can then finish wiring it synchronously during addRelayURLs, which
+                // avoids a close/newSub race when the user switches login methods.
+                const subId = `nip46-${randomString(8)}`;
+                const stream = await pool.newSub(subId, {
+                    kinds: [NIP46_KIND],
+                    "#p": [localSigner.publicKey.hex],
+                    limit: 100,
+                });
+                if (stream instanceof Error) {
+                    return stream;
+                }
 
-        const subId = `nip46-${randomString(8)}`;
-        const stream = await pool.newSub(subId, {
-            kinds: [NIP46_KIND],
-            "#p": [localSigner.publicKey.hex],
-            limit: 100,
-        });
+                const relayErrors = await pool.addRelayURLs(relays);
+                if (relayErrors && relayErrors.length === relays.length) {
+                    return relayErrors[0];
+                }
 
-        if (stream instanceof Error) {
-            return stream;
+                return stream;
+            } catch (error) {
+                return error instanceof Error ? error : new Error("Failed to start NIP46 session");
+            } finally {
+                resolveSetup();
+            }
+        })();
+
+        if (setupResult instanceof Error) {
+            return setupResult;
         }
+        if (closed) {
+            return new Error("NIP46 session closed");
+        }
+        const stream = setupResult;
 
         const connectDeferred = new Promise<void>((resolve, reject) => {
+            rejectConnect = reject;
             const timeoutMs = options.connectTimeoutMs ?? 180_000;
-            const timeoutId = setTimeout(() => {
+            connectTimeoutId = setTimeout(() => {
+                rejectConnect = undefined;
                 reject(new Error("Timed out waiting for approval"));
             }, timeoutMs);
 
@@ -224,7 +253,11 @@ export function createNip46Session(options: Nip46Options): Nip46Session {
 
                     if (payload.result === secret && remoteSignerPubkey === "") {
                         remoteSignerPubkey = event.pubkey;
-                        clearTimeout(timeoutId);
+                        if (connectTimeoutId) {
+                            clearTimeout(connectTimeoutId);
+                            connectTimeoutId = undefined;
+                        }
+                        rejectConnect = undefined;
                         resolve();
                         continue;
                     }
@@ -249,14 +282,22 @@ export function createNip46Session(options: Nip46Options): Nip46Session {
                     pending.resolve(payload.result ?? "");
                 }
             })().catch((error) => {
-                clearTimeout(timeoutId);
+                if (connectTimeoutId) {
+                    clearTimeout(connectTimeoutId);
+                    connectTimeoutId = undefined;
+                }
+                rejectConnect = undefined;
                 reject(
                     error instanceof Error ? error : new Error("NIP46 stream failed"),
                 );
             });
         });
 
-        await connectDeferred;
+        try {
+            await connectDeferred;
+        } catch (error) {
+            return error instanceof Error ? error : new Error("NIP46 connection failed");
+        }
 
         const request = async (
             method: string,
@@ -353,7 +394,17 @@ export function createNip46Session(options: Nip46Options): Nip46Session {
         nostrConnectUri,
         signerPromise,
         close: async () => {
+            if (closePromise) {
+                return closePromise;
+            }
             closed = true;
+
+            if (connectTimeoutId) {
+                clearTimeout(connectTimeoutId);
+                connectTimeoutId = undefined;
+            }
+            rejectConnect?.(new Error("NIP46 session closed"));
+            rejectConnect = undefined;
 
             for (const pending of pendingRequests.values()) {
                 clearTimeout(pending.timeoutId);
@@ -361,7 +412,11 @@ export function createNip46Session(options: Nip46Options): Nip46Session {
             }
             pendingRequests.clear();
 
-            await pool.close();
+            closePromise = (async () => {
+                await setupDone;
+                await pool.close();
+            })();
+            return closePromise;
         },
     };
 }
