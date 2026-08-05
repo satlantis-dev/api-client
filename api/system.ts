@@ -1,6 +1,21 @@
 import { copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
-import type { SystemVersion } from "../models/system.ts";
+import type { CommunityBannerCatalog, SystemVersion } from "../models/system.ts";
+
+export const getCommunityBanners = (urlArg: URL) => async () => {
+    const url = copyURL(urlArg);
+    url.pathname = `/banners`;
+
+    const response = await safeFetch(url, {
+        method: "GET",
+    });
+
+    if (response instanceof Error) {
+        return response;
+    }
+
+    return handleResponse<CommunityBannerCatalog>(response);
+};
 
 export const getSystemBanners = (urlArg: URL) => async () => {
     const url = copyURL(urlArg);
