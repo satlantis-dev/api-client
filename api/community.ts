@@ -817,6 +817,12 @@ export type SendCommunityNewsletterArgs = {
      * rejected by the server with 400.
      */
     audience?: number[];
+    /**
+     * Additionally send to the community's active admins, deduplicated against
+     * the member audience. Purely additive — there is no encoding for "admins
+     * only", since an absent `audience` still means every tiered member.
+     */
+    includeAdmins?: boolean;
 };
 
 export const sendCommunityNewsletter = (
@@ -834,12 +840,16 @@ async (args: SendCommunityNewsletterArgs) => {
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
-    // Only attach a body when an audience is supplied: existing callers send
-    // no body at all and the server treats that as "all members with a tier".
+    // Only attach a body when a field is supplied: existing callers send none at
+    // all and the server reads that as "every tiered member, no admins". Each
+    // field is omitted independently so neither implies the other.
     let body: string | undefined;
-    if (args.audience !== undefined) {
+    if (args.audience !== undefined || args.includeAdmins !== undefined) {
         headers.set("Content-Type", "application/json");
-        body = JSON.stringify({ audience: args.audience });
+        body = JSON.stringify({
+            ...(args.audience !== undefined ? { audience: args.audience } : {}),
+            ...(args.includeAdmins !== undefined ? { includeAdmins: args.includeAdmins } : {}),
+        });
     }
 
     const response = await safeFetch(url, {
@@ -863,6 +873,11 @@ export type GetCommunityNewsletterAudienceSizeArgs = {
      * an assigned tier, excluding prospects" — matching the send default.
      */
     tierIds?: number[];
+    /**
+     * Additionally count the community's active admins, deduplicated against the
+     * member audience. Mirrors the send field, so the count matches what is sent.
+     */
+    includeAdmins?: boolean;
 };
 
 export const getCommunityNewsletterAudienceSize = (
@@ -878,6 +893,11 @@ async (args: GetCommunityNewsletterAudienceSizeArgs) => {
     url.pathname = `/secure/communities/${args.communityId}/newsletters/audience-size`;
     for (const tierId of args.tierIds ?? []) {
         url.searchParams.append("tierId", String(tierId));
+    }
+    // The server compares the raw string to "true", so a false flag is
+    // indistinguishable from an absent one — left off the URL rather than "false".
+    if (args.includeAdmins) {
+        url.searchParams.set("includeAdmins", "true");
     }
 
     const headers = new Headers();
