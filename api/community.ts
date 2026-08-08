@@ -1989,9 +1989,16 @@ async () => {
  * Every community the authenticated account owns, is an accepted admin of, or
  * holds a membership tier in — each annotated with its highest role. The server
  * deduplicates and sorts by role (owner, admin, member) then newest first, so
- * the response order is the render order. Not paginated; `[]` when there are
- * none.
+ * the response order is the render order.
  */
+export type GetUserCommunitiesResponse = {
+    communities: UserCommunity[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+};
+
 export const getUserCommunities = (
     urlArg: URL,
     getJwt: func_GetJwt,
@@ -2014,7 +2021,7 @@ async () => {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<UserCommunity[]>(response);
+    return handleResponse<GetUserCommunitiesResponse>(response);
 };
 
 export type SearchCommunitiesArgs = {
