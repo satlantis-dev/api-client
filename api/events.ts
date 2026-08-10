@@ -384,6 +384,38 @@ async (
     return handleResponse<Calendar[]>(response);
 };
 
+export interface GetLinkableCalendarsForEventArgs {
+    eventId: string | number;
+}
+
+/** Calendars the user can set as this event's official calendar: their own
+ *  calendars (including community-linked ones) merged with calendars already
+ *  linked to the event, deduped and sorted server-side. */
+export const getLinkableCalendarsForEvent = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    args: GetLinkableCalendarsForEventArgs,
+): Promise<Calendar[] | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/${args.eventId}/linkable-calendars`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    if (jwtToken !== "") {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+
+    if (response instanceof Error) {
+        return response;
+    }
+
+    return handleResponse<Calendar[]>(response);
+};
+
 export const getEventRsvps = (urlArg: URL, getJwt: func_GetJwt) =>
 async (
     args: GetEventRsvpsArgs,

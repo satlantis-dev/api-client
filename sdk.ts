@@ -304,6 +304,7 @@ import {
     getEventUserFinancialTimeline,
     getEventUserPermission,
     getFeaturedEvents,
+    getLinkableCalendarsForEvent,
     getNewestEvents,
     getPopularEvents,
     getPublicEventRsvps,
@@ -512,6 +513,7 @@ export class Client {
     // Calendar Events
     getEvents: ReturnType<typeof getEvents>;
     getEventCalendars: ReturnType<typeof getEventCalendars>;
+    getLinkableCalendarsForEvent: ReturnType<typeof getLinkableCalendarsForEvent>;
     getEventRsvps: ReturnType<typeof getEventRsvps>;
     getEventUserPermission: ReturnType<typeof getEventUserPermission>;
     getEventAttendees: ReturnType<typeof getEventAttendees>;
@@ -1143,6 +1145,7 @@ export class Client {
         // Event details
         this.getEvents = getEvents(rest_api_url, getJwt);
         this.getEventCalendars = getEventCalendars(rest_api_url);
+        this.getLinkableCalendarsForEvent = getLinkableCalendarsForEvent(rest_api_url, getJwt);
         this.getEventRsvps = getEventRsvps(rest_api_url, getJwt);
         this.getEventUserPermission = getEventUserPermission(rest_api_url, getJwt);
         this.getEventAttendees = getEventAttendees(rest_api_url, getJwt);
