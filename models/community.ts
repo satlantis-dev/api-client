@@ -279,9 +279,13 @@ export type CommunityMembershipPayment = {
     currency: OrderCurrency;
     cardLast4?: string;
     cardBrand?: string;
-    // Address supplied at purchase; absent when none, in which case refunds
-    // default to the member's Satlantis wallet.
-    lightningAddress?: string;
+    // Address used at purchase. For lightning payments the BE backfills this
+    // with the member's derived Satlantis wallet address ({username}@satlantis.io)
+    // whenever the buyer didn't supply an external one — it is rarely null in
+    // practice, and a @satlantis.io value here is NOT a signal to route a
+    // refund externally (it's the same wallet the free refund path already
+    // credits). Null for non-lightning payments.
+    lightningAddress?: string | null;
     lightningPreimage?: string;
     stripePaymentIntentId?: string;
     paidAt?: string;
