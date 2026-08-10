@@ -275,6 +275,7 @@ import {
 import { mapUserToDestination } from "./api/location.ts";
 
 import {
+    acceptRsvp,
     addTicketToRsvp,
     assignTicketToRSVP,
     cancelEventTicket,
@@ -320,6 +321,7 @@ import {
     purchaseEventTicket,
     refundEventTicket,
     refundTicketsInRsvp,
+    rejectRsvp,
     removeTicketFromUser,
     saveRegistrationQuestions,
     saveRsvpConfirmationMessage,
@@ -519,6 +521,8 @@ export class Client {
     getEventAttendees: ReturnType<typeof getEventAttendees>;
     getPublicEventRsvps: ReturnType<typeof getPublicEventRsvps>;
     updateRsvpStatus: ReturnType<typeof updateRsvpStatus>;
+    acceptRsvp: ReturnType<typeof acceptRsvp>;
+    rejectRsvp: ReturnType<typeof rejectRsvp>;
     getAccountEventTickets: ReturnType<typeof getAccountEventTickets>;
     getRandomizedEvents: ReturnType<typeof getRandomizedEvents>;
     getPopularEvents: ReturnType<typeof getPopularEvents>;
@@ -1151,6 +1155,8 @@ export class Client {
         this.getEventAttendees = getEventAttendees(rest_api_url, getJwt);
         this.getPublicEventRsvps = getPublicEventRsvps(rest_api_url);
         this.updateRsvpStatus = updateRsvpStatus(rest_api_url, getJwt);
+        this.acceptRsvp = acceptRsvp(rest_api_url, getJwt);
+        this.rejectRsvp = rejectRsvp(rest_api_url, getJwt);
         this.getAccountEventTickets = getAccountEventTickets(rest_api_url, getJwt);
         this.getRandomizedEvents = getRandomizedEvents(rest_api_url, getJwt);
         this.getPopularEvents = getPopularEvents(rest_api_url, getJwt);

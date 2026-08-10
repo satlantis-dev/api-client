@@ -576,6 +576,12 @@ export interface UpdateRsvpStatusRequest {
 
 export interface UpdateRsvpStatusResultItem {
     id: number;
+    /**
+     * The RSVP's status after processing, which can differ from the requested
+     * one - `acceptRsvp` on a full event resolves to `waitlisted`/`rejected`.
+     * Only set on success.
+     */
+    status?: RsvpStatusType;
     success: boolean;
     error?: string;
 }
@@ -613,6 +619,45 @@ async (
 
     return handleResponse<UpdateRsvpStatusResponse>(response);
 };
+
+/**
+ * Reviews a single gated RSVP request.
+ *
+ * Distinct from `updateRsvpStatus`, which force-writes statuses and bypasses
+ * the event's capacity checks. These endpoints keep gating/waitlisting logic
+ * intact, so an `accept` on a full event resolves to `waitlisted` (or
+ * `rejected`) - read `results[0].status` for what actually happened.
+ */
+const reviewRsvpRequest = (urlArg: URL, getJwt: func_GetJwt, action: "accept" | "reject") =>
+async (
+    rsvpId: number,
+): Promise<UpdateRsvpStatusResponse | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/rsvps/${rsvpId}/${action}`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+
+    if (jwtToken !== "") {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+    });
+
+    if (response instanceof Error) {
+        return response;
+    }
+
+    return handleResponse<UpdateRsvpStatusResponse>(response);
+};
+
+export const acceptRsvp = (urlArg: URL, getJwt: func_GetJwt) => reviewRsvpRequest(urlArg, getJwt, "accept");
+
+export const rejectRsvp = (urlArg: URL, getJwt: func_GetJwt) => reviewRsvpRequest(urlArg, getJwt, "reject");
+
 export interface GetRandomizedEventsArgs {
     placeId?: number;
     type?: number;
