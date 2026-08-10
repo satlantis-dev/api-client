@@ -279,6 +279,9 @@ export type CommunityMembershipPayment = {
     currency: OrderCurrency;
     cardLast4?: string;
     cardBrand?: string;
+    // Address supplied at purchase; absent when none, in which case refunds
+    // default to the member's Satlantis wallet.
+    lightningAddress?: string;
     lightningPreimage?: string;
     stripePaymentIntentId?: string;
     paidAt?: string;
