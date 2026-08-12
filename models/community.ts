@@ -134,6 +134,19 @@ export type CommunityNewsletter = {
     updatedAt: string;
 };
 
+// How far a community_members row has ever progressed toward membership. The
+// backend only ever raises this value (a former member stays MEMBER, a rejected
+// applicant stays MEMBERSHIP_REQUESTED), so it describes provenance rather than
+// current state — use the membership requests for live pending statuses.
+export enum CommunityMemberEngagementStage {
+    UNKNOWN = "unknown",
+    IMPORTED_CONTACT = "imported_contact",
+    EVENT_ATTENDEE = "event_attendee",
+    CALENDAR_SUBSCRIBER = "calendar_subscriber",
+    MEMBERSHIP_REQUESTED = "membership_requested",
+    MEMBER = "member",
+}
+
 export type CommunityMember = {
     id: number;
     communityId: number;
@@ -154,6 +167,7 @@ export type CommunityMember = {
     adminInvitationAcceptedAt?: string | null;
     adminInvitationDeclinedAt?: string | null;
     isInvited?: boolean | null;
+    engagementStage?: CommunityMemberEngagementStage;
     createdAt: string;
     updatedAt: string;
 };
