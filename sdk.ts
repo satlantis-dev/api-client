@@ -403,6 +403,7 @@ import {
     deleteCommunity,
     deleteCommunityMembershipTier,
     deleteCommunityNewsletter,
+    getAccountCommunities,
     getCommunities,
     getCommunityById,
     getCommunityCalendarEvents,
@@ -984,6 +985,7 @@ export class Client {
     getFeaturedCommunities: ReturnType<typeof getFeaturedCommunities>;
     getNewestCommunities: ReturnType<typeof getNewestCommunities>;
     getUserCommunities: ReturnType<typeof getUserCommunities>;
+    getAccountCommunities: ReturnType<typeof getAccountCommunities>;
     createCommunityFromCalendar: ReturnType<
         typeof createCommunityFromCalendar
     >;
@@ -1724,6 +1726,8 @@ export class Client {
         this.getFeaturedCommunities = getFeaturedCommunities(rest_api_url, getJwt);
         this.getNewestCommunities = getNewestCommunities(rest_api_url, getJwt);
         this.getUserCommunities = getUserCommunities(rest_api_url, getJwt);
+        // Public route — no JWT.
+        this.getAccountCommunities = getAccountCommunities(rest_api_url);
         this.createCommunityFromCalendar = createCommunityFromCalendar(
             rest_api_url,
             getJwt,

@@ -2044,6 +2044,31 @@ async () => {
     return handleResponse<GetUserCommunitiesResponse>(response);
 };
 
+export type GetAccountCommunitiesArgs = {
+    npub: string;
+};
+
+/**
+ * Same envelope and same role annotation as {@link GetUserCommunitiesResponse},
+ * for an arbitrary account rather than the caller. The route is public and is not
+ * narrowed for other accounts: it includes the account's tiered memberships, not
+ * just what it owns or admins.
+ */
+export type GetAccountCommunitiesResponse = GetUserCommunitiesResponse;
+
+export const getAccountCommunities = (urlArg: URL) => async (args: GetAccountCommunitiesArgs) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/account/${args.npub}/communities`;
+
+    const response = await safeFetch(url, {
+        method: "GET",
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<GetAccountCommunitiesResponse>(response);
+};
+
 export type SearchCommunitiesArgs = {
     /** Fuzzy term. The backend 400s below 3 characters. */
     search?: string;

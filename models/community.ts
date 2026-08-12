@@ -61,8 +61,9 @@ export type CommunityDTO = {
 export type CommunityRole = "owner" | "admin" | "member";
 
 /**
- * A `CommunityDTO` annotated with the querying account's role. Returned only by
- * the authenticated `/secure/user/communities` endpoint.
+ * A `CommunityDTO` annotated with the queried account's role — the caller's own
+ * for `/secure/user/communities`, the target account's for the public
+ * `/account/{npub}/communities`.
  */
 export type UserCommunity = CommunityDTO & {
     role: CommunityRole;
