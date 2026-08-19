@@ -2,7 +2,7 @@ import { type NostrEvent, NostrKind, prepareNostrEvent, type Tag } from "@blowat
 import type { func_GetJwt, func_GetNostrSigner, OrderCurrency } from "@satlantis/api-client";
 import { copyURL, generateUUID, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
-import type { AccountDTO } from "../models/account.ts";
+import type { AccountDTO, SearchAccountDTO } from "../models/account.ts";
 import type {
     Calendar,
     CalendarEventAnnouncement,
@@ -953,11 +953,18 @@ async (
     }>(response);
 };
 
+/** @deprecated Superseded by {@link EventInvitationResult}. */
 export interface InviteAttendeesResponse {
     emails?: Record<string, string | true>;
     npubs?: Record<string, string | true>;
 }
 
+/**
+ * @deprecated `POST /secure/events/{id}/invite` is superseded by
+ * {@link inviteEventGuests} and {@link inviteEventGuestsCSV} (SAT-5601), which
+ * accept a per-contact name and return a richer result. Kept while the old
+ * route is still served.
+ */
 export const inviteAttendees = (urlArg: URL, getJwt: func_GetJwt) =>
 async (args: {
     eventId: number;
@@ -1030,6 +1037,125 @@ async (args: {
         return response;
     }
     return handleResponse<{}>(response);
+};
+
+/**
+ * A single input - an email address, an npub, or an account ID - that could not
+ * be invited, together with a human-readable reason.
+ */
+export interface InvitationFailure {
+    identifier: string;
+    reason: string;
+}
+
+/** Shared result shape of both guest invitation endpoints. */
+export interface EventInvitationResult {
+    invited: SearchAccountDTO[];
+    alreadyInvited: SearchAccountDTO[];
+    failed: InvitationFailure[];
+}
+
+/**
+ * One invitee, identified by email address, npub, or account ID (as a string).
+ * `name` seeds the resolved account's name and display name, and is ignored
+ * when that account already has either.
+ */
+export interface InvitationContact {
+    identifier: string;
+    name?: string;
+}
+
+/** The backend rejects a batch larger than this with a 400. */
+export const MAX_INVITATION_CONTACTS = 100;
+
+export type InviteEventGuestsArgs = {
+    eventId: number;
+    contacts: InvitationContact[];
+    emailSubject?: string;
+    invitationMessage?: string;
+    ticketTypeId?: number;
+    options?: {
+        signal: AbortSignal;
+    };
+};
+
+export const inviteEventGuests = (urlArg: URL, getJwt: func_GetJwt) =>
+async (args: InviteEventGuestsArgs): Promise<EventInvitationResult | Error> => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/${args.eventId}/invite/contacts`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+            contacts: args.contacts,
+            emailSubject: args.emailSubject,
+            invitationMessage: args.invitationMessage,
+            ticketTypeId: args.ticketTypeId,
+        }),
+        signal: args.options?.signal,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<EventInvitationResult>(response);
+};
+
+export type InviteEventGuestsCSVArgs = {
+    eventId: number;
+    file: File;
+    emailSubject?: string;
+    invitationMessage?: string;
+    ticketTypeId?: number;
+    options?: {
+        signal: AbortSignal;
+    };
+};
+
+export const inviteEventGuestsCSV = (urlArg: URL, getJwt: func_GetJwt) =>
+async (args: InviteEventGuestsCSVArgs): Promise<EventInvitationResult | Error> => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/${args.eventId}/invite/csv`;
+
+    // Content-Type is left unset on purpose: the browser has to add the
+    // multipart boundary itself.
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const formData = new FormData();
+    formData.append("file", args.file);
+    if (args.emailSubject) {
+        formData.append("emailSubject", args.emailSubject);
+    }
+    if (args.invitationMessage) {
+        formData.append("invitationMessage", args.invitationMessage);
+    }
+    if (args.ticketTypeId !== undefined) {
+        formData.append("ticketTypeId", String(args.ticketTypeId));
+    }
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: formData,
+        signal: args.options?.signal,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<EventInvitationResult>(response);
 };
 
 export enum EventTicketStatus {

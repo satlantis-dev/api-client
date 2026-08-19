@@ -315,6 +315,8 @@ import {
     getRecommendedEvents,
     getUserEventsImages,
     inviteAttendees,
+    inviteEventGuests,
+    inviteEventGuestsCSV,
     markCalendarEventAsFeatured,
     postEventFinancialsWithdraw,
     previewEventCoupon,
@@ -576,6 +578,8 @@ export class Client {
     >;
     markCalendarEventAsFeatured: ReturnType<typeof markCalendarEventAsFeatured>;
     inviteAttendees: ReturnType<typeof inviteAttendees>;
+    inviteEventGuests: ReturnType<typeof inviteEventGuests>;
+    inviteEventGuestsCSV: ReturnType<typeof inviteEventGuestsCSV>;
     sendInviteAttendeesPreview: ReturnType<typeof sendInviteAttendeesPreview>;
     createEventCoupon: ReturnType<typeof createEventCoupon>;
     updateEventCoupon: ReturnType<typeof updateEventCoupon>;
@@ -1251,6 +1255,8 @@ export class Client {
             getJwt,
         );
         this.inviteAttendees = inviteAttendees(rest_api_url, getJwt);
+        this.inviteEventGuests = inviteEventGuests(rest_api_url, getJwt);
+        this.inviteEventGuestsCSV = inviteEventGuestsCSV(rest_api_url, getJwt);
         this.sendInviteAttendeesPreview = sendInviteAttendeesPreview(rest_api_url, getJwt);
         this.createEventCoupon = createEventCoupon(rest_api_url, getJwt);
         this.updateEventCoupon = updateEventCoupon(rest_api_url, getJwt);
