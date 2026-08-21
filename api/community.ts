@@ -28,6 +28,7 @@ import type {
     UserCommunityMembershipPaymentsResponse,
 } from "../models/community.ts";
 import type { OrderCurrency } from "../models/ticketing.ts";
+import type { InvitationContact, InvitationFailure } from "../models/invitation.ts";
 
 export type CreateCommunityFromCalendarArgs = {
     calendarId: number;
@@ -2414,13 +2415,21 @@ export type InviteCommunityMembersArgs = {
     emails?: string[];
 };
 
+/** Shared result shape of all three community invitation endpoints. */
 export type CommunityInvitationResult = {
     invited: AccountSearchDTO[];
     alreadyMembers: AccountSearchDTO[];
     alreadyInvited: AccountSearchDTO[];
-    failed: AccountSearchDTO[];
+    failed: InvitationFailure[];
 };
 
+/**
+ * @deprecated `POST /secure/communities/{communityId}/invitations` is superseded
+ * by {@link inviteCommunityMembersByContacts} (SAT-5613), which captures a name
+ * per invitee and carries a custom invitation message, email subject and tier.
+ * It also accepts npubs for accounts that do not exist yet. Kept for callers
+ * that have not migrated.
+ */
 export const inviteCommunityMembers = (
     urlArg: URL,
     getJwt: func_GetJwt,
@@ -2451,9 +2460,63 @@ async (args: InviteCommunityMembersArgs) => {
     return handleResponse<CommunityInvitationResult>(response);
 };
 
+export type InviteCommunityMembersByContactsArgs = {
+    communityId: number;
+    contacts: InvitationContact[];
+    invitationMessage?: string;
+    emailSubject?: string;
+    tierId?: number;
+    options?: {
+        signal: AbortSignal;
+    };
+};
+
+/**
+ * Invites up to `MAX_INVITATION_CONTACTS` people in one call, each identified by
+ * email address, npub, or account ID (as a string). A batch larger than that is
+ * rejected with a 400, so chunk before calling.
+ */
+export const inviteCommunityMembersByContacts = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (
+    args: InviteCommunityMembersByContactsArgs,
+): Promise<CommunityInvitationResult | Error> => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/invitations/contacts`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+            contacts: args.contacts,
+            invitationMessage: args.invitationMessage,
+            emailSubject: args.emailSubject,
+            tierId: args.tierId,
+        }),
+        signal: args.options?.signal,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityInvitationResult>(response);
+};
+
 export type InviteCommunityMembersCSVArgs = {
     communityId: number;
     file: File;
+    invitationMessage?: string;
+    emailSubject?: string;
+    tierId?: number;
 };
 
 export const inviteCommunityMembersCSV = (
@@ -2471,8 +2534,19 @@ async (args: InviteCommunityMembersCSVArgs) => {
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
+    // invitationMessage/emailSubject/tierId apply to the whole batch rather than
+    // a single row, so they ride as sibling multipart fields next to the file.
     const formData = new FormData();
     formData.append("file", args.file);
+    if (args.invitationMessage) {
+        formData.append("invitationMessage", args.invitationMessage);
+    }
+    if (args.emailSubject) {
+        formData.append("emailSubject", args.emailSubject);
+    }
+    if (args.tierId !== undefined) {
+        formData.append("tierId", String(args.tierId));
+    }
 
     const response = await safeFetch(url, {
         method: "POST",
