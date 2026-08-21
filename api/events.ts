@@ -22,6 +22,16 @@ import type {
     CreateCouponPayload,
     GetEventCouponsResponse,
 } from "../models/ticketing.ts";
+import {
+    type InvitationContact,
+    type InvitationFailure,
+    MAX_INVITATION_CONTACTS,
+} from "../models/invitation.ts";
+
+// Re-exported so callers that already reach for these through the event
+// invitation surface keep working; the definitions live in models/invitation.ts
+// because the community endpoints share them.
+export { type InvitationContact, type InvitationFailure, MAX_INVITATION_CONTACTS };
 
 export enum RsvpStatus {
     Accepted = "accepted",
@@ -1039,34 +1049,12 @@ async (args: {
     return handleResponse<{}>(response);
 };
 
-/**
- * A single input - an email address, an npub, or an account ID - that could not
- * be invited, together with a human-readable reason.
- */
-export interface InvitationFailure {
-    identifier: string;
-    reason: string;
-}
-
 /** Shared result shape of both guest invitation endpoints. */
 export interface EventInvitationResult {
     invited: SearchAccountDTO[];
     alreadyInvited: SearchAccountDTO[];
     failed: InvitationFailure[];
 }
-
-/**
- * One invitee, identified by email address, npub, or account ID (as a string).
- * `name` seeds the resolved account's name and display name, and is ignored
- * when that account already has either.
- */
-export interface InvitationContact {
-    identifier: string;
-    name?: string;
-}
-
-/** The backend rejects a batch larger than this with a 400. */
-export const MAX_INVITATION_CONTACTS = 100;
 
 export type InviteEventGuestsArgs = {
     eventId: number;
@@ -1079,35 +1067,36 @@ export type InviteEventGuestsArgs = {
     };
 };
 
-export const inviteEventGuests = (urlArg: URL, getJwt: func_GetJwt) =>
-async (args: InviteEventGuestsArgs): Promise<EventInvitationResult | Error> => {
-    const jwtToken = getJwt();
-    if (jwtToken == "") {
-        return new Error("jwt token is empty");
-    }
-    const url = copyURL(urlArg);
-    url.pathname = `/secure/events/${args.eventId}/invite/contacts`;
+export const inviteEventGuests =
+    (urlArg: URL, getJwt: func_GetJwt) =>
+    async (args: InviteEventGuestsArgs): Promise<EventInvitationResult | Error> => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/${args.eventId}/invite/contacts`;
 
-    const headers = new Headers();
-    headers.set("Authorization", `Bearer ${jwtToken}`);
-    headers.set("Content-Type", "application/json");
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        headers.set("Content-Type", "application/json");
 
-    const response = await safeFetch(url, {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-            contacts: args.contacts,
-            emailSubject: args.emailSubject,
-            invitationMessage: args.invitationMessage,
-            ticketTypeId: args.ticketTypeId,
-        }),
-        signal: args.options?.signal,
-    });
-    if (response instanceof Error) {
-        return response;
-    }
-    return handleResponse<EventInvitationResult>(response);
-};
+        const response = await safeFetch(url, {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+                contacts: args.contacts,
+                emailSubject: args.emailSubject,
+                invitationMessage: args.invitationMessage,
+                ticketTypeId: args.ticketTypeId,
+            }),
+            signal: args.options?.signal,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<EventInvitationResult>(response);
+    };
 
 export type InviteEventGuestsCSVArgs = {
     eventId: number;
@@ -1120,43 +1109,44 @@ export type InviteEventGuestsCSVArgs = {
     };
 };
 
-export const inviteEventGuestsCSV = (urlArg: URL, getJwt: func_GetJwt) =>
-async (args: InviteEventGuestsCSVArgs): Promise<EventInvitationResult | Error> => {
-    const jwtToken = getJwt();
-    if (jwtToken == "") {
-        return new Error("jwt token is empty");
-    }
-    const url = copyURL(urlArg);
-    url.pathname = `/secure/events/${args.eventId}/invite/csv`;
+export const inviteEventGuestsCSV =
+    (urlArg: URL, getJwt: func_GetJwt) =>
+    async (args: InviteEventGuestsCSVArgs): Promise<EventInvitationResult | Error> => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/${args.eventId}/invite/csv`;
 
-    // Content-Type is left unset on purpose: the browser has to add the
-    // multipart boundary itself.
-    const headers = new Headers();
-    headers.set("Authorization", `Bearer ${jwtToken}`);
+        // Content-Type is left unset on purpose: the browser has to add the
+        // multipart boundary itself.
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
 
-    const formData = new FormData();
-    formData.append("file", args.file);
-    if (args.emailSubject) {
-        formData.append("emailSubject", args.emailSubject);
-    }
-    if (args.invitationMessage) {
-        formData.append("invitationMessage", args.invitationMessage);
-    }
-    if (args.ticketTypeId !== undefined) {
-        formData.append("ticketTypeId", String(args.ticketTypeId));
-    }
+        const formData = new FormData();
+        formData.append("file", args.file);
+        if (args.emailSubject) {
+            formData.append("emailSubject", args.emailSubject);
+        }
+        if (args.invitationMessage) {
+            formData.append("invitationMessage", args.invitationMessage);
+        }
+        if (args.ticketTypeId !== undefined) {
+            formData.append("ticketTypeId", String(args.ticketTypeId));
+        }
 
-    const response = await safeFetch(url, {
-        method: "POST",
-        headers,
-        body: formData,
-        signal: args.options?.signal,
-    });
-    if (response instanceof Error) {
-        return response;
-    }
-    return handleResponse<EventInvitationResult>(response);
-};
+        const response = await safeFetch(url, {
+            method: "POST",
+            headers,
+            body: formData,
+            signal: args.options?.signal,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<EventInvitationResult>(response);
+    };
 
 export enum EventTicketStatus {
     Active = "active",
