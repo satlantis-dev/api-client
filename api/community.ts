@@ -1481,6 +1481,11 @@ export type MembershipLightningInvoice = {
 export type StartMembershipLightningInvoiceArgs = {
     communityId: number;
     subscriptionId: number;
+    // Refund destination recorded on the resulting payment. Optional: when it is
+    // omitted the backend falls back to the member's Satlantis wallet address,
+    // so this is only ever set when the member named an external one. Callers
+    // trim and omit empty values rather than sending a blank string.
+    lightningAddress?: string;
 };
 
 export const startMembershipSubscriptionLightningInvoice = (
@@ -1503,6 +1508,9 @@ async (args: StartMembershipLightningInvoiceArgs) => {
     const response = await safeFetch(url, {
         method: "POST",
         headers,
+        // An absent lightningAddress drops the key, sending `{}` — which the
+        // backend's optional-body decoder treats exactly like no body at all.
+        body: JSON.stringify({ lightningAddress: args.lightningAddress }),
     });
     if (response instanceof Error) {
         return response;
