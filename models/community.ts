@@ -245,8 +245,6 @@ export type CommunityMembershipRequest = {
     requestedTier?: CommunityMembershipTier | null;
     status: CommunityMembershipRequestStatus;
     registrationAnswers?: Record<string, unknown> | null;
-    period?: CommunityMembershipPeriod | null;
-    paymentMethod?: PaymentMethod | null;
     reviewedByAccountId?: number | null;
     reviewedByAccount?: AccountDTO | null;
     reviewNotes?: string | null;
