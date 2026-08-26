@@ -113,9 +113,36 @@ async (args: GetCommunityUserPermissionArgs) => {
     return handleResponse<CommunityUserPermission>(response);
 };
 
+export type MemberRecordsPagination = {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+};
+
+export type PaginatedMemberRecords<T> = {
+    records: T[];
+    pagination: MemberRecordsPagination;
+};
+
+// The server defaults to page 1, limit 10; omit either param unless the caller sets it.
+function setPaginationParams(
+    url: URL,
+    args: { page?: number; limit?: number },
+) {
+    if (args.page != null) {
+        url.searchParams.set("page", String(args.page));
+    }
+    if (args.limit != null) {
+        url.searchParams.set("limit", String(args.limit));
+    }
+}
+
 export type ListCommunityMembersArgs = {
     communityId: number;
     order?: "date_desc" | "date_asc" | "num_events" | "revenue";
+    page?: number;
+    limit?: number;
 };
 
 export type CommunityMemberExtended = CommunityMember & {
@@ -155,6 +182,7 @@ async (args: ListCommunityMembersArgs) => {
     }
     const url = copyURL(urlArg);
     url.pathname = `/secure/communities/${args.communityId}/members`;
+    setPaginationParams(url, args);
     if (args.order) {
         url.searchParams.set("order", args.order);
     }
@@ -169,13 +197,15 @@ async (args: ListCommunityMembersArgs) => {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<CommunityMemberExtended[]>(response);
+    return handleResponse<PaginatedMemberRecords<CommunityMemberExtended>>(response);
 };
 
 export type ListCommunityMembersAndProspectsArgs = {
     communityId: number;
     order?: "date_desc" | "date_asc" | "num_events" | "revenue";
     search?: string;
+    page?: number;
+    limit?: number;
 };
 
 // Returns members and prospects in a single call. Members carry a non-null
@@ -193,6 +223,7 @@ async (args: ListCommunityMembersAndProspectsArgs) => {
     }
     const url = copyURL(urlArg);
     url.pathname = `/secure/communities/${args.communityId}/members-and-prospects`;
+    setPaginationParams(url, args);
     if (args.order) {
         url.searchParams.set("order", args.order);
     }
@@ -210,7 +241,7 @@ async (args: ListCommunityMembersAndProspectsArgs) => {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<CommunityMemberExtended[]>(response);
+    return handleResponse<PaginatedMemberRecords<CommunityMemberExtended>>(response);
 };
 
 export type ListCommunityMembersMiniArgs = {
@@ -2341,6 +2372,8 @@ export type ListCommunityProspectsArgs = {
     // Restrict to prospects with an accepted RSVP for this event. The event must
     // belong to a calendar of this community.
     eventId?: number;
+    page?: number;
+    limit?: number;
 };
 
 export const listCommunityProspects = (
@@ -2354,6 +2387,7 @@ async (args: ListCommunityProspectsArgs) => {
     }
     const url = copyURL(urlArg);
     url.pathname = `/secure/communities/${args.communityId}/prospects`;
+    setPaginationParams(url, args);
     if (args.order) {
         url.searchParams.set("order", args.order);
     }
@@ -2374,7 +2408,7 @@ async (args: ListCommunityProspectsArgs) => {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<CommunityMemberExtended[]>(response);
+    return handleResponse<PaginatedMemberRecords<CommunityMemberExtended>>(response);
 };
 
 /////////////////////////// Bulk member updates ///////////////////////////
