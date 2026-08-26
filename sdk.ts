@@ -413,6 +413,7 @@ import {
     getCommunityFinancialSummary,
     getCommunityFinancialTransactions,
     getCommunityGalleryImages,
+    getCommunityMember,
     getCommunityMembershipRequests,
     getCommunityMembershipTiers,
     getCommunityMemberTransactions,
@@ -457,6 +458,7 @@ import {
     unmarkCommunityAsFeatured,
     updateCommunity,
     updateCommunityGalleryImageRank,
+    updateCommunityMember,
     updateCommunityMembershipTier,
     updateCommunityNewsletter,
     updateMemberships,
@@ -1014,7 +1016,10 @@ export class Client {
     listCommunityMembersMini: ReturnType<typeof listCommunityMembersMini>;
     addMembersToCommunity: ReturnType<typeof addMembersToCommunity>;
     removeMembersFromCommunity: ReturnType<typeof removeMembersFromCommunity>;
+    /** @deprecated Use {@link Client.updateCommunityMember} - this only ever upgrades a tier. */
     updateMemberships: ReturnType<typeof updateMemberships>;
+    getCommunityMember: ReturnType<typeof getCommunityMember>;
+    updateCommunityMember: ReturnType<typeof updateCommunityMember>;
     listCommunityProspects: ReturnType<typeof listCommunityProspects>;
     addProspectsToCommunity: ReturnType<typeof addProspectsToCommunity>;
     removeCommunityAdmins: ReturnType<typeof removeCommunityAdmins>;
@@ -1768,6 +1773,11 @@ export class Client {
             getJwt,
         );
         this.updateMemberships = updateMemberships(rest_api_url, getJwt);
+        this.getCommunityMember = getCommunityMember(rest_api_url, getJwt);
+        this.updateCommunityMember = updateCommunityMember(
+            rest_api_url,
+            getJwt,
+        );
         this.listCommunityProspects = listCommunityProspects(
             rest_api_url,
             getJwt,

@@ -2411,8 +2411,15 @@ async (args: ListCommunityProspectsArgs) => {
     return handleResponse<PaginatedMemberRecords<CommunityMemberExtended>>(response);
 };
 
-/////////////////////////// Bulk member updates ///////////////////////////
+/////////////////////////// Member updates ///////////////////////////
 
+/**
+ * @deprecated `PUT /secure/communities/{communityId}/members` only ever raises a
+ * member's tier (and extends expiry) - it silently ignores a target tier ranked
+ * below the current one. Use {@link updateCommunityMember}, which sets the tier
+ * to exactly what was asked for, whether that is an upgrade, a downgrade or a
+ * period change (SAT-5696).
+ */
 export type UpdateMembershipsArgs = {
     communityId: number;
     accountIds: number[];
@@ -2420,6 +2427,7 @@ export type UpdateMembershipsArgs = {
     extendUntil?: string;
 };
 
+/** @deprecated See {@link UpdateMembershipsArgs} - use {@link updateCommunityMember}. */
 export const updateMemberships = (
     urlArg: URL,
     getJwt: func_GetJwt,
@@ -2449,6 +2457,87 @@ async (args: UpdateMembershipsArgs) => {
         return response;
     }
     return handleResponse<CommunityMember[]>(response);
+};
+
+export type GetCommunityMemberArgs = {
+    communityId: number;
+    memberId: number;
+};
+
+// A single member with the detail the admin member list omits: their open
+// subscriptions (and so their billing period) and open membership requests.
+// Requires community management permission.
+export const getCommunityMember = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: GetCommunityMemberArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/members/${args.memberId}`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityMember>(response);
+};
+
+export type UpdateCommunityMemberArgs = {
+    communityId: number;
+    memberId: number;
+    tierId: number;
+    // Required for paid tiers (the backend defaults to monthly when omitted) and
+    // rejected for free ones. The target tier must actually price the period
+    // asked for, or the change fails.
+    period?: CommunityMembershipPeriod;
+};
+
+/**
+ * Sets one member's tier to exactly what was requested - an upgrade, a downgrade
+ * or a period change on the same tier - unlike the deprecated bulk
+ * {@link updateMemberships}, which only ever upgrades. The tier and/or period
+ * must differ from the member's current ones, or the backend rejects the change.
+ * The returned member carries `tierId` but no expanded `tier`/`account`, so use
+ * it to confirm the new tier rather than to replace a member object.
+ */
+export const updateCommunityMember = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: UpdateCommunityMemberArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/members/${args.memberId}`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify({
+            tierId: args.tierId,
+            period: args.period,
+        }),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityMember>(response);
 };
 
 export type InviteCommunityMembersArgs = {
