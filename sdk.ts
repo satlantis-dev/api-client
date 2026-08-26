@@ -2929,6 +2929,23 @@ export class Client {
         return this.resolver.getUser(pubkey);
     };
 
+    /**
+     * Drops every identity-scoped cache held on the client.
+     *
+     * `me`, `users` and `accounts` are keyed by pubkey/npub but `me` is not —
+     * it is whichever account resolved last. On a multi-account device the
+     * client instance outlives the signed-in account, so without this the
+     * previous account's `UserResolver` stays reachable through
+     * `getMyProfile({ useCache: true })` and its `Account` through
+     * `getAccount(..., { useCache: true })` after a switch. Call it whenever
+     * the active signer changes.
+     */
+    clearIdentityCaches = () => {
+        this.me = undefined;
+        this.users.clear();
+        this.accounts.clear();
+    };
+
     getMyProfile = async (options?: {
         useCache: boolean;
     }): Promise<UserResolver | Error> => {
