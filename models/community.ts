@@ -364,9 +364,11 @@ export type CommunityFinancialTransactionsResponse = {
     transactions: CommunityFinancialTransaction[];
 };
 
-// GET /secure/communities/{id}/financials/summary. All monetary values are in
-// the community's master currency's smallest unit (cents / sats) at the
-// current exchange rate; `currency` names that master currency.
+// GET /secure/communities/{id}/financials/summary. Fiat and total amounts are
+// integers in the community's master currency's smallest unit (cents / sats) at
+// the current exchange rate; `currency` names that master currency. The BTC-rail
+// figures (`btcEarnings` / `totalBTCEarnings`) are raw satoshis and are NOT
+// converted to the master currency — SAT-5705 changed that.
 export type CommunityTierStats = {
     tierId: number;
     name: string;
@@ -374,12 +376,24 @@ export type CommunityTierStats = {
     members: number;
     mrr: number;
     totalEarnings: number;
+    // Non-BTC payments, converted to the master currency. Absent on deploys
+    // predating SAT-5705.
+    totalFiatEarnings?: number;
     totalBTCEarnings: number;
 };
 
 export type CommunityMonthlyStats = {
     month: string; // "YYYY-MM"
-    revenue: number;
+    // Fiat + BTC for the month, converted to the master currency. This replaced
+    // `revenue` in SAT-5705, so it's absent on deploys predating that; read it
+    // as `totalEarnings ?? revenue`.
+    totalEarnings?: number;
+    // Non-BTC payments for the month, converted to the master currency. Added
+    // in SAT-5705.
+    fiatEarnings?: number;
+    /** @deprecated Renamed to `totalEarnings` in SAT-5705; only older deploys still send it. */
+    revenue?: number;
+    // Raw satoshis collected via the BTC rail this month, unconverted.
     btcEarnings: number;
     activeSubscriptions: number;
     terminatedSubscriptions: number;
@@ -394,10 +408,22 @@ export type CommunityMonthlyStats = {
 export type CommunityFinancialSummary = {
     currency: OrderCurrency;
     mrr: number;
+    // MRR split by rail — fiat in the master currency's minor unit, BTC in sats.
+    // Absent on deploys predating SAT-5705.
+    mrrFiat?: number;
+    mrrBTC?: number;
     totalEarnings: number;
+    // Cumulative non-BTC earnings, converted to the master currency. Absent on
+    // deploys predating SAT-5705.
+    totalFiatEarnings?: number;
     totalBTCEarnings: number;
     activeSubscriptions: number;
-    terminatedSubscriptions: number;
+    /** @deprecated Dropped from the payload in SAT-5705; only older deploys still send it. */
+    terminatedSubscriptions?: number;
+    // Churn for the most recent month as a 0..1 fraction, same definition as
+    // CommunityMonthlyStats.churnRate. Added in SAT-5705 — before it, the only
+    // source was the last `monthlyStats` entry.
+    lastMonthChurnRate?: number;
     tierStats?: CommunityTierStats[] | null;
     monthlyStats?: CommunityMonthlyStats[] | null;
 };
