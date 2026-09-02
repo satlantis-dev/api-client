@@ -283,6 +283,7 @@ import {
     createCalendarEventTag,
     createEventCoupon,
     createEventTicketType,
+    declineRsvp,
     deleteEventCoupon,
     deleteEventTicketType,
     generateAiEventDescription,
@@ -529,6 +530,7 @@ export class Client {
     updateRsvpStatus: ReturnType<typeof updateRsvpStatus>;
     acceptRsvp: ReturnType<typeof acceptRsvp>;
     rejectRsvp: ReturnType<typeof rejectRsvp>;
+    declineRsvp: ReturnType<typeof declineRsvp>;
     getAccountEventTickets: ReturnType<typeof getAccountEventTickets>;
     getRandomizedEvents: ReturnType<typeof getRandomizedEvents>;
     getPopularEvents: ReturnType<typeof getPopularEvents>;
@@ -1172,6 +1174,7 @@ export class Client {
         this.updateRsvpStatus = updateRsvpStatus(rest_api_url, getJwt);
         this.acceptRsvp = acceptRsvp(rest_api_url, getJwt);
         this.rejectRsvp = rejectRsvp(rest_api_url, getJwt);
+        this.declineRsvp = declineRsvp(rest_api_url, getJwt);
         this.getAccountEventTickets = getAccountEventTickets(rest_api_url, getJwt);
         this.getRandomizedEvents = getRandomizedEvents(rest_api_url, getJwt);
         this.getPopularEvents = getPopularEvents(rest_api_url, getJwt);
