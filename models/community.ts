@@ -169,8 +169,23 @@ export type CommunityMember = {
     adminInvitationDeclinedAt?: string | null;
     isInvited?: boolean | null;
     engagementStage?: CommunityMemberEngagementStage;
+    // Admin-only annotations, editable through
+    // `updateCommunityMemberAdminFields`. Stripped from every self-service
+    // response, so they only ever arrive on admin listings and detail reads.
+    altName?: string;
+    altEmail?: string;
+    altPhone?: string;
+    memo?: string;
     createdAt: string;
     updatedAt: string;
+};
+
+// One entry in a member's activity timeline. The backend renders each event to
+// a human-readable sentence rather than a typed payload, so there is no kind
+// discriminator and no id to link back to the underlying event.
+export type CommunityMemberTimelineEntry = {
+    timestamp: string;
+    description: string;
 };
 
 export type CommunityUserPermission = CommunityMember & {

@@ -21,6 +21,7 @@ import type {
     CommunityMembershipSubscriptionChange,
     CommunityMembershipSubscriptionDetail,
     CommunityMembershipTier,
+    CommunityMemberTimelineEntry,
     CommunityNewsletter,
     CommunityUserPermission,
     CommunityWalletInfo,
@@ -2538,6 +2539,88 @@ async (args: UpdateCommunityMemberArgs) => {
         return response;
     }
     return handleResponse<CommunityMember>(response);
+};
+
+export type UpdateCommunityMemberAdminFieldsArgs = {
+    communityId: number;
+    memberId: number;
+    // Only the fields present are written; omitting one leaves it untouched.
+    // Pass an empty string to clear one. Backend column limits: altName and
+    // altEmail 100 characters, altPhone 20, memo 500.
+    altName?: string;
+    altEmail?: string;
+    altPhone?: string;
+    memo?: string;
+};
+
+/**
+ * Writes the admin-only annotations a community organiser keeps against a
+ * member - an alternate name, email and phone, plus a free-text memo. These
+ * are invisible to the member themselves: every self-service membership
+ * endpoint strips them before responding.
+ */
+export const updateCommunityMemberAdminFields = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: UpdateCommunityMemberAdminFieldsArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/members/${args.memberId}/admin-fields`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const response = await safeFetch(url, {
+        method: "PATCH",
+        headers,
+        body: JSON.stringify({
+            altName: args.altName,
+            altEmail: args.altEmail,
+            altPhone: args.altPhone,
+            memo: args.memo,
+        }),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityMember>(response);
+};
+
+export type GetCommunityMemberTimelineArgs = {
+    communityId: number;
+    memberId: number;
+};
+
+// A member's activity history, newest first and unpaginated. Requires
+// community management permission.
+export const getCommunityMemberTimeline = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: GetCommunityMemberTimelineArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/members/${args.memberId}/timeline`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityMemberTimelineEntry[]>(response);
 };
 
 export type InviteCommunityMembersArgs = {

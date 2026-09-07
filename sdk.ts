@@ -416,6 +416,7 @@ import {
     getCommunityMember,
     getCommunityMembershipRequests,
     getCommunityMembershipTiers,
+    getCommunityMemberTimeline,
     getCommunityMemberTransactions,
     getCommunityNewsletter,
     getCommunityNewsletterAudienceSize,
@@ -459,6 +460,7 @@ import {
     updateCommunity,
     updateCommunityGalleryImageRank,
     updateCommunityMember,
+    updateCommunityMemberAdminFields,
     updateCommunityMembershipTier,
     updateCommunityNewsletter,
     updateMemberships,
@@ -1020,6 +1022,10 @@ export class Client {
     updateMemberships: ReturnType<typeof updateMemberships>;
     getCommunityMember: ReturnType<typeof getCommunityMember>;
     updateCommunityMember: ReturnType<typeof updateCommunityMember>;
+    updateCommunityMemberAdminFields: ReturnType<
+        typeof updateCommunityMemberAdminFields
+    >;
+    getCommunityMemberTimeline: ReturnType<typeof getCommunityMemberTimeline>;
     listCommunityProspects: ReturnType<typeof listCommunityProspects>;
     addProspectsToCommunity: ReturnType<typeof addProspectsToCommunity>;
     removeCommunityAdmins: ReturnType<typeof removeCommunityAdmins>;
@@ -1775,6 +1781,14 @@ export class Client {
         this.updateMemberships = updateMemberships(rest_api_url, getJwt);
         this.getCommunityMember = getCommunityMember(rest_api_url, getJwt);
         this.updateCommunityMember = updateCommunityMember(
+            rest_api_url,
+            getJwt,
+        );
+        this.updateCommunityMemberAdminFields = updateCommunityMemberAdminFields(
+            rest_api_url,
+            getJwt,
+        );
+        this.getCommunityMemberTimeline = getCommunityMemberTimeline(
             rest_api_url,
             getJwt,
         );
