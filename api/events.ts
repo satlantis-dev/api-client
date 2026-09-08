@@ -668,6 +668,32 @@ export const acceptRsvp = (urlArg: URL, getJwt: func_GetJwt) => reviewRsvpReques
 
 export const rejectRsvp = (urlArg: URL, getJwt: func_GetJwt) => reviewRsvpRequest(urlArg, getJwt, "reject");
 
+export const declineRsvp = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    rsvpId: number,
+): Promise<UpdateRsvpStatusResponse | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/rsvps/${rsvpId}/decline`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+
+    if (jwtToken !== "") {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+    });
+
+    if (response instanceof Error) {
+        return response;
+    }
+
+    return handleResponse<UpdateRsvpStatusResponse>(response);
+};
+
 export interface GetRandomizedEventsArgs {
     placeId?: number;
     type?: number;
