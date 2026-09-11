@@ -1520,7 +1520,14 @@ export interface EventTicketPurchasePayload {
     couponCode?: string;
     email: string;
     name: string;
+    /**
+     * BTC orders only. Selects which rail the order is minted on. Omitted is
+     * treated as `"lightning"` by the backend.
+     */
+    paymentMethod?: TicketPaymentMethod;
 }
+
+export type TicketPaymentMethod = "lightning" | "onchain";
 
 export interface EventTicketPurchaseResponse {
     paymentId: string;
@@ -1550,6 +1557,33 @@ export interface EventTicketPurchaseResponse {
         id: number;
         status: string;
         ticketTypeName: string;
+    }>;
+    /**
+     * Rail the payment is currently on. Both rails live on the same payment
+     * row; `switchTicketPaymentMethod` flips this and repoints `expiresAt`.
+     */
+    paymentMethod?: TicketPaymentMethod;
+    /** Lightning invoice expiry (120 s). Independent of `expiresAt`. */
+    lightningExpiresAt?: Date;
+    /** On-chain address expiry (45 min). Independent of `expiresAt`. */
+    onchainExpiresAt?: Date;
+    /** One address per order, persisted — stable across polls. */
+    onchainAddress?: string;
+    /** `bitcoin:<address>?amount=<BTC decimal>` for the **full** amount. */
+    onchainUri?: string;
+    onchainTxId?: string;
+    onchainConfirmations?: number;
+    /**
+     * Sats seen for the address. **Overwritten** per webhook, not accumulated.
+     * Remaining is `amount - onchainReceivedSats`, computed client-side.
+     */
+    onchainReceivedSats?: number;
+    orderItems?: Array<{
+        ticketTypeId?: number;
+        ticketTypeName?: string;
+        quantity?: number;
+        priceCurrency?: string;
+        priceAmount?: number;
     }>;
 }
 
@@ -1677,6 +1711,35 @@ async (
         return response;
     }
     return handleResponse<GetEventTicketStatusResponse>(response);
+};
+
+export const switchTicketPaymentMethod = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    args: {
+        paymentId: string;
+        paymentMethod: TicketPaymentMethod;
+    },
+): Promise<EventTicketPurchaseResponse | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/payments/${args.paymentId}/method`;
+
+    const jwtToken = getJwt();
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+
+    if (jwtToken !== "") {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ paymentMethod: args.paymentMethod }),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<EventTicketPurchaseResponse>(response);
 };
 
 export const assignTicketToRSVP = (urlArg: URL, getJwt: func_GetJwt) =>

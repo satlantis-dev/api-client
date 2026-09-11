@@ -328,6 +328,7 @@ import {
     saveRegistrationQuestions,
     saveRsvpConfirmationMessage,
     sendInviteAttendeesPreview,
+    switchTicketPaymentMethod,
     unmarkCalendarEventAsFeatured,
     updateEventCoupon,
     updateEventTicketStatus,
@@ -602,6 +603,7 @@ export class Client {
     getEventTicketTypes: ReturnType<typeof getEventTicketTypes>;
     purchaseEventTicket: ReturnType<typeof purchaseEventTicket>;
     getEventTicketPaymentStatus: ReturnType<typeof getEventTicketPaymentStatus>;
+    switchTicketPaymentMethod: ReturnType<typeof switchTicketPaymentMethod>;
     assignTicketToRSVP: ReturnType<typeof assignTicketToRSVP>;
     addTicketToRsvp: ReturnType<typeof addTicketToRsvp>;
     removeTicketFromUser: ReturnType<typeof removeTicketFromUser>;
@@ -1296,6 +1298,10 @@ export class Client {
             getNostrSigner,
         );
         this.getEventTicketPaymentStatus = getEventTicketPaymentStatus(rest_api_url);
+        this.switchTicketPaymentMethod = switchTicketPaymentMethod(
+            rest_api_url,
+            getJwt,
+        );
         this.assignTicketToRSVP = assignTicketToRSVP(rest_api_url, getJwt);
         this.addTicketToRsvp = addTicketToRsvp(rest_api_url, getJwt);
         this.removeTicketFromUser = removeTicketFromUser(rest_api_url, getJwt);

@@ -1,5 +1,6 @@
 export enum PaymentMethod {
     LIGHTNING = "lightning",
+    ONCHAIN = "onchain",
     STRIPE = "stripe",
 }
 
