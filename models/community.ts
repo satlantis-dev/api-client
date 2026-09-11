@@ -142,6 +142,7 @@ export type CommunityNewsletter = {
 export enum CommunityMemberEngagementStage {
     UNKNOWN = "unknown",
     IMPORTED_CONTACT = "imported_contact",
+    INVITED = "invited",
     EVENT_ATTENDEE = "event_attendee",
     CALENDAR_SUBSCRIBER = "calendar_subscriber",
     MEMBERSHIP_REQUESTED = "membership_requested",
