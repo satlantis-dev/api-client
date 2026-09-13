@@ -983,6 +983,13 @@ async (args: {
     emailSubject?: string;
     invitationMessage?: string;
     ticketTypeId?: number;
+    /**
+     * Issue a complimentary ticket of `ticketTypeId` instead of only inviting to
+     * it (SAT-5768). Omitted, the backend defaults it to `true` whenever
+     * `ticketTypeId` is present; pass `false` to invite without issuing. `true`
+     * without a `ticketTypeId` is rejected with a 400.
+     */
+    issueTickets?: boolean;
     options?: {
         signal: AbortSignal;
     };
@@ -1003,6 +1010,7 @@ async (args: {
         emailSubject: args.emailSubject,
         invitationMessage: args.invitationMessage,
         ticketTypeId: args.ticketTypeId,
+        issueTickets: args.issueTickets,
     };
     const response = await safeFetch(url, {
         method: "POST",
@@ -1062,6 +1070,13 @@ export type InviteEventGuestsArgs = {
     emailSubject?: string;
     invitationMessage?: string;
     ticketTypeId?: number;
+    /**
+     * Issue a complimentary ticket of `ticketTypeId` instead of only inviting to
+     * it (SAT-5768). Omitted, the backend defaults it to `true` whenever
+     * `ticketTypeId` is present; pass `false` to invite without issuing. `true`
+     * without a `ticketTypeId` is rejected with a 400.
+     */
+    issueTickets?: boolean;
     options?: {
         signal: AbortSignal;
     };
@@ -1089,6 +1104,7 @@ export const inviteEventGuests =
                 emailSubject: args.emailSubject,
                 invitationMessage: args.invitationMessage,
                 ticketTypeId: args.ticketTypeId,
+                issueTickets: args.issueTickets,
             }),
             signal: args.options?.signal,
         });
@@ -1104,6 +1120,13 @@ export type InviteEventGuestsCSVArgs = {
     emailSubject?: string;
     invitationMessage?: string;
     ticketTypeId?: number;
+    /**
+     * Issue a complimentary ticket of `ticketTypeId` instead of only inviting to
+     * it (SAT-5768). Omitted, the backend defaults it to `true` whenever
+     * `ticketTypeId` is present; pass `false` to invite without issuing. `true`
+     * without a `ticketTypeId` is rejected with a 400.
+     */
+    issueTickets?: boolean;
     options?: {
         signal: AbortSignal;
     };
@@ -1134,6 +1157,9 @@ export const inviteEventGuestsCSV =
         }
         if (args.ticketTypeId !== undefined) {
             formData.append("ticketTypeId", String(args.ticketTypeId));
+        }
+        if (args.issueTickets !== undefined) {
+            formData.append("issueTickets", String(args.issueTickets));
         }
 
         const response = await safeFetch(url, {
@@ -1499,6 +1525,40 @@ async (
         return response;
     }
     return handleResponse<GetEventTicketTypeResponse[]>(response);
+};
+
+/**
+ * Retrieve a single ticket type by id.
+ *
+ * Unlike {@link getEventTicketTypes}, this route applies no `isHidden` filter,
+ * so it returns hidden types to any authenticated caller — which is how a guest
+ * invited to a hidden ticket type (SAT-5754) can see the one they were invited
+ * to. Requires JWT auth. The backend responds 400 for an unknown id.
+ */
+export const getEventTicketType = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    ticketTypeId: number,
+): Promise<GetEventTicketTypeResponse | null | Error> => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/ticket-types/${ticketTypeId}`;
+
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<GetEventTicketTypeResponse>(response);
 };
 
 export interface EventTicketPurchasePayload {

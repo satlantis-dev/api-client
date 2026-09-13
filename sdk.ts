@@ -300,6 +300,7 @@ import {
     getEvents,
     getEventsContacts,
     getEventTicketPaymentStatus,
+    getEventTicketType,
     getEventTicketTypes,
     getEventTicketWithdrawalFee,
     getEventUserFinancialTimeline,
@@ -600,6 +601,7 @@ export class Client {
     refundEventTicket: ReturnType<typeof refundEventTicket>;
     changeTicketType: ReturnType<typeof changeTicketType>;
     deleteEventTicketType: ReturnType<typeof deleteEventTicketType>;
+    getEventTicketType: ReturnType<typeof getEventTicketType>;
     getEventTicketTypes: ReturnType<typeof getEventTicketTypes>;
     purchaseEventTicket: ReturnType<typeof purchaseEventTicket>;
     getEventTicketPaymentStatus: ReturnType<typeof getEventTicketPaymentStatus>;
@@ -1291,6 +1293,7 @@ export class Client {
         this.refundEventTicket = refundEventTicket(rest_api_url, getJwt);
         this.changeTicketType = changeTicketType(rest_api_url, getJwt);
         this.deleteEventTicketType = deleteEventTicketType(rest_api_url, getJwt);
+        this.getEventTicketType = getEventTicketType(rest_api_url, getJwt);
         this.getEventTicketTypes = getEventTicketTypes(rest_api_url, getJwt);
         this.purchaseEventTicket = purchaseEventTicket(
             rest_api_url,
