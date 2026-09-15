@@ -1,6 +1,6 @@
 import type { Calendar, CalendarEvent, func_GetJwt } from "@satlantis/api-client";
 import type { AccountSearchDTO, SearchAccountDTO } from "../models/account.ts";
-import { copyURL, handleResponse } from "../helpers/_helper.ts";
+import { copyURL, handleResponse, handleStringResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { PaymentMethod, PaymentStatus } from "../models/order.ts";
 import type {
@@ -243,6 +243,47 @@ async (args: ListCommunityMembersAndProspectsArgs) => {
         return response;
     }
     return handleResponse<PaginatedMemberRecords<CommunityMemberExtended>>(response);
+};
+
+export type DownloadCommunityMembersAndProspectsCsvArgs = {
+    communityId: number;
+    onlyMembers?: boolean;
+    onlyProspects?: boolean;
+};
+
+// Returns the same member/prospect population as listCommunityMembersAndProspects, rendered as a
+// CSV by the backend. The CSV carries columns the list endpoint never returns (alt_email, phone,
+// alt_phone, memo, registration_answers), so it is a download path, not a formatting of data the
+// caller already holds.
+export const downloadCommunityMembersAndProspectsCsv = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: DownloadCommunityMembersAndProspectsCsvArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/members-and-prospects/csv`;
+    // Only ever send one of these: the backend rejects the pair with a 400.
+    if (args.onlyMembers) {
+        url.searchParams.set("onlyMembers", "true");
+    } else if (args.onlyProspects) {
+        url.searchParams.set("onlyProspects", "true");
+    }
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleStringResponse(response);
 };
 
 export type ListCommunityMembersMiniArgs = {
