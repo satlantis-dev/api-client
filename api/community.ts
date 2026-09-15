@@ -141,7 +141,7 @@ function setPaginationParams(
 
 export type ListCommunityMembersArgs = {
     communityId: number;
-    order?: "date_desc" | "date_asc" | "num_events" | "revenue";
+    order?: "date_desc" | "date_asc" | "num_events" | "revenue" | "start_asc" | "start_desc";
     page?: number;
     limit?: number;
 };
@@ -203,7 +203,7 @@ async (args: ListCommunityMembersArgs) => {
 
 export type ListCommunityMembersAndProspectsArgs = {
     communityId: number;
-    order?: "date_desc" | "date_asc" | "num_events" | "revenue";
+    order?: "date_desc" | "date_asc" | "num_events" | "revenue" | "start_asc" | "start_desc";
     search?: string;
     page?: number;
     limit?: number;
@@ -2368,7 +2368,7 @@ async (args: AddProspectsToCommunityArgs) => {
 
 export type ListCommunityProspectsArgs = {
     communityId: number;
-    order?: "date_desc" | "date_asc" | "num_events" | "revenue";
+    order?: "date_desc" | "date_asc" | "num_events" | "revenue" | "start_asc" | "start_desc";
     search?: string;
     // Restrict to prospects with an accepted RSVP for this event. The event must
     // belong to a calendar of this community.
