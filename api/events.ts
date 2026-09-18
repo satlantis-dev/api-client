@@ -120,6 +120,12 @@ export interface EventDetails {
 
     userTicket?: UserTicketEventDetails;
     userTickets?: UserTicketEventDetails[];
+    /**
+     * The guest's newest still-resumable pending order, when there is one.
+     * Authenticated callers only. Present for both rails, so a client that
+     * only resumes on-chain orders must filter on `onchainExpiresAt`.
+     */
+    userOrder?: UserPendingOrderInfo;
     isUnlisted: boolean;
     isHidingLocation?: boolean;
     isHidingAttendees?: boolean;
@@ -160,6 +166,35 @@ export interface UserTicketEventDetails {
     code?: string;
     ticketTypeId: number;
     ticketTypeName: string;
+}
+
+/**
+ * A pending Bitcoin order the guest can still pay, returned on event details
+ * so the client can offer to resume it. `code` is the order code, which is
+ * also the `paymentId` every payment endpoint resolves by — it feeds
+ * `getEventTicketPaymentStatus` and `switchTicketPaymentMethod` unchanged.
+ *
+ * Both rails keep their own window and the backend resumes either, so the
+ * rail is told apart by which expiry is set rather than by `paymentMethod`
+ * alone. Dates are RFC3339 strings on the wire.
+ */
+export interface UserPendingOrderInfo {
+    code: string;
+    status: string;
+    paymentMethod: TicketPaymentMethod;
+    amountSats: number;
+    /** Sats seen on the on-chain address. Overwritten per webhook, not summed. */
+    receivedSats: number;
+    remainingSats: number;
+    currency: string;
+    totalPrice: number;
+    priceCurrency?: PriceCurrency;
+    priceAmount?: number;
+    /** On-chain address expiry. Absent on a Lightning-only order. */
+    onchainExpiresAt?: string;
+    /** Lightning invoice expiry (120 s). */
+    lightningExpiresAt?: string;
+    createdAt: string;
 }
 
 export interface PublicTicketDetails {
