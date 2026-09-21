@@ -1474,10 +1474,17 @@ export const cancelCommunityMembershipRequest = (
 
 /////////////////////////// Membership Subscriptions ///////////////////////////
 
+// No `period` here on purpose: the handler decodes only cancelAtPeriodEnd and
+// paymentMethod, so a period sent here is silently dropped rather than rejected.
+// The backend's own docs point elsewhere ("To change the billing period, submit a
+// period_change membership request instead") — but note that route does not work
+// either: submitCommunityMembershipRequest is rejected with "Already a member of
+// this tier" before it can classify a request against the member's own tier as a
+// period_change, which is the only shape that qualifies. There is currently NO way
+// to change billing frequency from any client; tracked in SAT-5800.
 export type ModifyActiveMembershipSubscriptionArgs = {
     communityId: number;
     subscriptionId: number;
-    period?: CommunityMembershipPeriod;
     cancelAtPeriodEnd?: boolean;
     paymentMethod?: PaymentMethod;
 };
@@ -1502,7 +1509,6 @@ async (args: ModifyActiveMembershipSubscriptionArgs) => {
         method: "PUT",
         headers,
         body: JSON.stringify({
-            period: args.period,
             cancelAtPeriodEnd: args.cancelAtPeriodEnd,
             paymentMethod: args.paymentMethod,
         }),
