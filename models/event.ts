@@ -33,6 +33,11 @@ export type EventPaymentHistory = {
     lightningInvoice?: string;
     lightningPaymentHash?: string;
     lightningPreimage?: string;
+    // On-chain payment
+    onchainAddress?: string;
+    onchainTxId?: string;
+    onchainConfirmations?: number;
+    onchainReceivedSats?: number;
     stripePaymentIntentId?: string;
     stripeTransactionId?: string;
     createdAt: string;
@@ -97,6 +102,10 @@ export type PaymentInboundData = {
     lightningInvoice?: string;
     lightningPaymentHash?: string;
     lightningPreimage?: string;
+    onchainAddress?: string;
+    onchainTxId?: string;
+    onchainConfirmations?: number;
+    onchainReceivedSats?: number;
     cardBrand?: string;
     cardLast4?: string;
 };
