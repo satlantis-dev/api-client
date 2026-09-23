@@ -2178,6 +2178,8 @@ export class Client {
         contactEmail?: string;
         multipleTicketsPurchaseAllowed?: boolean;
         currency?: string;
+        isExternallyManaged?: boolean;
+        externalWebsite?: string;
     }) => {
         const jwtToken = this.getJwt();
         if (jwtToken == "") {
@@ -2281,6 +2283,8 @@ export class Client {
             ...(args.placeId && { placeId: args.placeId }), // Only include if placeId exists
             ...(args.isUnlisted !== undefined && { isUnlisted: args.isUnlisted }),
             ...(args.contactEmail !== undefined && { contactEmail: args.contactEmail }),
+            ...(args.isExternallyManaged !== undefined && { isExternallyManaged: args.isExternallyManaged }),
+            ...(args.externalWebsite !== undefined && { externalWebsite: args.externalWebsite }),
             event,
             isHidingAttendees: args.isHidingAttendees ?? false,
             isHidingLocation: args.isHidingLocation ?? false,
@@ -2333,6 +2337,8 @@ export class Client {
         contactEmail?: string;
         multipleTicketsPurchaseAllowed?: boolean;
         currency?: string;
+        isExternallyManaged?: boolean;
+        externalWebsite?: string;
     }) => {
         const jwtToken = this.getJwt();
         if (jwtToken == "") {
@@ -2435,6 +2441,8 @@ export class Client {
             calendarEventId: args.calendarEventId,
             ...(args.placeId && { placeId: args.placeId }), // Only include if placeId exists
             ...(args.contactEmail !== undefined && { contactEmail: args.contactEmail }),
+            ...(args.isExternallyManaged !== undefined && { isExternallyManaged: args.isExternallyManaged }),
+            ...(args.externalWebsite !== undefined && { externalWebsite: args.externalWebsite }),
             event,
             isHidingAttendees: args.isHidingAttendees,
             isUnlisted: args.isUnlisted,

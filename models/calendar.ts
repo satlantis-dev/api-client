@@ -112,6 +112,8 @@ export type CalendarEvent = {
     accountStripeConnectId?: number | null;
     contactEmail?: string;
     isOnline?: boolean;
+    // Ticketing/RSVP handled on another website (`website`); RSVP confirmation emails are skipped.
+    isExternallyManaged: boolean;
 };
 
 export type PlaceCalendarEvent = {

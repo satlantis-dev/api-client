@@ -95,6 +95,8 @@ export interface EventDetails {
     type: CalendarEventType;
     url: string;
     website: string;
+    // Ticketing/RSVP handled on another website (`website`); RSVP confirmation emails are skipped.
+    isExternallyManaged: boolean;
     isSatlantisCreated: boolean;
     googleId: string;
     venueId: number | null;

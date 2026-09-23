@@ -35,6 +35,9 @@ export interface PlaceCalendarEventPost {
     isHidingAttendees?: boolean;
     isHidingLocation?: boolean;
     isOnline?: boolean;
+    // Defaults to false. When true, `externalWebsite` (http(s) URL) is required and stored as `website`.
+    isExternallyManaged?: boolean;
+    externalWebsite?: string;
 }
 
 /**
@@ -74,6 +77,9 @@ export interface PlaceCalendarEventPut {
     isHidingLocation?: boolean;
     isUnlisted?: boolean;
     isOnline?: boolean;
+    // Omitted keeps the existing flag. True without `externalWebsite` keeps the existing `website`.
+    isExternallyManaged?: boolean;
+    externalWebsite?: string;
 }
 
 export interface RespondCalendarEventCohostInvitationPut {
