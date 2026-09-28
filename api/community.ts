@@ -2623,7 +2623,7 @@ async (args: UpdateCommunityMemberAdminFieldsArgs) => {
     headers.set("Content-Type", "application/json");
 
     const response = await safeFetch(url, {
-        method: "PATCH",
+        method: "PUT",
         headers,
         body: JSON.stringify({
             altName: args.altName,
