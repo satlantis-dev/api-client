@@ -1519,6 +1519,40 @@ async (args: ModifyActiveMembershipSubscriptionArgs) => {
     return handleResponse<CommunityMembershipSubscription>(response);
 };
 
+export type RenewPastDueMembershipSubscriptionArgs = {
+    communityId: number;
+    subscriptionId: number;
+};
+
+/**
+ * Admin-only: renews a past_due subscription by one period from where its last period ended.
+ * The backend rejects any other status. Sends no body, so no offline payment is recorded.
+ */
+export const renewPastDueMembershipSubscription = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: RenewPastDueMembershipSubscriptionArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/subscriptions/${args.subscriptionId}/renew`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityMembershipSubscription>(response);
+};
+
 export type StartMembershipCardSetupArgs = {
     communityId: number;
     subscriptionId: number;

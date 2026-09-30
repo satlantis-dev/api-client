@@ -454,6 +454,7 @@ import {
     removeCommunityAdmins,
     removeCommunityGalleryImage,
     removeMembersFromCommunity,
+    renewPastDueMembershipSubscription,
     searchCommunities,
     sendCommunityNewsletter,
     startMembershipSubscriptionCardSetup,
@@ -1100,6 +1101,9 @@ export class Client {
     >;
     modifyActiveMembershipSubscription: ReturnType<
         typeof modifyActiveMembershipSubscription
+    >;
+    renewPastDueMembershipSubscription: ReturnType<
+        typeof renewPastDueMembershipSubscription
     >;
     startMembershipSubscriptionCardSetup: ReturnType<
         typeof startMembershipSubscriptionCardSetup
@@ -1927,6 +1931,10 @@ export class Client {
             getJwt,
         );
         this.modifyActiveMembershipSubscription = modifyActiveMembershipSubscription(
+            rest_api_url,
+            getJwt,
+        );
+        this.renewPastDueMembershipSubscription = renewPastDueMembershipSubscription(
             rest_api_url,
             getJwt,
         );
