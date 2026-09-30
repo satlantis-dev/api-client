@@ -459,6 +459,7 @@ import {
     sendCommunityNewsletter,
     startMembershipSubscriptionCardSetup,
     startMembershipSubscriptionLightningInvoice,
+    startMembershipSubscriptionOnchainPayment,
     submitCommunityMembershipRequest,
     unlinkCalendarFromCommunity,
     unmarkCommunityAsFeatured,
@@ -1110,6 +1111,9 @@ export class Client {
     >;
     startMembershipSubscriptionLightningInvoice: ReturnType<
         typeof startMembershipSubscriptionLightningInvoice
+    >;
+    startMembershipSubscriptionOnchainPayment: ReturnType<
+        typeof startMembershipSubscriptionOnchainPayment
     >;
     getMembershipSubscription: ReturnType<
         typeof getMembershipSubscription
@@ -1943,6 +1947,10 @@ export class Client {
             getJwt,
         );
         this.startMembershipSubscriptionLightningInvoice = startMembershipSubscriptionLightningInvoice(
+            rest_api_url,
+            getJwt,
+        );
+        this.startMembershipSubscriptionOnchainPayment = startMembershipSubscriptionOnchainPayment(
             rest_api_url,
             getJwt,
         );

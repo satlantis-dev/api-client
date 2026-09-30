@@ -316,6 +316,13 @@ export type CommunityMembershipPayment = {
     // credits). Null for non-lightning payments.
     lightningAddress?: string | null;
     lightningPreimage?: string;
+    // On-chain rail only. `onchainReceivedSats` accumulates partial payments to
+    // `onchainAddress`; `expiresAt` is when that address stops being watched.
+    onchainAddress?: string | null;
+    onchainTxId?: string | null;
+    onchainConfirmations?: number | null;
+    onchainReceivedSats?: number | null;
+    expiresAt?: string | null;
     stripePaymentIntentId?: string;
     // Offline payments only (paymentMethod OFFLINE): how it was paid, the
     // uploaded proof, and the notes from the member's submission and the

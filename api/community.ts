@@ -1639,6 +1639,58 @@ async (args: StartMembershipLightningInvoiceArgs) => {
     return handleResponse<MembershipLightningInvoice>(response);
 };
 
+export type MembershipOnchainPayment = {
+    subscriptionId: number;
+    address: string;
+    // BIP21 URI for the amount still owed (`remainingSats`), not the full price.
+    paymentUri: string;
+    amountSats: number;
+    receivedSats: number;
+    remainingSats: number;
+    // ISO timestamp. The address is valid for 45 minutes from mint.
+    expiresAt: string;
+};
+
+export type StartMembershipOnchainPaymentArgs = {
+    communityId: number;
+    subscriptionId: number;
+    // Refund destination for a partial or late payment. Optional: when omitted
+    // the backend falls back to the member's Satlantis wallet address.
+    lightningAddress?: string;
+};
+
+// Mints (or re-reads) the on-chain address for a pending membership subscription.
+// Re-calling while the address is still valid returns the same address with fresh
+// received/remaining totals. Re-calling after expiry expires the old address (any
+// partial payment becomes refund-due) and mints a new one for the full amount.
+export const startMembershipSubscriptionOnchainPayment = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: StartMembershipOnchainPaymentArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname =
+        `/secure/communities/${args.communityId}/subscriptions/${args.subscriptionId}/onchain-address`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ lightningAddress: args.lightningAddress }),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<MembershipOnchainPayment>(response);
+};
+
 export type GetMembershipSubscriptionPaymentsArgs = {
     communityId: number;
     subscriptionId: number;
