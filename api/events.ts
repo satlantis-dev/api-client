@@ -1993,6 +1993,29 @@ export interface CurrencyEarnings {
     totalRefunded: number; // Total refunded to customers
     pendingRefunds: number; // Refunds being processed
     ticketsSold: number;
+    // Sats/cents moved through the event wallet outside of ticket sales
+    // (manual receives and sends). Absent on older deploys.
+    walletReceived?: number;
+    walletSent?: number;
+    // Satlantis platform fees charged on this rail's paid orders, in the rail's
+    // smallest unit (cents for fiat, sats for BTC). This is the platform cut
+    // ONLY — the payment processor's own fee is not included, so the organizer's
+    // take-home is NOT `totalEarnings - platformFees`. For the full split
+    // (platform fee, processor fee, net) see the per-order `payment.platformFee`
+    // breakdown on GET /secure/orders/{orderId}/history.
+    // Older orders predate fee tracking and contribute 0.
+    platformFees?: number;
+    // The payment processor's own cut (Stripe), aggregated the same way
+    // `platformFees` is. NOT in the api-dev payload yet — the figure currently
+    // only exists per order, as `payment.platformFee.processorFeeAmount` on
+    // GET /secure/orders/{orderId}/history. Declared so the "Merchant Fees"
+    // line lights up on its own once the backend starts sending it.
+    processorFees?: number;
+    // The rate behind `platformFees`, as a percentage (2.9 for Starter's 2.9%).
+    // Also not in the api-dev payload yet, and also only available per order
+    // (`payment.platformFee.platformFeePercent`). The rate is plan-dependent —
+    // Growth and Pro are 0% — so the UI cannot safely assume one.
+    platformFeePercent?: number;
 }
 
 export interface EventFinancialsSummaryResponse {
