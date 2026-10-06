@@ -887,7 +887,7 @@ export const postCalendarEventRSVP =
         }
 
         const url = copyURL(urlArg);
-        url.pathname = `/secure/postCalendarEventRSVP`;
+        url.pathname = `/secure/rsvps`;
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
