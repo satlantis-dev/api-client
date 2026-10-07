@@ -2,6 +2,25 @@ export enum PaymentMethod {
     LIGHTNING = "lightning",
     ONCHAIN = "onchain",
     STRIPE = "stripe",
+    // Collected outside the platform; see OfflinePaymentMethod for how.
+    OFFLINE = "offline",
+}
+
+// How an off-platform (offline) payment was actually made. Mirrors the backend's
+// models.OfflinePaymentMethod; the backend defaults to OTHER when omitted.
+export enum OfflinePaymentMethod {
+    CASH = "cash",
+    CARD = "card",
+    TRANSFER = "transfer",
+    CHEQUE = "cheque",
+    CRYPTO = "crypto",
+    PIX = "pix",
+    ALIPAY = "alipay",
+    REVOLUT = "revolut",
+    WECHAT = "wechat",
+    WISE = "wise",
+    ZELLE = "zelle",
+    OTHER = "other",
 }
 
 export enum OrderStatus {

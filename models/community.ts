@@ -1,6 +1,6 @@
 import type { AccountDTO, SearchAccountDTO } from "@satlantis/api-client";
 import type { Calendar } from "./calendar.ts";
-import type { PaymentMethod, PaymentStatus, RefundStatus } from "./order.ts";
+import type { OfflinePaymentMethod, PaymentMethod, PaymentStatus, RefundStatus } from "./order.ts";
 import type { OrderCurrency } from "./ticketing.ts";
 
 export type Community = {
@@ -317,6 +317,13 @@ export type CommunityMembershipPayment = {
     lightningAddress?: string | null;
     lightningPreimage?: string;
     stripePaymentIntentId?: string;
+    // Offline payments only (paymentMethod OFFLINE): how it was paid, the
+    // uploaded proof, and the notes from the member's submission and the
+    // admin's review.
+    offlinePaymentMethod?: OfflinePaymentMethod | null;
+    proofImageUrl?: string | null;
+    submitNotes?: string | null;
+    reviewNotes?: string | null;
     paidAt?: string;
     createdAt: string;
     updatedAt: string;

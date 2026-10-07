@@ -2,7 +2,7 @@ import type { Calendar, CalendarEvent, func_GetJwt } from "@satlantis/api-client
 import type { AccountSearchDTO, SearchAccountDTO } from "../models/account.ts";
 import { copyURL, handleResponse, handleStringResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
-import type { PaymentMethod, PaymentStatus } from "../models/order.ts";
+import type { OfflinePaymentMethod, PaymentMethod, PaymentStatus } from "../models/order.ts";
 import type {
     AccountCommunityRole,
     Community,
@@ -2582,6 +2582,22 @@ export type UpdateCommunityMemberArgs = {
     // rejected for free ones. The target tier must actually price the period
     // asked for, or the change fails.
     period?: CommunityMembershipPeriod;
+    // Records a payment the admin already collected off-platform. Paid tiers
+    // only, and only for upgrades or period increases (a prospect getting a
+    // paid tier counts). The backend creates the payment already `paid`.
+    offlinePaymentInfo?: OfflinePaymentInfo;
+};
+
+export type OfflinePaymentInfo = {
+    // Smallest currency unit (cents / sats), like every other payment amount.
+    // Must be greater than 0.
+    amount: number;
+    // Defaults to the community's currency.
+    currency?: OrderCurrency;
+    // Defaults to OfflinePaymentMethod.OTHER.
+    method?: OfflinePaymentMethod;
+    // A URL from uploadFile; the backend takes no file itself.
+    proofImageUrl?: string;
 };
 
 /**
@@ -2614,6 +2630,12 @@ async (args: UpdateCommunityMemberArgs) => {
         body: JSON.stringify({
             tierId: args.tierId,
             period: args.period,
+            offlinePaymentInfo: args.offlinePaymentInfo && {
+                offlinePaymentAmount: args.offlinePaymentInfo.amount,
+                offlinePaymentCurrency: args.offlinePaymentInfo.currency,
+                offlinePaymentMethod: args.offlinePaymentInfo.method,
+                offlinePaymentProofImageUrl: args.offlinePaymentInfo.proofImageUrl,
+            },
         }),
     });
     if (response instanceof Error) {
