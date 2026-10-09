@@ -600,6 +600,12 @@ async (args: RemoveCommunityAdminsArgs) => {
 export type AddMembersToCommunityArgs = {
     communityId: number;
     accountIds: number[];
+    // The tier every added account joins; the backend rejects the request without one.
+    tierId: number;
+    // Paid tiers only (the backend defaults to monthly when omitted); rejected for
+    // free ones. To record an off-platform payment, add members one at a time via
+    // POST /members/single instead.
+    period?: CommunityMembershipPeriod;
 };
 
 export const addMembersToCommunity = (
@@ -623,14 +629,15 @@ async (args: AddMembersToCommunityArgs) => {
         headers,
         body: JSON.stringify({
             accountIds: args.accountIds,
+            tierId: args.tierId,
+            period: args.period,
         }),
     });
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{
-        message: string;
-    }>(response);
+    // The members as added, one per account.
+    return handleResponse<CommunityMember[]>(response);
 };
 
 export type RemoveMembersFromCommunityArgs = {
