@@ -19,11 +19,39 @@ export type EventOrderItemHistory = {
     couponDiscountPercent?: number;
 };
 
+// Fee accounting for one paid transaction, in the same units as the payment it belongs to:
+// minor units (cents) for fiat, sats for BTC.
+//
+// `platformFeeAmount` is what Satlantis charged and `processorFeeAmount` is what the payment
+// processor charged; the two are always reported separately. `processorFeeAmount` is absent on
+// BTC rather than zero, because Lightning routing and on-chain miner fees on an inbound payment
+// are paid by the sender — the organizer is charged nothing, so there is no figure to report.
+//
+// Recorded once per PAYMENT, so it covers the whole order: there is no per-order-item figure.
+export type PaymentFeeBreakdown = {
+    grossAmount: number;
+    platformFeeAmount: number;
+    // The rate behind `platformFeeAmount`, as a percentage (2.9 for Starter's 2.9%).
+    // Plan-dependent — Growth and Pro are 0% — so the UI cannot assume a rate.
+    platformFeePercent: number;
+    // Absent on the BTC rail. See the note above.
+    processorFeeAmount?: number;
+    netAmount: number;
+    currency: string; // "USD", "BTC", ...
+    paymentRail: PaymentMethod;
+    planTier?: string;
+    // Which rule produced the rate: "plan" | "override" | "config" | "backfill".
+    // "backfill" marks a breakdown reconstructed after the fact rather than recorded at settlement.
+    feeSource: string;
+};
+
 export type EventPaymentHistory = {
     id: number;
     paymentMethod: PaymentMethod;
     status: PaymentStatus;
     amount: number;
+    // Absent on orders that predate fee tracking, so every read must tolerate it missing.
+    platformFee?: PaymentFeeBreakdown;
     // Stripe payment
     cardLast4?: string;
     cardBrand?: string;
