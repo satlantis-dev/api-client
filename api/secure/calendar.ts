@@ -251,6 +251,11 @@ export const removeCohostFromCalendarEvent =
         if (response instanceof Error) {
             return response;
         }
+        // A 403/404/500 must come back as an Error, not as a silent success.
+        const result = await handleResponse<{}>(response);
+        if (result instanceof Error) {
+            return result;
+        }
         return;
     };
 
