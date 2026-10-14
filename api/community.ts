@@ -682,6 +682,83 @@ async (args: RemoveMembersFromCommunityArgs) => {
     }>(response);
 };
 
+// A banned row is soft-deleted with its tier stripped, so nothing here says whether the person
+// was a member or a prospect before the ban. `bannedAt` is the soft-delete time.
+export type BannedCommunityMember = CommunityMember & {
+    bannedAt: string;
+};
+
+export type ListBannedCommunityMembersArgs = {
+    communityId: number;
+    search?: string;
+    page?: number;
+    // Server caps this at 100.
+    limit?: number;
+};
+
+// Most recently banned first. Requires community management permission.
+export const listBannedCommunityMembers = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: ListBannedCommunityMembersArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/banned`;
+    setPaginationParams(url, args);
+    if (args.search) {
+        url.searchParams.set("search", args.search);
+    }
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<PaginatedMemberRecords<BannedCommunityMember>>(response);
+};
+
+export type UnbanCommunityMemberArgs = {
+    communityId: number;
+    // The id from the banned listing; the same row comes back live after the unban.
+    memberId: number;
+};
+
+// Lifts the ban and restores the person as a prospect (no tier). A 403 can also mean the owner's
+// plan limit on prospects would be exceeded — the ApiError text carries the server's reason.
+export const unbanCommunityMember = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: UnbanCommunityMemberArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/banned/${args.memberId}`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "DELETE",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<Record<string, never>>(response);
+};
+
 export type CreateCommunityNewsletterArgs = {
     communityId: number;
     subject: string;

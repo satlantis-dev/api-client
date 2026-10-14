@@ -442,6 +442,7 @@ import {
     inviteCommunityMembersByContacts,
     inviteCommunityMembersCSV,
     linkCalendarToCommunity,
+    listBannedCommunityMembers,
     listCommunityAdmins,
     listCommunityMembers,
     listCommunityMembersAndProspects,
@@ -461,6 +462,7 @@ import {
     startMembershipSubscriptionLightningInvoice,
     startMembershipSubscriptionOnchainPayment,
     submitCommunityMembershipRequest,
+    unbanCommunityMember,
     unlinkCalendarFromCommunity,
     unmarkCommunityAsFeatured,
     updateCommunity,
@@ -1030,6 +1032,8 @@ export class Client {
     listCommunityMembersMini: ReturnType<typeof listCommunityMembersMini>;
     addMembersToCommunity: ReturnType<typeof addMembersToCommunity>;
     removeMembersFromCommunity: ReturnType<typeof removeMembersFromCommunity>;
+    listBannedCommunityMembers: ReturnType<typeof listBannedCommunityMembers>;
+    unbanCommunityMember: ReturnType<typeof unbanCommunityMember>;
     /** @deprecated Use {@link Client.updateCommunityMember} - this only ever upgrades a tier. */
     updateMemberships: ReturnType<typeof updateMemberships>;
     getCommunityMember: ReturnType<typeof getCommunityMember>;
@@ -1806,6 +1810,8 @@ export class Client {
             rest_api_url,
             getJwt,
         );
+        this.listBannedCommunityMembers = listBannedCommunityMembers(rest_api_url, getJwt);
+        this.unbanCommunityMember = unbanCommunityMember(rest_api_url, getJwt);
         this.updateMemberships = updateMemberships(rest_api_url, getJwt);
         this.getCommunityMember = getCommunityMember(rest_api_url, getJwt);
         this.updateCommunityMember = updateCommunityMember(
