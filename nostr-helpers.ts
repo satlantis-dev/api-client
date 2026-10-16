@@ -14,6 +14,7 @@ import type { Client } from "./sdk.ts";
 const Kind_PlaceFollowList = 10016;
 const FALLBACK_RELAYS = ["wss://relay.primal.net", "wss://relay.damus.io"];
 const NIP65_RELAY_LIST_KIND = 10002 as NostrKind;
+const RELAY_READ_TIMEOUT_MS = 5_000;
 let replaceableSubCounter = 0;
 const followingMutationLocks = new WeakMap<Client, Promise<void>>();
 const lastPublishedContactLists = new WeakMap<Client, NostrEvent>();
@@ -282,10 +283,23 @@ async function getReplaceableEvent(
     return result || latestEvent;
 }
 
+export class RelayReadTimeout extends Error {
+    constructor(url: string, timeoutMs: number) {
+        super(`${url} did not answer within ${timeoutMs}ms`);
+        this.name = RelayReadTimeout.name;
+    }
+}
+
+/**
+ * Reads the newest `kind` event by `pubKey` from one relay. Resolves to an `Error` instead of waiting
+ * forever when the relay does not finish answering within `timeoutMs`: the SDK keeps reconnecting to
+ * a relay that refuses the connection and never errors the subscription.
+ */
 export async function getContactList(
     satlantis_relay: string,
     pubKey: string | PublicKey,
     kind: NostrKind = NostrKind.CONTACTS,
+    timeoutMs: number = RELAY_READ_TIMEOUT_MS,
 ) {
     let pub: PublicKey;
     if (typeof pubKey == "string") {
@@ -301,7 +315,20 @@ export async function getContactList(
     if (relay instanceof Error) {
         return relay;
     }
-    const event = await getReplaceableEvent(relay, pub, kind);
+
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const timedOut = new Promise<RelayReadTimeout>((resolve) => {
+        timer = setTimeout(() => resolve(new RelayReadTimeout(satlantis_relay, timeoutMs)), timeoutMs);
+    });
+    const event = await Promise.race([getReplaceableEvent(relay, pub, kind), timedOut]);
+    clearTimeout(timer);
+
+    if (event instanceof RelayReadTimeout) {
+        // Closing stops the SDK's reconnect loop. Not awaited: closing a socket that never opened
+        // can itself wait on the network.
+        relay.close().catch(() => undefined);
+        return event;
+    }
     await relay.close();
     return event;
 }
