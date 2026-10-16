@@ -1952,7 +1952,7 @@ async (args: GetMembershipSubscriptionArgs) => {
         return new Error("jwt token is empty");
     }
     const url = copyURL(urlArg);
-    url.pathname = `/communities/${args.communityId}/subscriptions/${args.subscriptionId}`;
+    url.pathname = `/secure/communities/${args.communityId}/subscriptions/${args.subscriptionId}`;
 
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);

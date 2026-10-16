@@ -280,6 +280,20 @@ export type CommunityMembershipSubscription = {
     cancelAtPeriodEnd?: boolean;
     currentPeriodStart?: string | null;
     currentPeriodEnd?: string | null;
+    // Price in the payment method's currency as of the last charge (or the
+    // last paymentMethod change): sats for BTC, cents for fiat. Repriced when
+    // the payment method changes.
+    amount?: number | null;
+    currency?: OrderCurrency | null;
+    // Listed tier price the subscription was taken at, in the community's
+    // currency. Fixed for the life of the subscription — use it for display.
+    listAmount?: number | null;
+    listCurrency?: OrderCurrency | null;
+    // Set when a coupon discounts the first charge only: the amount that
+    // charge will be, in `currency`.
+    nextChargeAmountOverride?: number | null;
+    couponId?: number | null;
+    couponDiscountAmount?: number | null;
     metadata?: Record<string, unknown> | null;
     cardLast4?: string;
     cardBrand?: string;
@@ -361,6 +375,7 @@ export type CommunityMembershipSubscriptionDetail =
         account?: AccountDTO | null;
         member?: CommunityMember | null;
         tier?: CommunityMembershipTier | null;
+        payments?: CommunityMembershipPayment[] | null;
     };
 
 // Payment as returned by GET /secure/communities/{id}/financials/transactions.
