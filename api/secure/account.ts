@@ -400,7 +400,7 @@ export const updateAccountFollowingList =
         const ok = await handleResponse<string>(response);
         if (ok instanceof Error) return ok;
 
-        return ok.toLowerCase() == "success";
+        return typeof ok == "string" && ok.toLowerCase() == "success";
     };
 
 export const updateAccount = (urlArg: URL, getJwt: func_GetJwt) =>

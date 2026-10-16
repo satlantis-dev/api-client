@@ -210,7 +210,15 @@ import {
     updateCalendarEventDraft,
     updateEventInCalendar,
 } from "./api/secure/calendar.ts";
-import { followPubkeys, getFollowingPubkeys, getInterestsOf, unfollowPubkeys } from "./nostr-helpers.ts";
+import {
+    type FollowingChanges,
+    followPubkeys,
+    getContactListsFromRelays,
+    getFollowingPubkeys,
+    getInterestsOf,
+    unfollowPubkeys,
+    updateFollowings,
+} from "./nostr-helpers.ts";
 import { getPubkeyByNip05 } from "./api/nip5.ts";
 import { safeFetch } from "./helpers/safe-fetch.ts";
 import { type Account, type Kind0MetaData, normalizeKind0MetaData } from "./models/account.ts";
@@ -2867,6 +2875,18 @@ export class Client {
         } finally {
             await relay.close();
         }
+    };
+
+    /**
+     * Follow and unfollow in one contact list publish. Resolves to `true` once the server
+     * accepted the new list (or nothing needed to change), otherwise to an `Error`.
+     */
+    updateFollowings = async (changes: FollowingChanges) => {
+        return updateFollowings(
+            this,
+            changes,
+            (author) => getContactListsFromRelays(author, [this.relay_url]),
+        );
     };
 
     followPubkeys = async (toFollow: PublicKey[]) => {

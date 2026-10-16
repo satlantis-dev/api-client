@@ -7,6 +7,7 @@ import {
     type Signer,
     SingleRelayConnection,
     type Tag,
+    verifyEvent,
 } from "@blowater/nostr-sdk";
 import type { Client } from "./sdk.ts";
 
@@ -15,6 +16,7 @@ const FALLBACK_RELAYS = ["wss://relay.primal.net", "wss://relay.damus.io"];
 const NIP65_RELAY_LIST_KIND = 10002 as NostrKind;
 let replaceableSubCounter = 0;
 const followingMutationLocks = new WeakMap<Client, Promise<void>>();
+const lastPublishedContactLists = new WeakMap<Client, NostrEvent>();
 
 async function withFollowingMutationLock<T>(
     apiClient: Client,
@@ -47,61 +49,95 @@ async function withFollowingMutationLock<T>(
     }
 }
 
-async function getFollowingBaseline(
-    apiClient: Client,
-    signer: Signer,
+export type FollowingChanges = {
+    add: PublicKey[];
+    remove: PublicKey[];
+};
+
+/**
+ * Picks the contact list to edit from every copy the relays (and our own cache) returned.
+ * Only kind 3 events authored by `authorHex` with a valid signature count; the newest
+ * `created_at` wins and a tie goes to the lower event id, as NIP-01 prescribes for replaceable events.
+ */
+export async function pickNewestContactList(
+    events: NostrEvent[],
+    authorHex: string,
+): Promise<NostrEvent | undefined> {
+    const valid: NostrEvent[] = [];
+    for (const event of events) {
+        if (event.kind !== NostrKind.CONTACTS) continue;
+        if (event.pubkey !== authorHex) continue;
+        if (!(await verifyEvent(event))) continue;
+        valid.push(event);
+    }
+    return valid.sort((a, b) => {
+        if (a.created_at !== b.created_at) return b.created_at - a.created_at;
+        return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+    })[0];
+}
+
+/**
+ * Edits the base contact list in place: drops every `p` tag naming a pubkey in `remove`, then appends
+ * `["p", hex]` for each pubkey in `add` that is not already followed. Every other tag (petnames, relay
+ * hints, malformed `p` tags, non-`p` tags) and the content are carried over untouched.
+ */
+export function applyFollowingChanges(
+    base: NostrEvent | undefined,
+    changes: { add: string[]; remove: string[] },
+): { tags: Tag[]; content: string; changed: boolean } {
+    const remove = new Set(changes.remove.map((hex) => hex.toLowerCase()));
+    const tags: Tag[] = [];
+    let changed = false;
+    for (const tag of base?.tags ?? []) {
+        if (tag[0] === "p" && typeof tag[1] === "string" && remove.has(tag[1].toLowerCase())) {
+            changed = true;
+            continue;
+        }
+        tags.push(tag);
+    }
+
+    const followed = new Set(
+        tags.filter((tag) => tag[0] === "p" && typeof tag[1] === "string").map((tag) => tag[1].toLowerCase()),
+    );
+    for (const hex of changes.add) {
+        const pubkey = hex.toLowerCase();
+        if (followed.has(pubkey)) continue;
+        followed.add(pubkey);
+        tags.push(["p", pubkey]);
+        changed = true;
+    }
+
+    return { tags, content: base?.content ?? "", changed };
+}
+
+/**
+ * Relays and the backend keep a replaceable event only if it is strictly newer than the stored one,
+ * so a second publish in the same second (or over a future-dated base) must move past the base.
+ */
+export function nextCreatedAt(base: NostrEvent | undefined, nowSec: number) {
+    return base ? Math.max(nowSec, base.created_at + 1) : nowSec;
+}
+
+/**
+ * Every contact list copy for `author` found on the fallback relays, the bootstrap relays, and the
+ * write relays from the author's NIP-65 list. Unreachable relays are skipped.
+ */
+export async function getContactListsFromRelays(
+    author: PublicKey,
     bootstrapRelays: string[],
-): Promise<Set<string> | Error> {
+): Promise<NostrEvent[]> {
+    const relays = new Set<string>([...FALLBACK_RELAYS, ...bootstrapRelays]);
     const relayList = await getReplaceableEventFromRelays(
-        Array.from(new Set([...FALLBACK_RELAYS, ...bootstrapRelays])),
-        signer.publicKey,
+        Array.from(relays),
+        author,
         NIP65_RELAY_LIST_KIND,
     );
-    const relays = new Set<string>([...FALLBACK_RELAYS, ...bootstrapRelays]);
     if (!(relayList instanceof Error) && relayList) {
         for (const tag of relayList.tags) {
             if (tag[0] === "r" && tag[1]?.startsWith("wss://")) relays.add(tag[1]);
         }
     }
-    const contactLists = await getReplaceableEventsFromRelays(
-        Array.from(relays),
-        signer.publicKey,
-        NostrKind.CONTACTS,
-    );
-    const baseline = new Set<string>();
-    const followingPubkeys = contactLists.flatMap((event) => getTags(event).p);
-    if (contactLists.length === 0) {
-        const account = await apiClient.getAccount({
-            npub: signer.publicKey.bech32(),
-        });
-        if (account instanceof Error) {
-            return new Error(
-                "Could not verify the account before updating the following list",
-                {
-                    cause: account,
-                },
-            );
-        }
-        if ((account.followingCount ?? 0) > 0) {
-            return new Error(
-                "Primal returned no kind 3 for an account with existing follows",
-            );
-        }
-    }
-    for (const followingPubkey of followingPubkeys) {
-        const pubkey = PublicKey.FromHex(followingPubkey);
-        if (pubkey instanceof Error) {
-            return new Error(
-                `Relay returned an invalid following pubkey: ${followingPubkey}`,
-                {
-                    cause: pubkey,
-                },
-            );
-        }
-        baseline.add(pubkey.hex);
-    }
-
-    return baseline;
+    return getReplaceableEventsFromRelays(Array.from(relays), author, NostrKind.CONTACTS);
 }
 
 async function getReplaceableEventFromRelays(
@@ -134,36 +170,55 @@ async function getReplaceableEventsFromRelays(
     return results.filter((event): event is NostrEvent => Boolean(event));
 }
 
-async function updateFollowingPubkeys(
+/**
+ * Applies `changes` to the signer's newest contact list in one read and one publish.
+ *
+ * The backend fans the event out to relays asynchronously, so relays may not have our previous
+ * publish yet; the last event this client published is therefore always a base candidate too.
+ */
+export async function updateFollowings(
     apiClient: Client,
-    mutate: (followings: Set<string>) => boolean,
-    bootstrapRelays: string[] = [],
-) {
+    changes: FollowingChanges,
+    loadContactLists: (author: PublicKey) => Promise<NostrEvent[]>,
+): Promise<true | Error> {
     return withFollowingMutationLock(apiClient, async () => {
         const signer = await apiClient.getNostrSigner();
         if (signer instanceof Error) {
             return signer;
         }
 
-        const followings = await getFollowingBaseline(
-            apiClient,
-            signer,
-            bootstrapRelays,
-        );
-        if (followings instanceof Error) {
-            return followings;
+        const candidates = await loadContactLists(signer.publicKey);
+        const lastPublished = lastPublishedContactLists.get(apiClient);
+        if (lastPublished) candidates.push(lastPublished);
+        const base = await pickNewestContactList(candidates, signer.publicKey.hex);
+        if (!base) {
+            const account = await apiClient.getAccount({
+                npub: signer.publicKey.bech32(),
+            });
+            if (account instanceof Error) {
+                return new Error(
+                    "Could not verify the account before updating the following list",
+                    { cause: account },
+                );
+            }
+            if ((account.followingCount ?? 0) > 0) {
+                return new Error("Relays returned no kind 3 for an account with existing follows");
+            }
         }
 
-        const changed = mutate(followings);
+        const { tags, content, changed } = applyFollowingChanges(base, {
+            add: changes.add.map((pubkey) => pubkey.hex),
+            remove: changes.remove.map((pubkey) => pubkey.hex),
+        });
         if (!changed) {
             return true;
         }
 
-        const tags: Tag[] = Array.from(followings, (pubkey) => ["p", pubkey]);
         const event = await prepareNostrEvent(signer, {
             kind: NostrKind.CONTACTS,
-            content: "",
+            content,
             tags,
+            created_at: nextCreatedAt(base, Math.floor(Date.now() / 1000)),
         });
         if (event instanceof Error) {
             return event;
@@ -171,7 +226,14 @@ async function updateFollowingPubkeys(
 
         // @ts-ignore: use private
         const result = await apiClient.updateAccountFollowingList({ event });
-        return result;
+        if (result instanceof Error) {
+            return result;
+        }
+        if (!result) {
+            return new Error("The server did not accept the following list update");
+        }
+        lastPublishedContactLists.set(apiClient, event);
+        return true;
     });
 }
 
@@ -249,19 +311,10 @@ export async function followPubkeys(
     toFollow: PublicKey[],
     apiClient: Client,
 ) {
-    return updateFollowingPubkeys(
+    return updateFollowings(
         apiClient,
-        (followings) => {
-            let changed = false;
-            for (const pubkey of toFollow) {
-                if (!followings.has(pubkey.hex)) {
-                    followings.add(pubkey.hex);
-                    changed = true;
-                }
-            }
-            return changed;
-        },
-        [satlantis_relay_url],
+        { add: toFollow, remove: [] },
+        (author) => getContactListsFromRelays(author, [satlantis_relay_url]),
     );
 }
 
@@ -270,16 +323,10 @@ export async function unfollowPubkeys(
     toUnfollow: PublicKey[],
     apiClient: Client,
 ) {
-    return updateFollowingPubkeys(
+    return updateFollowings(
         apiClient,
-        (followings) => {
-            let changed = false;
-            for (const pubkey of toUnfollow) {
-                changed = followings.delete(pubkey.hex) || changed;
-            }
-            return changed;
-        },
-        [satlantis_relay_url],
+        { add: [], remove: toUnfollow },
+        (author) => getContactListsFromRelays(author, [satlantis_relay_url]),
     );
 }
 
