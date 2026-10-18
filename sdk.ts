@@ -117,7 +117,18 @@ import {
     updateAdditionalPictures,
 } from "./api/secure/account.ts";
 import { getCommunityBanners, getSystemBanners, getSystemVersion } from "./api/system.ts";
-import { getPlans } from "./api/plan.ts";
+import {
+    cancelScheduledPlanChange,
+    confirmPlanCardSetup,
+    getPlanPaymentStatus,
+    getPlans,
+    getUserPlan,
+    previewPlanCoupon,
+    startPlanCardSetup,
+    startPlanLightningInvoice,
+    startPlanOnchainPayment,
+    subscribeToPlan,
+} from "./api/premium.ts";
 import { deletePlaceGalleryImage, postPlaceGalleryImage, updatePlace } from "./api/secure/place.ts";
 import { deleteNote, postNote, postReaction, recordNotesAsSeen } from "./api/secure/note.ts";
 import { getNotifications } from "./api/secure/notification.ts";
@@ -718,7 +729,17 @@ export class Client {
     getCommunityBanners: ReturnType<typeof getCommunityBanners>;
     getSystemBanners: ReturnType<typeof getSystemBanners>;
     getSystemVersion: ReturnType<typeof getSystemVersion>;
+    // premium
     getPlans: ReturnType<typeof getPlans>;
+    getUserPlan: ReturnType<typeof getUserPlan>;
+    previewPlanCoupon: ReturnType<typeof previewPlanCoupon>;
+    subscribeToPlan: ReturnType<typeof subscribeToPlan>;
+    cancelScheduledPlanChange: ReturnType<typeof cancelScheduledPlanChange>;
+    startPlanCardSetup: ReturnType<typeof startPlanCardSetup>;
+    confirmPlanCardSetup: ReturnType<typeof confirmPlanCardSetup>;
+    startPlanLightningInvoice: ReturnType<typeof startPlanLightningInvoice>;
+    startPlanOnchainPayment: ReturnType<typeof startPlanOnchainPayment>;
+    getPlanPaymentStatus: ReturnType<typeof getPlanPaymentStatus>;
 
     // note
     private getNotesOfPubkey: ReturnType<typeof getNotesOfPubkey>;
@@ -1464,7 +1485,18 @@ export class Client {
         this.getCommunityBanners = getCommunityBanners(rest_api_url);
         this.getSystemBanners = getSystemBanners(rest_api_url);
         this.getSystemVersion = getSystemVersion(rest_api_url);
+
+        // Premium
         this.getPlans = getPlans(rest_api_url);
+        this.getUserPlan = getUserPlan(rest_api_url, getJwt);
+        this.previewPlanCoupon = previewPlanCoupon(rest_api_url);
+        this.subscribeToPlan = subscribeToPlan(rest_api_url, getJwt);
+        this.cancelScheduledPlanChange = cancelScheduledPlanChange(rest_api_url, getJwt);
+        this.startPlanCardSetup = startPlanCardSetup(rest_api_url, getJwt);
+        this.confirmPlanCardSetup = confirmPlanCardSetup(rest_api_url, getJwt);
+        this.startPlanLightningInvoice = startPlanLightningInvoice(rest_api_url, getJwt);
+        this.startPlanOnchainPayment = startPlanOnchainPayment(rest_api_url, getJwt);
+        this.getPlanPaymentStatus = getPlanPaymentStatus(rest_api_url, getJwt);
 
         // Notifications
         this.getNotifications = getNotifications(rest_api_url, getJwt);
@@ -4035,7 +4067,7 @@ export * from "./api/login.ts";
 export * from "./api/nip5.ts";
 export * from "./api/note.ts";
 export * from "./api/people.ts";
-export * from "./api/plan.ts";
+export * from "./api/premium.ts";
 export * from "./api/place.ts";
 export * from "./api/share_types.ts";
 export * from "./api/secure/account.ts";
@@ -4049,7 +4081,7 @@ export * from "./models/location.ts";
 export * from "./models/metric.ts";
 export * from "./models/notification.ts";
 export * from "./models/place.ts";
-export * from "./models/plan.ts";
+export * from "./models/premium.ts";
 export * from "./models/region.ts";
 export * from "./models/interest.ts";
 export * from "./models/reaction.ts";
