@@ -32,6 +32,9 @@ export enum OrderStatus {
 
 export enum PaymentStatus {
     PENDING = "pending",
+    // Offline only: the member submitted what they paid and it awaits an admin's
+    // confirmation, after which it becomes PAID.
+    SUBMITTED = "submitted",
     PAID = "paid",
     EXPIRED = "expired",
     FAILED = "failed",

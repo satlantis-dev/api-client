@@ -320,6 +320,10 @@ export type CommunityMembershipPayment = {
     status: PaymentStatus;
     amount: number;
     currency: OrderCurrency;
+    // The period this payment covers. Set once it is paid; for offline payments
+    // that is when an admin confirms, so these stay empty while SUBMITTED.
+    billingPeriodStart?: string | null;
+    billingPeriodEnd?: string | null;
     cardLast4?: string;
     cardBrand?: string;
     // Address used at purchase. For lightning payments the BE backfills this
@@ -342,6 +346,9 @@ export type CommunityMembershipPayment = {
     // uploaded proof, and the notes from the member's submission and the
     // admin's review.
     offlinePaymentMethod?: OfflinePaymentMethod | null;
+    // The day the member says they paid (date only), and when they submitted it.
+    offlinePaymentDate?: string | null;
+    submittedAt?: string | null;
     proofImageUrl?: string | null;
     submitNotes?: string | null;
     reviewNotes?: string | null;

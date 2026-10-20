@@ -1768,6 +1768,101 @@ async (args: StartMembershipOnchainPaymentArgs) => {
     return handleResponse<MembershipOnchainPayment>(response);
 };
 
+export type StartMembershipOfflinePaymentArgs = {
+    communityId: number;
+    subscriptionId: number;
+};
+
+// Returns the open offline payment for a subscription awaiting payment
+// (pending_payment, or past_due for a renewal), creating a pending one if there
+// is none. Re-calling returns the same payment, PENDING or SUBMITTED, until it is
+// confirmed or cancelled. Subscription owner only; the backend rejects
+// pending_approval, so a gated tier must be approved first.
+export const startMembershipSubscriptionOfflinePayment = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: StartMembershipOfflinePaymentArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname =
+        `/secure/communities/${args.communityId}/subscriptions/${args.subscriptionId}/offline-payment`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityMembershipPayment>(response);
+};
+
+export type SubmitOfflineMembershipPaymentArgs = {
+    communityId: number;
+    subscriptionId: number;
+    paymentId: number;
+    // Smallest currency unit (cents / sats), > 0.
+    amount: number;
+    // Send the payment's own currency: the backend defaults to the community's,
+    // which differs for a BTC community (its offline subscriptions are in USD).
+    currency: OrderCurrency;
+    // Defaults to OfflinePaymentMethod.OTHER.
+    method?: OfflinePaymentMethod;
+    // A URL from uploadFile; the backend takes no file itself.
+    proofImageUrl?: string;
+    // Max 500 characters.
+    notes?: string;
+    // YYYY-MM-DD, not in the future.
+    paymentDate?: string;
+};
+
+// Records what the member paid off-platform and moves the payment from PENDING
+// to SUBMITTED, where it stays until an admin confirms it. One shot: the backend
+// rejects a payment that is no longer PENDING, and there is no way to edit or
+// resubmit it.
+export const submitOfflineMembershipPayment = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: SubmitOfflineMembershipPaymentArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname =
+        `/secure/communities/${args.communityId}/subscriptions/${args.subscriptionId}/payments/${args.paymentId}/submit-offline`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    // The response names these proofImageUrl and submitNotes.
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify({
+            offlinePaymentAmount: args.amount,
+            offlinePaymentCurrency: args.currency,
+            offlinePaymentMethod: args.method,
+            offlinePaymentProofImageUrl: args.proofImageUrl,
+            offlinePaymentNotes: args.notes,
+            offlinePaymentDate: args.paymentDate,
+        }),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityMembershipPayment>(response);
+};
+
 export type GetMembershipSubscriptionPaymentsArgs = {
     communityId: number;
     subscriptionId: number;
