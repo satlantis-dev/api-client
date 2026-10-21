@@ -1606,11 +1606,15 @@ async (args: ModifyActiveMembershipSubscriptionArgs) => {
 export type RenewPastDueMembershipSubscriptionArgs = {
     communityId: number;
     subscriptionId: number;
+    // Records a payment the admin already collected off-platform for this
+    // renewal, created already `paid`. Also cancels any open offline payment
+    // on the subscription (e.g. one the member submitted).
+    offlinePaymentInfo?: OfflinePaymentInfo;
 };
 
 /**
  * Admin-only: renews a past_due subscription by one period from where its last period ended.
- * The backend rejects any other status. Sends no body, so no offline payment is recorded.
+ * The backend rejects any other status. Without `offlinePaymentInfo` no payment is recorded.
  */
 export const renewPastDueMembershipSubscription = (
     urlArg: URL,
@@ -1627,9 +1631,18 @@ async (args: RenewPastDueMembershipSubscriptionArgs) => {
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
+    let body: string | undefined;
+    if (args.offlinePaymentInfo) {
+        headers.set("Content-Type", "application/json");
+        body = JSON.stringify({
+            offlinePaymentInfo: toOfflinePaymentInfoBody(args.offlinePaymentInfo),
+        });
+    }
+
     const response = await safeFetch(url, {
         method: "PUT",
         headers,
+        body,
     });
     if (response instanceof Error) {
         return response;
@@ -1856,6 +1869,44 @@ async (args: SubmitOfflineMembershipPaymentArgs) => {
             offlinePaymentNotes: args.notes,
             offlinePaymentDate: args.paymentDate,
         }),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityMembershipPayment>(response);
+};
+
+export type ConfirmOfflineMembershipPaymentArgs = {
+    communityId: number;
+    subscriptionId: number;
+    paymentId: number;
+    // Max 500 characters.
+    reviewNotes?: string;
+};
+
+// Admin-only: marks a SUBMITTED offline payment paid, which activates or renews
+// the membership. There is no reject counterpart.
+export const confirmOfflineMembershipPayment = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: ConfirmOfflineMembershipPaymentArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname =
+        `/secure/communities/${args.communityId}/subscriptions/${args.subscriptionId}/payments/${args.paymentId}/confirm-offline`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify({ reviewNotes: args.reviewNotes }),
     });
     if (response instanceof Error) {
         return response;
@@ -2829,7 +2880,21 @@ export type OfflinePaymentInfo = {
     method?: OfflinePaymentMethod;
     // A URL from uploadFile; the backend takes no file itself.
     proofImageUrl?: string;
+    // The day it was paid, YYYY-MM-DD, not in the future.
+    paymentDate?: string;
+    // The admin's note, max 500 characters. Stored as the payment's reviewNotes.
+    reviewNotes?: string;
 };
+
+// The wire shape shared by every endpoint that takes an offlinePaymentInfo.
+const toOfflinePaymentInfoBody = (info: OfflinePaymentInfo) => ({
+    offlinePaymentAmount: info.amount,
+    offlinePaymentCurrency: info.currency,
+    offlinePaymentMethod: info.method,
+    offlinePaymentProofImageUrl: info.proofImageUrl,
+    offlinePaymentDate: info.paymentDate,
+    offlinePaymentReviewNotes: info.reviewNotes,
+});
 
 /**
  * Sets one member's tier to exactly what was requested - an upgrade, a downgrade
@@ -2861,12 +2926,8 @@ async (args: UpdateCommunityMemberArgs) => {
         body: JSON.stringify({
             tierId: args.tierId,
             period: args.period,
-            offlinePaymentInfo: args.offlinePaymentInfo && {
-                offlinePaymentAmount: args.offlinePaymentInfo.amount,
-                offlinePaymentCurrency: args.offlinePaymentInfo.currency,
-                offlinePaymentMethod: args.offlinePaymentInfo.method,
-                offlinePaymentProofImageUrl: args.offlinePaymentInfo.proofImageUrl,
-            },
+            offlinePaymentInfo: args.offlinePaymentInfo &&
+                toOfflinePaymentInfoBody(args.offlinePaymentInfo),
         }),
     });
     if (response instanceof Error) {

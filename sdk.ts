@@ -418,6 +418,7 @@ import {
     addProspectsToCommunity,
     cancelCommunityMembershipRequest,
     changeCommunityCurrency,
+    confirmOfflineMembershipPayment,
     createCommunity,
     createCommunityFromCalendar,
     createCommunityMembershipTier,
@@ -1155,6 +1156,9 @@ export class Client {
     >;
     submitOfflineMembershipPayment: ReturnType<
         typeof submitOfflineMembershipPayment
+    >;
+    confirmOfflineMembershipPayment: ReturnType<
+        typeof confirmOfflineMembershipPayment
     >;
     getMembershipSubscription: ReturnType<
         typeof getMembershipSubscription
@@ -2013,6 +2017,10 @@ export class Client {
             getJwt,
         );
         this.submitOfflineMembershipPayment = submitOfflineMembershipPayment(
+            rest_api_url,
+            getJwt,
+        );
+        this.confirmOfflineMembershipPayment = confirmOfflineMembershipPayment(
             rest_api_url,
             getJwt,
         );
