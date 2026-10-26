@@ -43,6 +43,9 @@ export type PlanSubscription = {
     paymentMethod?: PlanPaymentMethod;
     amount?: number;
     currency?: string;
+    // Used instead of `amount` for the single next charge (a coupon's first period, an upgrade's
+    // prorated credit), in the same currency; cleared once that charge resolves.
+    nextChargeAmountOverride?: number | null;
     cardLast4?: string;
     scheduledChanges?: PlanSubscriptionChange[];
 };
