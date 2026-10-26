@@ -72,13 +72,18 @@ export type PreviewPlanCouponArgs = {
     couponCode: string;
 };
 
-// POST /plans/coupon/preview — validates a coupon and returns the discounted total.
-export const previewPlanCoupon = (urlArg: URL) => async (args: PreviewPlanCouponArgs) => {
+// POST /plans/coupon/preview — validates a coupon and returns the discounted total. Public, but
+// sends the JWT when signed in so the single-use check runs against the account.
+export const previewPlanCoupon = (urlArg: URL, getJwt?: func_GetJwt) => async (args: PreviewPlanCouponArgs) => {
     const url = copyURL(urlArg);
     url.pathname = "/plans/coupon/preview";
 
     const headers = new Headers();
     headers.set("Content-Type", "application/json");
+    const jwtToken = getJwt?.() ?? "";
+    if (jwtToken !== "") {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
 
     const response = await safeFetch(url, {
         method: "POST",

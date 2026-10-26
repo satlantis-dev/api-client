@@ -1509,7 +1509,7 @@ export class Client {
         // Premium
         this.getPlans = getPlans(rest_api_url);
         this.getUserPlan = getUserPlan(rest_api_url, getJwt);
-        this.previewPlanCoupon = previewPlanCoupon(rest_api_url);
+        this.previewPlanCoupon = previewPlanCoupon(rest_api_url, getJwt);
         this.subscribeToPlan = subscribeToPlan(rest_api_url, getJwt);
         this.cancelScheduledPlanChange = cancelScheduledPlanChange(rest_api_url, getJwt);
         this.startPlanCardSetup = startPlanCardSetup(rest_api_url, getJwt);
