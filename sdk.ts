@@ -472,6 +472,7 @@ import {
     modifyActiveMembershipSubscription,
     previewCommunityNewsletter,
     rejectCommunityMembershipRequest,
+    rejectOfflineMembershipPayment,
     removeCommunityAdmins,
     removeCommunityGalleryImage,
     removeMembersFromCommunity,
@@ -1159,6 +1160,9 @@ export class Client {
     >;
     confirmOfflineMembershipPayment: ReturnType<
         typeof confirmOfflineMembershipPayment
+    >;
+    rejectOfflineMembershipPayment: ReturnType<
+        typeof rejectOfflineMembershipPayment
     >;
     getMembershipSubscription: ReturnType<
         typeof getMembershipSubscription
@@ -2021,6 +2025,10 @@ export class Client {
             getJwt,
         );
         this.confirmOfflineMembershipPayment = confirmOfflineMembershipPayment(
+            rest_api_url,
+            getJwt,
+        );
+        this.rejectOfflineMembershipPayment = rejectOfflineMembershipPayment(
             rest_api_url,
             getJwt,
         );

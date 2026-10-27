@@ -1882,10 +1882,13 @@ export type ConfirmOfflineMembershipPaymentArgs = {
     paymentId: number;
     // Max 500 characters.
     reviewNotes?: string;
+    // The payment's submittedAt as the admin reviewed it. If the member resubmitted
+    // since, the backend refuses with 409 rather than confirm unseen details.
+    submittedAt?: string;
 };
 
 // Admin-only: marks a SUBMITTED offline payment paid, which activates or renews
-// the membership. There is no reject counterpart.
+// the membership. See rejectOfflineMembershipPayment for the counterpart.
 export const confirmOfflineMembershipPayment = (
     urlArg: URL,
     getJwt: func_GetJwt,
@@ -1906,7 +1909,54 @@ async (args: ConfirmOfflineMembershipPaymentArgs) => {
     const response = await safeFetch(url, {
         method: "PUT",
         headers,
-        body: JSON.stringify({ reviewNotes: args.reviewNotes }),
+        body: JSON.stringify({
+            reviewNotes: args.reviewNotes,
+            submittedAt: args.submittedAt,
+        }),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityMembershipPayment>(response);
+};
+
+export type RejectOfflineMembershipPaymentArgs = {
+    communityId: number;
+    subscriptionId: number;
+    paymentId: number;
+    // Required, max 500 characters. Shown to the member.
+    reason: string;
+    // As for confirm: a resubmission since this submittedAt gets a 409.
+    submittedAt?: string;
+};
+
+// Admin-only: turns down a SUBMITTED offline payment. It goes back to PENDING with
+// the reason in reviewNotes, so the member can correct it and submit it again; the
+// rejected details move to metadata.offlineRejections.
+export const rejectOfflineMembershipPayment = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: RejectOfflineMembershipPaymentArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname =
+        `/secure/communities/${args.communityId}/subscriptions/${args.subscriptionId}/payments/${args.paymentId}/reject-offline`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const response = await safeFetch(url, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify({
+            reason: args.reason,
+            submittedAt: args.submittedAt,
+        }),
     });
     if (response instanceof Error) {
         return response;
