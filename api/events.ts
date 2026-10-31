@@ -1430,7 +1430,7 @@ export interface EventTicketType {
     promotion?: PromotionResponse | null;
 }
 
-export type FiatCurrency = "USD" | "EUR" | "CAD" | "AUD" | "GBP" | "NZD";
+export type FiatCurrency = "USD" | "EUR" | "CAD" | "AUD" | "GBP" | "NZD" | "PYG";
 export type PriceCurrency = "BTC" | FiatCurrency;
 export type SellCurrency = "BTC" | FiatCurrency;
 
@@ -1980,6 +1980,7 @@ export enum Currency {
     AUD = "AUD",
     GBP = "GBP",
     NZD = "NZD",
+    PYG = "PYG", // zero-decimal: amounts are whole guaraníes
     BTC = "BTC",
 }
 

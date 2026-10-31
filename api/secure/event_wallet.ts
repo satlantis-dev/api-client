@@ -1,6 +1,6 @@
-import type { func_GetJwt } from "../../sdk";
-import { copyURL, handleResponse } from "../../helpers/_helper";
-import { safeFetch } from "../../helpers/safe-fetch";
+import type { func_GetJwt } from "../../sdk.ts";
+import { copyURL, handleResponse } from "../../helpers/_helper.ts";
+import { safeFetch } from "../../helpers/safe-fetch.ts";
 import type {
     DecodeInvoiceResponse,
     FeeEstimateResponse,
@@ -10,7 +10,7 @@ import type {
     TransactionDetails,
     TransactionHistoryResponse,
     WalletFilter,
-} from "./wallet";
+} from "./wallet.ts";
 
 // --- Response Interfaces ---
 
