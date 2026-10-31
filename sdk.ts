@@ -423,6 +423,7 @@ import {
     createCommunityFromCalendar,
     createCommunityMembershipTier,
     createCommunityNewsletter,
+    createMembershipPaymentLink,
     createMembershipSubscriptionRefund,
     declineCommunityAdminInvitation,
     deleteCommunity,
@@ -470,6 +471,7 @@ import {
     listCommunityProspects,
     markCommunityAsFeatured,
     modifyActiveMembershipSubscription,
+    previewCommunityCoupon,
     previewCommunityNewsletter,
     rejectCommunityMembershipRequest,
     rejectOfflineMembershipPayment,
@@ -1142,6 +1144,12 @@ export class Client {
     >;
     renewPastDueMembershipSubscription: ReturnType<
         typeof renewPastDueMembershipSubscription
+    >;
+    createMembershipPaymentLink: ReturnType<
+        typeof createMembershipPaymentLink
+    >;
+    previewCommunityCoupon: ReturnType<
+        typeof previewCommunityCoupon
     >;
     startMembershipSubscriptionCardSetup: ReturnType<
         typeof startMembershipSubscriptionCardSetup
@@ -2004,6 +2012,11 @@ export class Client {
             rest_api_url,
             getJwt,
         );
+        this.createMembershipPaymentLink = createMembershipPaymentLink(
+            rest_api_url,
+            getJwt,
+        );
+        this.previewCommunityCoupon = previewCommunityCoupon(rest_api_url);
         this.startMembershipSubscriptionCardSetup = startMembershipSubscriptionCardSetup(
             rest_api_url,
             getJwt,

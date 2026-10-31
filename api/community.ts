@@ -6,6 +6,7 @@ import type { OfflinePaymentMethod, PaymentMethod, PaymentStatus } from "../mode
 import type {
     AccountCommunityRole,
     Community,
+    CommunityCouponPreview,
     CommunityDTO,
     CommunityFAQ,
     CommunityFinancialSummary,
@@ -25,6 +26,7 @@ import type {
     CommunityNewsletter,
     CommunityUserPermission,
     CommunityWalletInfo,
+    CreateMembershipPaymentLinkResponse,
     UserCommunity,
     UserCommunityMembershipPaymentsResponse,
 } from "../models/community.ts";
@@ -1648,6 +1650,85 @@ async (args: RenewPastDueMembershipSubscriptionArgs) => {
         return response;
     }
     return handleResponse<CommunityMembershipSubscription>(response);
+};
+
+export type CreateMembershipPaymentLinkArgs = {
+    communityId: number;
+    accountId: number;
+    tierId: number;
+    period: CommunityMembershipPeriod;
+    couponCode?: string;
+};
+
+/**
+ * Admin-only: creates a pending_payment subscription for a prospect and returns a pay link for it.
+ * The backend emails the link and sends an in-app notification; the link auto-cancels after 72h.
+ * Error bodies are plain text (e.g. 409 "account is already a member of this community").
+ */
+export const createMembershipPaymentLink = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: CreateMembershipPaymentLinkArgs) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/payment-links`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+            accountId: args.accountId,
+            tierId: args.tierId,
+            period: args.period,
+            couponCode: args.couponCode,
+        }),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CreateMembershipPaymentLinkResponse>(response);
+};
+
+export type PreviewCommunityCouponArgs = {
+    communityId: number;
+    couponCode: string;
+    tierId: number;
+    period: CommunityMembershipPeriod;
+    // Whose single-use check to run. Ignored by the backend when a JWT is sent, so this method
+    // never sends one: an admin previewing for a prospect must be checked as the prospect.
+    email?: string;
+};
+
+// POST /communities/{id}/coupon/preview — public; validates a coupon against a tier and period.
+export const previewCommunityCoupon = (urlArg: URL) => async (args: PreviewCommunityCouponArgs) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/communities/${args.communityId}/coupon/preview`;
+
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+            couponCode: args.couponCode,
+            tierId: args.tierId,
+            period: args.period,
+            email: args.email,
+        }),
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityCouponPreview>(response);
 };
 
 export type StartMembershipCardSetupArgs = {

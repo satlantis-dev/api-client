@@ -303,6 +303,31 @@ export type CommunityMembershipSubscription = {
     updatedAt: string;
 };
 
+// Response of POST /secure/communities/{id}/payment-links. `paymentLink` is an
+// absolute web URL with no token; the backend does not return it again later.
+// `emailError` arrives on a 200: the link and pending_payment subscription exist,
+// only the email send failed (the in-app notification was already sent).
+export type CreateMembershipPaymentLinkResponse = {
+    subscription: CommunityMembershipSubscription;
+    paymentLink: string;
+    emailError?: string;
+};
+
+// Response of POST /communities/{id}/coupon/preview. Always 200 for coupon
+// problems: check `valid` and read `error`. Amounts are in minor units. A coupon
+// covering the full price comes back valid with `finalTotal: 0`.
+export type CommunityCouponPreview = {
+    valid: boolean;
+    errorCode?: string;
+    error?: string;
+    couponCode?: string;
+    discountType?: string;
+    totalDiscount?: number;
+    finalTotal?: number;
+    originalTotal?: number;
+    currency?: string;
+};
+
 export type CommunityMembershipSubscriptionChange = {
     id: number;
     subscriptionId: number;
