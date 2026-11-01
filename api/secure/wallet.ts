@@ -72,7 +72,7 @@ export interface FeeEstimateResponse {
     lightningAddressInfo?: LightningAddressInfo;
 }
 
-export type TransactionSource = "wallet" | "ticket";
+export type TransactionSource = "wallet" | "ticket" | "withdrawal" | "refund";
 
 /** One ticket-type line within a ticket purchase. */
 export interface TicketPurchaseItem {
@@ -112,8 +112,9 @@ export interface Transaction {
     status: TransactionStatus;
     timestamp: string;
     // Event-wallet histories only: "wallet" for regular transactions, "ticket"
-    // for ticket purchases (where `id` is the ticket order id). Absent on the
-    // personal wallet's rows.
+    // for ticket purchases (where `id` is the ticket order id), "withdrawal" for
+    // host withdrawals and "refund" for ticket refunds (each with `id` from its
+    // own table). Absent on the personal wallet's rows.
     source?: TransactionSource;
     ticket?: TicketPurchaseSummary | null;
 }
