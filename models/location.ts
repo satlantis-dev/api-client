@@ -15,6 +15,7 @@ export enum LocationCategoryName {
     Attractions = "Attractions",
     Coworking = "Coworking & Event Spaces",
     Healthcare = "Healthcare",
+    Medical = "Medical",
     RestaurantsCafes = "Restaurants & Cafes",
     Extras = "extras",
     Nightlife = "Nightlife",

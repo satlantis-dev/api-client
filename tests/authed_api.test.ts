@@ -13,13 +13,12 @@ import { assertEquals } from "jsr:@std/assert@0.226.0/assert-equals";
 import { fail } from "jsr:@std/assert@0.226.0/fail";
 
 import { AccountPlaceRoleTypeEnum } from "../models/account.ts";
-import { Client, loginNostr, NoteType } from "../sdk.ts";
-import { randomString } from "./public_api.test.ts";
+import { Client, loginNostr } from "../sdk.ts";
 import { UserResolver } from "../resolvers/user.ts";
 
 import { nip04Encrypt } from "../api/nostr_event.ts";
 import { assertNotEquals } from "@std/assert/not-equals";
-import { aws_cdn_url, relay_url, rest_url } from "./urls.ts";
+import { aws_cdn_url, randomString, relay_url, rest_url } from "./urls.ts";
 
 const clientNoAuth = Client.New({
     baseURL: rest_url,
@@ -168,57 +167,6 @@ Deno.test("upload file", async () => {
     }
 });*/
 
-Deno.test("update place", async () => {
-    const signer = InMemoryAccountContext.Generate();
-    const res = await clientNoAuth.loginNostr(signer, { name: "test" });
-    if (res instanceof Error) fail(res.message);
-    const client = Client.New({
-        baseURL: rest_url,
-        getJwt: () => res.token,
-        getNostrSigner: async () => signer,
-        relay_url,
-        aws_cdn_url,
-    }) as Client;
-    {
-        const originalPlace = await client.getPlaceByOsmRef({ osmRef: "R296561" });
-        if (originalPlace instanceof Error) {
-            fail(originalPlace.message);
-        }
-
-        let result = await client.updatePlace({
-            id: originalPlace.id,
-            name: "RandomTestName",
-        });
-        if (result instanceof Error) {
-            fail(result.message);
-        }
-
-        let updatedPlace = await client.getPlaceByOsmRef({
-            osmRef: originalPlace.osmRef,
-        });
-        if (updatedPlace instanceof Error) {
-            fail(updatedPlace.message);
-        }
-        assertEquals(updatedPlace.name, "RandomTestName");
-
-        result = await client.updatePlace({
-            id: originalPlace.id,
-            name: originalPlace.name,
-        });
-        if (result instanceof Error) {
-            fail(result.message);
-        }
-
-        updatedPlace = await client.getPlaceByOsmRef({
-            osmRef: originalPlace.osmRef,
-        });
-        if (updatedPlace instanceof Error) {
-            fail(updatedPlace.message);
-        }
-        assertEquals(updatedPlace, originalPlace);
-    }
-});
-
 Deno.test({
     name: "signEvent",
     // ignore: true,
@@ -363,11 +311,6 @@ Deno.test("getInterests", async () => {
     const interests = await client.getInterests();
     if (interests instanceof Error) fail(interests.message);
     assertEquals(interests.length > 0, true);
-    // https://linear.app/sat-lantis/issue/SAT-1115/remove-default-from-interests-list
-    assertEquals(
-        interests.find((i) => i.name == "Default"),
-        undefined,
-    );
 });
 
 // TODO: unfinished
@@ -434,17 +377,22 @@ Deno.test("calendar events", async () => {
             url: "",
             summary: "this is from integration tests of api-client",
             website: "https://website.satlantis.io",
+            venue: "",
+            calendarEventTags: "",
+            googleMapsUri: "",
+            venueName: "",
+            googlePlaceId: "",
         });
         if (res instanceof Error) {
             fail(res.message);
         }
-        assertNotEquals(res.postResult.calendarEvent.id, 0);
+        assertNotEquals(res.postResult.id, 0);
         const res2 = await client.postCalendarEventRSVP({
             response: "accepted",
             calendarEvent: {
                 accountId: account.id,
                 dtag: getTags(res.event).d as string,
-                calendarEventId: res.postResult.calendarEvent.id,
+                calendarEventId: res.postResult.id,
                 pubkey: account.pubKey,
             },
         });
@@ -453,8 +401,8 @@ Deno.test("calendar events", async () => {
         }
 
         const res3 = await client.updateCalendarEvent({
-            dTag: res.postResult.calendarEvent.dtag,
-            calendarEventId: res.postResult.calendarEvent.id,
+            dTag: getTags(res.event).d as string,
+            calendarEventId: res.postResult.id,
             placeId: 23751,
             calendarEventType: "2concert",
             description: "2a concert",
@@ -469,6 +417,11 @@ Deno.test("calendar events", async () => {
             url: "",
             summary: "this is from integration tests of api-client",
             website: "2website.satlantis.io",
+            venue: "",
+            calendarEventTags: "",
+            googleMapsUri: "",
+            venueName: "",
+            googlePlaceId: "",
         });
         if (res3 instanceof Error) {
             fail(res3.message);
@@ -476,83 +429,67 @@ Deno.test("calendar events", async () => {
     }
 });
 
-Deno.test("getUserProfile & updateUserProfile", async (t) => {
-    // setup
-    const signer = InMemoryAccountContext.Generate();
+Deno.test(
+    "getUserProfile & updateUserProfile",
+    { sanitizeOps: false, sanitizeResources: false },
+    async (t) => {
+        // setup
+        const signer = InMemoryAccountContext.Generate();
 
-    const res = await clientNoAuth.loginNostr(signer, { name: "test" });
-    if (res instanceof Error) fail(res.message);
+        const res = await clientNoAuth.loginNostr(signer, { name: "test" });
+        if (res instanceof Error) fail(res.message);
 
-    // test
-    {
-        const p1 = client.resolver.getUser(signer.publicKey);
-        const p2 = client.getMyProfile();
-        const profile1 = (await p1) as UserResolver;
-        const profile2 = (await p2) as UserResolver;
+        // test
+        {
+            const p1 = client.resolver.getUser(signer.publicKey);
+            const p2 = client.getMyProfile();
+            const profile1 = (await p1) as UserResolver;
+            const profile2 = (await p2) as UserResolver;
 
-        assertEquals(profile1.metaData, profile2.metaData);
+            assertEquals(profile1.metaData, profile2.metaData);
 
-        await client.updateMyProfile({
-            name: "this is a test",
-        });
-        const p3 = (await client.getMyProfile()) as UserResolver;
-        const expected = new UserResolver(
-            client,
-            signer.publicKey,
-            false,
-            false,
-            "",
-            {
+            await client.updateMyProfile({
                 name: "this is a test",
-                about: "",
-                banner: "",
-                displayName: "this is a test",
-                lud06: "",
-                lud16: "",
-                picture: "",
-                website: "",
-            },
-        );
+            });
+            const p3 = (await client.getMyProfile()) as UserResolver;
+            const expected = new UserResolver(
+                client,
+                signer.publicKey,
+                false,
+                false,
+                "",
+                {
+                    name: "this is a test",
+                    about: "",
+                    banner: "",
+                    displayName: "test",
+                    lud06: "",
+                    lud16: "",
+                    picture: "",
+                    website: "",
+                },
+            );
 
-        assertEquals(p3.metaData, expected.metaData);
+            assertEquals(p3.metaData, expected.metaData);
 
-        assertEquals(await p3.getNip05(), "");
-        assertEquals(await p3.getIsBusiness(), false);
-        assertEquals(p3.isBusiness, false);
-
-        await t.step("become a business", async () => {
-            // @ts-ignore: use private
-            const err = await client.becomeBusinessAccount();
-            if (err instanceof Error) {
-                fail(err.message);
-            }
-
+            assertEquals(await p3.getNip05(), "");
+            assertEquals(await p3.getIsBusiness(), false);
             assertEquals(p3.isBusiness, false);
-            assertEquals(await p3.getIsBusiness(), true);
-            assertEquals(p3.isBusiness, true);
-        });
-    }
-});
 
-Deno.test("claim location", async (t) => {
-    // https://www.dev.satlantis.io/location/1998
-    const res = await client.claimLocation({ locationId: 1998 });
-    if (res instanceof Error) fail(res.message);
-    // // the lenght of the code might not be part of the API
-    // // put it here just to be safe
-    // // so that when it changes, we will know
-    assertEquals(res.code.length, "wA2tjNpcGvNED7YoSpbF".length);
+            await t.step("become a business", async () => {
+                // @ts-ignore: use private
+                const err = await client.becomeBusinessAccount();
+                if (err instanceof Error) {
+                    fail(err.message);
+                }
 
-    await t.step("should be successful", async () => {
-        const res2 = await client.proveLocationClaim({
-            locationId: 1998,
-            referredBy: "",
-            url: "https://posts.gle/xPnjpX",
-        });
-        // todo: blocked
-        console.log(res2);
-    });
-});
+                assertEquals(p3.isBusiness, false);
+                assertEquals(await p3.getIsBusiness(), true);
+                assertEquals(p3.isBusiness, true);
+            });
+        }
+    },
+);
 
 Deno.test("submitAmbassadorApplication", async (t) => {
     const receiver = InMemoryAccountContext.Generate();

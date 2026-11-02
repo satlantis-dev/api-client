@@ -1,9 +1,8 @@
-import type { NostrEvent, NostrKind } from "@blowater/nostr-sdk";
+import type { NostrEvent } from "@blowater/nostr-sdk";
 
 import { copyURL, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
 import { type Note, NoteType } from "../note.ts";
-import type { Account } from "../../models/account.ts";
 
 export type ReactionPost = {
     accountId: number;

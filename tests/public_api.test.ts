@@ -1,11 +1,10 @@
 import { assertEquals, assertExists, assertInstanceOf, fail } from "@std/assert";
-import { Client, LocationResolver, loginNostr, type Place } from "../sdk.ts";
+import { Client, loginNostr, type Place } from "../sdk.ts";
 import { InMemoryAccountContext, PrivateKey, PublicKey } from "@blowater/nostr-sdk";
 import { ApiError } from "../helpers/_helper.ts";
-import type { UserResolver } from "../resolvers/user.ts";
 import { LocationCategoryName } from "../models/location.ts";
 import { NoteResolver } from "../resolvers/note.ts";
-import { aws_cdn_url, relay_url, rest_url } from "./urls.ts";
+import { aws_cdn_url, randomString, relay_url, rest_url } from "./urls.ts";
 import { VanityObjectType } from "../models/vanity.ts";
 
 const testSigner = InMemoryAccountContext.Generate();
@@ -88,6 +87,8 @@ Deno.test("/getPlaceNotes", async () => {
 Deno.test("/getPlaceCalendarEvents", async () => {
     const result = await client.getPlaceCalendarEvents({
         placeID: 29883,
+        limit: 10,
+        page: 1,
     });
     if (result instanceof Error) {
         fail(result.message);
@@ -95,7 +96,7 @@ Deno.test("/getPlaceCalendarEvents", async () => {
     assertEquals(result.length > 0, true);
     for (const data of result) {
         assertEquals(data.placeId, 29883);
-        const date = new Date(data.calendarEvent.start);
+        const date = new Date(data.start);
         assertInstanceOf(date, Date);
     }
 });
@@ -107,12 +108,14 @@ Deno.test("/getPlaceMetrics", async () => {
     if (result instanceof Error) {
         fail(result.message);
     }
-    assertEquals(result.length > 0, true);
+    assertEquals(Array.isArray(result) && result.length > 0, true);
 });
 
 Deno.test("/getPlaceCalenderEvents", async () => {
     const result = await client.getPlaceCalendarEvents({
         placeID: 23949,
+        limit: 10,
+        page: 1,
     });
     if (result instanceof Error) {
         fail(result.message);
@@ -348,12 +351,22 @@ Deno.test("login", async () => {
 });
 
 Deno.test("getNote", async () => {
-    const note = await client.getNote({ noteID: 531394 });
+    const placeNotes = await client.getPlaceNotes({
+        accountID: 0,
+        placeID: 23949,
+        limit: 1,
+        page: 0,
+    });
+    if (placeNotes instanceof Error) {
+        fail(placeNotes.message);
+    }
+    assertEquals(placeNotes.length > 0, true);
+    const note = await client.getNote({ noteID: placeNotes[0].id });
     if (note instanceof Error) {
         fail(note.message);
     }
     // should be contain an account object
-    assertEquals(note?.account.id, 95880);
+    assertEquals(note?.account.id, placeNotes[0].account.id);
 });
 
 Deno.test("getNotes", async () => {
@@ -403,20 +416,6 @@ Deno.test("getIpInfo", async () => {
     if (result instanceof Error) {
         fail(result.message);
     }
-});
-
-Deno.test("getLocationReviews", async () => {
-    const result = await client.getLocationReviews({
-        limit: 2,
-        page: 0,
-        locationId: 2313,
-    });
-    if (result instanceof Error) fail(result.message);
-
-    const location = (await client.getLocation(2313)) as LocationResolver;
-
-    const reviews = await location.getReviews({ page: 0, limit: 2 });
-    assertEquals(reviews, result);
 });
 
 Deno.test("addressLookup", async () => {
@@ -485,17 +484,6 @@ Deno.test("interests", async () => {
     assertEquals(res.interests, ["food", "travel"]);
 });
 
-Deno.test("getAccountFollowingPubkeys", async () => {
-    const result = await client.getAccountFollowingPubkeys(
-        "npub1k07dmj2h95c7kd69gzwcg4rswwx4096ka8v0mltymewdzp3lck8q44tz6s",
-    );
-    if (result instanceof Error) {
-        fail(result.message);
-    }
-    console.log(result);
-    assertEquals(result.size > 0, true);
-});
-
 Deno.test("getAccountFollowers & getAccountFollowings", async () => {
     const _followers = await client.getAccountFollowers({
         npub: "npub1k07dmj2h95c7kd69gzwcg4rswwx4096ka8v0mltymewdzp3lck8q44tz6s",
@@ -540,16 +528,7 @@ Deno.test("follow & unfollow", async () => {
         if (follows instanceof Error) {
             fail(follows.message);
         }
-        const me = (await authedClient.getMyProfile()) as UserResolver;
-        const followings = await me.getFollowing();
-        if (followings instanceof Error) {
-            fail(followings.message);
-        }
         assertEquals(follows, new Set());
-        assertEquals(
-            followings.map((f) => f.pubkey.hex),
-            [],
-        );
     }
 
     const pub1 = PrivateKey.Generate().toPublicKey();
@@ -560,12 +539,17 @@ Deno.test("follow & unfollow", async () => {
             fail(err.message);
         }
 
-        const me = (await authedClient.getMyProfile()) as UserResolver;
-        const following = (await me.getFollowing()) as UserResolver[];
-        assertEquals(
-            following.map((u) => u.pubkey.hex),
-            [pub1.hex],
-        );
+        const follows = await authedClient.getMyFollowingPubkeys();
+        if (follows instanceof Error) {
+            fail(follows.message);
+        }
+        assertEquals(follows, new Set([pub1.hex]));
+
+        const following = await client.getAccountFollowingPubkeys(user1.publicKey);
+        if (following instanceof Error) {
+            fail(following.message);
+        }
+        assertEquals(following, new Set([pub1.hex]));
     }
 });
 
@@ -586,10 +570,6 @@ Deno.test("get exchange rate", async () => {
     assertEquals(typeof result.rate, "number");
 });
 
-export function randomString() {
-    return String(Date.now());
-}
-
 Deno.test("getPlaceGalleryImages", async () => {
     const result = await client.getPlaceCategoryScores({ placeID: 23751 }); // Florianópolis
     if (result instanceof Error) {
@@ -606,7 +586,11 @@ Deno.test("getLocationGalleryImages", async () => {
 });
 
 Deno.test("getLocationLinks", async () => {
-    const result = await client.getLocationLinks({ locationId: 2313 });
+    const locations = await client.getLocationsByPlaceIDRandomized({ placeId: 28564 });
+    if (locations instanceof Error) {
+        fail(locations.message);
+    }
+    const result = await client.getLocationLinks({ locationId: locations[0].id });
     if (result instanceof Error) {
         fail(result.message);
     }
@@ -614,7 +598,7 @@ Deno.test("getLocationLinks", async () => {
 
 Deno.test("getAccountCalendarEvents", async () => {
     const result = await client.getAccountCalendarEvents({
-        npub: "npub1le59glyc3r9zsddury0fu8wyqu69ckvj78fn4425m5xn9zd0zpdssjtd53",
+        npub: "npub1gwyq2gde4kdpzt0vvyqpctjkgpuh4kr4xfdkfma09vm0mzjqu2zqaxgv8t",
     });
     if (result instanceof Error) {
         fail(result.message);

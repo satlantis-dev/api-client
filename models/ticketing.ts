@@ -10,6 +10,23 @@ export enum OrderCurrency {
     GBP = "GBP",
     AUD = "AUD",
     NZD = "NZD",
+    PYG = "PYG", // zero-decimal: amounts are whole guaraníes
+}
+
+/**
+ * Fiat currencies with no minor unit: the API stores and charges them in whole units
+ * (PYG 50000 is ₲50,000) instead of hundredths. Mirrors util.CurrencyMinorUnits in the api,
+ * so keep the two in sync when a currency is added.
+ */
+export const ZERO_DECIMAL_CURRENCIES: readonly string[] = ["JPY", "KRW", "VND", OrderCurrency.PYG];
+
+/**
+ * How many API units make one unit of a fiat currency: 1 for a zero-decimal currency, 100
+ * (cents) for any other. Case-insensitive; a null/unset currency counts as USD. Not for BTC,
+ * whose amounts are sats.
+ */
+export function currencyMinorUnits(currency: string | null | undefined): number {
+    return currency && ZERO_DECIMAL_CURRENCIES.includes(currency.toUpperCase()) ? 1 : 100;
 }
 
 export enum CouponDiscountType {

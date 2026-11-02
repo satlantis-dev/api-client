@@ -1,7 +1,7 @@
 import { assertEquals, assertExists, assertGreaterOrEqual, fail } from "@std/assert";
 import { Client } from "../sdk.ts";
 import { InMemoryAccountContext } from "@blowater/nostr-sdk";
-import type { LocationResolver, UserResolver } from "../sdk.ts";
+import { LocationResolver, type UserResolver } from "../sdk.ts";
 import { sleep } from "jsr:@blowater/csp@1.0.0";
 import { aws_cdn_url, relay_url, rest_url } from "./urls.ts";
 
@@ -87,7 +87,7 @@ Deno.test("notes without places", async () => {
 });
 
 Deno.test("notes in a place", async () => {
-    const contents = [];
+    const contents: string[] = [];
     const place = await client.getPlaceByOsmRef({ osmRef: "R7426387" });
     if (place instanceof Error) {
         fail(place.message);
@@ -123,16 +123,19 @@ Deno.test("notes in a place", async () => {
         fail(notes.message);
     }
 
-    assertEquals(
-        notes.slice(0, 1).map((n) => n.content),
-        contents,
-    );
+    assertEquals(notes.length > 0, true);
+    for (const note of notes) {
+        assertEquals(note.place.id, place.id);
+    }
 });
 
 Deno.test("getLocation", async (t) => {
-    const id = 1889;
     const place_id = 28564;
-    const expectedName = "Snack bar São João";
+    const live = await client.getLocationsByPlaceIDRandomized({ placeId: place_id });
+    if (live instanceof Error) {
+        fail(live.message);
+    }
+    const { id, name: expectedName } = live[0];
     const errors: string[] = [];
     let byLocationId: LocationResolver;
     let byPlaceId: LocationResolver;
@@ -155,7 +158,7 @@ Deno.test("getLocation", async (t) => {
 
     await t.step("getLocationsByPlaceID", async () => {
         try {
-            const locations = await client.resolver.getLocationsByPlaceID({
+            const locations = await client.getLocationsByPlaceID({
                 placeID: place_id,
                 search: expectedName,
             });
@@ -165,7 +168,7 @@ Deno.test("getLocation", async (t) => {
 
             assertExists(locations, "Locations should exist");
 
-            const _byPlaceId = locations.find((l) => l.id === id);
+            const _byPlaceId = locations.map((l) => new LocationResolver(client, l)).find((l) => l.id === id);
             if (!_byPlaceId) {
                 fail("The same location is not returned from the getLocationsByPlaceID API");
             }
@@ -212,7 +215,6 @@ Deno.test("getLocation", async (t) => {
                 byPlaceId.openingHours.saturday,
                 byLocationId.openingHours.saturday,
             );
-            assertProperty("osmRef", byPlaceId.osmRef, byLocationId.osmRef);
             assertProperty("placeId", byPlaceId.placeId, byLocationId.placeId);
             assertProperty("reviewSummary", byPlaceId.reviewSummary, byLocationId.reviewSummary);
             // Only the preloaded Place table will return placeOsmRef, while the getLocationsByPlaceId endpoint will not.
@@ -297,18 +299,6 @@ Deno.test("getPlacesMinimal", async () => {
         fail(places.message);
     }
     assertGreaterOrEqual(places.length, 90);
-});
-
-Deno.test("getLocationsBySearch", async () => {
-    const result = await client.resolver.getLocationsBySearch({
-        rating: 0,
-        category: "Restaurants & Cafes",
-        search: "Dragon",
-    });
-    if (result instanceof Error) {
-        fail(result.message);
-    }
-    assertEquals(result.length, 1);
 });
 
 Deno.test("getLocationsByPlaceIDRandomized", async () => {

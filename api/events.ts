@@ -329,10 +329,9 @@ async (
     const url = copyURL(urlArg);
     url.pathname = `/events/${args.eventId}`;
 
-    let headers;
     const jwtToken = getJwt();
 
-    headers = new Headers();
+    const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
     const response = await safeFetch(url, {
@@ -1430,7 +1429,7 @@ export interface EventTicketType {
     promotion?: PromotionResponse | null;
 }
 
-export type FiatCurrency = "USD" | "EUR" | "CAD" | "AUD" | "GBP" | "NZD";
+export type FiatCurrency = "USD" | "EUR" | "CAD" | "AUD" | "GBP" | "NZD" | "PYG";
 export type PriceCurrency = "BTC" | FiatCurrency;
 export type SellCurrency = "BTC" | FiatCurrency;
 
@@ -1854,7 +1853,7 @@ async (
     if (jwtToken !== "") {
         headers.set("Authorization", `Bearer ${jwtToken}`);
     }
-    let payload = {
+    const payload = {
         ticketTypeId,
     };
 
@@ -1980,6 +1979,7 @@ export enum Currency {
     AUD = "AUD",
     GBP = "GBP",
     NZD = "NZD",
+    PYG = "PYG", // zero-decimal: amounts are whole guaraníes
     BTC = "BTC",
 }
 
@@ -2196,7 +2196,7 @@ async (
         headers.set("Authorization", `Bearer ${jwtToken}`);
     }
 
-    const { eventId, ...payload } = params;
+    const { eventId: _eventId, ...payload } = params;
 
     const response = await safeFetch(url, {
         method: "POST",

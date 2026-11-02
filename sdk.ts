@@ -2305,7 +2305,7 @@ export class Client {
         if (signer instanceof Error) {
             return signer;
         }
-        let tags: Tag[] = [
+        const tags: Tag[] = [
             ["d", generateUUID()],
             ["t", args.calendarEventType],
             ["r", args.url],
@@ -2465,7 +2465,7 @@ export class Client {
             return signer;
         }
 
-        let tags: Tag[] = [
+        const tags: Tag[] = [
             ["d", generateUUID()],
             ["t", args.calendarEventType],
             ["r", args.url],
