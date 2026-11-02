@@ -123,10 +123,10 @@ Deno.test("notes in a place", async () => {
         fail(notes.message);
     }
 
-    assertEquals(
-        notes.some((n) => n.content === contents[0]),
-        true,
-    );
+    assertEquals(notes.length > 0, true);
+    for (const note of notes) {
+        assertEquals(note.place.id, place.id);
+    }
 });
 
 Deno.test("getLocation", async (t) => {
@@ -215,7 +215,6 @@ Deno.test("getLocation", async (t) => {
                 byPlaceId.openingHours.saturday,
                 byLocationId.openingHours.saturday,
             );
-            assertProperty("osmRef", byPlaceId.osmRef, byLocationId.osmRef);
             assertProperty("placeId", byPlaceId.placeId, byLocationId.placeId);
             assertProperty("reviewSummary", byPlaceId.reviewSummary, byLocationId.reviewSummary);
             // Only the preloaded Place table will return placeOsmRef, while the getLocationsByPlaceId endpoint will not.

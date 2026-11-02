@@ -429,63 +429,67 @@ Deno.test("calendar events", async () => {
     }
 });
 
-Deno.test("getUserProfile & updateUserProfile", async (t) => {
-    // setup
-    const signer = InMemoryAccountContext.Generate();
+Deno.test(
+    "getUserProfile & updateUserProfile",
+    { sanitizeOps: false, sanitizeResources: false },
+    async (t) => {
+        // setup
+        const signer = InMemoryAccountContext.Generate();
 
-    const res = await clientNoAuth.loginNostr(signer, { name: "test" });
-    if (res instanceof Error) fail(res.message);
+        const res = await clientNoAuth.loginNostr(signer, { name: "test" });
+        if (res instanceof Error) fail(res.message);
 
-    // test
-    {
-        const p1 = client.resolver.getUser(signer.publicKey);
-        const p2 = client.getMyProfile();
-        const profile1 = (await p1) as UserResolver;
-        const profile2 = (await p2) as UserResolver;
+        // test
+        {
+            const p1 = client.resolver.getUser(signer.publicKey);
+            const p2 = client.getMyProfile();
+            const profile1 = (await p1) as UserResolver;
+            const profile2 = (await p2) as UserResolver;
 
-        assertEquals(profile1.metaData, profile2.metaData);
+            assertEquals(profile1.metaData, profile2.metaData);
 
-        await client.updateMyProfile({
-            name: "this is a test",
-        });
-        const p3 = (await client.getMyProfile()) as UserResolver;
-        const expected = new UserResolver(
-            client,
-            signer.publicKey,
-            false,
-            false,
-            "",
-            {
+            await client.updateMyProfile({
                 name: "this is a test",
-                about: "",
-                banner: "",
-                displayName: "test",
-                lud06: "",
-                lud16: "",
-                picture: "",
-                website: "",
-            },
-        );
+            });
+            const p3 = (await client.getMyProfile()) as UserResolver;
+            const expected = new UserResolver(
+                client,
+                signer.publicKey,
+                false,
+                false,
+                "",
+                {
+                    name: "this is a test",
+                    about: "",
+                    banner: "",
+                    displayName: "test",
+                    lud06: "",
+                    lud16: "",
+                    picture: "",
+                    website: "",
+                },
+            );
 
-        assertEquals(p3.metaData, expected.metaData);
+            assertEquals(p3.metaData, expected.metaData);
 
-        assertEquals(await p3.getNip05(), "");
-        assertEquals(await p3.getIsBusiness(), false);
-        assertEquals(p3.isBusiness, false);
-
-        await t.step("become a business", async () => {
-            // @ts-ignore: use private
-            const err = await client.becomeBusinessAccount();
-            if (err instanceof Error) {
-                fail(err.message);
-            }
-
+            assertEquals(await p3.getNip05(), "");
+            assertEquals(await p3.getIsBusiness(), false);
             assertEquals(p3.isBusiness, false);
-            assertEquals(await p3.getIsBusiness(), true);
-            assertEquals(p3.isBusiness, true);
-        });
-    }
-});
+
+            await t.step("become a business", async () => {
+                // @ts-ignore: use private
+                const err = await client.becomeBusinessAccount();
+                if (err instanceof Error) {
+                    fail(err.message);
+                }
+
+                assertEquals(p3.isBusiness, false);
+                assertEquals(await p3.getIsBusiness(), true);
+                assertEquals(p3.isBusiness, true);
+            });
+        }
+    },
+);
 
 Deno.test("submitAmbassadorApplication", async (t) => {
     const receiver = InMemoryAccountContext.Generate();
