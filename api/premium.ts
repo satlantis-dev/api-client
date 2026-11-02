@@ -74,27 +74,28 @@ export type PreviewPlanCouponArgs = {
 
 // POST /plans/coupon/preview — validates a coupon and returns the discounted total. Public, but
 // sends the JWT when signed in so the single-use check runs against the account.
-export const previewPlanCoupon = (urlArg: URL, getJwt?: func_GetJwt) => async (args: PreviewPlanCouponArgs) => {
-    const url = copyURL(urlArg);
-    url.pathname = "/plans/coupon/preview";
+export const previewPlanCoupon =
+    (urlArg: URL, getJwt?: func_GetJwt) => async (args: PreviewPlanCouponArgs) => {
+        const url = copyURL(urlArg);
+        url.pathname = "/plans/coupon/preview";
 
-    const headers = new Headers();
-    headers.set("Content-Type", "application/json");
-    const jwtToken = getJwt?.() ?? "";
-    if (jwtToken !== "") {
-        headers.set("Authorization", `Bearer ${jwtToken}`);
-    }
+        const headers = new Headers();
+        headers.set("Content-Type", "application/json");
+        const jwtToken = getJwt?.() ?? "";
+        if (jwtToken !== "") {
+            headers.set("Authorization", `Bearer ${jwtToken}`);
+        }
 
-    const response = await safeFetch(url, {
-        method: "POST",
-        headers,
-        body: JSON.stringify(args),
-    });
-    if (response instanceof Error) {
-        return response;
-    }
-    return handleResponse<PlanCouponPreview>(response);
-};
+        const response = await safeFetch(url, {
+            method: "POST",
+            headers,
+            body: JSON.stringify(args),
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<PlanCouponPreview>(response);
+    };
 
 export type SubscribeToPlanArgs = {
     planId: number;
