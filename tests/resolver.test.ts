@@ -1,7 +1,7 @@
 import { assertEquals, assertExists, assertGreaterOrEqual, fail } from "@std/assert";
 import { Client } from "../sdk.ts";
 import { InMemoryAccountContext } from "@blowater/nostr-sdk";
-import type { LocationResolver, UserResolver } from "../sdk.ts";
+import { LocationResolver, type UserResolver } from "../sdk.ts";
 import { sleep } from "jsr:@blowater/csp@1.0.0";
 import { aws_cdn_url, relay_url, rest_url } from "./urls.ts";
 
@@ -155,7 +155,7 @@ Deno.test("getLocation", async (t) => {
 
     await t.step("getLocationsByPlaceID", async () => {
         try {
-            const locations = await client.resolver.getLocationsByPlaceID({
+            const locations = await client.getLocationsByPlaceID({
                 placeID: place_id,
                 search: expectedName,
             });
@@ -165,7 +165,7 @@ Deno.test("getLocation", async (t) => {
 
             assertExists(locations, "Locations should exist");
 
-            const _byPlaceId = locations.find((l) => l.id === id);
+            const _byPlaceId = locations.map((l) => new LocationResolver(client, l)).find((l) => l.id === id);
             if (!_byPlaceId) {
                 fail("The same location is not returned from the getLocationsByPlaceID API");
             }

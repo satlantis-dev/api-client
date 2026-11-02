@@ -88,6 +88,8 @@ Deno.test("/getPlaceNotes", async () => {
 Deno.test("/getPlaceCalendarEvents", async () => {
     const result = await client.getPlaceCalendarEvents({
         placeID: 29883,
+        limit: 10,
+        page: 1,
     });
     if (result instanceof Error) {
         fail(result.message);
@@ -95,7 +97,7 @@ Deno.test("/getPlaceCalendarEvents", async () => {
     assertEquals(result.length > 0, true);
     for (const data of result) {
         assertEquals(data.placeId, 29883);
-        const date = new Date(data.calendarEvent.start);
+        const date = new Date(data.start);
         assertInstanceOf(date, Date);
     }
 });
@@ -107,12 +109,14 @@ Deno.test("/getPlaceMetrics", async () => {
     if (result instanceof Error) {
         fail(result.message);
     }
-    assertEquals(result.length > 0, true);
+    assertEquals(Array.isArray(result) && result.length > 0, true);
 });
 
 Deno.test("/getPlaceCalenderEvents", async () => {
     const result = await client.getPlaceCalendarEvents({
         placeID: 23949,
+        limit: 10,
+        page: 1,
     });
     if (result instanceof Error) {
         fail(result.message);

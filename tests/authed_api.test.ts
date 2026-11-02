@@ -434,6 +434,11 @@ Deno.test("calendar events", async () => {
             url: "",
             summary: "this is from integration tests of api-client",
             website: "https://website.satlantis.io",
+            venue: "",
+            calendarEventTags: "",
+            googleMapsUri: "",
+            venueName: "",
+            googlePlaceId: "",
         });
         if (res instanceof Error) {
             fail(res.message);
@@ -469,6 +474,11 @@ Deno.test("calendar events", async () => {
             url: "",
             summary: "this is from integration tests of api-client",
             website: "2website.satlantis.io",
+            venue: "",
+            calendarEventTags: "",
+            googleMapsUri: "",
+            venueName: "",
+            googlePlaceId: "",
         });
         if (res3 instanceof Error) {
             fail(res3.message);
