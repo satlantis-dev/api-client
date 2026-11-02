@@ -367,6 +367,8 @@ export type CommunityMembershipPayment = {
     onchainReceivedSats?: number | null;
     expiresAt?: string | null;
     stripePaymentIntentId?: string;
+    // What a coupon took off this charge, in the payment's smallest unit.
+    couponDiscountAmount?: number | null;
     // Offline payments only (paymentMethod OFFLINE): how it was paid, the
     // uploaded proof, and the notes from the member's submission and the
     // admin's review.
@@ -529,6 +531,9 @@ export type CommunityWalletInfo = {
 // the backend can't resolve the tier.
 export type CommunityMembershipPaymentWithTier = CommunityMembershipPayment & {
     tierName: string;
+    // What a card charge was raised by to reach Stripe's minimum, in the
+    // payment's smallest unit. Already included in `amount`.
+    cardMinimumTopUp?: number | null;
 };
 
 export type UserCommunityMembershipPaymentsResponse = {
