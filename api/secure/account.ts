@@ -451,7 +451,7 @@ export type GetAccountsBySearchArgs = {
 export const getAccountsBySearch = (urlArg: URL, getJwt: func_GetJwt) =>
 async (
     args: GetAccountsBySearchArgs,
-    options?: {
+    _options?: {
         signal: AbortSignal;
     },
 ) => {

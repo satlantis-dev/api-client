@@ -24,7 +24,10 @@
                 "no-slow-types",
                 "require-await",
                 "verbatim-module-syntax",
-                "ban-types"
+                "ban-types",
+                "no-explicit-any",
+                "no-extra-boolean-cast",
+                "no-import-prefix"
             ]
         }
     }

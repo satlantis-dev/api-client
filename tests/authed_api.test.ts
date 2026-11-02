@@ -13,7 +13,7 @@ import { assertEquals } from "jsr:@std/assert@0.226.0/assert-equals";
 import { fail } from "jsr:@std/assert@0.226.0/fail";
 
 import { AccountPlaceRoleTypeEnum } from "../models/account.ts";
-import { Client, loginNostr, NoteType } from "../sdk.ts";
+import { Client, loginNostr } from "../sdk.ts";
 import { randomString } from "./public_api.test.ts";
 import { UserResolver } from "../resolvers/user.ts";
 
