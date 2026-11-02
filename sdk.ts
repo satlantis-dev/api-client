@@ -417,6 +417,7 @@ import {
     addMembersToCommunity,
     addProspectsToCommunity,
     cancelCommunityMembershipRequest,
+    cancelMembershipPaymentLink,
     changeCommunityCurrency,
     confirmOfflineMembershipPayment,
     createCommunity,
@@ -1150,6 +1151,9 @@ export class Client {
     >;
     previewCommunityCoupon: ReturnType<
         typeof previewCommunityCoupon
+    >;
+    cancelMembershipPaymentLink: ReturnType<
+        typeof cancelMembershipPaymentLink
     >;
     startMembershipSubscriptionCardSetup: ReturnType<
         typeof startMembershipSubscriptionCardSetup
@@ -2017,6 +2021,10 @@ export class Client {
             getJwt,
         );
         this.previewCommunityCoupon = previewCommunityCoupon(rest_api_url);
+        this.cancelMembershipPaymentLink = cancelMembershipPaymentLink(
+            rest_api_url,
+            getJwt,
+        );
         this.startMembershipSubscriptionCardSetup = startMembershipSubscriptionCardSetup(
             rest_api_url,
             getJwt,
