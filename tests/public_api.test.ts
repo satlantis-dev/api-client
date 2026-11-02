@@ -2,7 +2,6 @@ import { assertEquals, assertExists, assertInstanceOf, fail } from "@std/assert"
 import { Client, loginNostr, type Place } from "../sdk.ts";
 import { InMemoryAccountContext, PrivateKey, PublicKey } from "@blowater/nostr-sdk";
 import { ApiError } from "../helpers/_helper.ts";
-import type { UserResolver } from "../resolvers/user.ts";
 import { LocationCategoryName } from "../models/location.ts";
 import { NoteResolver } from "../resolvers/note.ts";
 import { aws_cdn_url, randomString, relay_url, rest_url } from "./urls.ts";
@@ -599,7 +598,7 @@ Deno.test("getLocationLinks", async () => {
 
 Deno.test("getAccountCalendarEvents", async () => {
     const result = await client.getAccountCalendarEvents({
-        npub: "npub1le59glyc3r9zsddury0fu8wyqu69ckvj78fn4425m5xn9zd0zpdssjtd53",
+        npub: "npub1gwyq2gde4kdpzt0vvyqpctjkgpuh4kr4xfdkfma09vm0mzjqu2zqaxgv8t",
     });
     if (result instanceof Error) {
         fail(result.message);

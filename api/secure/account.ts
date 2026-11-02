@@ -568,7 +568,8 @@ export const deleteAccount =
         if (responseBody instanceof Error) {
             return responseBody;
         }
-        if (response.ok) {
+        // the api answers 202 Accepted
+        if (response.status >= 200 && response.status < 300) {
             return true;
         }
         return false;

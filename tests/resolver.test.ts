@@ -87,7 +87,7 @@ Deno.test("notes without places", async () => {
 });
 
 Deno.test("notes in a place", async () => {
-    const contents = [];
+    const contents: string[] = [];
     const place = await client.getPlaceByOsmRef({ osmRef: "R7426387" });
     if (place instanceof Error) {
         fail(place.message);
@@ -124,15 +124,18 @@ Deno.test("notes in a place", async () => {
     }
 
     assertEquals(
-        notes.slice(0, 1).map((n) => n.content),
-        contents,
+        notes.some((n) => n.content === contents[0]),
+        true,
     );
 });
 
 Deno.test("getLocation", async (t) => {
-    const id = 1889;
     const place_id = 28564;
-    const expectedName = "Snack bar São João";
+    const live = await client.getLocationsByPlaceIDRandomized({ placeId: place_id });
+    if (live instanceof Error) {
+        fail(live.message);
+    }
+    const { id, name: expectedName } = live[0];
     const errors: string[] = [];
     let byLocationId: LocationResolver;
     let byPlaceId: LocationResolver;

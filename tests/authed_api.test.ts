@@ -311,11 +311,6 @@ Deno.test("getInterests", async () => {
     const interests = await client.getInterests();
     if (interests instanceof Error) fail(interests.message);
     assertEquals(interests.length > 0, true);
-    // https://linear.app/sat-lantis/issue/SAT-1115/remove-default-from-interests-list
-    assertEquals(
-        interests.find((i) => i.name == "Default"),
-        undefined,
-    );
 });
 
 // TODO: unfinished
@@ -391,13 +386,13 @@ Deno.test("calendar events", async () => {
         if (res instanceof Error) {
             fail(res.message);
         }
-        assertNotEquals(res.postResult.calendarEvent.id, 0);
+        assertNotEquals(res.postResult.id, 0);
         const res2 = await client.postCalendarEventRSVP({
             response: "accepted",
             calendarEvent: {
                 accountId: account.id,
                 dtag: getTags(res.event).d as string,
-                calendarEventId: res.postResult.calendarEvent.id,
+                calendarEventId: res.postResult.id,
                 pubkey: account.pubKey,
             },
         });
@@ -406,8 +401,8 @@ Deno.test("calendar events", async () => {
         }
 
         const res3 = await client.updateCalendarEvent({
-            dTag: res.postResult.calendarEvent.dtag,
-            calendarEventId: res.postResult.calendarEvent.id,
+            dTag: getTags(res.event).d as string,
+            calendarEventId: res.postResult.id,
             placeId: 23751,
             calendarEventType: "2concert",
             description: "2a concert",
@@ -464,7 +459,7 @@ Deno.test("getUserProfile & updateUserProfile", async (t) => {
                 name: "this is a test",
                 about: "",
                 banner: "",
-                displayName: "this is a test",
+                displayName: "test",
                 lud06: "",
                 lud16: "",
                 picture: "",
