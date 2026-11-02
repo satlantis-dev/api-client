@@ -347,7 +347,12 @@ async (args: {
     return handleResponse<CalendarEvent[]>(response);
 };
 
-export const sendOTP = (urlArg: URL) => async (args: { email: string }) => {
+export const sendOTP = (urlArg: URL) =>
+async (args: {
+    email: string;
+    // Send no code to an account that has a Nostr key we don't store; the response then has success=false, canSignNostrEvent=false
+    requirePrivateKey?: boolean;
+}) => {
     const url = copyURL(urlArg);
     url.pathname = `/auth/otp`;
 
@@ -365,6 +370,7 @@ export const sendOTP = (urlArg: URL) => async (args: { email: string }) => {
         message: string; // e.g. OTP code sent to your email
         success: boolean;
         token: string; // Token to use later for `/auth/otp/verify` endpoint
+        canSignNostrEvent?: boolean; // false: we don't store the account's Nostr key, so it must log in with Nostr
     }>(response);
 };
 
