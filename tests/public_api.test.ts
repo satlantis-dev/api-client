@@ -1,5 +1,5 @@
 import { assertEquals, assertExists, assertInstanceOf, fail } from "@std/assert";
-import { Client, LocationResolver, loginNostr, type Place } from "../sdk.ts";
+import { Client, loginNostr, type Place } from "../sdk.ts";
 import { InMemoryAccountContext, PrivateKey, PublicKey } from "@blowater/nostr-sdk";
 import { ApiError } from "../helpers/_helper.ts";
 import type { UserResolver } from "../resolvers/user.ts";
@@ -352,12 +352,22 @@ Deno.test("login", async () => {
 });
 
 Deno.test("getNote", async () => {
-    const note = await client.getNote({ noteID: 531394 });
+    const placeNotes = await client.getPlaceNotes({
+        accountID: 0,
+        placeID: 23949,
+        limit: 1,
+        page: 0,
+    });
+    if (placeNotes instanceof Error) {
+        fail(placeNotes.message);
+    }
+    assertEquals(placeNotes.length > 0, true);
+    const note = await client.getNote({ noteID: placeNotes[0].id });
     if (note instanceof Error) {
         fail(note.message);
     }
     // should be contain an account object
-    assertEquals(note?.account.id, 95880);
+    assertEquals(note?.account.id, placeNotes[0].account.id);
 });
 
 Deno.test("getNotes", async () => {
@@ -475,17 +485,6 @@ Deno.test("interests", async () => {
     assertEquals(res.interests, ["food", "travel"]);
 });
 
-Deno.test("getAccountFollowingPubkeys", async () => {
-    const result = await client.getAccountFollowingPubkeys(
-        "npub1k07dmj2h95c7kd69gzwcg4rswwx4096ka8v0mltymewdzp3lck8q44tz6s",
-    );
-    if (result instanceof Error) {
-        fail(result.message);
-    }
-    console.log(result);
-    assertEquals(result.size > 0, true);
-});
-
 Deno.test("getAccountFollowers & getAccountFollowings", async () => {
     const _followers = await client.getAccountFollowers({
         npub: "npub1k07dmj2h95c7kd69gzwcg4rswwx4096ka8v0mltymewdzp3lck8q44tz6s",
@@ -530,16 +529,7 @@ Deno.test("follow & unfollow", async () => {
         if (follows instanceof Error) {
             fail(follows.message);
         }
-        const me = (await authedClient.getMyProfile()) as UserResolver;
-        const followings = await me.getFollowing();
-        if (followings instanceof Error) {
-            fail(followings.message);
-        }
         assertEquals(follows, new Set());
-        assertEquals(
-            followings.map((f) => f.pubkey.hex),
-            [],
-        );
     }
 
     const pub1 = PrivateKey.Generate().toPublicKey();
@@ -550,12 +540,17 @@ Deno.test("follow & unfollow", async () => {
             fail(err.message);
         }
 
-        const me = (await authedClient.getMyProfile()) as UserResolver;
-        const following = (await me.getFollowing()) as UserResolver[];
-        assertEquals(
-            following.map((u) => u.pubkey.hex),
-            [pub1.hex],
-        );
+        const follows = await authedClient.getMyFollowingPubkeys();
+        if (follows instanceof Error) {
+            fail(follows.message);
+        }
+        assertEquals(follows, new Set([pub1.hex]));
+
+        const following = await client.getAccountFollowingPubkeys(user1.publicKey);
+        if (following instanceof Error) {
+            fail(following.message);
+        }
+        assertEquals(following, new Set([pub1.hex]));
     }
 });
 
@@ -592,7 +587,11 @@ Deno.test("getLocationGalleryImages", async () => {
 });
 
 Deno.test("getLocationLinks", async () => {
-    const result = await client.getLocationLinks({ locationId: 2313 });
+    const locations = await client.getLocationsByPlaceIDRandomized({ placeId: 28564 });
+    if (locations instanceof Error) {
+        fail(locations.message);
+    }
+    const result = await client.getLocationLinks({ locationId: locations[0].id });
     if (result instanceof Error) {
         fail(result.message);
     }

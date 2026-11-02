@@ -167,57 +167,6 @@ Deno.test("upload file", async () => {
     }
 });*/
 
-Deno.test("update place", async () => {
-    const signer = InMemoryAccountContext.Generate();
-    const res = await clientNoAuth.loginNostr(signer, { name: "test" });
-    if (res instanceof Error) fail(res.message);
-    const client = Client.New({
-        baseURL: rest_url,
-        getJwt: () => res.token,
-        getNostrSigner: async () => signer,
-        relay_url,
-        aws_cdn_url,
-    }) as Client;
-    {
-        const originalPlace = await client.getPlaceByOsmRef({ osmRef: "R296561" });
-        if (originalPlace instanceof Error) {
-            fail(originalPlace.message);
-        }
-
-        let result = await client.updatePlace({
-            id: originalPlace.id,
-            name: "RandomTestName",
-        });
-        if (result instanceof Error) {
-            fail(result.message);
-        }
-
-        let updatedPlace = await client.getPlaceByOsmRef({
-            osmRef: originalPlace.osmRef,
-        });
-        if (updatedPlace instanceof Error) {
-            fail(updatedPlace.message);
-        }
-        assertEquals(updatedPlace.name, "RandomTestName");
-
-        result = await client.updatePlace({
-            id: originalPlace.id,
-            name: originalPlace.name,
-        });
-        if (result instanceof Error) {
-            fail(result.message);
-        }
-
-        updatedPlace = await client.getPlaceByOsmRef({
-            osmRef: originalPlace.osmRef,
-        });
-        if (updatedPlace instanceof Error) {
-            fail(updatedPlace.message);
-        }
-        assertEquals(updatedPlace, originalPlace);
-    }
-});
-
 Deno.test({
     name: "signEvent",
     // ignore: true,

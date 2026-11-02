@@ -568,7 +568,7 @@ export const deleteAccount =
         if (responseBody instanceof Error) {
             return responseBody;
         }
-        if (response.status == 200) {
+        if (response.ok) {
             return true;
         }
         return false;
