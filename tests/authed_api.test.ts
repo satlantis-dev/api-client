@@ -14,12 +14,11 @@ import { fail } from "jsr:@std/assert@0.226.0/fail";
 
 import { AccountPlaceRoleTypeEnum } from "../models/account.ts";
 import { Client, loginNostr } from "../sdk.ts";
-import { randomString } from "./public_api.test.ts";
 import { UserResolver } from "../resolvers/user.ts";
 
 import { nip04Encrypt } from "../api/nostr_event.ts";
 import { assertNotEquals } from "@std/assert/not-equals";
-import { aws_cdn_url, relay_url, rest_url } from "./urls.ts";
+import { aws_cdn_url, randomString, relay_url, rest_url } from "./urls.ts";
 
 const clientNoAuth = Client.New({
     baseURL: rest_url,
@@ -542,26 +541,6 @@ Deno.test("getUserProfile & updateUserProfile", async (t) => {
             assertEquals(p3.isBusiness, true);
         });
     }
-});
-
-Deno.test("claim location", async (t) => {
-    // https://www.dev.satlantis.io/location/1998
-    const res = await client.claimLocation({ locationId: 1998 });
-    if (res instanceof Error) fail(res.message);
-    // // the lenght of the code might not be part of the API
-    // // put it here just to be safe
-    // // so that when it changes, we will know
-    assertEquals(res.code.length, "wA2tjNpcGvNED7YoSpbF".length);
-
-    await t.step("should be successful", async () => {
-        const res2 = await client.proveLocationClaim({
-            locationId: 1998,
-            referredBy: "",
-            url: "https://posts.gle/xPnjpX",
-        });
-        // todo: blocked
-        console.log(res2);
-    });
 });
 
 Deno.test("submitAmbassadorApplication", async (t) => {

@@ -451,7 +451,7 @@ export type GetAccountsBySearchArgs = {
 export const getAccountsBySearch = (urlArg: URL, getJwt: func_GetJwt) =>
 async (
     args: GetAccountsBySearchArgs,
-    _options?: {
+    options?: {
         signal: AbortSignal;
     },
 ) => {
@@ -479,6 +479,7 @@ async (
     const response = await safeFetch(url, {
         method: "GET",
         headers,
+        signal: options?.signal,
     });
     if (response instanceof Error) {
         return response;

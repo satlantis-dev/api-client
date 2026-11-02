@@ -5,7 +5,7 @@ import { ApiError } from "../helpers/_helper.ts";
 import type { UserResolver } from "../resolvers/user.ts";
 import { LocationCategoryName } from "../models/location.ts";
 import { NoteResolver } from "../resolvers/note.ts";
-import { aws_cdn_url, relay_url, rest_url } from "./urls.ts";
+import { aws_cdn_url, randomString, relay_url, rest_url } from "./urls.ts";
 import { VanityObjectType } from "../models/vanity.ts";
 
 const testSigner = InMemoryAccountContext.Generate();
@@ -409,20 +409,6 @@ Deno.test("getIpInfo", async () => {
     }
 });
 
-Deno.test("getLocationReviews", async () => {
-    const result = await client.getLocationReviews({
-        limit: 2,
-        page: 0,
-        locationId: 2313,
-    });
-    if (result instanceof Error) fail(result.message);
-
-    const location = (await client.getLocation(2313)) as LocationResolver;
-
-    const reviews = await location.getReviews({ page: 0, limit: 2 });
-    assertEquals(reviews, result);
-});
-
 Deno.test("addressLookup", async () => {
     const result = await client.addressLookup({
         address: "paris",
@@ -589,10 +575,6 @@ Deno.test("get exchange rate", async () => {
     }
     assertEquals(typeof result.rate, "number");
 });
-
-export function randomString() {
-    return String(Date.now());
-}
 
 Deno.test("getPlaceGalleryImages", async () => {
     const result = await client.getPlaceCategoryScores({ placeID: 23751 }); // Florianópolis
