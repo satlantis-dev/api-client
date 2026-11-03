@@ -87,7 +87,7 @@ Deno.test("notes without places", async () => {
 });
 
 Deno.test("notes in a place", async () => {
-    const contents: string[] = [];
+    const posted: number[] = [];
     const place = await client.getPlaceByOsmRef({ osmRef: "R7426387" });
     if (place instanceof Error) {
         fail(place.message);
@@ -102,7 +102,7 @@ Deno.test("notes in a place", async () => {
         if (res instanceof Error) {
             fail(res.message);
         }
-        contents.push(res.content);
+        posted.push(res.id);
     }
 
     const user = (await client.resolver.getUser(
@@ -127,6 +127,15 @@ Deno.test("notes in a place", async () => {
     for (const note of notes) {
         assertEquals(note.place.id, place.id);
     }
+
+    for (const id of posted) {
+        const note = await client.getNote({ noteID: id });
+        if (note instanceof Error) {
+            fail(note.message);
+        }
+        assertEquals(note.content, "hello Satlantis");
+        assertEquals(note.place?.id, place.id);
+    }
 });
 
 Deno.test("getLocation", async (t) => {
@@ -135,6 +144,7 @@ Deno.test("getLocation", async (t) => {
     if (live instanceof Error) {
         fail(live.message);
     }
+    assertGreaterOrEqual(live.length, 1, `place ${place_id} should have locations`);
     const { id, name: expectedName } = live[0];
     const errors: string[] = [];
     let byLocationId: LocationResolver;
