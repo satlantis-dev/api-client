@@ -16,12 +16,12 @@ jobs:
 
         steps:
             - name: setup repo
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: setup deno
-              uses: denoland/setup-deno@v1
+              uses: denoland/setup-deno@v2
               with:
-                  deno-version: 2.0.0
+                  deno-version: 2.9.8
 
             - name: check
               run: make check

@@ -29,6 +29,11 @@ const startRelay = (behaviour: RelayBehaviour, reply: unknown[] = []) => {
     return {
         url: `ws://127.0.0.1:${server.addr.port}`,
         stop: async () => {
+            // Let the client's own close finish first: closing both ends at once makes Deno 2.9 fire the
+            // client's close event twice, and the SDK throws an uncaught error on the second one.
+            for (let i = 0; sockets.size > 0 && i < 40; i++) {
+                await new Promise((resolve) => setTimeout(resolve, 25));
+            }
             sockets.forEach((socket) => socket.close());
             await server.shutdown();
         },
