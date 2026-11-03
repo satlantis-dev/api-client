@@ -14,9 +14,6 @@
             "cov_profile"
         ]
     },
-    "compilerOptions": {
-        "verbatimModuleSyntax": true
-    },
     "license": "MIT",
     "lint": {
         "rules": {

@@ -426,6 +426,8 @@ Deno.test("calendar events", async () => {
         if (res3 instanceof Error) {
             fail(res3.message);
         }
+        assertEquals(res3.postResult.id, res.postResult.id);
+        assertEquals(res3.postResult.title, "2song");
     }
 });
 
