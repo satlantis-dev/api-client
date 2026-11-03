@@ -102,6 +102,7 @@ export interface CommunityMembershipTier {
     isGated: boolean;
     isPaid: boolean;
     isRecommended: boolean;
+    isHidden: boolean;
     currency?: OrderCurrency | null;
     monthlyAmount?: number | null;
     yearlyAmount?: number | null;
