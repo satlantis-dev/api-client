@@ -87,7 +87,7 @@ Deno.test("notes without places", async () => {
 });
 
 Deno.test("notes in a place", async () => {
-    const posted: number[] = [];
+    const posted: { id: number; content: string }[] = [];
     const place = await client.getPlaceByOsmRef({ osmRef: "R7426387" });
     if (place instanceof Error) {
         fail(place.message);
@@ -102,7 +102,7 @@ Deno.test("notes in a place", async () => {
         if (res instanceof Error) {
             fail(res.message);
         }
-        posted.push(res.id);
+        posted.push({ id: res.id, content: res.content });
     }
 
     const user = (await client.resolver.getUser(
@@ -128,12 +128,12 @@ Deno.test("notes in a place", async () => {
         assertEquals(note.place.id, place.id);
     }
 
-    for (const id of posted) {
+    for (const { id, content } of posted) {
         const note = await client.getNote({ noteID: id });
         if (note instanceof Error) {
             fail(note.message);
         }
-        assertEquals(note.content, "hello Satlantis");
+        assertEquals(note.content, content);
         assertEquals(note.place?.id, place.id);
     }
 });
