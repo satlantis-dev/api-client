@@ -1,5 +1,6 @@
 import { type NostrEvent, NostrKind, prepareNostrEvent, type Tag } from "@blowater/nostr-sdk";
-import type { func_GetJwt, func_GetNostrSigner, OrderCurrency } from "@satlantis/api-client";
+import type { func_GetJwt, func_GetNostrSigner } from "@satlantis/api-client";
+import { OrderCurrency } from "../models/ticketing.ts";
 import { copyURL, generateUUID, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { AccountDTO, SearchAccountDTO } from "../models/account.ts";
@@ -1429,7 +1430,7 @@ export interface EventTicketType {
     promotion?: PromotionResponse | null;
 }
 
-export type FiatCurrency = "USD" | "EUR" | "CAD" | "AUD" | "GBP" | "NZD" | "PYG";
+export type FiatCurrency = Exclude<`${OrderCurrency}`, "BTC">;
 export type PriceCurrency = "BTC" | FiatCurrency;
 export type SellCurrency = "BTC" | FiatCurrency;
 
@@ -1972,16 +1973,9 @@ async (
     return handleResponse<RefundTicketsInRsvpResponse>(response);
 };
 
-export enum Currency {
-    USD = "USD",
-    EUR = "EUR",
-    CAD = "CAD",
-    AUD = "AUD",
-    GBP = "GBP",
-    NZD = "NZD",
-    PYG = "PYG", // zero-decimal: amounts are whole guaraníes
-    BTC = "BTC",
-}
+// Same values as OrderCurrency; aliased so a new currency is added in one place.
+export const Currency = OrderCurrency;
+export type Currency = OrderCurrency;
 
 export interface CurrencyEarnings {
     currency: Currency;

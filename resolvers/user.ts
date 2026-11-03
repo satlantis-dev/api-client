@@ -61,32 +61,14 @@ export class UserResolver {
      */
     following: UserResolver[] = [];
     /**
-     * @deprecated account.following will be removed in a future version
+     * Fetches the whole list page by page. The api no longer returns
+     * account.following, so options.useCache has no effect.
+     * @deprecated use client.resolver.getFollowings, or account.followingCount for the count
      */
-    async getFollowing(options?: { useCache: boolean }) {
-        const account = await this.client.getAccount(
-            { npub: this.pubkey.bech32() },
-            options,
-        );
-        if (account instanceof Error) {
-            return account;
-        }
-        const newList = [];
-        for (const a of account.following) {
-            const pub = PublicKey.FromHex(a.pubKey);
-            if (pub instanceof Error) {
-                console.error(`account ${a.id} has invalid pubkey`, pub);
-                continue;
-            }
-            const u = new UserResolver(
-                this.client,
-                pub,
-                a.isAdmin,
-                a.isBusiness,
-                a.nip05,
-                a,
-            );
-            newList.push(u);
+    async getFollowing(_options?: { useCache: boolean }) {
+        const newList = await this.fetchAllPages(this.client.resolver.getFollowings);
+        if (newList instanceof Error) {
+            return newList;
         }
         this.following = newList;
         return newList;
@@ -97,30 +79,35 @@ export class UserResolver {
      */
     followedBy: UserResolver[] = [];
     /**
-     * @deprecated account.followedBy will be removed in a future version
+     * Fetches the whole list page by page. The api no longer returns
+     * account.followedBy, so options.useCache has no effect.
+     * @deprecated use client.resolver.getFollowers, or account.followersCount for the count
      */
-    getFollowedBy = async (options?: { useCache: boolean }) => {
-        const account = await this.client.getAccount(
-            { npub: this.pubkey.bech32() },
-            options,
-        );
-        if (account instanceof Error) {
-            return account;
-        }
-        const newList = [];
-        for (const a of account.followedBy) {
-            const pub = PublicKey.FromHex(a.pubKey);
-            if (pub instanceof Error) {
-                console.error(`account ${a.id} has invalid pubkey`, pub);
-                continue;
-            }
-            newList.push(
-                new UserResolver(this.client, pub, a.isAdmin, a.isBusiness, a.nip05, a),
-            );
+    getFollowedBy = async (_options?: { useCache: boolean }) => {
+        const newList = await this.fetchAllPages(this.client.resolver.getFollowers);
+        if (newList instanceof Error) {
+            return newList;
         }
         this.followedBy = newList;
         return this.followedBy;
     };
+
+    private async fetchAllPages(
+        getPage: (args: { npub: string; page: number; limit: number }) => Promise<UserResolver[] | Error>,
+    ) {
+        const limit = 100;
+        const all: UserResolver[] = [];
+        for (let page = 1;; page++) {
+            const users = await getPage({ npub: this.pubkey.bech32(), page, limit });
+            if (users instanceof Error) {
+                return users;
+            }
+            all.push(...users);
+            if (users.length < limit) {
+                return all;
+            }
+        }
+    }
 
     getAccountPlaceRoles = async (options?: { useCache: boolean }) => {
         const account = await this.client.getAccount(

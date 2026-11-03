@@ -590,6 +590,7 @@ Deno.test("getLocationLinks", async () => {
     if (locations instanceof Error) {
         fail(locations.message);
     }
+    assertEquals(locations.length > 0, true, "place 28564 should have locations");
     const result = await client.getLocationLinks({ locationId: locations[0].id });
     if (result instanceof Error) {
         fail(result.message);

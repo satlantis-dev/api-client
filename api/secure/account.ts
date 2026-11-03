@@ -1,6 +1,7 @@
 import { type NostrEvent, NostrKind, prepareNostrEvent } from "@blowater/nostr-sdk";
 
 import {
+    ApiError,
     copyURL,
     handleBinaryResponse,
     handleResponse,
@@ -572,7 +573,7 @@ export const deleteAccount =
         if (response.status >= 200 && response.status < 300) {
             return true;
         }
-        return false;
+        return new ApiError(response.status, responseBody);
     };
 
 export type GetUserFollowersArgs = {
