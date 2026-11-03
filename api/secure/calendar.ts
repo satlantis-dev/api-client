@@ -307,7 +307,7 @@ export const postPlaceCalendarEvent =
         if (response instanceof Error) {
             return response;
         }
-        return handleResponse<PlaceCalendarEvent>(response);
+        return handleResponse<CalendarEvent>(response);
     };
 
 /**
@@ -339,7 +339,7 @@ export const createEventInCalendar =
         if (response instanceof Error) {
             return response;
         }
-        return handleResponse<PlaceCalendarEvent>(response);
+        return handleResponse<CalendarEvent>(response);
     };
 
 export interface UpdateEventInCalendarArgs {
