@@ -16,7 +16,6 @@ import {
     type CalendarEventSubmission,
     type func_GetJwt,
     type func_GetNostrSigner,
-    type PlaceCalendarEvent,
     type SearchAccountDTO,
 } from "../../sdk.ts";
 import type { AnswerType } from "../events.ts";
@@ -148,6 +147,13 @@ export const searchAccountViaEmail =
         return handleResponse<SearchAccountDTO>(response);
     };
 
+/** One entry per invited cohost, in request order; a failed invite doesn't fail the others. */
+export interface CohostInviteResult {
+    index: number;
+    success: boolean;
+    error: string;
+}
+
 export const sendCohostEmailInviteToCalendarEvent =
     (urlArg: URL, getJwt: () => string) => async (args: PlaceCalendarEventInviteCohostViaEmail) => {
         const jwtToken = getJwt();
@@ -172,7 +178,7 @@ export const sendCohostEmailInviteToCalendarEvent =
         if (response instanceof Error) {
             return response;
         }
-        return handleResponse<PlaceCalendarEvent>(response);
+        return handleResponse<CohostInviteResult[]>(response);
     };
 
 export const getCalendarEventCohosts =
@@ -200,7 +206,8 @@ export const getCalendarEventCohosts =
     };
 
 export const updateCalendarEventCohostRole =
-    (urlArg: URL, getJwt: () => string) => async (args: UpdateCalendarEventCohostRolePut) => {
+    (urlArg: URL, getJwt: () => string) =>
+    async (args: UpdateCalendarEventCohostRolePut): Promise<void | Error> => {
         const jwtToken = getJwt();
         if (jwtToken == "") {
             return new Error("jwt token is empty");
@@ -221,7 +228,11 @@ export const updateCalendarEventCohostRole =
         if (response instanceof Error) {
             return response;
         }
-        return handleResponse<PlaceCalendarEvent>(response);
+        const result = await handleResponse<{}>(response);
+        if (result instanceof Error) {
+            return result;
+        }
+        return;
     };
 
 /**
@@ -441,11 +452,11 @@ export const putUpdateCalendarEvent =
         if (response instanceof Error) {
             return response;
         }
-        return handleResponse<PlaceCalendarEvent>(response);
+        return handleResponse<CalendarEvent>(response);
     };
 
 export const relistCalendarEvent =
-    (urlArg: URL, getJwt: () => string) => async (args: { eventId: number }) => {
+    (urlArg: URL, getJwt: () => string) => async (args: { eventId: number }): Promise<void | Error> => {
         const jwtToken = getJwt();
         if (jwtToken == "") {
             return new Error("jwt token is empty");
@@ -467,11 +478,15 @@ export const relistCalendarEvent =
         if (response instanceof Error) {
             return response;
         }
-        return handleResponse<PlaceCalendarEvent>(response);
+        const result = await handleResponse<{}>(response);
+        if (result instanceof Error) {
+            return result;
+        }
+        return;
     };
 
 export const unlistCalendarEvent =
-    (urlArg: URL, getJwt: () => string) => async (args: { eventId: number }) => {
+    (urlArg: URL, getJwt: () => string) => async (args: { eventId: number }): Promise<void | Error> => {
         const jwtToken = getJwt();
         if (jwtToken == "") {
             return new Error("jwt token is empty");
@@ -493,11 +508,15 @@ export const unlistCalendarEvent =
         if (response instanceof Error) {
             return response;
         }
-        return handleResponse<PlaceCalendarEvent>(response);
+        const result = await handleResponse<{}>(response);
+        if (result instanceof Error) {
+            return result;
+        }
+        return;
     };
 
 export const unhideAttendeesCalendarEvent =
-    (urlArg: URL, getJwt: () => string) => async (args: { eventId: number }) => {
+    (urlArg: URL, getJwt: () => string) => async (args: { eventId: number }): Promise<void | Error> => {
         const jwtToken = getJwt();
         if (jwtToken == "") {
             return new Error("jwt token is empty");
@@ -519,11 +538,15 @@ export const unhideAttendeesCalendarEvent =
         if (response instanceof Error) {
             return response;
         }
-        return handleResponse<PlaceCalendarEvent>(response);
+        const result = await handleResponse<{}>(response);
+        if (result instanceof Error) {
+            return result;
+        }
+        return;
     };
 
 export const hideAttendeesCalendarEvent =
-    (urlArg: URL, getJwt: () => string) => async (args: { eventId: number }) => {
+    (urlArg: URL, getJwt: () => string) => async (args: { eventId: number }): Promise<void | Error> => {
         const jwtToken = getJwt();
         if (jwtToken == "") {
             return new Error("jwt token is empty");
@@ -545,11 +568,15 @@ export const hideAttendeesCalendarEvent =
         if (response instanceof Error) {
             return response;
         }
-        return handleResponse<PlaceCalendarEvent>(response);
+        const result = await handleResponse<{}>(response);
+        if (result instanceof Error) {
+            return result;
+        }
+        return;
     };
 
 export const unhideLocationCalendarEvent =
-    (urlArg: URL, getJwt: () => string) => async (args: { eventId: number }) => {
+    (urlArg: URL, getJwt: () => string) => async (args: { eventId: number }): Promise<void | Error> => {
         const jwtToken = getJwt();
         if (jwtToken == "") {
             return new Error("jwt token is empty");
@@ -571,11 +598,15 @@ export const unhideLocationCalendarEvent =
         if (response instanceof Error) {
             return response;
         }
-        return handleResponse<PlaceCalendarEvent>(response);
+        const result = await handleResponse<{}>(response);
+        if (result instanceof Error) {
+            return result;
+        }
+        return;
     };
 
 export const hideLocationCalendarEvent =
-    (urlArg: URL, getJwt: () => string) => async (args: { eventId: number }) => {
+    (urlArg: URL, getJwt: () => string) => async (args: { eventId: number }): Promise<void | Error> => {
         const jwtToken = getJwt();
         if (jwtToken == "") {
             return new Error("jwt token is empty");
@@ -597,7 +628,11 @@ export const hideLocationCalendarEvent =
         if (response instanceof Error) {
             return response;
         }
-        return handleResponse<PlaceCalendarEvent>(response);
+        const result = await handleResponse<{}>(response);
+        if (result instanceof Error) {
+            return result;
+        }
+        return;
     };
 
 export const respondCalendarEventCohostInvitation =
@@ -624,7 +659,7 @@ export const respondCalendarEventCohostInvitation =
         if (response instanceof Error) {
             return response;
         }
-        return handleResponse<PlaceCalendarEvent>(response);
+        return handleResponse<string>(response);
     };
 
 export const postCalendarEventAnnouncementV2 = (urlArg: URL, getJwt: () => string) =>
@@ -815,7 +850,7 @@ export const deletePlaceCalendarEvent =
         if (response instanceof Error) {
             return response;
         }
-        return handleResponse<PlaceCalendarEvent>(response);
+        return handleResponse<string>(response);
     };
 
 export const deletePlaceCalendarEventById =
@@ -841,7 +876,7 @@ export const deletePlaceCalendarEventById =
         if (response instanceof Error) {
             return response;
         }
-        return handleResponse<PlaceCalendarEvent>(response);
+        return handleResponse<string>(response);
     };
 
 export type EventRegistrationAnswer = {
