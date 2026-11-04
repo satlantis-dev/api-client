@@ -2518,13 +2518,21 @@ async (args: DeleteCommunityArgs) => {
  * Communities flagged as featured. Public, capped at 20 server-side, and
  * shuffled on every request — the order is not stable across calls.
  */
+export type GetCommunityCarouselArgs = {
+    /** Only communities with at least one calendar in this place. */
+    placeId?: number;
+};
+
 export const getFeaturedCommunities = (
     urlArg: URL,
     getJwt: func_GetJwt,
 ) =>
-async () => {
+async (args: GetCommunityCarouselArgs = {}) => {
     const url = copyURL(urlArg);
     url.pathname = `/communities/featured`;
+    if (args.placeId != undefined) {
+        url.searchParams.set("placeId", String(args.placeId));
+    }
 
     const headers = new Headers();
     const jwtToken = getJwt();
@@ -2550,9 +2558,12 @@ export const getNewestCommunities = (
     urlArg: URL,
     getJwt: func_GetJwt,
 ) =>
-async () => {
+async (args: GetCommunityCarouselArgs = {}) => {
     const url = copyURL(urlArg);
     url.pathname = `/communities/newest`;
+    if (args.placeId != undefined) {
+        url.searchParams.set("placeId", String(args.placeId));
+    }
 
     const headers = new Headers();
     const jwtToken = getJwt();
@@ -2639,6 +2650,8 @@ export type SearchCommunitiesArgs = {
     search?: string;
     /** Exact Whop ID. The backend 400s below 15 characters. */
     whopId?: string;
+    /** Only communities with at least one calendar in this place. */
+    placeId?: number;
     page?: number;
     /** Defaults to 10 server-side. */
     limit?: number;
@@ -2665,6 +2678,9 @@ async (args: SearchCommunitiesArgs) => {
     }
     if (args.whopId) {
         url.searchParams.set("whopId", args.whopId);
+    }
+    if (args.placeId != undefined) {
+        url.searchParams.set("placeId", String(args.placeId));
     }
     if (args.page != undefined) {
         url.searchParams.set("page", String(args.page));
