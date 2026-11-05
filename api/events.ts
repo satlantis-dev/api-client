@@ -675,7 +675,9 @@ async (
  * intact, so an `accept` on a full event resolves to `waitlisted` (or
  * `rejected`) - read `results[0].status` for what actually happened.
  */
-const reviewRsvpRequest = (urlArg: URL, getJwt: func_GetJwt, action: "accept" | "reject") =>
+type RsvpReviewAction = "accept" | "reject" | "decline";
+
+const reviewRsvpRequest = (urlArg: URL, getJwt: func_GetJwt, action: RsvpReviewAction) =>
 async (
     rsvpId: number,
 ): Promise<UpdateRsvpStatusResponse | Error> => {
@@ -704,6 +706,13 @@ async (
 export const acceptRsvp = (urlArg: URL, getJwt: func_GetJwt) => reviewRsvpRequest(urlArg, getJwt, "accept");
 
 export const rejectRsvp = (urlArg: URL, getJwt: func_GetJwt) => reviewRsvpRequest(urlArg, getJwt, "reject");
+
+/**
+ * Declines an RSVP: a guest turning down their invitation or saying they're no
+ * longer going. Unlike `rejectRsvp` (the host turning a guest away), the guest
+ * can RSVP again later. Cancels the RSVP's tickets.
+ */
+export const declineRsvp = (urlArg: URL, getJwt: func_GetJwt) => reviewRsvpRequest(urlArg, getJwt, "decline");
 
 export interface GetRandomizedEventsArgs {
     placeId?: number;
