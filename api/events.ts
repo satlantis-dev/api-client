@@ -1737,37 +1737,31 @@ export const purchaseEventTicket =
         const url = copyURL(urlArg);
         url.pathname = `/events/${eventId}/order`;
 
-        let isNostrAccount = null;
-
-        let signer = null;
-
-        signer = await getNostrSigner();
-        if (signer instanceof Error) {
-            isNostrAccount = false;
-            signer = null;
-        } else {
-            isNostrAccount = true;
-        }
-
-        const uuid = generateUUID();
-        const dTag = calendarEvent.dtag;
-        const aTag = `${NostrKind.Calendar_Time}:${calendarEvent.pubkey}:${dTag}`;
-        let event = null;
-
-        if (signer && isNostrAccount) {
-            event = await prepareNostrEvent(signer, {
+        // The kind 31925 RSVP event is optional: the api records the RSVP either way.
+        // Send the order without it when there is no signer, or when signing fails —
+        // e.g. a read-only session (logged in with email/Google/Apple for an account
+        // whose Nostr key the api doesn't store) can't sign, but can still register.
+        let event: NostrEvent | null = null;
+        const signer = await getNostrSigner();
+        if (!(signer instanceof Error)) {
+            const aTag = `${NostrKind.Calendar_Time}:${calendarEvent.pubkey}:${calendarEvent.dtag}`;
+            const signed = await prepareNostrEvent(signer, {
                 kind: 31925 as NostrKind,
                 content: "",
                 tags: [
                     ["a", aTag],
-                    ["d", uuid],
+                    ["d", generateUUID()],
                     ["status", payload.rsvpData.status],
                 ],
             });
-        }
-
-        if (event instanceof Error) {
-            return event;
+            if (signed instanceof Error) {
+                console.warn(
+                    "purchaseEventTicket: could not sign the RSVP event, ordering without it",
+                    signed,
+                );
+            } else {
+                event = signed;
+            }
         }
 
         const jwtToken = getJwt();
@@ -1782,10 +1776,8 @@ export const purchaseEventTicket =
             headers.set("X-Platform", xplatform);
         }
 
-        let eventRSVPData;
-        if (event && isNostrAccount) {
-            eventRSVPData = { ...payload.rsvpData, event };
-            payload.rsvpData = eventRSVPData;
+        if (event) {
+            payload.rsvpData = { ...payload.rsvpData, event };
         }
 
         const response = await safeFetch(url, {
