@@ -2,6 +2,7 @@ import type { Interest, Location, Note, Place } from "../sdk.ts";
 import type { AccountDTO } from "./account.ts";
 import type { Community } from "./community.ts";
 import type { CalendarEventTag } from "./event.ts";
+import type { EventRegistrationAnswer } from "../api/secure/calendar.ts";
 
 export interface CalendarEventRSVP {
     id: number;
@@ -16,6 +17,8 @@ export interface CalendarEventRSVP {
     tags: string;
     calendarEventId: number;
     status: string;
+    // Answers to the event's registration questions, when the guest gave any.
+    registrationAnswers?: { answers?: EventRegistrationAnswer[] } | null;
 }
 
 export interface CalendarEventAnnouncement {

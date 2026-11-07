@@ -2,7 +2,7 @@ import { ApiError, copyURL, handleResponse } from "../helpers/_helper.ts";
 import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { Account, AccountDTO, FollowingAccountDTO } from "../models/account.ts";
 import type { Activity } from "../models/activity.ts";
-import { type CalendarEvent, CalendarEventPeriod, type func_GetJwt, type SearchAccountDTO } from "../sdk.ts";
+import { type CalendarEvent, CalendarEventPeriod, type func_GetJwt } from "../sdk.ts";
 import { type AnswerType, type RsvpStatus } from "./events.ts";
 
 export const getAccount =
@@ -408,7 +408,14 @@ async (args: {
     }>(response);
 };
 
-export const verifyOTP = (urlArg: URL) => async (args: { token: string; otp: string }) => {
+export type VerifyOTPArgs = {
+    token: string;
+    otp: string;
+    // Optional; the response then includes the account's RSVP answers for this event.
+    calendarEventId?: number;
+};
+
+export const verifyOTP = (urlArg: URL) => async (args: VerifyOTPArgs) => {
     const url = copyURL(urlArg);
     url.pathname = `/auth/otp/verify`;
     const response = await safeFetch(url, {
@@ -446,7 +453,7 @@ export const getAccountById = (urlArg: URL) => async (args: { id: number }) => {
         return response;
     }
 
-    return handleResponse<SearchAccountDTO>(response);
+    return handleResponse<AccountDTO>(response);
 };
 
 export const getAccountActivities =

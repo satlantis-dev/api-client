@@ -81,6 +81,10 @@ export interface EventDetails {
     knownAttendees?: AccountDTO[];
     sampleAttendees?: AccountDTO[];
     attendeeCount?: number;
+    // Externally managed events only: people with an RSVP that isn't invited, declined or rejected.
+    interestedCount?: number;
+    // Up to 6 of them, most followed first; absent when attendees are hidden.
+    sampleInterested?: AccountDTO[];
     nostrId: string;
     notes: CalendarEventNote[];
     officialCalendar?: Calendar;
