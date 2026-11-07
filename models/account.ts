@@ -120,6 +120,8 @@ export type AccountPlaceRole = {
     active: boolean;
     type: AccountPlaceRoleTypeEnum;
     place: Place;
+    // Whether the account asked to become an ambassador of the place.
+    ambassadorRequest: boolean;
 };
 
 export enum AccountPlaceRoleTypeEnum {

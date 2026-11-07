@@ -4165,6 +4165,8 @@ export * from "./models/collection.ts";
 export * from "./models/activity.ts";
 export * from "./models/system.ts";
 export * from "./models/ticketing.ts";
+export type { Theme } from "./models/community.ts";
+export type { Timezone } from "./models/geo.ts";
 // data resolvers
 export * from "./resolvers/location.ts";
 export * from "./resolvers/user.ts";

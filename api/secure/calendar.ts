@@ -1925,7 +1925,7 @@ export function getEventsFromCalendarPaginated(urlArg: URL, getJwt: func_GetJwt)
 // Calendar Event Draft Types
 export interface CalendarEventDraft {
     id: number;
-    accountId: string;
+    accountId: number;
     title: string;
     draft: any; // Any valid JSON (entire calendar event create data)
     createdAt: string;
