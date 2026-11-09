@@ -367,6 +367,12 @@ async (
 
 export interface GetEventsArgs {
     destination?: string;
+    /** Filter by destination (place) id. Sent as `?placeId=`, which the backend reads. */
+    placeId?: number;
+    /**
+     * @deprecated The backend reads `placeId`, so `?place_id=` is silently ignored. Use `placeId`.
+     * Kept only so existing callers keep compiling.
+     */
     place_id?: number;
     type?: string;
     period?: string;
