@@ -2181,6 +2181,7 @@ export class Client {
             sortColumn: "score" | "id" | "price" | "trending" | "topPicks";
             sortDirection: "desc" | "asc";
             active_only?: boolean;
+            include_account_roles?: boolean;
         },
         options?: { useCache: boolean },
     ) => {
