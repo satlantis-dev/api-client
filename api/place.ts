@@ -66,6 +66,8 @@ async (args: {
     sortColumn: "score" | "id" | "price" | "trending" | "topPicks";
     sortDirection: "desc" | "asc";
     active_only?: boolean;
+    /** false leaves out each place's accountRoles, which are most of the response. */
+    include_account_roles?: boolean;
 }) => {
     const url = copyURL(urlArg);
     url.pathname = `/destinations`;
@@ -80,6 +82,9 @@ async (args: {
     } else {
         // Default to false if not provided
         url.searchParams.append("active_only", "false");
+    }
+    if (args.include_account_roles === false) {
+        url.searchParams.append("include_account_roles", "false");
     }
 
     const response = await safeFetch(url);
