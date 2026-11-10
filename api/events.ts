@@ -26,13 +26,14 @@ import type {
 import {
     type InvitationContact,
     type InvitationFailure,
+    type IssuedTicket,
     MAX_INVITATION_CONTACTS,
 } from "../models/invitation.ts";
 
 // Re-exported so callers that already reach for these through the event
 // invitation surface keep working; the definitions live in models/invitation.ts
 // because the community endpoints share them.
-export { type InvitationContact, type InvitationFailure, MAX_INVITATION_CONTACTS };
+export { type InvitationContact, type InvitationFailure, type IssuedTicket, MAX_INVITATION_CONTACTS };
 
 export enum RsvpStatus {
     Accepted = "accepted",
@@ -1126,13 +1127,7 @@ export type InviteEventGuestsArgs = {
     emailSubject?: string;
     invitationMessage?: string;
     ticketTypeId?: number;
-    /**
-     * Issue a complimentary ticket of `ticketTypeId` instead of only inviting to
-     * it (SAT-5768). Omitted, the backend defaults it to `true` whenever
-     * `ticketTypeId` is present; pass `false` to invite without issuing. `true`
-     * without a `ticketTypeId` is rejected with a 400.
-     */
-    issueTickets?: boolean;
+    tickets?: IssuedTicket[];
     options?: {
         signal: AbortSignal;
     };
@@ -1160,7 +1155,7 @@ export const inviteEventGuests =
                 emailSubject: args.emailSubject,
                 invitationMessage: args.invitationMessage,
                 ticketTypeId: args.ticketTypeId,
-                issueTickets: args.issueTickets,
+                tickets: args.tickets,
             }),
             signal: args.options?.signal,
         });

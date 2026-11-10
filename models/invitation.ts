@@ -25,3 +25,8 @@ export interface InvitationFailure {
 
 /** The backend rejects a batch larger than this with a 400. */
 export const MAX_INVITATION_CONTACTS = 200;
+
+export interface IssuedTicket {
+    ticketTypeId: number;
+    quantity: number;
+}
