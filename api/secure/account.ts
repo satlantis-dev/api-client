@@ -448,6 +448,7 @@ export type GetAccountsBySearchArgs = {
     username?: string;
     limit?: number;
     page?: number;
+    excludeSelf?: boolean;
 };
 export const getAccountsBySearch = (urlArg: URL, getJwt: func_GetJwt) =>
 async (
@@ -472,6 +473,9 @@ async (
     }
     if (args.page) {
         url.searchParams.set("page", args.page.toString());
+    }
+    if (args.excludeSelf) {
+        url.searchParams.set("exclude_self", "true");
     }
 
     const headers = new Headers();
