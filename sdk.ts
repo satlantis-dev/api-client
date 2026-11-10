@@ -385,6 +385,16 @@ import {
     sendEventPayment,
     updateEventWalletLightningAddress,
 } from "./api/secure/event_wallet.ts";
+import {
+    createCommunityReceiveInvoice,
+    decodeCommunityInvoice,
+    estimateCommunityPaymentFee,
+    getCommunityTransactionDetails,
+    getCommunityTransactionHistory,
+    getCommunityWallets,
+    sendCommunityPayment,
+    updateCommunityWalletLightningAddress,
+} from "./api/secure/community_wallet.ts";
 import { getAllThemes, getTimezoneInfo } from "./api/base.ts";
 import { getVanityPathMapping } from "./api/vanity.ts";
 import {
@@ -797,6 +807,16 @@ export class Client {
     getEventTransactionDetails: ReturnType<typeof getEventTransactionDetails>;
     decodeEventInvoice: ReturnType<typeof decodeEventInvoice>;
     updateEventWalletLightningAddress: ReturnType<typeof updateEventWalletLightningAddress>;
+
+    // Community Wallet (the wallet itself: getCommunityWallet)
+    getCommunityWallets: ReturnType<typeof getCommunityWallets>;
+    createCommunityReceiveInvoice: ReturnType<typeof createCommunityReceiveInvoice>;
+    sendCommunityPayment: ReturnType<typeof sendCommunityPayment>;
+    estimateCommunityPaymentFee: ReturnType<typeof estimateCommunityPaymentFee>;
+    getCommunityTransactionHistory: ReturnType<typeof getCommunityTransactionHistory>;
+    getCommunityTransactionDetails: ReturnType<typeof getCommunityTransactionDetails>;
+    decodeCommunityInvoice: ReturnType<typeof decodeCommunityInvoice>;
+    updateCommunityWalletLightningAddress: ReturnType<typeof updateCommunityWalletLightningAddress>;
 
     // Location
     getLocationsWithinBoundingBox: ReturnType<
@@ -1566,6 +1586,19 @@ export class Client {
         this.getEventTransactionDetails = getEventTransactionDetails(rest_api_url, getJwt);
         this.decodeEventInvoice = decodeEventInvoice(rest_api_url, getJwt);
         this.updateEventWalletLightningAddress = updateEventWalletLightningAddress(rest_api_url, getJwt);
+
+        // Community Wallet
+        this.getCommunityWallets = getCommunityWallets(rest_api_url, getJwt);
+        this.createCommunityReceiveInvoice = createCommunityReceiveInvoice(rest_api_url, getJwt);
+        this.sendCommunityPayment = sendCommunityPayment(rest_api_url, getJwt);
+        this.estimateCommunityPaymentFee = estimateCommunityPaymentFee(rest_api_url, getJwt);
+        this.getCommunityTransactionHistory = getCommunityTransactionHistory(rest_api_url, getJwt);
+        this.getCommunityTransactionDetails = getCommunityTransactionDetails(rest_api_url, getJwt);
+        this.decodeCommunityInvoice = decodeCommunityInvoice(rest_api_url, getJwt);
+        this.updateCommunityWalletLightningAddress = updateCommunityWalletLightningAddress(
+            rest_api_url,
+            getJwt,
+        );
 
         // Location
         this.getLocationsWithinBoundingBox = getLocationsWithinBoundingBox(
