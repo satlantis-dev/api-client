@@ -120,6 +120,7 @@ import { getCommunityBanners, getSystemBanners, getSystemVersion } from "./api/s
 import {
     cancelScheduledPlanChange,
     confirmPlanCardSetup,
+    createPlan,
     getPlanPaymentStatus,
     getPlans,
     getUserPlan,
@@ -128,6 +129,7 @@ import {
     startPlanLightningInvoice,
     startPlanOnchainPayment,
     subscribeToPlan,
+    updatePlan,
 } from "./api/premium.ts";
 import { deletePlaceGalleryImage, postPlaceGalleryImage, updatePlace } from "./api/secure/place.ts";
 import { deleteNote, postNote, postReaction, recordNotesAsSeen } from "./api/secure/note.ts";
@@ -758,6 +760,8 @@ export class Client {
     getSystemVersion: ReturnType<typeof getSystemVersion>;
     // premium
     getPlans: ReturnType<typeof getPlans>;
+    createPlan: ReturnType<typeof createPlan>;
+    updatePlan: ReturnType<typeof updatePlan>;
     getUserPlan: ReturnType<typeof getUserPlan>;
     previewPlanCoupon: ReturnType<typeof previewPlanCoupon>;
     subscribeToPlan: ReturnType<typeof subscribeToPlan>;
@@ -1546,7 +1550,9 @@ export class Client {
         this.getSystemVersion = getSystemVersion(rest_api_url);
 
         // Premium
-        this.getPlans = getPlans(rest_api_url);
+        this.getPlans = getPlans(rest_api_url, getJwt);
+        this.createPlan = createPlan(rest_api_url, getJwt);
+        this.updatePlan = updatePlan(rest_api_url, getJwt);
         this.getUserPlan = getUserPlan(rest_api_url, getJwt);
         this.previewPlanCoupon = previewPlanCoupon(rest_api_url, getJwt);
         this.subscribeToPlan = subscribeToPlan(rest_api_url, getJwt);

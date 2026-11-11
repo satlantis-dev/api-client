@@ -5,6 +5,7 @@
 export type Plan = {
     readonly id: number;
     readonly name: string;
+    readonly description?: string;
     readonly currency: string;
     readonly monthlyAmount?: number;
     readonly yearlyAmount?: number;
