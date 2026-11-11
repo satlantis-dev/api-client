@@ -1,4 +1,4 @@
-import type { AccountDTO, SearchAccountDTO } from "@satlantis/api-client";
+import type { AccountDTO, AccountMiniDTO, SearchAccountDTO } from "@satlantis/api-client";
 import type { Calendar } from "./calendar.ts";
 import type { OfflinePaymentMethod, PaymentMethod, PaymentStatus, RefundStatus } from "./order.ts";
 import type { OrderCurrency } from "./ticketing.ts";
@@ -46,6 +46,8 @@ export type Community = {
 export type CommunityDTO = {
     id: number;
     accountId: number;
+    /** The community owner. */
+    account?: AccountMiniDTO;
     name: string;
     bio?: string;
     description?: string;
