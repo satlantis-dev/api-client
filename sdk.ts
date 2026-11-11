@@ -1,3 +1,4 @@
+import type { CalendarEventAutoFollow } from "./models/calendar.ts";
 import {
     type Encrypter,
     type NostrEvent,
@@ -2323,7 +2324,7 @@ export class Client {
         googleMapsUri: string;
         venueName: string;
         googlePlaceId: string;
-        autofollowHostAndCohosts?: boolean;
+        autoFollow?: CalendarEventAutoFollow;
         allowCohostsToDownloadAttendeeList?: boolean;
         enableWaitlist?: boolean;
         capacity?: number;
@@ -2361,10 +2362,7 @@ export class Client {
             ["summary", args.summary],
             ["url", args.url],
             ["calendar_event_tags", args.calendarEventTags ?? ""],
-            [
-                "autoFollowHosts",
-                args.autofollowHostAndCohosts ? args.autofollowHostAndCohosts.toString() : "false",
-            ],
+            ["autoFollow", args.autoFollow ?? "owner"],
 
             [
                 "rsvp_gated_enabled",
@@ -2483,7 +2481,7 @@ export class Client {
         googleMapsUri: string;
         venueName: string;
         googlePlaceId: string;
-        autofollowHostAndCohosts?: boolean;
+        autoFollow?: CalendarEventAutoFollow;
         allowCohostsToDownloadAttendeeList?: boolean;
         enableWaitlist?: boolean;
         capacity?: number;
@@ -2522,10 +2520,7 @@ export class Client {
             ["url", args.url],
             ["calendar_event_tags", args.calendarEventTags ?? ""],
             ["website", args.website],
-            [
-                "autoFollowHosts",
-                args.autofollowHostAndCohosts ? args.autofollowHostAndCohosts.toString() : "false",
-            ],
+            ["autoFollow", args.autoFollow ?? "owner"],
             [
                 "rsvp_gated_enabled",
                 args.gatedEvent ? args.gatedEvent.toString() : "false",
