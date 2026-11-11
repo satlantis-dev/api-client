@@ -1089,6 +1089,8 @@ async (args: {
     email: string;
     emailSubject?: string;
     invitationMessage?: string;
+    /** Tickets the real invitation issues to each guest; shown in the preview, never minted. */
+    tickets?: { ticketTypeId: number; quantity: number }[];
 }): Promise<{} | Error> => {
     const url = copyURL(urlArg);
     url.pathname = `/secure/events/${args.eventId}/invite/preview`;
@@ -1104,6 +1106,7 @@ async (args: {
         email: args.email,
         emailSubject: args.emailSubject,
         invitationMessage: args.invitationMessage,
+        tickets: args.tickets,
     };
     const response = await safeFetch(url, {
         method: "POST",
