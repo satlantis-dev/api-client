@@ -17,7 +17,7 @@ import type {
 // Premium plans: listing, the account's current plan, subscribing (upgrade or scheduled
 // downgrade) and paying for a subscription by card (Stripe) or Bitcoin.
 
-type Method = "GET" | "POST" | "DELETE";
+type Method = "GET" | "POST" | "PUT" | "DELETE";
 
 // Authenticated JSON request shared by the secure premium routes below.
 async function secureRequest<T extends {}>(
@@ -49,12 +49,28 @@ async function secureRequest<T extends {}>(
     return handleResponse<T>(response);
 }
 
-// GET /plans — every plan, including inactive ones (check `isActive`).
-export const getPlans = (urlArg: URL) => async () => {
+export type GetPlansArgs = {
+    // Platform admins only: also return hidden plans. Sends the JWT; for anyone else the api
+    // ignores it and hidden plans stay out.
+    includeHidden?: boolean;
+};
+
+// GET /plans — every plan except hidden ones, including inactive ones (check `isActive`).
+export const getPlans = (urlArg: URL, getJwt: func_GetJwt) => async (args?: GetPlansArgs) => {
     const url = copyURL(urlArg);
     url.pathname = "/plans";
 
-    const response = await safeFetch(url);
+    const headers = new Headers();
+    if (args?.includeHidden) {
+        url.searchParams.set("includeHidden", "true");
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, { headers });
     if (response instanceof Error) {
         return response;
     }
@@ -182,3 +198,40 @@ export const getPlanPaymentStatus =
             "GET",
             `/secure/plans/subscriptions/${args.subscriptionId}/payment`,
         );
+
+// The plan fields platform admins can set. The name, the rank and the plan allowances (limits)
+// are not editable.
+export type PlanFieldsArgs = {
+    description?: string | null;
+    currency: string;
+    // Amounts are in minor units (cents); PYG and BTC are whole units.
+    monthlyAmount?: number | null;
+    yearlyAmount?: number | null;
+    // 0-100.
+    btcDiscountPercentage?: number | null;
+    isPaid: boolean;
+    isHidden: boolean;
+    isActive: boolean;
+    trialDays: number;
+};
+
+export type UpdatePlanArgs = PlanFieldsArgs & {
+    planId: number;
+};
+
+// PUT /secure/admin/plans/{planId} — platform admins only. Replaces the editable fields (a field
+// left out is cleared or reset). 403 for the Starter plan, which can't be edited.
+export const updatePlan = (urlArg: URL, getJwt: func_GetJwt) => async (args: UpdatePlanArgs) => {
+    const { planId, ...body } = args;
+    return secureRequest<Plan>(urlArg, getJwt, "PUT", `/secure/admin/plans/${planId}`, body);
+};
+
+export type CreatePlanArgs = PlanFieldsArgs & {
+    // Must not match an existing plan, case-insensitive (409). Can't be changed later.
+    name: string;
+};
+
+// POST /secure/admin/plans — platform admins only. The plan is added last (highest rank) and
+// starts hidden and inactive, whatever `isHidden` and `isActive` say.
+export const createPlan = (urlArg: URL, getJwt: func_GetJwt) => async (args: CreatePlanArgs) =>
+    secureRequest<Plan>(urlArg, getJwt, "POST", "/secure/admin/plans", args);
