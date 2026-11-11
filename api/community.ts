@@ -164,11 +164,13 @@ export type ListCommunityAdminsResponse = {
     declined: AccountCommunityRole[];
 };
 
-export type InviteCommunityAdminArgs = {
-    communityId: number;
-    inviteeId?: number;
-    inviteeEmail?: string;
-};
+export type InviteCommunityAdminArgs =
+    & { communityId: number }
+    & (
+        | { inviteeId: number; inviteeEmail?: never; inviteeNpub?: never }
+        | { inviteeId?: never; inviteeEmail: string; inviteeNpub?: never }
+        | { inviteeId?: never; inviteeEmail?: never; inviteeNpub: string }
+    );
 
 export type RespondCommunityAdminInvitationArgs = {
     communityId: number;
@@ -376,18 +378,17 @@ async (args: InviteCommunityAdminArgs) => {
         return new Error("jwt token is empty");
     }
     const url = copyURL(urlArg);
-    url.pathname = `/secure/communities/${args.communityId}/admins/invite`;
+    const { communityId, ...invitee } = args;
+    url.pathname = `/secure/communities/${communityId}/admins/invite`;
 
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
     headers.set("Content-Type", "application/json");
 
-    const body = args.inviteeEmail ? { inviteeEmail: args.inviteeEmail } : { inviteeId: args.inviteeId };
-
     const response = await safeFetch(url, {
         method: "POST",
         headers,
-        body: JSON.stringify(body),
+        body: JSON.stringify(invitee),
     });
     if (response instanceof Error) {
         return response;
