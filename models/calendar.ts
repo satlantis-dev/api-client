@@ -1,5 +1,5 @@
 import type { Interest, Location, Note, Place } from "../sdk.ts";
-import type { AccountDTO } from "./account.ts";
+import type { AccountDTO, AccountMiniDTO } from "./account.ts";
 import type { Community } from "./community.ts";
 import type { CalendarEventTag } from "./event.ts";
 import type { EventRegistrationAnswer } from "../api/secure/calendar.ts";
@@ -165,6 +165,30 @@ export type Calendar = {
     updatedAt: string;
     communityId?: number;
     community?: Community;
+};
+
+/**
+ * The trimmed calendar shape the list endpoints return (discover, an account's calendars and
+ * subscriptions). Single-calendar endpoints return `Calendar`.
+ */
+export type CalendarDTO = {
+    id: number;
+    account_id: number;
+    /** The calendar owner. */
+    owner?: AccountMiniDTO;
+    name: string;
+    description: string;
+    slug: string;
+    banner: string;
+    createdAt: string;
+    eventCount: number;
+    upcomingEventCount?: number;
+    eventTags?: CalendarEventTag[];
+    numSubscriptions: number;
+    placeId?: number;
+    isPublic: boolean;
+    featured: boolean;
+    communityId?: number;
 };
 
 export interface CalendarEventSubmission {
