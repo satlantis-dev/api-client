@@ -52,6 +52,9 @@ export type CommunityDTO = {
     banner?: string;
     logo?: string;
     memberCount: number | null;
+    /** Distinct events listed in the community's calendars; absent if the count failed. */
+    eventCount?: number;
+    upcomingEventCount?: number;
     calendars?: Calendar[];
     whopId?: string;
     createdAt: string;

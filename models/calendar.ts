@@ -154,6 +154,7 @@ export type Calendar = {
     eventTags: CalendarEventTag[];
     events: CalendarEvent[] | null;
     eventCount: number;
+    upcomingEventCount?: number;
     isPublic: boolean;
     featured: boolean;
     place?: Place;
