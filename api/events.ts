@@ -306,6 +306,8 @@ export interface GetEventRsvpsArgs {
     sort_by?: string;
     sort_order?: string;
     search?: string;
+    /** Only the RSVP of this account (exact match). Use it to look up a known guest instead of `search`. */
+    account_id?: number;
     /** Multiple values are serialized as CSV — the backend splits on comma. */
     ticket_type_id?: string | string[];
     options?: {
