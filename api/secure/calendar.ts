@@ -23,7 +23,7 @@ import type { AccountDTO } from "../../models/account.ts";
 import type { CalendarEventTag } from "../../models/event.ts";
 import { createSecureUrl } from "../../helpers/util.ts";
 import type { CalendarEventTicketOrderPayment } from "../../models/ticketing.ts";
-import type { CalendarEventCohostRole, Cohost } from "../../models/calendar.ts";
+import type { CalendarDTO, CalendarEventCohostRole, Cohost } from "../../models/calendar.ts";
 
 // https://github.com/satlantis-dev/api/blob/dev/shared/models.go#L17
 export interface PlaceCalendarEventPost {
@@ -1038,7 +1038,7 @@ export const getCalendarsByAccount = (urlArg: URL) => async (args: GetCalendarsB
         return response;
     }
 
-    return handleResponse<Calendar[]>(response);
+    return handleResponse<CalendarDTO[]>(response);
 };
 
 export type GetAccountCalendarSubscriptionsArgs = {
@@ -1057,7 +1057,7 @@ export const getAccountCalendarSubscriptions =
             return response;
         }
 
-        return handleResponse<Calendar[]>(response);
+        return handleResponse<CalendarDTO[]>(response);
     };
 
 export const getUserCalendars =
@@ -1474,7 +1474,7 @@ export const unsubscribeFromCalendar =
     };
 
 export const getUserCalendarSubscriptions =
-    (urlArg: URL, getJwt: () => string) => async (): Promise<Calendar[] | Error> => {
+    (urlArg: URL, getJwt: () => string) => async (): Promise<CalendarDTO[] | Error> => {
         const jwtToken = getJwt();
         if (jwtToken == "") {
             return new Error("jwt token is empty");
@@ -1493,7 +1493,7 @@ export const getUserCalendarSubscriptions =
         if (response instanceof Error) {
             return response;
         }
-        return handleResponse<Calendar[]>(response);
+        return handleResponse<CalendarDTO[]>(response);
     };
 
 export const isSubscribedToCalendar =
@@ -1714,7 +1714,7 @@ export function getFeaturedCalendars(urlArg: URL) {
         const response = await safeFetch(url);
 
         if (response instanceof Error) return response;
-        return handleResponse<Calendar[]>(response);
+        return handleResponse<CalendarDTO[]>(response);
     };
 }
 
@@ -1740,7 +1740,7 @@ export function getRecommendedCalendars(urlArg: URL, getJwt: func_GetJwt) {
         });
 
         if (response instanceof Error) return response;
-        return handleResponse<Calendar[]>(response);
+        return handleResponse<CalendarDTO[]>(response);
     };
 }
 
@@ -1757,7 +1757,7 @@ export function getPopularCalendars(urlArg: URL) {
         const response = await safeFetch(url);
 
         if (response instanceof Error) return response;
-        return handleResponse<Calendar[]>(response);
+        return handleResponse<CalendarDTO[]>(response);
     };
 }
 
@@ -1774,7 +1774,7 @@ export function getNewestCalendars(urlArg: URL) {
         const response = await safeFetch(url);
 
         if (response instanceof Error) return response;
-        return handleResponse<Calendar[]>(response);
+        return handleResponse<CalendarDTO[]>(response);
     };
 }
 
@@ -1805,7 +1805,7 @@ export function searchCalendars(urlArg: URL) {
         });
 
         if (response instanceof Error) return response;
-        return handleResponse<Calendar[]>(response);
+        return handleResponse<CalendarDTO[]>(response);
     };
 }
 
@@ -1839,7 +1839,7 @@ export function getCalendarsRandomized(urlArg: URL) {
         const response = await safeFetch(url);
 
         if (response instanceof Error) return response;
-        return handleResponse<Calendar[]>(response);
+        return handleResponse<CalendarDTO[]>(response);
     };
 }
 
