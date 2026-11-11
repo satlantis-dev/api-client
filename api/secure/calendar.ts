@@ -1041,6 +1041,25 @@ export const getCalendarsByAccount = (urlArg: URL) => async (args: GetCalendarsB
     return handleResponse<Calendar[]>(response);
 };
 
+export type GetAccountCalendarSubscriptionsArgs = {
+    npub: string;
+};
+
+/** The public calendars an account is subscribed to; private calendars are left out. */
+export const getAccountCalendarSubscriptions =
+    (urlArg: URL) => async (args: GetAccountCalendarSubscriptionsArgs) => {
+        const url = copyURL(urlArg);
+        url.pathname = `/account/${args.npub}/calendar-subscriptions`;
+
+        const response = await safeFetch(url);
+
+        if (response instanceof Error) {
+            return response;
+        }
+
+        return handleResponse<Calendar[]>(response);
+    };
+
 export const getUserCalendars =
     (urlArg: URL, getJwt: func_GetJwt) => async (args?: { includeCommunityCalendars?: boolean }) => {
         const jwtToken = getJwt();

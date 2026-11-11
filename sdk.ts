@@ -165,6 +165,7 @@ import {
     downloadCalendarEventAttendees,
     downloadCalendarEventIcsFile,
     editCalendar,
+    getAccountCalendarSubscriptions,
     GetAccountEventsFromCalendar,
     GetAccountPaymentsFromCalendar,
     getAccountRolesForCalendar,
@@ -741,6 +742,7 @@ export class Client {
     >;
     removeCohostFromCalendarEvent: ReturnType<typeof removeCohostFromCalendarEvent>;
     getCalendarsByAccount: ReturnType<typeof getCalendarsByAccount>;
+    getAccountCalendarSubscriptions: ReturnType<typeof getAccountCalendarSubscriptions>;
     getUserCalendars: ReturnType<typeof getUserCalendars>;
     getEventsByAccount: ReturnType<typeof getEventsByAccount>;
     getAllUserEvents: ReturnType<typeof getAllUserEvents>;
@@ -1522,6 +1524,7 @@ export class Client {
             getJwt,
         );
         this.getCalendarsByAccount = getCalendarsByAccount(rest_api_url);
+        this.getAccountCalendarSubscriptions = getAccountCalendarSubscriptions(rest_api_url);
         this.getUserCalendars = getUserCalendars(rest_api_url, getJwt);
         this.getEventsByAccount = getEventsByAccount(rest_api_url, getJwt);
         this.getAllUserEvents = getAllUserEvents(rest_api_url, getJwt);
