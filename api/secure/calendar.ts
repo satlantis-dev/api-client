@@ -1718,6 +1718,32 @@ export function getFeaturedCalendars(urlArg: URL) {
     };
 }
 
+/**
+ * Public calendars with events whose destination is within about 150 km of
+ * `lat`/`lng`, shuffled and capped at 20 server-side. Standalone calendars only
+ * unless `includeCommunityCalendars`.
+ */
+export function getNearbyCalendars(urlArg: URL) {
+    return async (args: {
+        lat: number;
+        lng: number;
+        includeCommunityCalendars?: boolean;
+    }) => {
+        const url = copyURL(urlArg);
+        url.pathname = `/calendars/nearby`;
+        url.searchParams.set("lat", String(args.lat));
+        url.searchParams.set("lng", String(args.lng));
+        if (args.includeCommunityCalendars) {
+            url.searchParams.set("includeCommunityCalendars", "true");
+        }
+
+        const response = await safeFetch(url);
+
+        if (response instanceof Error) return response;
+        return handleResponse<CalendarDTO[]>(response);
+    };
+}
+
 export function getRecommendedCalendars(urlArg: URL, getJwt: func_GetJwt) {
     return async (args: {
         placeId?: number;

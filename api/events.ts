@@ -866,6 +866,36 @@ export const getFeaturedEvents =
         return handleResponse<EventDetails[]>(response);
     };
 
+/** A position to look around, e.g. from the browser's geolocation. */
+export interface NearbyArgs {
+    lat: number;
+    lng: number;
+}
+
+/**
+ * Upcoming, listed, in-person events within about 150 km of `lat`/`lng`, soonest
+ * first, capped at 20 server-side. Empty when nothing is near.
+ */
+export const getNearbyEvents =
+    (urlArg: URL, getJwt?: func_GetJwt) => async (args: NearbyArgs): Promise<EventDetails[] | Error> => {
+        const url = copyURL(urlArg);
+        url.pathname = `/events/nearby`;
+        url.searchParams.set("lat", String(args.lat));
+        url.searchParams.set("lng", String(args.lng));
+
+        const headers = new Headers();
+        const jwtToken = getJwt?.() ?? "";
+        if (jwtToken !== "") {
+            headers.set("Authorization", `Bearer ${jwtToken}`);
+        }
+
+        const response = await safeFetch(url, { method: "GET", headers });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<EventDetails[]>(response);
+    };
+
 export interface GetRecommendedEventsArgs {
     placeId?: number;
 }
