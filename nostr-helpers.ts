@@ -15,6 +15,8 @@ const Kind_PlaceFollowList = 10016;
 const FALLBACK_RELAYS = ["wss://relay.primal.net", "wss://relay.damus.io"];
 const NIP65_RELAY_LIST_KIND = 10002 as NostrKind;
 const RELAY_READ_TIMEOUT_MS = 5_000;
+/** Contact list copies to collect, our relay's included, before a read stops waiting for the rest. */
+const CONTACT_LIST_MIN_COPIES = 2;
 let replaceableSubCounter = 0;
 const followingMutationLocks = new WeakMap<Client, Promise<void>>();
 const lastPublishedContactLists = new WeakMap<Client, NostrEvent>();
@@ -120,32 +122,45 @@ export function nextCreatedAt(base: NostrEvent | undefined, nowSec: number) {
 }
 
 /**
- * Contact list copies for `author` from the fallback relays, the bootstrap relays, and the write
- * relays from the author's NIP-65 list. Each of the two reads (relay list, then contact list) stops
- * once every bootstrap relay and at least one other relay have answered and a copy was found, so one
- * slow or dead relay no longer holds the caller for the full read timeout. While no relay has a copy
- * it keeps waiting, so a list that only a slow relay holds isn't mistaken for no list (which would
- * make updateFollowings publish a list with only the new follows). Unreachable relays are skipped.
+ * Contact list copies for `author` from the fallback relays, the bootstrap relays, and the relays
+ * in the author's NIP-65 list. The fallback and bootstrap relays are asked for the contact list
+ * right away, alongside the NIP-65 relay list read; the author's own relays are added once that
+ * read is done. The contact list read stops once every bootstrap relay has finished and at least
+ * `CONTACT_LIST_MIN_COPIES` relays have returned a copy, so one slow or dead relay no longer holds
+ * the caller for the full read timeout. Short of that it waits for every relay (each capped at
+ * the read timeout), so a list that only a slow relay holds isn't mistaken for a missing or older
+ * one (which would make updateFollowings publish a list that drops follows). Unreachable relays
+ * are skipped.
  */
-export async function getContactListsFromRelays(
+export function getContactListsFromRelays(
     author: PublicKey,
     bootstrapRelays: string[],
 ): Promise<NostrEvent[]> {
     const required = bootstrapRelays.map(normalizeRelayUrl);
-    const relays = new Set<string>([...FALLBACK_RELAYS.map(normalizeRelayUrl), ...required]);
-    const relayLists = await getReplaceableEventsFromRelays(
-        Array.from(relays),
-        required,
+    const known = Array.from(new Set([...FALLBACK_RELAYS.map(normalizeRelayUrl), ...required]));
+
+    const contactLists = new ReplaceableEventRead(
         author,
-        NIP65_RELAY_LIST_KIND,
+        NostrKind.CONTACTS,
+        required,
+        CONTACT_LIST_MIN_COPIES,
     );
-    const relayList = relayLists.sort((a, b) => b.created_at - a.created_at)[0];
-    if (relayList) {
-        for (const tag of relayList.tags) {
-            if (tag[0] === "r" && tag[1]?.startsWith("wss://")) relays.add(normalizeRelayUrl(tag[1]));
-        }
-    }
-    return getReplaceableEventsFromRelays(Array.from(relays), required, author, NostrKind.CONTACTS);
+    contactLists.add(known);
+
+    const relayListRead = new ReplaceableEventRead(author, NIP65_RELAY_LIST_KIND, required, 1);
+    relayListRead.add(known);
+    relayListRead.seal();
+    relayListRead.result
+        .then((relayLists) => {
+            const relayList = relayLists.sort((a, b) => b.created_at - a.created_at)[0];
+            const authorRelays = (relayList?.tags ?? [])
+                .filter((tag) => tag[0] === "r" && tag[1]?.startsWith("wss://"))
+                .map((tag) => normalizeRelayUrl(tag[1]));
+            contactLists.add(authorRelays);
+        })
+        .finally(() => contactLists.seal());
+
+    return contactLists.result;
 }
 
 function normalizeRelayUrl(url: string) {
@@ -153,53 +168,70 @@ function normalizeRelayUrl(url: string) {
 }
 
 /**
- * Reads the newest `kind` event by `pubkey` from every relay in `relayUrls` at once and returns the
- * copies found as soon as every relay in `requiredRelays` has finished (answered, failed or timed
- * out), at least one other relay has answered, and at least one copy was found; or once every relay
- * has finished. Copies from relays that answer later are dropped. Each relay is still capped at
- * `timeoutMs`.
+ * Reads the newest `kind` event by `pubkey` from relays added over time (`add`), all at once.
+ * `result` resolves with the copies found as soon as every relay in `requiredRelays` has finished
+ * (answered, failed or timed out) and at least `minCopies` copies were found; or, once `seal` says
+ * no more relays will be added, when every relay has finished. Copies from relays that answer
+ * later are dropped, and relays added after that aren't read. Each relay is capped at `timeoutMs`.
  */
-export function getReplaceableEventsFromRelays(
-    relayUrls: string[],
-    requiredRelays: string[],
-    pubkey: PublicKey,
-    kind: NostrKind,
-    timeoutMs: number = RELAY_READ_TIMEOUT_MS,
-): Promise<NostrEvent[]> {
-    const required = new Set(requiredRelays);
-    const hasOthers = relayUrls.some((url) => !required.has(url));
-    const events: NostrEvent[] = [];
-    let pending = relayUrls.length;
-    let requiredPending = relayUrls.filter((url) => required.has(url)).length;
-    let othersAnswered = 0;
+export class ReplaceableEventRead {
+    readonly result: Promise<NostrEvent[]>;
+    private readonly required: Set<string>;
+    private readonly started = new Set<string>();
+    private readonly events: NostrEvent[] = [];
+    private pending = 0;
+    private requiredPending: number;
+    private sealed = false;
+    private done = false;
+    private resolveResult!: (events: NostrEvent[]) => void;
 
-    return new Promise((resolve) => {
-        let done = false;
-        const finish = () => {
-            if (done) return;
-            done = true;
-            resolve([...events]);
-        };
-        if (pending === 0) return finish();
+    constructor(
+        private readonly pubkey: PublicKey,
+        private readonly kind: NostrKind,
+        requiredRelays: string[],
+        private readonly minCopies: number,
+        private readonly timeoutMs: number = RELAY_READ_TIMEOUT_MS,
+    ) {
+        this.required = new Set(requiredRelays);
+        this.requiredPending = this.required.size;
+        this.result = new Promise((resolve) => {
+            this.resolveResult = resolve;
+        });
+        this.add(requiredRelays);
+    }
 
+    add(relayUrls: string[]) {
         for (const url of relayUrls) {
-            getContactList(url, pubkey, kind, timeoutMs)
+            if (this.done || this.started.has(url)) continue;
+            this.started.add(url);
+            this.pending++;
+            getContactList(url, this.pubkey, this.kind, this.timeoutMs)
                 .catch((cause) => cause instanceof Error ? cause : new Error(String(cause)))
-                .then((result) => {
-                    if (done) return;
-                    pending--;
-                    const isRequired = required.has(url);
-                    if (isRequired) requiredPending--;
-                    if (!(result instanceof Error)) {
-                        if (result) events.push(result);
-                        if (!isRequired) othersAnswered++;
-                    }
-                    const quorum = requiredPending === 0 && (othersAnswered > 0 || !hasOthers) &&
-                        events.length > 0;
-                    if (pending === 0 || quorum) finish();
-                });
+                .then((result) => this.settle(url, result));
         }
-    });
+    }
+
+    seal() {
+        this.sealed = true;
+        this.check();
+    }
+
+    private settle(url: string, result: NostrEvent | Error | undefined) {
+        if (this.done) return;
+        this.pending--;
+        if (this.required.has(url)) this.requiredPending--;
+        if (result && !(result instanceof Error)) this.events.push(result);
+        this.check();
+    }
+
+    private check() {
+        if (this.done) return;
+        const enough = this.requiredPending === 0 && this.events.length >= this.minCopies;
+        if (enough || (this.sealed && this.pending === 0)) {
+            this.done = true;
+            this.resolveResult([...this.events]);
+        }
+    }
 }
 
 /**

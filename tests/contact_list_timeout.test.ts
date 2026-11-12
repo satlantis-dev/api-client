@@ -1,6 +1,6 @@
 import { assert, assertEquals, assertInstanceOf } from "@std/assert";
 import { InMemoryAccountContext, NostrKind, prepareNostrEvent } from "@blowater/nostr-sdk";
-import { getContactList, getReplaceableEventsFromRelays, RelayReadTimeout } from "../nostr-helpers.ts";
+import { getContactList, RelayReadTimeout, ReplaceableEventRead } from "../nostr-helpers.ts";
 
 // Local fake relays on 127.0.0.1; nothing leaves the machine.
 
@@ -85,77 +85,90 @@ const contactList = async (createdAt: number) => {
     return event;
 };
 
-const QUORUM_TIMEOUT_MS = 1_500;
+const READ_TIMEOUT_MS = 1_500;
 
-relayTest(
-    "getReplaceableEventsFromRelays: stops once the required relay and one other answered",
-    async () => {
-        const ours = startRelay("answer", [await contactList(1_000)]);
-        const other = startRelay("answer", [await contactList(900)]);
-        const slow = startRelay("silent");
-        const startedAt = Date.now();
-        const events = await getReplaceableEventsFromRelays(
-            [ours.url, other.url, slow.url],
-            [ours.url],
-            author.publicKey,
-            NostrKind.CONTACTS,
-            QUORUM_TIMEOUT_MS,
-        );
-        assert(Date.now() - startedAt < QUORUM_TIMEOUT_MS, "did not wait for the silent relay");
-        assertEquals(events.map((event) => event.created_at).sort(), [1_000, 900].sort());
-        await Promise.all([ours.stop(), other.stop(), slow.stop()]);
-    },
-);
+const read = (requiredRelay: string, minCopies: number, relays: string[], seal = true) => {
+    const reader = new ReplaceableEventRead(
+        author.publicKey,
+        NostrKind.CONTACTS,
+        [requiredRelay],
+        minCopies,
+        READ_TIMEOUT_MS,
+    );
+    reader.add(relays);
+    if (seal) reader.seal();
+    return reader;
+};
 
-relayTest(
-    "getReplaceableEventsFromRelays: waits for the required relay even when others answered",
-    async () => {
-        const ours = startRelay("silent");
-        const other = startRelay("answer", [await contactList(900)]);
-        const startedAt = Date.now();
-        const events = await getReplaceableEventsFromRelays(
-            [ours.url, other.url],
-            [ours.url],
-            author.publicKey,
-            NostrKind.CONTACTS,
-            QUORUM_TIMEOUT_MS,
-        );
-        assert(Date.now() - startedAt >= QUORUM_TIMEOUT_MS * 0.9, "waited for the required relay");
-        assertEquals(events.map((event) => event.created_at), [900]);
-        await Promise.all([ours.stop(), other.stop()]);
-    },
-);
+const createdAts = (events: { created_at: number }[]) =>
+    events.map((event) => event.created_at).sort((a, b) => a - b);
 
-relayTest("getReplaceableEventsFromRelays: an empty answer from another relay is enough", async () => {
+relayTest("ReplaceableEventRead: stops once our relay answered and two copies were found", async () => {
+    const ours = startRelay("answer", [await contactList(1_000)]);
+    const other = startRelay("answer", [await contactList(900)]);
+    const slow = startRelay("silent");
+    const startedAt = Date.now();
+    const events = await read(ours.url, 2, [other.url, slow.url]).result;
+    assert(Date.now() - startedAt < READ_TIMEOUT_MS, "did not wait for the silent relay");
+    assertEquals(createdAts(events), [900, 1_000]);
+    await Promise.all([ours.stop(), other.stop(), slow.stop()]);
+});
+
+relayTest("ReplaceableEventRead: two copies from other relays still wait for our relay", async () => {
+    const ours = startRelay("silent");
+    const a = startRelay("answer", [await contactList(900)]);
+    const b = startRelay("answer", [await contactList(800)]);
+    const startedAt = Date.now();
+    const events = await read(ours.url, 2, [a.url, b.url]).result;
+    assert(Date.now() - startedAt >= READ_TIMEOUT_MS * 0.9, "waited for our relay");
+    assertEquals(createdAts(events), [800, 900]);
+    await Promise.all([ours.stop(), a.stop(), b.stop()]);
+});
+
+relayTest("ReplaceableEventRead: one copy keeps waiting for the other relays", async () => {
     const ours = startRelay("answer", [await contactList(1_000)]);
     const empty = startRelay("answer", []);
     const slow = startRelay("silent");
     const startedAt = Date.now();
-    const events = await getReplaceableEventsFromRelays(
-        [ours.url, empty.url, slow.url],
-        [ours.url],
-        author.publicKey,
-        NostrKind.CONTACTS,
-        QUORUM_TIMEOUT_MS,
-    );
-    assert(Date.now() - startedAt < QUORUM_TIMEOUT_MS, "did not wait for the silent relay");
-    assertEquals(events.map((event) => event.created_at), [1_000]);
+    const events = await read(ours.url, 2, [empty.url, slow.url]).result;
+    assert(Date.now() - startedAt >= READ_TIMEOUT_MS * 0.9, "waited for the slow relay");
+    assertEquals(createdAts(events), [1_000]);
     await Promise.all([ours.stop(), empty.stop(), slow.stop()]);
 });
 
-relayTest("getReplaceableEventsFromRelays: keeps waiting while no relay has a copy", async () => {
+relayTest("ReplaceableEventRead: no copy anywhere ends when every relay finished", async () => {
     const ours = startRelay("answer", []);
     const empty = startRelay("answer", []);
+    const startedAt = Date.now();
+    const events = await read(ours.url, 2, [empty.url]).result;
+    assert(Date.now() - startedAt < READ_TIMEOUT_MS, "no relay left to wait for");
+    assertEquals(events, []);
+    await Promise.all([ours.stop(), empty.stop()]);
+});
+
+relayTest("ReplaceableEventRead: waits for seal before giving up, and reads relays added later", async () => {
+    const ours = startRelay("answer", [await contactList(1_000)]);
+    const later = startRelay("answer", [await contactList(1_100)]);
+    const reader = read(ours.url, 2, [], false);
+    let settled = false;
+    reader.result.then(() => settled = true);
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    assert(!settled, "one copy and not sealed: still waiting");
+    reader.add([later.url]);
+    reader.seal();
+    const events = await reader.result;
+    assertEquals(createdAts(events), [1_000, 1_100]);
+    await Promise.all([ours.stop(), later.stop()]);
+});
+
+relayTest("ReplaceableEventRead: our relay empty, two other copies are enough", async () => {
+    const ours = startRelay("answer", []);
+    const a = startRelay("answer", [await contactList(900)]);
+    const b = startRelay("answer", [await contactList(800)]);
     const slow = startRelay("silent");
     const startedAt = Date.now();
-    const events = await getReplaceableEventsFromRelays(
-        [ours.url, empty.url, slow.url],
-        [ours.url],
-        author.publicKey,
-        NostrKind.CONTACTS,
-        QUORUM_TIMEOUT_MS,
-    );
-    assert(Date.now() - startedAt >= QUORUM_TIMEOUT_MS * 0.9, "waited for the slow relay");
-    assertEquals(events, []);
-    await Promise.all([ours.stop(), empty.stop(), slow.stop()]);
+    const events = await read(ours.url, 2, [a.url, b.url, slow.url]).result;
+    assert(Date.now() - startedAt < READ_TIMEOUT_MS, "did not wait for the silent relay");
+    assertEquals(createdAts(events), [800, 900]);
+    await Promise.all([ours.stop(), a.stop(), b.stop(), slow.stop()]);
 });
