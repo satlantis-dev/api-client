@@ -142,3 +142,20 @@ relayTest("getReplaceableEventsFromRelays: an empty answer from another relay is
     assertEquals(events.map((event) => event.created_at), [1_000]);
     await Promise.all([ours.stop(), empty.stop(), slow.stop()]);
 });
+
+relayTest("getReplaceableEventsFromRelays: keeps waiting while no relay has a copy", async () => {
+    const ours = startRelay("answer", []);
+    const empty = startRelay("answer", []);
+    const slow = startRelay("silent");
+    const startedAt = Date.now();
+    const events = await getReplaceableEventsFromRelays(
+        [ours.url, empty.url, slow.url],
+        [ours.url],
+        author.publicKey,
+        NostrKind.CONTACTS,
+        QUORUM_TIMEOUT_MS,
+    );
+    assert(Date.now() - startedAt >= QUORUM_TIMEOUT_MS * 0.9, "waited for the slow relay");
+    assertEquals(events, []);
+    await Promise.all([ours.stop(), empty.stop(), slow.stop()]);
+});

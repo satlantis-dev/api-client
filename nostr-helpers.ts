@@ -122,8 +122,10 @@ export function nextCreatedAt(base: NostrEvent | undefined, nowSec: number) {
 /**
  * Contact list copies for `author` from the fallback relays, the bootstrap relays, and the write
  * relays from the author's NIP-65 list. Each of the two reads (relay list, then contact list) stops
- * once every bootstrap relay and at least one other relay have answered, so one slow or dead relay
- * no longer holds the caller for the full read timeout. Unreachable relays are skipped.
+ * once every bootstrap relay and at least one other relay have answered and a copy was found, so one
+ * slow or dead relay no longer holds the caller for the full read timeout. While no relay has a copy
+ * it keeps waiting, so a list that only a slow relay holds isn't mistaken for no list (which would
+ * make updateFollowings publish a list with only the new follows). Unreachable relays are skipped.
  */
 export async function getContactListsFromRelays(
     author: PublicKey,
@@ -153,8 +155,9 @@ function normalizeRelayUrl(url: string) {
 /**
  * Reads the newest `kind` event by `pubkey` from every relay in `relayUrls` at once and returns the
  * copies found as soon as every relay in `requiredRelays` has finished (answered, failed or timed
- * out) and at least one other relay has answered, or once every relay has finished. Copies from
- * relays that answer later are dropped. Each relay is still capped at `timeoutMs`.
+ * out), at least one other relay has answered, and at least one copy was found; or once every relay
+ * has finished. Copies from relays that answer later are dropped. Each relay is still capped at
+ * `timeoutMs`.
  */
 export function getReplaceableEventsFromRelays(
     relayUrls: string[],
@@ -191,7 +194,8 @@ export function getReplaceableEventsFromRelays(
                         if (result) events.push(result);
                         if (!isRequired) othersAnswered++;
                     }
-                    const quorum = requiredPending === 0 && (othersAnswered > 0 || !hasOthers);
+                    const quorum = requiredPending === 0 && (othersAnswered > 0 || !hasOthers) &&
+                        events.length > 0;
                     if (pending === 0 || quorum) finish();
                 });
         }
