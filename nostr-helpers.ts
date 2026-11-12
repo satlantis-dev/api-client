@@ -17,7 +17,7 @@ const NIP65_RELAY_LIST_KIND = 10002 as NostrKind;
 const RELAY_READ_TIMEOUT_MS = 5_000;
 /** A relay read stops once this many relays returned a copy, our relay among them... */
 const READ_MIN_COPIES = 3;
-/** ...or once every relay but this many has finished, so the slowest relay doesn't hold it. */
+/** ...or once ours and every relay but this many have finished, so the slowest doesn't hold it. */
 const READ_RELAYS_NOT_AWAITED = 1;
 let replaceableSubCounter = 0;
 const followingMutationLocks = new WeakMap<Client, Promise<void>>();
@@ -127,8 +127,8 @@ export function nextCreatedAt(base: NostrEvent | undefined, nowSec: number) {
  * Contact list copies for `author` from the fallback relays, the bootstrap relays, and the relays
  * in the author's NIP-65 list. The fallback and bootstrap relays are asked for the contact list
  * right away, alongside the NIP-65 relay list read; the author's own relays are added once that
- * read is done. Both reads stop early by the rule in `ReplaceableEventRead` (every relay but the
- * slowest finished, or `READ_MIN_COPIES` copies including ours), otherwise they wait for every
+ * read is done. Both reads stop early by the rule in `ReplaceableEventRead` (ours and every relay
+ * but the slowest finished, or `READ_MIN_COPIES` copies including ours), otherwise they wait for every
  * relay, each capped at the read timeout. Unreachable relays are skipped.
  */
 export function getContactListsFromRelays(
@@ -165,8 +165,9 @@ function normalizeRelayUrl(url: string) {
  * Reads the newest `kind` event by `pubkey` from relays added over time (`add`), all at once.
  * `result` resolves with the copies found as soon as either:
  * - `minCopies` relays have returned a copy, one of them in `ownRelays`; or
- * - once `seal` says no more relays will be added, every relay but `relaysNotAwaited` has finished
- *   (answered, failed or timed out), so the slowest relay doesn't hold the caller.
+ * - once `seal` says no more relays will be added, every relay in `ownRelays` and every relay but
+ *   `relaysNotAwaited` has finished (answered, failed or timed out), so the slowest relay doesn't
+ *   hold the caller unless it is ours.
  * Otherwise it waits for every relay, each capped at `timeoutMs`. Copies from relays that answer
  * later are dropped, and relays added after that aren't read.
  */
@@ -177,6 +178,7 @@ export class ReplaceableEventRead {
     private readonly events: NostrEvent[] = [];
     private pending = 0;
     private ownCopy = false;
+    private ownPending: number;
     private sealed = false;
     private done = false;
     private resolveResult!: (events: NostrEvent[]) => void;
@@ -190,6 +192,7 @@ export class ReplaceableEventRead {
         private readonly timeoutMs: number = RELAY_READ_TIMEOUT_MS,
     ) {
         this.own = new Set(ownRelays);
+        this.ownPending = this.own.size;
         this.result = new Promise((resolve) => {
             this.resolveResult = resolve;
         });
@@ -215,6 +218,7 @@ export class ReplaceableEventRead {
     private settle(url: string, result: NostrEvent | Error | undefined) {
         if (this.done) return;
         this.pending--;
+        if (this.own.has(url)) this.ownPending--;
         if (result && !(result instanceof Error)) {
             this.events.push(result);
             if (this.own.has(url)) this.ownCopy = true;
@@ -225,7 +229,8 @@ export class ReplaceableEventRead {
     private check() {
         if (this.done) return;
         const enoughCopies = this.ownCopy && this.events.length >= this.minCopies;
-        const allButSlowest = this.sealed && this.pending <= this.relaysNotAwaited;
+        const allButSlowest = this.sealed && this.ownPending === 0 &&
+            this.pending <= this.relaysNotAwaited;
         if (enoughCopies || allButSlowest) {
             this.done = true;
             this.resolveResult([...this.events]);

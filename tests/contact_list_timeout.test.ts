@@ -175,3 +175,15 @@ relayTest("ReplaceableEventRead: before seal it waits, and reads relays added la
     assert(found.includes(1_100) || found.includes(1_200), "read a relay added later");
     await Promise.all([ours.stop(), other.stop(), laterA.stop(), laterB.stop()]);
 });
+
+relayTest("ReplaceableEventRead: our relay is never the slowest one skipped", async () => {
+    const ours = startRelay("silent");
+    const a = startRelay("answer", [await contactList(900)]);
+    const b = startRelay("answer", [await contactList(800)]);
+    const empty = startRelay("answer", []);
+    const startedAt = Date.now();
+    const events = await read(ours.url, [a.url, b.url, empty.url]).result;
+    assert(elapsed(startedAt) >= READ_TIMEOUT_MS * 0.9, "waited for our relay");
+    assertEquals(createdAts(events), [800, 900]);
+    await Promise.all([ours.stop(), a.stop(), b.stop(), empty.stop()]);
+});
