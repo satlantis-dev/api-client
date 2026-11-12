@@ -120,55 +120,82 @@ export function nextCreatedAt(base: NostrEvent | undefined, nowSec: number) {
 }
 
 /**
- * Every contact list copy for `author` found on the fallback relays, the bootstrap relays, and the
- * write relays from the author's NIP-65 list. Unreachable relays are skipped.
+ * Contact list copies for `author` from the fallback relays, the bootstrap relays, and the write
+ * relays from the author's NIP-65 list. Each of the two reads (relay list, then contact list) stops
+ * once every bootstrap relay and at least one other relay have answered, so one slow or dead relay
+ * no longer holds the caller for the full read timeout. Unreachable relays are skipped.
  */
 export async function getContactListsFromRelays(
     author: PublicKey,
     bootstrapRelays: string[],
 ): Promise<NostrEvent[]> {
-    const relays = new Set<string>([...FALLBACK_RELAYS, ...bootstrapRelays]);
-    const relayList = await getReplaceableEventFromRelays(
+    const required = bootstrapRelays.map(normalizeRelayUrl);
+    const relays = new Set<string>([...FALLBACK_RELAYS.map(normalizeRelayUrl), ...required]);
+    const relayLists = await getReplaceableEventsFromRelays(
         Array.from(relays),
+        required,
         author,
         NIP65_RELAY_LIST_KIND,
     );
-    if (!(relayList instanceof Error) && relayList) {
+    const relayList = relayLists.sort((a, b) => b.created_at - a.created_at)[0];
+    if (relayList) {
         for (const tag of relayList.tags) {
-            if (tag[0] === "r" && tag[1]?.startsWith("wss://")) relays.add(tag[1]);
+            if (tag[0] === "r" && tag[1]?.startsWith("wss://")) relays.add(normalizeRelayUrl(tag[1]));
         }
     }
-    return getReplaceableEventsFromRelays(Array.from(relays), author, NostrKind.CONTACTS);
+    return getReplaceableEventsFromRelays(Array.from(relays), required, author, NostrKind.CONTACTS);
 }
 
-async function getReplaceableEventFromRelays(
-    relayUrls: string[],
-    pubkey: PublicKey,
-    kind: NostrKind,
-): Promise<NostrEvent | Error | undefined> {
-    const results = await Promise.all(
-        relayUrls.map(async (url) => {
-            const event = await getContactList(url, pubkey, kind);
-            return event instanceof Error ? undefined : event;
-        }),
-    );
-    return results
-        .filter((event): event is NostrEvent => Boolean(event))
-        .sort((a, b) => b.created_at - a.created_at)[0];
+function normalizeRelayUrl(url: string) {
+    return url.trim().replace(/\/+$/, "");
 }
 
-async function getReplaceableEventsFromRelays(
+/**
+ * Reads the newest `kind` event by `pubkey` from every relay in `relayUrls` at once and returns the
+ * copies found as soon as every relay in `requiredRelays` has finished (answered, failed or timed
+ * out) and at least one other relay has answered, or once every relay has finished. Copies from
+ * relays that answer later are dropped. Each relay is still capped at `timeoutMs`.
+ */
+export function getReplaceableEventsFromRelays(
     relayUrls: string[],
+    requiredRelays: string[],
     pubkey: PublicKey,
     kind: NostrKind,
-) {
-    const results = await Promise.all(
-        relayUrls.map(async (url) => {
-            const event = await getContactList(url, pubkey, kind);
-            return event instanceof Error ? undefined : event;
-        }),
-    );
-    return results.filter((event): event is NostrEvent => Boolean(event));
+    timeoutMs: number = RELAY_READ_TIMEOUT_MS,
+): Promise<NostrEvent[]> {
+    const required = new Set(requiredRelays);
+    const hasOthers = relayUrls.some((url) => !required.has(url));
+    const events: NostrEvent[] = [];
+    let pending = relayUrls.length;
+    let requiredPending = relayUrls.filter((url) => required.has(url)).length;
+    let othersAnswered = 0;
+
+    return new Promise((resolve) => {
+        let done = false;
+        const finish = () => {
+            if (done) return;
+            done = true;
+            resolve([...events]);
+        };
+        if (pending === 0) return finish();
+
+        for (const url of relayUrls) {
+            getContactList(url, pubkey, kind, timeoutMs)
+                .catch((cause) => cause instanceof Error ? cause : new Error(String(cause)))
+                .then((result) => {
+                    if (done) return;
+                    pending--;
+                    const isRequired = required.has(url);
+                    if (isRequired) requiredPending--;
+                    if (!(result instanceof Error)) {
+                        if (result) events.push(result);
+                        if (!isRequired) othersAnswered++;
+                    }
+                    const quorum = requiredPending === 0 && (othersAnswered > 0 || !hasOthers);
+                    if (pending === 0 || quorum) finish();
+                });
+        }
+    });
 }
 
 /**

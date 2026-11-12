@@ -1,6 +1,6 @@
 import { assert, assertEquals, assertInstanceOf } from "@std/assert";
 import { InMemoryAccountContext, NostrKind, prepareNostrEvent } from "@blowater/nostr-sdk";
-import { getContactList, RelayReadTimeout } from "../nostr-helpers.ts";
+import { getContactList, getReplaceableEventsFromRelays, RelayReadTimeout } from "../nostr-helpers.ts";
 
 // Local fake relays on 127.0.0.1; nothing leaves the machine.
 
@@ -72,4 +72,73 @@ relayTest("getContactList: a relay that answers returns its newest event", async
     const result = await getContactList(relay.url, author.publicKey, NostrKind.CONTACTS, TIMEOUT_MS);
     assertEquals(result, event);
     await relay.stop();
+});
+
+const contactList = async (createdAt: number) => {
+    const event = await prepareNostrEvent(author, {
+        kind: NostrKind.CONTACTS,
+        content: "",
+        tags: [],
+        created_at: createdAt,
+    });
+    if (event instanceof Error) throw event;
+    return event;
+};
+
+const QUORUM_TIMEOUT_MS = 1_500;
+
+relayTest(
+    "getReplaceableEventsFromRelays: stops once the required relay and one other answered",
+    async () => {
+        const ours = startRelay("answer", [await contactList(1_000)]);
+        const other = startRelay("answer", [await contactList(900)]);
+        const slow = startRelay("silent");
+        const startedAt = Date.now();
+        const events = await getReplaceableEventsFromRelays(
+            [ours.url, other.url, slow.url],
+            [ours.url],
+            author.publicKey,
+            NostrKind.CONTACTS,
+            QUORUM_TIMEOUT_MS,
+        );
+        assert(Date.now() - startedAt < QUORUM_TIMEOUT_MS, "did not wait for the silent relay");
+        assertEquals(events.map((event) => event.created_at).sort(), [1_000, 900].sort());
+        await Promise.all([ours.stop(), other.stop(), slow.stop()]);
+    },
+);
+
+relayTest(
+    "getReplaceableEventsFromRelays: waits for the required relay even when others answered",
+    async () => {
+        const ours = startRelay("silent");
+        const other = startRelay("answer", [await contactList(900)]);
+        const startedAt = Date.now();
+        const events = await getReplaceableEventsFromRelays(
+            [ours.url, other.url],
+            [ours.url],
+            author.publicKey,
+            NostrKind.CONTACTS,
+            QUORUM_TIMEOUT_MS,
+        );
+        assert(Date.now() - startedAt >= QUORUM_TIMEOUT_MS * 0.9, "waited for the required relay");
+        assertEquals(events.map((event) => event.created_at), [900]);
+        await Promise.all([ours.stop(), other.stop()]);
+    },
+);
+
+relayTest("getReplaceableEventsFromRelays: an empty answer from another relay is enough", async () => {
+    const ours = startRelay("answer", [await contactList(1_000)]);
+    const empty = startRelay("answer", []);
+    const slow = startRelay("silent");
+    const startedAt = Date.now();
+    const events = await getReplaceableEventsFromRelays(
+        [ours.url, empty.url, slow.url],
+        [ours.url],
+        author.publicKey,
+        NostrKind.CONTACTS,
+        QUORUM_TIMEOUT_MS,
+    );
+    assert(Date.now() - startedAt < QUORUM_TIMEOUT_MS, "did not wait for the silent relay");
+    assertEquals(events.map((event) => event.created_at), [1_000]);
+    await Promise.all([ours.stop(), empty.stop(), slow.stop()]);
 });
