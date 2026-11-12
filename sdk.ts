@@ -182,6 +182,7 @@ import {
     getEventsFromCalendarPaginated,
     getEventSubmissions,
     getFeaturedCalendars,
+    getNearbyCalendars,
     getNewestCalendars,
     getPopularCalendars,
     getRecommendedCalendars,
@@ -332,6 +333,7 @@ import {
     getEventUserPermission,
     getFeaturedEvents,
     getLinkableCalendarsForEvent,
+    getNearbyEvents,
     getNewestEvents,
     getPopularEvents,
     getPublicEventRsvps,
@@ -468,6 +470,7 @@ import {
     getMembershipSubscription,
     getMembershipSubscriptionPayments,
     getMembershipSubscriptionRefundFeeEstimation,
+    getNearbyCommunities,
     getNewestCommunities,
     getPublicCommunityAdmins,
     getUserCommunities,
@@ -586,6 +589,7 @@ export class Client {
     getPopularEvents: ReturnType<typeof getPopularEvents>;
     getNewestEvents: ReturnType<typeof getNewestEvents>;
     getFeaturedEvents: ReturnType<typeof getFeaturedEvents>;
+    getNearbyEvents: ReturnType<typeof getNearbyEvents>;
     getRecommendedEvents: ReturnType<typeof getRecommendedEvents>;
     getEventById: ReturnType<typeof getEventById>;
     getPlaceCalendarEvents: ReturnType<typeof getPlaceCalendarEvents>;
@@ -703,6 +707,7 @@ export class Client {
     generateAiEventDescription: ReturnType<typeof generateAiEventDescription>;
     createCalendarEventTag: ReturnType<typeof createCalendarEventTag>;
     getFeaturedCalendars: ReturnType<typeof getFeaturedCalendars>;
+    getNearbyCalendars: ReturnType<typeof getNearbyCalendars>;
     getNewestCalendars: ReturnType<typeof getNewestCalendars>;
     getPopularCalendars: ReturnType<typeof getPopularCalendars>;
     getRecommendedCalendars: ReturnType<typeof getRecommendedCalendars>;
@@ -1068,6 +1073,7 @@ export class Client {
     deleteCommunity: ReturnType<typeof deleteCommunity>;
     searchCommunities: ReturnType<typeof searchCommunities>;
     getFeaturedCommunities: ReturnType<typeof getFeaturedCommunities>;
+    getNearbyCommunities: ReturnType<typeof getNearbyCommunities>;
     getNewestCommunities: ReturnType<typeof getNewestCommunities>;
     getUserCommunities: ReturnType<typeof getUserCommunities>;
     getAccountCommunities: ReturnType<typeof getAccountCommunities>;
@@ -1292,6 +1298,7 @@ export class Client {
         this.getPopularEvents = getPopularEvents(rest_api_url, getJwt);
         this.getNewestEvents = getNewestEvents(rest_api_url, getJwt);
         this.getFeaturedEvents = getFeaturedEvents(rest_api_url, getJwt);
+        this.getNearbyEvents = getNearbyEvents(rest_api_url, getJwt);
         this.getRecommendedEvents = getRecommendedEvents(rest_api_url, getJwt);
         this.getEventDetails = getEventDetails(rest_api_url, getJwt);
         this.getPublicTicketDetails = getPublicTicketDetails(rest_api_url);
@@ -1490,6 +1497,7 @@ export class Client {
             getJwt,
         );
         this.getFeaturedCalendars = getFeaturedCalendars(rest_api_url);
+        this.getNearbyCalendars = getNearbyCalendars(rest_api_url);
         this.getNewestCalendars = getNewestCalendars(rest_api_url);
         this.getPopularCalendars = getPopularCalendars(rest_api_url);
         this.getRecommendedCalendars = getRecommendedCalendars(
@@ -1887,6 +1895,7 @@ export class Client {
         this.deleteCommunity = deleteCommunity(rest_api_url, getJwt);
         this.searchCommunities = searchCommunities(rest_api_url, getJwt);
         this.getFeaturedCommunities = getFeaturedCommunities(rest_api_url, getJwt);
+        this.getNearbyCommunities = getNearbyCommunities(rest_api_url, getJwt);
         this.getNewestCommunities = getNewestCommunities(rest_api_url, getJwt);
         this.getUserCommunities = getUserCommunities(rest_api_url, getJwt);
         // Public route — no JWT.

@@ -2552,6 +2552,36 @@ async (args: GetCommunityCarouselArgs = {}) => {
 };
 
 /**
+ * Communities with a calendar in a destination within about 150 km of
+ * `lat`/`lng`. Public, shuffled and capped at 20 server-side.
+ */
+export const getNearbyCommunities = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (args: { lat: number; lng: number }) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/communities/nearby`;
+    url.searchParams.set("lat", String(args.lat));
+    url.searchParams.set("lng", String(args.lng));
+
+    const headers = new Headers();
+    const jwtToken = getJwt();
+    if (jwtToken != "") {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityDTO[]>(response);
+};
+
+/**
  * The most recently created communities. Public, ordered `createdAt` descending
  * and capped at 20 server-side. Communities with no members are included.
  */
