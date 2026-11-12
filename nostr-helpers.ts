@@ -15,8 +15,10 @@ const Kind_PlaceFollowList = 10016;
 const FALLBACK_RELAYS = ["wss://relay.primal.net", "wss://relay.damus.io"];
 const NIP65_RELAY_LIST_KIND = 10002 as NostrKind;
 const RELAY_READ_TIMEOUT_MS = 5_000;
-/** Contact list copies to collect, our relay's included, before a read stops waiting for the rest. */
-const CONTACT_LIST_MIN_COPIES = 2;
+/** A relay read stops once this many relays returned a copy, our relay among them... */
+const READ_MIN_COPIES = 3;
+/** ...or once every relay but this many has finished, so the slowest relay doesn't hold it. */
+const READ_RELAYS_NOT_AWAITED = 1;
 let replaceableSubCounter = 0;
 const followingMutationLocks = new WeakMap<Client, Promise<void>>();
 const lastPublishedContactLists = new WeakMap<Client, NostrEvent>();
@@ -125,29 +127,21 @@ export function nextCreatedAt(base: NostrEvent | undefined, nowSec: number) {
  * Contact list copies for `author` from the fallback relays, the bootstrap relays, and the relays
  * in the author's NIP-65 list. The fallback and bootstrap relays are asked for the contact list
  * right away, alongside the NIP-65 relay list read; the author's own relays are added once that
- * read is done. The contact list read stops once every bootstrap relay has finished and at least
- * `CONTACT_LIST_MIN_COPIES` relays have returned a copy, so one slow or dead relay no longer holds
- * the caller for the full read timeout. Short of that it waits for every relay (each capped at
- * the read timeout), so a list that only a slow relay holds isn't mistaken for a missing or older
- * one (which would make updateFollowings publish a list that drops follows). Unreachable relays
- * are skipped.
+ * read is done. Both reads stop early by the rule in `ReplaceableEventRead` (every relay but the
+ * slowest finished, or `READ_MIN_COPIES` copies including ours), otherwise they wait for every
+ * relay, each capped at the read timeout. Unreachable relays are skipped.
  */
 export function getContactListsFromRelays(
     author: PublicKey,
     bootstrapRelays: string[],
 ): Promise<NostrEvent[]> {
-    const required = bootstrapRelays.map(normalizeRelayUrl);
-    const known = Array.from(new Set([...FALLBACK_RELAYS.map(normalizeRelayUrl), ...required]));
+    const ownRelays = bootstrapRelays.map(normalizeRelayUrl);
+    const known = Array.from(new Set([...FALLBACK_RELAYS.map(normalizeRelayUrl), ...ownRelays]));
 
-    const contactLists = new ReplaceableEventRead(
-        author,
-        NostrKind.CONTACTS,
-        required,
-        CONTACT_LIST_MIN_COPIES,
-    );
+    const contactLists = new ReplaceableEventRead(author, NostrKind.CONTACTS, ownRelays);
     contactLists.add(known);
 
-    const relayListRead = new ReplaceableEventRead(author, NIP65_RELAY_LIST_KIND, required, 1);
+    const relayListRead = new ReplaceableEventRead(author, NIP65_RELAY_LIST_KIND, ownRelays);
     relayListRead.add(known);
     relayListRead.seal();
     relayListRead.result
@@ -169,18 +163,20 @@ function normalizeRelayUrl(url: string) {
 
 /**
  * Reads the newest `kind` event by `pubkey` from relays added over time (`add`), all at once.
- * `result` resolves with the copies found as soon as every relay in `requiredRelays` has finished
- * (answered, failed or timed out) and at least `minCopies` copies were found; or, once `seal` says
- * no more relays will be added, when every relay has finished. Copies from relays that answer
- * later are dropped, and relays added after that aren't read. Each relay is capped at `timeoutMs`.
+ * `result` resolves with the copies found as soon as either:
+ * - `minCopies` relays have returned a copy, one of them in `ownRelays`; or
+ * - once `seal` says no more relays will be added, every relay but `relaysNotAwaited` has finished
+ *   (answered, failed or timed out), so the slowest relay doesn't hold the caller.
+ * Otherwise it waits for every relay, each capped at `timeoutMs`. Copies from relays that answer
+ * later are dropped, and relays added after that aren't read.
  */
 export class ReplaceableEventRead {
     readonly result: Promise<NostrEvent[]>;
-    private readonly required: Set<string>;
+    private readonly own: Set<string>;
     private readonly started = new Set<string>();
     private readonly events: NostrEvent[] = [];
     private pending = 0;
-    private requiredPending: number;
+    private ownCopy = false;
     private sealed = false;
     private done = false;
     private resolveResult!: (events: NostrEvent[]) => void;
@@ -188,16 +184,16 @@ export class ReplaceableEventRead {
     constructor(
         private readonly pubkey: PublicKey,
         private readonly kind: NostrKind,
-        requiredRelays: string[],
-        private readonly minCopies: number,
+        ownRelays: string[],
+        private readonly minCopies: number = READ_MIN_COPIES,
+        private readonly relaysNotAwaited: number = READ_RELAYS_NOT_AWAITED,
         private readonly timeoutMs: number = RELAY_READ_TIMEOUT_MS,
     ) {
-        this.required = new Set(requiredRelays);
-        this.requiredPending = this.required.size;
+        this.own = new Set(ownRelays);
         this.result = new Promise((resolve) => {
             this.resolveResult = resolve;
         });
-        this.add(requiredRelays);
+        this.add(ownRelays);
     }
 
     add(relayUrls: string[]) {
@@ -219,15 +215,18 @@ export class ReplaceableEventRead {
     private settle(url: string, result: NostrEvent | Error | undefined) {
         if (this.done) return;
         this.pending--;
-        if (this.required.has(url)) this.requiredPending--;
-        if (result && !(result instanceof Error)) this.events.push(result);
+        if (result && !(result instanceof Error)) {
+            this.events.push(result);
+            if (this.own.has(url)) this.ownCopy = true;
+        }
         this.check();
     }
 
     private check() {
         if (this.done) return;
-        const enough = this.requiredPending === 0 && this.events.length >= this.minCopies;
-        if (enough || (this.sealed && this.pending === 0)) {
+        const enoughCopies = this.ownCopy && this.events.length >= this.minCopies;
+        const allButSlowest = this.sealed && this.pending <= this.relaysNotAwaited;
+        if (enoughCopies || allButSlowest) {
             this.done = true;
             this.resolveResult([...this.events]);
         }
