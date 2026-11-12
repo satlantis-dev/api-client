@@ -15,6 +15,10 @@ const Kind_PlaceFollowList = 10016;
 const FALLBACK_RELAYS = ["wss://relay.primal.net", "wss://relay.damus.io"];
 const NIP65_RELAY_LIST_KIND = 10002 as NostrKind;
 const RELAY_READ_TIMEOUT_MS = 5_000;
+/** A relay read stops once this many relays returned a copy, our relay among them... */
+const READ_MIN_COPIES = 3;
+/** ...or once ours and every relay but this many have finished, so the slowest doesn't hold it. */
+const READ_RELAYS_NOT_AWAITED = 1;
 let replaceableSubCounter = 0;
 const followingMutationLocks = new WeakMap<Client, Promise<void>>();
 const lastPublishedContactLists = new WeakMap<Client, NostrEvent>();
@@ -120,55 +124,118 @@ export function nextCreatedAt(base: NostrEvent | undefined, nowSec: number) {
 }
 
 /**
- * Every contact list copy for `author` found on the fallback relays, the bootstrap relays, and the
- * write relays from the author's NIP-65 list. Unreachable relays are skipped.
+ * Contact list copies for `author` from the fallback relays, the bootstrap relays, and the relays
+ * in the author's NIP-65 list. The fallback and bootstrap relays are asked for the contact list
+ * right away, alongside the NIP-65 relay list read; the author's own relays are added once that
+ * read is done. Both reads stop early by the rule in `ReplaceableEventRead` (ours and every relay
+ * but the slowest finished, or `READ_MIN_COPIES` copies including ours), otherwise they wait for every
+ * relay, each capped at the read timeout. Unreachable relays are skipped.
  */
-export async function getContactListsFromRelays(
+export function getContactListsFromRelays(
     author: PublicKey,
     bootstrapRelays: string[],
 ): Promise<NostrEvent[]> {
-    const relays = new Set<string>([...FALLBACK_RELAYS, ...bootstrapRelays]);
-    const relayList = await getReplaceableEventFromRelays(
-        Array.from(relays),
-        author,
-        NIP65_RELAY_LIST_KIND,
-    );
-    if (!(relayList instanceof Error) && relayList) {
-        for (const tag of relayList.tags) {
-            if (tag[0] === "r" && tag[1]?.startsWith("wss://")) relays.add(tag[1]);
+    const ownRelays = bootstrapRelays.map(normalizeRelayUrl);
+    const known = Array.from(new Set([...FALLBACK_RELAYS.map(normalizeRelayUrl), ...ownRelays]));
+
+    const contactLists = new ReplaceableEventRead(author, NostrKind.CONTACTS, ownRelays);
+    contactLists.add(known);
+
+    const relayListRead = new ReplaceableEventRead(author, NIP65_RELAY_LIST_KIND, ownRelays);
+    relayListRead.add(known);
+    relayListRead.seal();
+    relayListRead.result
+        .then((relayLists) => {
+            const relayList = relayLists.sort((a, b) => b.created_at - a.created_at)[0];
+            const authorRelays = (relayList?.tags ?? [])
+                .filter((tag) => tag[0] === "r" && tag[1]?.startsWith("wss://"))
+                .map((tag) => normalizeRelayUrl(tag[1]));
+            contactLists.add(authorRelays);
+        })
+        .finally(() => contactLists.seal());
+
+    return contactLists.result;
+}
+
+function normalizeRelayUrl(url: string) {
+    return url.trim().replace(/\/+$/, "");
+}
+
+/**
+ * Reads the newest `kind` event by `pubkey` from relays added over time (`add`), all at once.
+ * `result` resolves with the copies found as soon as either:
+ * - `minCopies` relays have returned a copy, one of them in `ownRelays`; or
+ * - once `seal` says no more relays will be added, every relay in `ownRelays` and every relay but
+ *   `relaysNotAwaited` has finished (answered, failed or timed out), so the slowest relay doesn't
+ *   hold the caller unless it is ours.
+ * Otherwise it waits for every relay, each capped at `timeoutMs`. Copies from relays that answer
+ * later are dropped, and relays added after that aren't read.
+ */
+export class ReplaceableEventRead {
+    readonly result: Promise<NostrEvent[]>;
+    private readonly own: Set<string>;
+    private readonly started = new Set<string>();
+    private readonly events: NostrEvent[] = [];
+    private pending = 0;
+    private ownCopy = false;
+    private ownPending: number;
+    private sealed = false;
+    private done = false;
+    private resolveResult!: (events: NostrEvent[]) => void;
+
+    constructor(
+        private readonly pubkey: PublicKey,
+        private readonly kind: NostrKind,
+        ownRelays: string[],
+        private readonly minCopies: number = READ_MIN_COPIES,
+        private readonly relaysNotAwaited: number = READ_RELAYS_NOT_AWAITED,
+        private readonly timeoutMs: number = RELAY_READ_TIMEOUT_MS,
+    ) {
+        this.own = new Set(ownRelays);
+        this.ownPending = this.own.size;
+        this.result = new Promise((resolve) => {
+            this.resolveResult = resolve;
+        });
+        this.add(ownRelays);
+    }
+
+    add(relayUrls: string[]) {
+        for (const url of relayUrls) {
+            if (this.done || this.started.has(url)) continue;
+            this.started.add(url);
+            this.pending++;
+            getContactList(url, this.pubkey, this.kind, this.timeoutMs)
+                .catch((cause) => cause instanceof Error ? cause : new Error(String(cause)))
+                .then((result) => this.settle(url, result));
         }
     }
-    return getReplaceableEventsFromRelays(Array.from(relays), author, NostrKind.CONTACTS);
-}
 
-async function getReplaceableEventFromRelays(
-    relayUrls: string[],
-    pubkey: PublicKey,
-    kind: NostrKind,
-): Promise<NostrEvent | Error | undefined> {
-    const results = await Promise.all(
-        relayUrls.map(async (url) => {
-            const event = await getContactList(url, pubkey, kind);
-            return event instanceof Error ? undefined : event;
-        }),
-    );
-    return results
-        .filter((event): event is NostrEvent => Boolean(event))
-        .sort((a, b) => b.created_at - a.created_at)[0];
-}
+    seal() {
+        this.sealed = true;
+        this.check();
+    }
 
-async function getReplaceableEventsFromRelays(
-    relayUrls: string[],
-    pubkey: PublicKey,
-    kind: NostrKind,
-) {
-    const results = await Promise.all(
-        relayUrls.map(async (url) => {
-            const event = await getContactList(url, pubkey, kind);
-            return event instanceof Error ? undefined : event;
-        }),
-    );
-    return results.filter((event): event is NostrEvent => Boolean(event));
+    private settle(url: string, result: NostrEvent | Error | undefined) {
+        if (this.done) return;
+        this.pending--;
+        if (this.own.has(url)) this.ownPending--;
+        if (result && !(result instanceof Error)) {
+            this.events.push(result);
+            if (this.own.has(url)) this.ownCopy = true;
+        }
+        this.check();
+    }
+
+    private check() {
+        if (this.done) return;
+        const enoughCopies = this.ownCopy && this.events.length >= this.minCopies;
+        const allButSlowest = this.sealed && this.ownPending === 0 &&
+            this.pending <= this.relaysNotAwaited;
+        if (enoughCopies || allButSlowest) {
+            this.done = true;
+            this.resolveResult([...this.events]);
+        }
+    }
 }
 
 /**
