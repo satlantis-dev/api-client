@@ -9,6 +9,7 @@ import type {
     SendPaymentResponse,
     TransactionDetails,
     TransactionHistoryResponse,
+    TransactionSource,
 } from "./wallet.ts";
 
 // Community wallets mirror the personal and event wallets (same request and
@@ -114,13 +115,22 @@ async (
     return response instanceof Error ? response : handleResponse<TransactionHistoryResponse>(response);
 };
 
+/**
+ * Community-wallet histories interleave wallet transactions with membership
+ * payments, withdrawals and refunds, whose `id` comes from another table. Pass
+ * the row's `source` so the backend resolves the id in the right one.
+ */
 export const getCommunityTransactionDetails = (urlArg: URL, getJwt: func_GetJwt) =>
 async (
     communityId: number,
     txId: number,
+    source?: TransactionSource,
 ): Promise<TransactionDetails | null | Error> => {
     const url = copyURL(urlArg);
     url.pathname = `/secure/communities/${communityId}/wallet/transactions/${txId}`;
+    if (source && source !== "wallet") {
+        url.searchParams.set("source", source);
+    }
     const response = await safeFetch(url, {
         method: "GET",
         headers: getHeaders(getJwt),
