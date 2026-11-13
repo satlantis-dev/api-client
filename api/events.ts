@@ -136,8 +136,8 @@ export interface EventDetails {
     userOrder?: UserPendingOrderInfo;
     isUnlisted: boolean;
     isHidingLocation?: boolean;
-    /** Name of the Google location (`googleId`) in event lists; absent when unknown or hidden. */
-    locationName?: string;
+    /** Name of the venue (Google location, `googleId`) in event lists; absent when unknown or hidden. */
+    venueName?: string;
     isHidingAttendees?: boolean;
     isOnline?: boolean;
     accountStripeConnectId?: number;
