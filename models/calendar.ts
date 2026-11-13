@@ -96,6 +96,8 @@ export type CalendarEvent = {
     sampleAttendees?: AccountDTO[];
     attendeeCount?: number;
     location?: string;
+    /** Name of the Google location (`googleId`) in event lists; absent when unknown or hidden. */
+    locationName?: string;
     locationClarification?: string | null;
     nostrId: string;
     notes: CalendarEventNote[];
