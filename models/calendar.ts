@@ -181,6 +181,8 @@ export type CalendarDTO = {
     slug: string;
     banner: string;
     createdAt: string;
+    /** Absent from api builds older than the field. */
+    updatedAt?: string;
     eventCount: number;
     upcomingEventCount?: number;
     eventTags?: CalendarEventTag[];

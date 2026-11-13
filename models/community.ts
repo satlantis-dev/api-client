@@ -60,6 +60,8 @@ export type CommunityDTO = {
     calendars?: Calendar[];
     whopId?: string;
     createdAt: string;
+    /** Absent from api builds older than the field. */
+    updatedAt?: string;
 };
 
 /** The querying account's relationship to a community, highest first. */
