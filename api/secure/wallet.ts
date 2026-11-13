@@ -72,7 +72,14 @@ export interface FeeEstimateResponse {
     lightningAddressInfo?: LightningAddressInfo;
 }
 
-export type TransactionSource = "wallet" | "ticket";
+/**
+ * What a wallet history row is. Event and community histories interleave wallet
+ * ledger rows ("wallet") with entries from other tables, whose `id` belongs to
+ * that table: ticket orders ("ticket", event wallets), membership payments
+ * ("membership", community wallets), withdrawals and refunds. Pass the source
+ * to the details call so the backend looks the id up in the right table.
+ */
+export type TransactionSource = "wallet" | "ticket" | "membership" | "withdrawal" | "refund";
 
 /** One ticket-type line within a ticket purchase. */
 export interface TicketPurchaseItem {
@@ -111,9 +118,8 @@ export interface Transaction {
     memo: string;
     status: TransactionStatus;
     timestamp: string;
-    // Event-wallet histories only: "wallet" for regular transactions, "ticket"
-    // for ticket purchases (where `id` is the ticket order id). Absent on the
-    // personal wallet's rows.
+    // Event and community wallet histories only (see TransactionSource). Absent
+    // on the personal wallet's rows.
     source?: TransactionSource;
     ticket?: TicketPurchaseSummary | null;
 }

@@ -9,6 +9,7 @@ import type {
     SendPaymentResponse,
     TransactionDetails,
     TransactionHistoryResponse,
+    TransactionSource,
     WalletFilter,
 } from "./wallet.ts";
 
@@ -191,20 +192,24 @@ async (
 
 /**
  * Event-wallet histories interleave regular wallet transactions with ticket
- * purchases (`source: "ticket"`), whose `id` is a ticket ORDER id from a
- * different table. Pass `isPurchase: true` for those rows so the backend
- * resolves the id against ticket orders instead of wallet transactions.
+ * purchases (`source: "ticket"`), withdrawals and refunds, whose `id` comes
+ * from a different table. Pass `isPurchase: true` for ticket rows, and the
+ * row's `source` for withdrawals and refunds, so the backend resolves the id
+ * in the right table instead of wallet transactions.
  */
 export const getEventTransactionDetails = (urlArg: URL, getJwt: func_GetJwt) =>
 async (
     eventId: number,
     txId: number,
     isPurchase = false,
+    source?: TransactionSource,
 ): Promise<TransactionDetails | null | Error> => {
     const url = copyURL(urlArg);
     url.pathname = `/secure/events/${eventId}/wallet/transactions/${txId}`;
-    if (isPurchase) {
+    if (isPurchase || source === "ticket") {
         url.searchParams.set("is_purchase", "true");
+    } else if (source === "withdrawal" || source === "refund") {
+        url.searchParams.set("source", source);
     }
     const response = await safeFetch(url, {
         method: "GET",

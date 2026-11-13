@@ -6,6 +6,7 @@ import {
     getCommunityWallets,
     sendCommunityPayment,
 } from "../api/secure/community_wallet.ts";
+import { getEventTransactionDetails } from "../api/secure/event_wallet.ts";
 
 function stubFetch(payload: unknown) {
     const calls: { url: string; method: string; body?: string; auth: string | null }[] = [];
@@ -66,5 +67,27 @@ Deno.test("community wallet: history uses the community filter names", async () 
     assertEquals(calls.map((call) => call.url), [
         "https://api.example.com/secure/communities/7/wallet/transactions?page=2&limit=50&filter=received",
         "https://api.example.com/secure/communities/7/wallet/transactions?page=1&limit=20&filter=all",
+    ]);
+});
+
+Deno.test("wallet details: non-ledger history rows are looked up by source", async () => {
+    const { calls, restore } = stubFetch({});
+    try {
+        await getCommunityTransactionDetails(baseURL, getJwt)(7, 42, "wallet");
+        await getCommunityTransactionDetails(baseURL, getJwt)(7, 43, "membership");
+        await getCommunityTransactionDetails(baseURL, getJwt)(7, 44, "refund");
+        await getEventTransactionDetails(baseURL, getJwt)(9, 1, false, "ticket");
+        await getEventTransactionDetails(baseURL, getJwt)(9, 2, false, "withdrawal");
+        await getEventTransactionDetails(baseURL, getJwt)(9, 3, true);
+    } finally {
+        restore();
+    }
+    assertEquals(calls.map((call) => call.url), [
+        "https://api.example.com/secure/communities/7/wallet/transactions/42",
+        "https://api.example.com/secure/communities/7/wallet/transactions/43?source=membership",
+        "https://api.example.com/secure/communities/7/wallet/transactions/44?source=refund",
+        "https://api.example.com/secure/events/9/wallet/transactions/1?is_purchase=true",
+        "https://api.example.com/secure/events/9/wallet/transactions/2?source=withdrawal",
+        "https://api.example.com/secure/events/9/wallet/transactions/3?is_purchase=true",
     ]);
 });
