@@ -41,12 +41,21 @@ export const getAccount =
  * `input` is any unique identifier the backend accepts: npub, email, or
  * numeric account ID. Returns the full AccountDTO (including its canonical
  * `email`) or an Error when no account matches (404).
+ *
+ * Sends the JWT when there is one: platform admins then also get blacklisted
+ * accounts (`isBlacklisted: true`), which are a 404 for everyone else.
  */
 export const getAccountDTO =
-    (urlArg: URL) => async (args: { input: string }): Promise<AccountDTO | Error> => {
+    (urlArg: URL, getJwt?: func_GetJwt) => async (args: { input: string }): Promise<AccountDTO | Error> => {
         const url = copyURL(urlArg);
         url.pathname = `/account/${encodeURIComponent(args.input)}`;
-        const response = await safeFetch(url);
+        const jwtToken = getJwt?.() ?? "";
+        let headers;
+        if (jwtToken !== "") {
+            headers = new Headers();
+            headers.set("Authorization", `Bearer ${jwtToken}`);
+        }
+        const response = await safeFetch(url, { headers });
         if (response instanceof Error) {
             return response;
         }

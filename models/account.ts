@@ -227,3 +227,22 @@ export type AccountSocialLinks = {
     youtube?: string;
     whatsapp?: string;
 };
+
+// A row of the platform admins' blacklist (GET /secure/admin/blacklisted-accounts). Blacklisting
+// wipes the profile, so name and picture fall back to the account's newest stored kind 0 event.
+export type BlacklistedAccount = {
+    id: number;
+    npub: string;
+    pubKey: string;
+    name: string;
+    picture: string;
+    email: string;
+    emailVerified: boolean;
+    level: number;
+    isDeleted: boolean;
+    createdAt: string;
+    lastSeen: string | null;
+    // When the account row was last changed, normally the blacklisting; null for accounts
+    // blacklisted before accounts.updated_at existed.
+    updatedAt: string | null;
+};
