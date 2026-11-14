@@ -1524,7 +1524,7 @@ export class Client {
         this._getAccountFollowings = getAccountFollowings(rest_api_url);
         this._getAccountFollowers = getAccountFollowers(rest_api_url);
         this.getAccountsBySearch = getAccountsBySearch(rest_api_url, getJwt);
-        this.getAccountDTO = getAccountDTO(rest_api_url);
+        this.getAccountDTO = getAccountDTO(rest_api_url, getJwt);
         this.searchAccountViaEmail = searchAccountViaEmail(rest_api_url, getJwt);
         this.getCalendarEventCohosts = getCalendarEventCohosts(rest_api_url, getJwt);
         this.sendCohostEmailInviteToCalendarEvent = sendCohostEmailInviteToCalendarEvent(
