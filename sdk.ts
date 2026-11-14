@@ -96,6 +96,7 @@ import {
     deleteAccount,
     followTierZeroPlaces,
     getAccountsBySearch,
+    getBlacklistedAccounts,
     getBlockedAccounts,
     getFollowedByAccounts,
     getMutedAccounts,
@@ -110,6 +111,7 @@ import {
     resendEmailVerification,
     saveDeviceInfo,
     setEmailAndSendOTP,
+    unblacklistAccount,
     unblockAccount,
     unmuteAccount,
     updateAccount,
@@ -759,6 +761,8 @@ export class Client {
     deleteAccount: ReturnType<typeof deleteAccount>;
     _blackListAccount: ReturnType<typeof blacklistAccount>;
     blacklistAccountWithNpub: ReturnType<typeof blacklistAccount>;
+    unblacklistAccount: ReturnType<typeof unblacklistAccount>;
+    getBlacklistedAccounts: ReturnType<typeof getBlacklistedAccounts>;
     getUserFollowers: ReturnType<typeof getUserFollowers>;
     getAccountActivities: ReturnType<typeof getAccountActivities>;
     getUserActivities: ReturnType<typeof getUserActivities>;
@@ -1541,6 +1545,8 @@ export class Client {
         this.deleteAccount = deleteAccount(rest_api_url, getJwt, getNostrSigner);
         this._blackListAccount = blacklistAccount(rest_api_url, getJwt);
         this.blacklistAccountWithNpub = blacklistAccount(rest_api_url, getJwt);
+        this.unblacklistAccount = unblacklistAccount(rest_api_url, getJwt);
+        this.getBlacklistedAccounts = getBlacklistedAccounts(rest_api_url, getJwt);
         this.getUserFollowers = getUserFollowers(rest_api_url, getJwt);
 
         this.getNotesOfPubkey = getNotesOfPubkey(rest_api_url);

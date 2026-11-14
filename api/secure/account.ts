@@ -9,7 +9,12 @@ import {
     handleStringResponse,
 } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
-import type { AccountDTO, AccountPlaceRole, AccountPlaceRoleTypeEnum } from "../../models/account.ts";
+import type {
+    AccountDTO,
+    AccountPlaceRole,
+    AccountPlaceRoleTypeEnum,
+    BlacklistedAccount,
+} from "../../models/account.ts";
 import type { Activity } from "../../models/activity.ts";
 import type { GoogleWalletData } from "../../models/event.ts";
 import type {
@@ -320,6 +325,48 @@ export const blacklistAccount = (urlArg: URL, getJwt: () => string) => async (ar
         return true;
     }
     return new Error("unexpected result", { cause: res });
+};
+
+// DELETE /secure/account/{npub}/blacklist — platform admins only. Lifts the blacklist (soft-deleted
+// accounts included) and restores the profile from the account's newest kind 0 event; the notes and
+// events deleted by the blacklisting stay deleted, and the username isn't restored.
+// 404 when the account doesn't exist, 409 when it isn't blacklisted.
+export const unblacklistAccount = (urlArg: URL, getJwt: () => string) => async (args: { npub: string }) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/account/${args.npub}/blacklist`;
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    const response = await safeFetch(url, { method: "DELETE", headers });
+    if (response instanceof Error) {
+        return response;
+    }
+    const res = await handleResponse<{ status: "success" }>(response);
+    if (res instanceof Error) {
+        return res;
+    }
+    return true;
+};
+
+// GET /secure/admin/blacklisted-accounts — platform admins only. Every blacklisted account,
+// most recently updated (normally: blacklisted) first.
+export const getBlacklistedAccounts = (urlArg: URL, getJwt: () => string) => async () => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = "/secure/admin/blacklisted-accounts";
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    const response = await safeFetch(url, { method: "GET", headers });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<BlacklistedAccount[]>(response);
 };
 
 export type RemoveAccountRoleArgs = {
