@@ -109,7 +109,7 @@ export interface CalendarEventNotePost {
 
 export const getEventById = (urlArg: URL) => async (args: { id: number }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getCalendarEventByID/${args.id}`;
+    url.pathname = `/events/${args.id}/basic`;
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;
@@ -643,7 +643,7 @@ export const respondCalendarEventCohostInvitation =
         }
 
         const url = copyURL(urlArg);
-        url.pathname = `/secure/respondCalendarEventCohostInvitation/${args.calendarEventId}`;
+        url.pathname = `/secure/events/${args.calendarEventId}/cohosts`;
         url.searchParams.append("action", args.action);
 
         const headers = new Headers();
@@ -835,7 +835,7 @@ export const deletePlaceCalendarEvent =
         }
 
         const url = copyURL(urlArg);
-        url.pathname = `/secure/deletePlaceCalendarEvent/${args.placeCalendarEventId}`;
+        url.pathname = `/secure/events/${args.placeCalendarEventId}`;
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);

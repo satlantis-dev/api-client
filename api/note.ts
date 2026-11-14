@@ -74,7 +74,7 @@ export interface FeedNote extends Note {
 export const getNotesOfPubkey =
     (urlArg: URL) => async (args: { npub: string; page: number; limit: number }) => {
         const url = copyURL(urlArg);
-        url.pathname = `/getNotes/${args.npub}`;
+        url.pathname = `/accounts/${args.npub}/notes`;
         url.searchParams.set("page", String(args.page));
         url.searchParams.set("limit", String(args.limit));
 
@@ -96,7 +96,7 @@ async (args: {
 }) => {
     const url = copyURL(urlArg);
     const headers = new Headers();
-    url.pathname = args.secure ? `/secure/getFeedNotes` : `/getNotes`;
+    url.pathname = args.secure ? `/secure/feed/notes` : `/getNotes`;
     url.searchParams.set("page", String(args.page));
     url.searchParams.set("limit", String(args.limit));
     if (args.placeId) {
@@ -158,7 +158,7 @@ async (args: {
 
 export const getNote = (urlArg: URL) => async (args: { accountID?: number; noteID: number }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getNote/${args.noteID}`;
+    url.pathname = `/notes/${args.noteID}`;
 
     if (args.accountID) {
         url.searchParams.set("accountId", String(args.accountID));
@@ -177,7 +177,7 @@ export const getNote = (urlArg: URL) => async (args: { accountID?: number; noteI
 
 export const getNoteByNostrId = (urlArg: URL) => async (args: { nostrId: string }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getNoteByNostrId/${args.nostrId}`;
+    url.pathname = `/notes/nostr/${args.nostrId}`;
 
     const response = await safeFetch(url);
     if (response instanceof Error) {
@@ -198,7 +198,7 @@ async (args: {
     limit: number;
 }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getNoteReactions/${args.noteID}`;
+    url.pathname = `/notes/${args.noteID}/reactions`;
     url.searchParams.set("page", String(args.page));
     url.searchParams.set("limit", String(args.limit));
     if (args.accountID) {
@@ -219,7 +219,7 @@ async (args: {
     limit: number;
 }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getNoteComments/${args.noteID}`;
+    url.pathname = `/notes/${args.noteID}/comments`;
     url.searchParams.set("page", String(args.page));
     url.searchParams.set("limit", String(args.limit));
     if (args.accountID) {

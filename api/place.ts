@@ -15,7 +15,7 @@ import type { Location, PlaceMinimal } from "../models/location.ts";
 
 export const getPlaceNames = (urlArg: URL) => async () => {
     const url = copyURL(urlArg);
-    url.pathname = `/getPlaceNames`;
+    url.pathname = `/destinations/names`;
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;
@@ -25,7 +25,7 @@ export const getPlaceNames = (urlArg: URL) => async () => {
 
 export const getAllPlaceRegionCountryNames = (urlArg: URL) => async () => {
     const url = copyURL(urlArg);
-    url.pathname = `/getAllPlaceRegionCountryNames`;
+    url.pathname = `/geo-entities/names`;
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;
@@ -140,7 +140,7 @@ async (args: {
     limit: number;
 }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getPlaceNotes/${args.placeID}`;
+    url.pathname = `/notes/place/${args.placeID}`;
     url.searchParams.set("page", String(args.page));
     url.searchParams.set("limit", String(args.limit));
 
@@ -156,11 +156,11 @@ async (args: {
 };
 
 /**
- * GET /getPlaceMetrics/{placeID}
+ * GET /destination/{placeID}/metrics
  */
 export const getPlaceMetrics = (urlArg: URL) => async (args: { placeID: string | number; name?: string }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getPlaceMetrics/${args.placeID}`;
+    url.pathname = `/destination/${args.placeID}/metrics`;
     if (args.name) {
         url.searchParams.set("name", args.name);
     }
@@ -231,11 +231,11 @@ async (args: {
 };
 
 /**
- * GET /getCalendarEventTypes
+ * GET /events/types
  */
 export const getCalendarEventTypes = (urlArg: URL) => async () => {
     const url = copyURL(urlArg);
-    url.pathname = `/getCalendarEventTypes`;
+    url.pathname = `/events/types`;
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;
@@ -258,11 +258,11 @@ export const getPlaceChats = (urlArg: URL) => async (args: { placeID: string | n
 };
 
 /**
- * GET /getPlaceCategoryScores/{placeID}
+ * GET /destination/{placeID}/scores
  */
 export const getPlaceCategoryScores = (urlArg: URL) => async (args: { placeID: string | number }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getPlaceCategoryScores/${args.placeID}`;
+    url.pathname = `/destination/${args.placeID}/scores`;
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;
@@ -272,7 +272,7 @@ export const getPlaceCategoryScores = (urlArg: URL) => async (args: { placeID: s
 
 export const getRegion = (urlArg: URL) => async (args: { regionID: number }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getRegion/${args.regionID}`;
+    url.pathname = `/region/${args.regionID}`;
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;
@@ -282,7 +282,7 @@ export const getRegion = (urlArg: URL) => async (args: { regionID: number }) => 
 
 export const getPlaceEvent = (urlArg: URL) => async (args: { placeID: number }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getPlaceEvent/${args.placeID}`;
+    url.pathname = `/destination/${args.placeID}/nostr-event`;
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;
@@ -291,11 +291,11 @@ export const getPlaceEvent = (urlArg: URL) => async (args: { placeID: number }) 
 };
 
 /**
- * GET /getPlaceGalleryImages/{placeID}
+ * GET /destination/{placeID}/images
  */
 export const getPlaceGalleryImages = (urlArg: URL) => async (args: { placeID: number }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getPlaceGalleryImages/${args.placeID}`;
+    url.pathname = `/destination/${args.placeID}/images`;
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;

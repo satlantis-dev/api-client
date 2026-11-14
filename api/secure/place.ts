@@ -13,7 +13,7 @@ export const updatePlace = (urlArg: URL, getJwt: () => string) => async (place: 
     }
 
     const url = copyURL(urlArg);
-    url.pathname = `/secure/updatePlace/${place.id}`;
+    url.pathname = `/secure/destination/${place.id}`;
 
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
@@ -30,7 +30,7 @@ export const updatePlace = (urlArg: URL, getJwt: () => string) => async (place: 
 };
 
 /**
- * POST /secure/postPlaceGalleryImage
+ * POST /secure/destination/{placeId}/image
  * Roles with permission: Admin and Place's Ambassador
  * @returns id of the new image
  * https://github.com/satlantis-dev/api/blob/dev/rest/place_gallery.go
@@ -48,7 +48,7 @@ async (args: {
     }
 
     const url = copyURL(urlArg);
-    url.pathname = `/secure/postPlaceGalleryImage`;
+    url.pathname = `/secure/destination/${args.placeId}/image`;
 
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);

@@ -661,7 +661,7 @@ async (
     items: UpdateRsvpStatusItem[],
 ): Promise<UpdateRsvpStatusResponse | Error> => {
     const url = copyURL(urlArg);
-    url.pathname = `/secure/rsvps/status`;
+    url.pathname = `/secure/rsvps`;
 
     const jwtToken = getJwt();
     const headers = new Headers();
@@ -674,7 +674,7 @@ async (
     const payload: UpdateRsvpStatusRequest = { items };
 
     const response = await safeFetch(url, {
-        method: "POST",
+        method: "PUT",
         headers,
         body: JSON.stringify(payload),
     });
@@ -744,7 +744,7 @@ export const getRandomizedEvents =
     (urlArg: URL, getJwt?: () => string) =>
     async (args: GetRandomizedEventsArgs): Promise<EventDetails[] | Error> => {
         const url = copyURL(urlArg);
-        url.pathname = `/getEventsRandomized`;
+        url.pathname = `/events/randomized`;
         Object.keys(args).forEach((key) => {
             if (!!(args as any)[key]) {
                 url.searchParams.set(key, (args as any)[key]);
@@ -778,7 +778,7 @@ export const getPopularEvents =
     (urlArg: URL, getJwt?: () => string) =>
     async (args: GetPopularEventsArgs): Promise<EventDetails[] | Error> => {
         const url = copyURL(urlArg);
-        url.pathname = `/getPopularEvents`;
+        url.pathname = `/events/popular`;
         Object.keys(args).forEach((key) => {
             if (!!(args as any)[key]) {
                 url.searchParams.set(key, (args as any)[key]);
@@ -812,7 +812,7 @@ export const getNewestEvents =
     (urlArg: URL, getJwt?: func_GetJwt) =>
     async (args: GetNewestEventsArgs): Promise<EventDetails[] | Error> => {
         const url = copyURL(urlArg);
-        url.pathname = `/getNewestEvents`;
+        url.pathname = `/events/newest`;
         Object.keys(args).forEach((key) => {
             if (!!(args as any)[key]) {
                 url.searchParams.set(key, (args as any)[key]);
@@ -846,7 +846,7 @@ export const getFeaturedEvents =
     (urlArg: URL, getJwt?: func_GetJwt) =>
     async (args: GetFeaturedEventsArgs): Promise<EventDetails[] | Error> => {
         const url = copyURL(urlArg);
-        url.pathname = `/getFeaturedEvents`;
+        url.pathname = `/events/featured`;
         Object.keys(args).forEach((key) => {
             if (!!(args as any)[key]) {
                 url.searchParams.set(key, (args as any)[key]);
@@ -916,7 +916,7 @@ export const getRecommendedEvents =
             headers = new Headers();
             headers.set("Authorization", `Bearer ${jwtToken}`);
         }
-        url.pathname = `/secure/getRecommendedEvents`;
+        url.pathname = `/secure/events/recommended`;
         Object.keys(args).forEach((key) => {
             if (!!(args as any)[key]) {
                 url.searchParams.set(key, (args as any)[key]);
@@ -1006,7 +1006,7 @@ async (
     eventId: number,
 ): Promise<{ success: boolean; message: string } | Error> => {
     const url = copyURL(urlArg);
-    url.pathname = `/secure/markCalendarEventAsFeatured/${eventId}`;
+    url.pathname = `/secure/events/${eventId}/featured`;
 
     const jwtToken = getJwt();
     const headers = new Headers();
@@ -1033,7 +1033,7 @@ async (
     eventId: number,
 ): Promise<{ success: boolean; message: string } | Error> => {
     const url = copyURL(urlArg);
-    url.pathname = `/secure/unmarkCalendarEventAsFeatured/${eventId}`;
+    url.pathname = `/secure/events/${eventId}/unfeatured`;
 
     const jwtToken = getJwt();
     const headers = new Headers();
@@ -2142,7 +2142,7 @@ async (
     withdrawalId: number,
 ): Promise<EventFinancialsWithdrawalResponse | null | Error> => {
     const url = copyURL(urlArg);
-    url.pathname = `/secure/events/financials/withdrawals/${withdrawalId}`;
+    url.pathname = `/secure/events/wallet/withdrawals/${withdrawalId}`;
 
     const jwtToken = getJwt();
     const headers = new Headers();
@@ -2173,7 +2173,7 @@ async (
     amount: number,
 ): Promise<EventFinancialsWithdrawalFeeEstimationsResponse | null | Error> => {
     const url = copyURL(urlArg);
-    url.pathname = `/secure/events/${eventId}/withdrawals/fee-estimations`;
+    url.pathname = `/secure/events/${eventId}/wallet/withdrawals/fee-estimations`;
     url.searchParams.set("lightning_address", lightningAddress);
     url.searchParams.set("amount", amount.toString());
 
@@ -2199,7 +2199,7 @@ async (
     params: { eventId: number; lightningAddress: string; amount: number },
 ): Promise<EventTicketWithdrawalFeeResponse | null | Error> => {
     const url = copyURL(urlArg);
-    url.pathname = `/secure/events/${params.eventId}/withdrawals/fee-estimations`;
+    url.pathname = `/secure/events/${params.eventId}/wallet/withdrawals/fee-estimations`;
 
     const jwtToken = getJwt();
     const headers = new Headers();
@@ -2230,7 +2230,7 @@ async (
     },
 ): Promise<EventFinancialsWithdrawalResponse | Error> => {
     const url = copyURL(urlArg);
-    url.pathname = `/secure/events/${params.eventId}/financials/withdraw`;
+    url.pathname = `/secure/events/${params.eventId}/wallet/withdraw`;
 
     const jwtToken = getJwt();
     const headers = new Headers();
@@ -2494,7 +2494,7 @@ async (
     args?: GetAccountEventTIcketsArgs,
 ) => {
     const url = copyURL(urlArg);
-    url.pathname = `/secure/me/tickets`;
+    url.pathname = `/secure/user/tickets`;
 
     const jwtToken = getJwt();
     const headers = new Headers();

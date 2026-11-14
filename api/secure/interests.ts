@@ -42,7 +42,7 @@ async (args?: {
 
 export const getAccountInterests = (urlArg: URL) => async (pubkey: PublicKey) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getInterests/${pubkey.bech32()}`;
+    url.pathname = `/account/${pubkey.bech32()}/interests`;
 
     const response = await safeFetch(url, {
         method: "GET",
@@ -60,7 +60,7 @@ export const createInterests = (urlArg: URL, getJwt: () => string) => async (int
     }
 
     const url = copyURL(urlArg);
-    url.pathname = `/secure/createInterests`;
+    url.pathname = `/secure/interests`;
 
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
@@ -91,7 +91,7 @@ async (args?: {
     }
 
     const url = copyURL(urlArg);
-    url.pathname = `/secure/getRecommendedFollows`;
+    url.pathname = `/secure/user/recommended-follows`;
     if (args?.max) {
         url.searchParams.append("max", args.max.toString());
     }

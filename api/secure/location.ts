@@ -3,7 +3,7 @@ import { safeFetch } from "../../helpers/safe-fetch.ts";
 import type { ImageCategory, LocationDTO, LocationGalleryImage } from "../../models/location.ts";
 
 /**
- * POST /secure/postLocationGalleryImage
+ * POST /secure/place/{locationID}/image
  * Roles with permission: Admin and some other roles(see the backend)
  * @returns id of the new image
  * https://github.com/satlantis-dev/api/blob/dev/rest/location_gallery.go
@@ -22,7 +22,7 @@ async (args: {
     }
 
     const url = copyURL(urlArg);
-    url.pathname = `/secure/postLocationGalleryImage`;
+    url.pathname = `/secure/place/${args.locationID}/image`;
 
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
@@ -131,7 +131,7 @@ export const promoteLocationGalleryImageToBanner =
     };
 
 /**
- * GET /secure//getRecommendedLocations/{placeId}
+ * GET /secure/destination/{placeId}/places/recommended
  * @returns Has been shuffled in BE.
  * https://github.com/satlantis-dev/api/blob/prod/rest/location.go#L163
  */
@@ -143,7 +143,7 @@ export const getRecommendedLocations =
         }
 
         const url = copyURL(urlArg);
-        url.pathname = `/secure/getRecommendedLocations/${args.placeId}`;
+        url.pathname = `/secure/destination/${args.placeId}/places/recommended`;
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
@@ -164,7 +164,7 @@ export const getRecommendedLocationsGlobal = (urlArg: URL, getJwt: () => string)
     }
 
     const url = copyURL(urlArg);
-    url.pathname = `/secure/getRecommendedLocationsGlobal`;
+    url.pathname = `/secure/places/recommended`;
 
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);

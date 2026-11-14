@@ -22,7 +22,7 @@ const createPublicUrl = (urlArg: URL, path: string) => {
 
 export const getLocationTags = (urlArg: URL) => async () => {
     const url = copyURL(urlArg);
-    url.pathname = `/getLocationTags`;
+    url.pathname = `/places/tags`;
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;
@@ -93,15 +93,13 @@ async (args: {
     const url = copyURL(urlArg);
     const headers = new Headers();
 
+    url.pathname = `/destination/${args.placeID}/places`;
     if (args.isSecure) {
         const jwt = getJwt();
         if (jwt == "") {
             return new Error("jwt token is empty");
         }
         headers.set("Authorization", `Bearer ${jwt}`);
-        url.pathname = `/secure/getLocationsByPlaceID/${args.placeID}`;
-    } else {
-        url.pathname = `/getLocationsByPlaceID/${args.placeID}`;
     }
 
     if (args.search) {
@@ -163,7 +161,7 @@ async (args: {
             return new Error("jwt token is empty");
         }
         headers.set("Authorization", `Bearer ${jwt}`);
-        url.pathname = `/secure/getNearbyLocations`;
+        url.pathname = `/secure/places/nearby`;
     } else {
         url.pathname = `/getNearbyLocations`;
     }
@@ -231,15 +229,13 @@ async (args: {
 }) => {
     const url = copyURL(urlArg);
     const headers = new Headers();
+    url.pathname = `/places/bounding-box`;
     if (args.isSecure) {
         const jwt = getJwt();
         if (jwt == "") {
             return new Error("jwt token is empty");
         }
         headers.set("Authorization", `Bearer ${jwt}`);
-        url.pathname = `/secure/getLocationsWithinBoundingBox`;
-    } else {
-        url.pathname = `/getLocationsWithinBoundingBox`;
     }
 
     let tags = "";
@@ -342,7 +338,7 @@ export const suggestLocation = (urlArg: URL, getJwt: func_GetJwt) => async (args
     headers.set("Authorization", `Bearer ${jwt}`);
 
     const url = copyURL(urlArg);
-    url.pathname = `/secure/suggestLocation`;
+    url.pathname = `/secure/places/suggest`;
 
     const response = await safeFetch(url, {
         headers,
@@ -393,7 +389,7 @@ export const proveLocationClaim =
         headers.set("Authorization", `Bearer ${jwt}`);
 
         const url = copyURL(urlArg);
-        url.pathname = `/secure/proveLocationClaim/${args.locationId}`;
+        url.pathname = `/secure/place/${args.locationId}/claim/prove`;
 
         const body = JSON.stringify({
             url: args.url,
@@ -426,7 +422,7 @@ async (args: {
     headers.set("Authorization", `Bearer ${jwt}`);
 
     const url = copyURL(urlArg);
-    url.pathname = `/secure/updateLocation/${args.locationId}`;
+    url.pathname = `/secure/place/${args.locationId}`;
 
     const body = JSON.stringify(args.location);
 
@@ -475,14 +471,14 @@ async (args: {
 };
 
 /**
- * GET /getLocationGalleryImages/:locationId
+ * GET /place/{locationId}/images
  */
 export const getLocationGalleryImages = (urlArg: URL) =>
 async (args: {
     locationId: number;
 }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getLocationGalleryImages/${args.locationId}`;
+    url.pathname = `/place/${args.locationId}/images`;
 
     const response = await safeFetch(url);
     if (response instanceof Error) {
@@ -538,7 +534,7 @@ async (args: {
 };
 
 /**
- * GET /getLocationsByPlaceIDRandomized/{placeId}
+ * GET /destination/{placeId}/places/randomized
  * https://github.com/satlantis-dev/api/blob/dev/rest/location.go#L154
  */
 export const getLocationsByPlaceIDRandomized = (urlArg: URL) =>
@@ -547,7 +543,7 @@ async (args: {
     tags?: { key: string; value: string }[];
 }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getLocationsByPlaceIDRandomized/${args.placeId}`;
+    url.pathname = `/destination/${args.placeId}/places/randomized`;
 
     if (args.tags) {
         const tagsArray: string[] = [];
@@ -565,7 +561,7 @@ async (args: {
 };
 
 /**
- * GET /getLocationLinks/{locationId}
+ * GET /place/{locationId}/links
  * https://github.com/satlantis-dev/api/blob/dev/rest/location.go#L883
  */
 export const getLocationLinks = (urlArg: URL) =>
@@ -573,7 +569,7 @@ async (args: {
     locationId: number;
 }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getLocationLinks/${args.locationId}`;
+    url.pathname = `/place/${args.locationId}/links`;
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;
@@ -582,7 +578,7 @@ async (args: {
 };
 
 /**
- * GET /accountRolesForLocation/{locationId}
+ * GET /place/{locationId}/accounts
  * https://github.com/satlantis-dev/api/blob/prod/rest/account_location_role.go#L34
  */
 export const getAccountRolesForLocation = (urlArg: URL) =>
@@ -591,7 +587,7 @@ async (args: {
     type: AccountLocationRoleType;
 }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/accountRolesForLocation/${args.locationId}`;
+    url.pathname = `/place/${args.locationId}/accounts`;
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;
@@ -604,7 +600,7 @@ async (args: {
     placeId: number;
 }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getLocationTagsByPlaceID/${args.placeId}`;
+    url.pathname = `/destination/${args.placeId}/places/tags`;
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;
@@ -627,7 +623,7 @@ async (args: {
 };
 
 /**
- * GET /getSimilarLocations/{locationId}
+ * GET /place/{locationId}/similar
  * https://github.com/satlantis-dev/api/blob/prod/rest/location.go#L1129
  */
 export const getSimilarLocations = (urlArg: URL) =>
@@ -635,7 +631,7 @@ async (args: {
     locationId: number;
 }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getSimilarLocations/${args.locationId}`;
+    url.pathname = `/place/${args.locationId}/similar`;
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;
