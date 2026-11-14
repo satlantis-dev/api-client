@@ -153,6 +153,10 @@ export interface EventDetails {
         pending: number;
         waitlisted: number;
     };
+    // True when the event has an RSVP limit and every seat is taken. When the event
+    // hides its attendees, it is the only capacity information non-staff get:
+    // rsvpLimit is null and every rsvp*Count is 0.
+    isFull?: boolean;
     userRsvp?: {
         id: number;
         accountId: number;
@@ -1472,7 +1476,10 @@ export interface EventTicketType {
     sellStartDate: string;
     sellEndDate: string;
     createdAt: string;
-    soldQuantity: number;
+    // null for non-staff when the event hides its attendees (maxCapacity too).
+    soldQuantity: number | null;
+    // True when the ticket type has a maxCapacity and it is reached.
+    isSoldOut?: boolean;
     totalFundsCollected: number;
     totalFundsCollectedFiat: number;
     warning?: string;
@@ -1487,7 +1494,7 @@ export type SellCurrency = "BTC" | FiatCurrency;
 
 export interface GetEventTicketTypeResponse extends EventTicketType {
     id: number;
-    soldQuantity: number;
+    soldQuantity: number | null;
     totalFundsCollected: number;
     requireApproval?: boolean;
 }
