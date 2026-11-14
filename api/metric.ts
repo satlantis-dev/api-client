@@ -3,11 +3,11 @@ import { safeFetch } from "../helpers/safe-fetch.ts";
 import type { Brand } from "../models/metric.ts";
 
 /**
- * GET /getBrands
+ * GET /brands
  */
 export const getBrands = (urlArg: URL) => async (args: { names: string[] }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getBrands`;
+    url.pathname = `/brands`;
     url.search = new URLSearchParams({ names: args.names.join(",") }).toString();
     const response = await safeFetch(url);
     if (response instanceof Error) {
@@ -35,11 +35,11 @@ export const getBrands = (urlArg: URL) => async (args: { names: string[] }) => {
 };
 
 /**
- * GET /getExchangeRate
+ * GET /exchange-rate/{code}
  */
 export const getExchangeRate = (urlArg: URL) => async (args: { code: string }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getExchangeRate/${args.code}`;
+    url.pathname = `/exchange-rate/${args.code}`;
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;

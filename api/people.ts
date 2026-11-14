@@ -7,7 +7,7 @@ async (args: {
     placeID: number;
 }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getPeopleOfPlace/${args.placeID}`;
+    url.pathname = `/destination/${args.placeID}/accounts`;
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;

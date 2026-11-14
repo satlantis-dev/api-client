@@ -35,7 +35,7 @@ export const deleteNote = (urlArg: URL, getJwt: () => string) => async (args: No
     }
 
     const url = copyURL(urlArg);
-    url.pathname = `/secure/deleteNote`;
+    url.pathname = `/secure/notes`;
 
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
@@ -43,7 +43,7 @@ export const deleteNote = (urlArg: URL, getJwt: () => string) => async (args: No
     const body = JSON.stringify(args);
 
     const response = await safeFetch(url, {
-        method: "POST",
+        method: "DELETE",
         body,
         headers,
     });
@@ -60,7 +60,7 @@ export const postNote = (urlArg: URL, getJwt: () => string) => async (args: Note
     }
 
     const url = copyURL(urlArg);
-    url.pathname = `/secure/postNote`;
+    url.pathname = `/secure/notes`;
 
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
@@ -85,7 +85,7 @@ export const postReaction = (urlArg: URL, getJwt: () => string) => async (args: 
     }
 
     const url = copyURL(urlArg);
-    url.pathname = `/secure/postReaction`;
+    url.pathname = `/secure/reactions`;
 
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
@@ -114,7 +114,7 @@ export const recordNotesAsSeen =
         }
 
         const url = copyURL(urlArg);
-        url.pathname = `/secure/recordNotesAsSeen`;
+        url.pathname = `/secure/feed/seen`;
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);

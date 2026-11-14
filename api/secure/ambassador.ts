@@ -20,7 +20,7 @@ export const postAmbassadorInquiry =
             return signer;
         }
         const url = copyURL(urlArg);
-        url.pathname = `/secure/postAmbassadorInquiry`;
+        url.pathname = `/secure/user/ambassador-inquiry`;
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
 

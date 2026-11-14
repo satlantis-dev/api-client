@@ -57,7 +57,7 @@ Deno.test("getPlaces", async () => {
     assertEquals(ok.name.toLowerCase(), "london");
 });
 
-Deno.test("/getPeopleOfPlace", async () => {
+Deno.test("/destination/{id}/accounts", async () => {
     const result = await client.getAccountPlaceRoles({
         placeID: 23949,
     });
@@ -71,7 +71,7 @@ Deno.test("/getPeopleOfPlace", async () => {
     }
 });
 
-Deno.test("/getPlaceNotes", async () => {
+Deno.test("/notes/place/{id}", async () => {
     const result = await client.getPlaceNotes({
         accountID: 0,
         placeID: 23949,
@@ -101,7 +101,7 @@ Deno.test("/getPlaceCalendarEvents", async () => {
     }
 });
 
-Deno.test("/getPlaceMetrics", async () => {
+Deno.test("/destination/{id}/metrics", async () => {
     const result = await client.getPlaceMetrics({
         placeID: 23949,
     });
@@ -132,7 +132,7 @@ Deno.test("/getPlaceChats", async () => {
     }
 });
 
-Deno.test("/getPlaceCategoryScores", async () => {
+Deno.test("/destination/{id}/scores", async () => {
     const result = await client.getPlaceCategoryScores({
         placeID: 23949,
     });
@@ -161,7 +161,7 @@ Deno.test("getRegion", async () => {
     assertEquals(result.places.length > 0, true);
 });
 
-Deno.test("/getLocationsWithinBoundingBox", async () => {
+Deno.test("/places/bounding-box", async () => {
     const result = await client.getLocationsWithinBoundingBox({
         sw_lat: 32.56768764046221,
         ne_lat: 32.766068258492425,

@@ -58,7 +58,7 @@ async (args: {
         return new Error("jwt token is empty");
     }
     const url = copyURL(urlArg);
-    url.pathname = `/secure/saveDeviceInfo`;
+    url.pathname = `/secure/user/device`;
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
@@ -81,7 +81,7 @@ export const getFollowedByAccounts = (urlArg: URL, getJwt: func_GetJwt) => async
         return new Error("jwt token is empty");
     }
     const url = copyURL(urlArg);
-    url.pathname = `/getFollowedByAccounts/${args.npub}`;
+    url.pathname = `/account/${args.npub}/notable-followers`;
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
@@ -137,7 +137,7 @@ export const followTierZeroPlaces = (urlArg: URL, getJwt: func_GetJwt) => async 
         return new Error("jwt token is empty");
     }
     const url = copyURL(urlArg);
-    url.pathname = `/secure/followTierZeroPlaces`;
+    url.pathname = `/secure/user/follow-tier-zero-destinations`;
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
@@ -157,7 +157,7 @@ export const blockAccount = (urlArg: URL, getJwt: func_GetJwt) => async (args: {
         return new Error("jwt token is empty");
     }
     const url = copyURL(urlArg);
-    url.pathname = `/secure/blockAccount/${args.npub}`;
+    url.pathname = `/secure/user/block/${args.npub}`;
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
@@ -177,7 +177,7 @@ export const unblockAccount = (urlArg: URL, getJwt: func_GetJwt) => async (args:
         return new Error("jwt token is empty");
     }
     const url = copyURL(urlArg);
-    url.pathname = `/secure/unblockAccount/${args.npub}`;
+    url.pathname = `/secure/user/unblock/${args.npub}`;
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
@@ -197,7 +197,7 @@ export const muteAccount = (urlArg: URL, getJwt: func_GetJwt) => async (args: { 
         return new Error("jwt token is empty");
     }
     const url = copyURL(urlArg);
-    url.pathname = `/secure/muteAccount/${args.npub}`;
+    url.pathname = `/secure/user/mute/${args.npub}`;
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
@@ -217,7 +217,7 @@ export const unmuteAccount = (urlArg: URL, getJwt: func_GetJwt) => async (args: 
         return new Error("jwt token is empty");
     }
     const url = copyURL(urlArg);
-    url.pathname = `/secure/unmuteAccount/${args.npub}`;
+    url.pathname = `/secure/user/unmute/${args.npub}`;
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
@@ -237,7 +237,7 @@ export const checkBlockStatus = (urlArg: URL, getJwt: func_GetJwt) => async (arg
         return new Error("jwt token is empty");
     }
     const url = copyURL(urlArg);
-    url.pathname = `/secure/checkBlockStatus/${args.npub}`;
+    url.pathname = `/secure/user/block-status/${args.npub}`;
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
@@ -274,7 +274,7 @@ async (
         return signer;
     }
     const url = copyURL(urlArg);
-    url.pathname = `/secure/addAccountRole`;
+    url.pathname = `/secure/user/destination`;
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
@@ -307,7 +307,7 @@ export const blacklistAccount = (urlArg: URL, getJwt: () => string) => async (ar
     }
 
     const url = copyURL(urlArg);
-    url.pathname = `/secure/blacklistAccount/${args.npub}`;
+    url.pathname = `/secure/account/${args.npub}/blacklist`;
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
     const response = await safeFetch(url, {
@@ -386,7 +386,7 @@ export const removeAccountRole =
             return signer;
         }
         const url = copyURL(urlArg);
-        url.pathname = `/secure/removeAccountRole`;
+        url.pathname = `/secure/user/destination`;
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
         const response = await safeFetch(url, {
@@ -412,7 +412,7 @@ export const resendEmailVerification = (urlArg: URL, getJwt: () => string) => as
         return new Error("jwt token is empty");
     }
     const url = copyURL(urlArg);
-    url.pathname = `/secure/resendEmailVerification`;
+    url.pathname = `/secure/auth/resend-email-verification`;
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
     const response = await safeFetch(url, { headers });
@@ -477,7 +477,7 @@ async (args: {
     }
 
     const url = copyURL(urlArg);
-    url.pathname = `/secure/updateAccount/${args.npub}`;
+    url.pathname = `/secure/account/${args.npub}`;
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
     const response = await safeFetch(url, {
@@ -546,7 +546,7 @@ export const getBlockedAccounts = (urlArg: URL, getJwt: func_GetJwt) => async ()
     }
 
     const url = copyURL(urlArg);
-    url.pathname = `/secure/getBlockedAccounts`;
+    url.pathname = `/secure/user/blocked`;
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
@@ -566,7 +566,7 @@ export const getMutedAccounts = (urlArg: URL, getJwt: func_GetJwt) => async () =
     }
 
     const url = copyURL(urlArg);
-    url.pathname = `/secure/getMutedAccounts`;
+    url.pathname = `/secure/user/muted`;
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
 
@@ -592,7 +592,7 @@ export const deleteAccount =
         }
 
         const url = copyURL(urlArg);
-        url.pathname = `/secure/deleteAccount`;
+        url.pathname = `/secure/user/account`;
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
 

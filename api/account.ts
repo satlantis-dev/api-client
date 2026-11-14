@@ -133,7 +133,7 @@ export const login = (urlArg: URL) => async (args: { username: string; password:
 export const createAccount =
     (urlArg: URL) => async (args: { username: string; password: string; email: string }) => {
         const url = copyURL(urlArg);
-        url.pathname = `/createAccount`;
+        url.pathname = `/accounts`;
         const response = await safeFetch(url, {
             method: "POST",
             body: JSON.stringify(args),
@@ -153,7 +153,7 @@ export const createAccount =
 
 export const initiatePasswordReset = (urlArg: URL) => async (args: { username: string }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/initiatePasswordReset`;
+    url.pathname = `/auth/initiate-password-reset`;
     const response = await safeFetch(url, {
         method: "PUT",
         body: JSON.stringify({
@@ -183,7 +183,7 @@ export const checkUsernameAvailabilityInSatlantis = (urlArg: URL) => async (args
 
 export const resetPassword = (urlArg: URL) => async (args: { token: string; password: string }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/resetPassword`;
+    url.pathname = `/auth/reset-password`;
     const response = await safeFetch(url, {
         method: "PUT",
         body: JSON.stringify({
@@ -199,7 +199,7 @@ export const resetPassword = (urlArg: URL) => async (args: { token: string; pass
 
 export const verifyEmail = (urlArg: URL) => async (args: { token: string }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/verifyEmail/${args.token}`;
+    url.pathname = `/auth/verify-email/${args.token}`;
     const response = await safeFetch(url, { method: "PUT" });
     if (response instanceof Error) {
         return response;
