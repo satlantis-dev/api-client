@@ -140,6 +140,8 @@ export type CalendarEventType = {
 export enum CalendarEventPeriod {
     Upcoming = "upcoming",
     Past = "past",
+    /** Upcoming and past together, newest first (by end time). The api treats any other value this way. */
+    All = "all",
 }
 
 /**
