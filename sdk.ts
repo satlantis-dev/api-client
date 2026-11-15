@@ -134,7 +134,13 @@ import {
     subscribeToPlan,
     updatePlan,
 } from "./api/premium.ts";
-import { deletePlaceGalleryImage, postPlaceGalleryImage, updatePlace } from "./api/secure/place.ts";
+import {
+    deletePlaceGalleryImage,
+    deletePlaces,
+    postPlaceGalleryImage,
+    setPlacesActive,
+    updatePlace,
+} from "./api/secure/place.ts";
 import { deleteNote, postNote, postReaction, recordNotesAsSeen } from "./api/secure/note.ts";
 import { getNotifications } from "./api/secure/notification.ts";
 import { presign } from "./api/secure/presign.ts";
@@ -952,6 +958,8 @@ export class Client {
 
     // place
     updatePlace: ReturnType<typeof updatePlace>;
+    setPlacesActive: ReturnType<typeof setPlacesActive>;
+    deletePlaces: ReturnType<typeof deletePlaces>;
 
     // Ambassador
     postAmbassadorInquiry: ReturnType<typeof postAmbassadorInquiry>;
@@ -1727,6 +1735,8 @@ export class Client {
         this.deleteNote = deleteNote(rest_api_url, this.getJwt);
         this.signEvent = signEvent(rest_api_url, getJwt);
         this.updatePlace = updatePlace(rest_api_url, this.getJwt);
+        this.setPlacesActive = setPlacesActive(rest_api_url, this.getJwt);
+        this.deletePlaces = deletePlaces(rest_api_url, this.getJwt);
 
         // sign-in / sign-up
         this.login = login(rest_api_url);

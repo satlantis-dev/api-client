@@ -92,3 +92,42 @@ export const deletePlaceGalleryImage =
         }
         return handleResponse<string>(response);
     };
+
+// Bulk admin actions on destinations (platform admins only). `updated` counts the rows that
+// changed: destinations already in the requested state, unknown ids and soft-deleted ones are
+// skipped.
+export type AdminPlacesResult = { updated: number };
+
+async function adminPlacesRequest(
+    urlArg: URL,
+    getJwt: () => string,
+    method: "PUT" | "DELETE",
+    pathname: string,
+    body: unknown,
+) {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = pathname;
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+    const response = await safeFetch(url, { method, headers, body: JSON.stringify(body) });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<AdminPlacesResult>(response);
+}
+
+// PUT /secure/admin/destinations/active — sets the active flag on the listed destinations.
+export const setPlacesActive =
+    (urlArg: URL, getJwt: () => string) => async (args: { ids: number[]; active: boolean }) =>
+        adminPlacesRequest(urlArg, getJwt, "PUT", "/secure/admin/destinations/active", args);
+
+// DELETE /secure/admin/destinations — soft-deletes the listed destinations. All or nothing:
+// 409 (naming them) when any still has a calendar or an upcoming event, or is the Satlantis
+// fallback destination.
+export const deletePlaces = (urlArg: URL, getJwt: () => string) => async (args: { ids: number[] }) =>
+    adminPlacesRequest(urlArg, getJwt, "DELETE", "/secure/admin/destinations", args);
