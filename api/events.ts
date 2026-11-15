@@ -301,6 +301,8 @@ export interface EventRsvpsResponse {
     rsvpTentativeCount: number;
     rsvpRequestedCount: number;
     rsvpRejectedCount: number;
+    /** Tickets checked in (status "used"): the number of people who attended. Optional until the api serves it everywhere. */
+    checkedInCount?: number;
 }
 
 export interface GetEventRsvpsArgs {
