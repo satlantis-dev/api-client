@@ -63,6 +63,18 @@ export interface SendPaymentResponse {
     message: string;
 }
 
+export interface LightningAddressCheckResponse {
+    /** False when the address can't be paid; `reason` then says why, for the user. */
+    valid: boolean;
+    reason?: string;
+    /** Normalised (lowercase) address. */
+    address?: string;
+    minSendableSat?: number;
+    maxSendableSat?: number;
+    /** The wallet accepts NIP-57 zaps (publishes zap receipts). */
+    allowsZaps?: boolean;
+}
+
 export interface FeeEstimateResponse {
     fee: number;
     amount: number;
@@ -238,6 +250,25 @@ async (
         body: JSON.stringify({ destination, amount }),
     });
     return response instanceof Error ? response : handleResponse<FeeEstimateResponse>(response);
+};
+
+/**
+ * Looks a Lightning address up the way a paying wallet would (no invoice is
+ * requested) and says whether it can be paid and zapped. A failed lookup is
+ * `{ valid: false, reason }`, not an Error.
+ */
+export const checkLightningAddress = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    address: string,
+): Promise<LightningAddressCheckResponse | null | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/wallet/lightning-address/check`;
+    url.searchParams.set("address", address);
+    const response = await safeFetch(url, {
+        method: "GET",
+        headers: getHeaders(getJwt),
+    });
+    return response instanceof Error ? response : handleResponse<LightningAddressCheckResponse>(response);
 };
 
 export const getTransactionHistory = (urlArg: URL, getJwt: func_GetJwt) =>

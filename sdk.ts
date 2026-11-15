@@ -367,6 +367,7 @@ import {
 } from "./api/events.ts";
 
 import {
+    checkLightningAddress,
     createLightningContact,
     createReceiveInvoice,
     decodeInvoice,
@@ -802,6 +803,7 @@ export class Client {
     createReceiveInvoice: ReturnType<typeof createReceiveInvoice>;
     sendPayment: ReturnType<typeof sendPayment>;
     estimatePaymentFee: ReturnType<typeof estimatePaymentFee>;
+    checkLightningAddress: ReturnType<typeof checkLightningAddress>;
     getTransactionHistory: ReturnType<typeof getTransactionHistory>;
     getTransactionDetails: ReturnType<typeof getTransactionDetails>;
     decodeInvoice: ReturnType<typeof decodeInvoice>;
@@ -1589,6 +1591,7 @@ export class Client {
         this.createReceiveInvoice = createReceiveInvoice(rest_api_url, getJwt);
         this.sendPayment = sendPayment(rest_api_url, getJwt);
         this.estimatePaymentFee = estimatePaymentFee(rest_api_url, getJwt);
+        this.checkLightningAddress = checkLightningAddress(rest_api_url, getJwt);
         this.getTransactionHistory = getTransactionHistory(rest_api_url, getJwt);
         this.getTransactionDetails = getTransactionDetails(rest_api_url, getJwt);
         this.decodeInvoice = decodeInvoice(rest_api_url, getJwt);
