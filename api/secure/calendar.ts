@@ -23,7 +23,12 @@ import type { AccountDTO } from "../../models/account.ts";
 import type { CalendarEventTag } from "../../models/event.ts";
 import { createSecureUrl } from "../../helpers/util.ts";
 import type { CalendarEventTicketOrderPayment } from "../../models/ticketing.ts";
-import type { CalendarDTO, CalendarEventCohostRole, Cohost } from "../../models/calendar.ts";
+import type {
+    CalendarDTO,
+    CalendarEventCohostRole,
+    CalendarEventSpeaker,
+    Cohost,
+} from "../../models/calendar.ts";
 
 // https://github.com/satlantis-dev/api/blob/dev/shared/models.go#L17
 export interface PlaceCalendarEventPost {
@@ -271,6 +276,116 @@ export const removeCohostFromCalendarEvent =
     };
 
 export const removeCalendarEventCohost = removeCohostFromCalendarEvent;
+
+export type CalendarEventSpeakerInvite =
+    | { email: string; displayName: string; picture: string }
+    | { npub: string; displayName: string; picture: string };
+
+export const getCalendarEventSpeakers =
+    (urlArg: URL, getJwt: () => string) =>
+    async (args: { calendarEventId: number }): Promise<CalendarEventSpeaker[] | Error> => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/${args.calendarEventId}/speakers`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const response = await safeFetch(url, {
+            method: "GET",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<CalendarEventSpeaker[]>(response);
+    };
+
+export const inviteSpeakersToCalendarEvent =
+    (urlArg: URL, getJwt: () => string) =>
+    async (args: {
+        calendarEventId: number;
+        speakers: CalendarEventSpeakerInvite[];
+    }): Promise<CohostInviteResult[] | Error> => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/${args.calendarEventId}/speakers`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        headers.set("Content-Type", "application/json");
+
+        const response = await safeFetch(url, {
+            method: "POST",
+            body: JSON.stringify(args.speakers),
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<CohostInviteResult[]>(response);
+    };
+
+export const respondCalendarEventSpeakerInvitation =
+    (urlArg: URL, getJwt: () => string) =>
+    async (args: { calendarEventId: number; action: "accept" | "decline" }): Promise<string | Error> => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/${args.calendarEventId}/speakers`;
+        url.searchParams.append("action", args.action);
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const response = await safeFetch(url, {
+            method: "PUT",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<string>(response);
+    };
+
+export const removeSpeakerFromCalendarEvent =
+    (urlArg: URL, getJwt: () => string) =>
+    async (args: { calendarEventId: number; speakerId: number }): Promise<void | Error> => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/${args.calendarEventId}/speakers/${args.speakerId}`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const response = await safeFetch(url, {
+            method: "DELETE",
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        const result = await handleResponse<{}>(response);
+        if (result instanceof Error) {
+            return result;
+        }
+        return;
+    };
 
 export const deleteCalendarEventNote = (urlArg: URL, getJwt: () => string) =>
 async (args: {

@@ -64,6 +64,18 @@ export type Cohost = {
     type?: CalendarEventCohostRole;
     updatedAt: string;
 };
+export type CalendarEventSpeaker = {
+    id: number;
+    accountId: number;
+    account: AccountDTO;
+    calendarEventId: number;
+    invitationReceivedAt?: string | null;
+    invitationAcceptedAt?: string | null;
+    invitationDeclinedAt?: string | null;
+    createdAt: string;
+    updatedAt: string;
+};
+
 // Whom a guest follows when they register: nobody, the owner, or the owner plus admin cohosts and speakers.
 export type CalendarEventAutoFollow = "none" | "owner" | "owner_cohosts_speakers";
 

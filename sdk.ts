@@ -179,6 +179,10 @@ import {
     getAccountRolesForCalendar,
     getCalendarByID,
     getCalendarEventCohosts,
+    getCalendarEventSpeakers,
+    inviteSpeakersToCalendarEvent,
+    removeSpeakerFromCalendarEvent,
+    respondCalendarEventSpeakerInvitation,
     getCalendarEventDraftById,
     getCalendarEventDrafts,
     getCalendarsByAccount,
@@ -755,6 +759,10 @@ export class Client {
         typeof sendCohostEmailInviteToCalendarEvent
     >;
     removeCohostFromCalendarEvent: ReturnType<typeof removeCohostFromCalendarEvent>;
+    getCalendarEventSpeakers: ReturnType<typeof getCalendarEventSpeakers>;
+    inviteSpeakersToCalendarEvent: ReturnType<typeof inviteSpeakersToCalendarEvent>;
+    respondCalendarEventSpeakerInvitation: ReturnType<typeof respondCalendarEventSpeakerInvitation>;
+    removeSpeakerFromCalendarEvent: ReturnType<typeof removeSpeakerFromCalendarEvent>;
     getCalendarsByAccount: ReturnType<typeof getCalendarsByAccount>;
     getAccountCalendarSubscriptions: ReturnType<typeof getAccountCalendarSubscriptions>;
     getUserCalendars: ReturnType<typeof getUserCalendars>;
@@ -1545,6 +1553,13 @@ export class Client {
             rest_api_url,
             getJwt,
         );
+        this.getCalendarEventSpeakers = getCalendarEventSpeakers(rest_api_url, getJwt);
+        this.inviteSpeakersToCalendarEvent = inviteSpeakersToCalendarEvent(rest_api_url, getJwt);
+        this.respondCalendarEventSpeakerInvitation = respondCalendarEventSpeakerInvitation(
+            rest_api_url,
+            getJwt,
+        );
+        this.removeSpeakerFromCalendarEvent = removeSpeakerFromCalendarEvent(rest_api_url, getJwt);
         this.getCalendarsByAccount = getCalendarsByAccount(rest_api_url);
         this.getAccountCalendarSubscriptions = getAccountCalendarSubscriptions(rest_api_url);
         this.getUserCalendars = getUserCalendars(rest_api_url, getJwt);

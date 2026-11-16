@@ -10,6 +10,7 @@ import type {
     CalendarEventNote,
     CalendarEventRSVP,
     CalendarEventType,
+    CalendarEventSpeaker,
     Cohost,
 } from "../models/calendar.ts";
 import type { AccountEventTicket, CalendarEventTag, EventUserTimeline } from "../models/event.ts";
@@ -113,6 +114,7 @@ export interface EventDetails {
     rsvpGatedEnabledAt: string | null;
     featured: boolean;
     cohosts: Cohost[];
+    speakers?: CalendarEventSpeaker[] | null;
     ownershipChangedAt: string | null;
     rsvpLimit: number | null;
     place: EventDetailsPLace;
