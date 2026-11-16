@@ -183,6 +183,8 @@ import {
     inviteSpeakersToCalendarEvent,
     removeSpeakerFromCalendarEvent,
     respondCalendarEventSpeakerInvitation,
+    updateCalendarEventSpeaker,
+    orderCalendarEventSpeakers,
     getCalendarEventDraftById,
     getCalendarEventDrafts,
     getCalendarsByAccount,
@@ -763,6 +765,8 @@ export class Client {
     inviteSpeakersToCalendarEvent: ReturnType<typeof inviteSpeakersToCalendarEvent>;
     respondCalendarEventSpeakerInvitation: ReturnType<typeof respondCalendarEventSpeakerInvitation>;
     removeSpeakerFromCalendarEvent: ReturnType<typeof removeSpeakerFromCalendarEvent>;
+    updateCalendarEventSpeaker: ReturnType<typeof updateCalendarEventSpeaker>;
+    orderCalendarEventSpeakers: ReturnType<typeof orderCalendarEventSpeakers>;
     getCalendarsByAccount: ReturnType<typeof getCalendarsByAccount>;
     getAccountCalendarSubscriptions: ReturnType<typeof getAccountCalendarSubscriptions>;
     getUserCalendars: ReturnType<typeof getUserCalendars>;
@@ -1560,6 +1564,8 @@ export class Client {
             getJwt,
         );
         this.removeSpeakerFromCalendarEvent = removeSpeakerFromCalendarEvent(rest_api_url, getJwt);
+        this.updateCalendarEventSpeaker = updateCalendarEventSpeaker(rest_api_url, getJwt);
+        this.orderCalendarEventSpeakers = orderCalendarEventSpeakers(rest_api_url, getJwt);
         this.getCalendarsByAccount = getCalendarsByAccount(rest_api_url);
         this.getAccountCalendarSubscriptions = getAccountCalendarSubscriptions(rest_api_url);
         this.getUserCalendars = getUserCalendars(rest_api_url, getJwt);

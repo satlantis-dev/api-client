@@ -334,6 +334,66 @@ export const inviteSpeakersToCalendarEvent =
         return handleResponse<CohostInviteResult[]>(response);
     };
 
+export const updateCalendarEventSpeaker =
+    (urlArg: URL, getJwt: () => string) =>
+    async (
+        args: { calendarEventId: number; speakerId: number } & (
+            | { notice: string; visible?: boolean }
+            | { notice?: string; visible: boolean }
+        ),
+    ): Promise<CalendarEventSpeaker | Error> => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/${args.calendarEventId}/speakers/${args.speakerId}`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        headers.set("Content-Type", "application/json");
+
+        const response = await safeFetch(url, {
+            method: "PUT",
+            body: JSON.stringify({ notice: args.notice, visible: args.visible }),
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<CalendarEventSpeaker>(response);
+    };
+
+export const orderCalendarEventSpeakers =
+    (urlArg: URL, getJwt: () => string) =>
+    async (args: {
+        calendarEventId: number;
+        speakerIds: number[];
+    }): Promise<CalendarEventSpeaker[] | Error> => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/events/${args.calendarEventId}/speakers/order`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+        headers.set("Content-Type", "application/json");
+
+        const response = await safeFetch(url, {
+            method: "PUT",
+            body: JSON.stringify(args.speakerIds),
+            headers,
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<CalendarEventSpeaker[]>(response);
+    };
+
 export const respondCalendarEventSpeakerInvitation =
     (urlArg: URL, getJwt: () => string) =>
     async (args: { calendarEventId: number; action: "accept" | "decline" }): Promise<string | Error> => {

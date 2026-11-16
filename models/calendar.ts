@@ -72,6 +72,9 @@ export type CalendarEventSpeaker = {
     invitationReceivedAt?: string | null;
     invitationAcceptedAt?: string | null;
     invitationDeclinedAt?: string | null;
+    notice: string | null;
+    visible: boolean;
+    rank: number;
     createdAt: string;
     updatedAt: string;
 };
