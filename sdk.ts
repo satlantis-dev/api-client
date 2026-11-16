@@ -2510,7 +2510,7 @@ export class Client {
     updateCalendarEvent = async (args: {
         calendarEventId: number;
         description: string;
-        dTag: string;
+        dTag?: string; // the event's current d tag; looked up from the event when missing
         placeATag: string | undefined;
         calendarEventType: string;
         url: string;
@@ -2558,8 +2558,21 @@ export class Client {
             return signer;
         }
 
+        // Kind 31923 is addressable: relays and clients replace the previous version only when
+        // the d tag stays the same, so an update must reuse the event's d tag. Callers that
+        // don't pass it get the one stored on the event. Events that were never published to
+        // Nostr (e.g. some imported ones) have none yet, so this first version gets a new one.
+        let dTag = args.dTag;
+        if (!dTag) {
+            const existing = await this.getEventDetails({ eventId: args.calendarEventId.toString() });
+            if (existing instanceof Error) {
+                return existing;
+            }
+            dTag = existing.dtag || generateUUID();
+        }
+
         const tags: Tag[] = [
-            ["d", generateUUID()],
+            ["d", dTag],
             ["t", args.calendarEventType],
             ["r", args.url],
             ["title", args.title],
