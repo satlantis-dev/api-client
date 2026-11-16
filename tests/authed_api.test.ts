@@ -428,6 +428,36 @@ Deno.test("calendar events", async () => {
         }
         assertEquals(res3.postResult.id, res.postResult.id);
         assertEquals(res3.postResult.title, "2song");
+        // the update replaces the addressable Nostr event, so it keeps the d tag
+        assertEquals(getTags(res3.event).d, getTags(res.event).d);
+
+        // without dTag, the event's stored d tag is used
+        const res4 = await client.updateCalendarEvent({
+            calendarEventId: res.postResult.id,
+            placeId: 23751,
+            calendarEventType: "concert",
+            description: "3a concert",
+            endDate: new Date(Date.now() + 1000 * 120),
+            geoHash: "rwerwr",
+            imageURL: "",
+            location: "somewhere",
+            placeATag: "",
+            startDate: new Date(Date.now() + 1000 * 60),
+            timezone: "",
+            title: "3song",
+            url: "",
+            summary: "this is from integration tests of api-client",
+            website: "https://website.satlantis.io",
+            venue: "",
+            calendarEventTags: "",
+            googleMapsUri: "",
+            venueName: "",
+            googlePlaceId: "",
+        });
+        if (res4 instanceof Error) {
+            fail(res4.message);
+        }
+        assertEquals(getTags(res4.event).d, getTags(res.event).d);
     }
 });
 
