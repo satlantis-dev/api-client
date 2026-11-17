@@ -2064,6 +2064,11 @@ export interface CurrencyEarnings {
     // (`payment.platformFee.platformFeePercent`). The rate is plan-dependent —
     // Growth and Pro are 0% — so the UI cannot safely assume one.
     platformFeePercent?: number;
+    // Paid tickets cancelled without a refund: their money is still in
+    // `totalEarnings` and `availableBalance`. The amount is their price in the
+    // rail's smallest unit. Absent on older deploys.
+    cancelledUnrefundedTickets?: number;
+    cancelledUnrefundedAmount?: number;
 }
 
 export interface EventFinancialsSummaryResponse {
@@ -2072,6 +2077,8 @@ export interface EventFinancialsSummaryResponse {
     btc: CurrencyEarnings; // BTC/Lightning earnings breakdown
     fiat: CurrencyEarnings; // Fiat/Stripe earnings breakdown
     totalTicketsSold: number; // Number of tickets sold
+    // Paid tickets cancelled without a refund, across currencies. Absent on older deploys.
+    totalCancelledUnrefundedTickets?: number;
     // Legacy/aggregate fields
     totalEarnings: number; // Total from all paid orders
     availableBalance: number; // Available to withdraw
