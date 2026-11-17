@@ -464,7 +464,7 @@ Deno.test("calendar events", async () => {
 Deno.test(
     "getUserProfile & updateUserProfile",
     { sanitizeOps: false, sanitizeResources: false },
-    async (t) => {
+    async () => {
         // setup
         const signer = InMemoryAccountContext.Generate();
 
@@ -507,18 +507,6 @@ Deno.test(
             assertEquals(await p3.getNip05(), "");
             assertEquals(await p3.getIsBusiness(), false);
             assertEquals(p3.isBusiness, false);
-
-            await t.step("become a business", async () => {
-                // @ts-ignore: use private
-                const err = await client.becomeBusinessAccount();
-                if (err instanceof Error) {
-                    fail(err.message);
-                }
-
-                assertEquals(p3.isBusiness, false);
-                assertEquals(await p3.getIsBusiness(), true);
-                assertEquals(p3.isBusiness, true);
-            });
         }
     },
 );

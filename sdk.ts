@@ -36,7 +36,6 @@ import {
 } from "./api/account.ts";
 import { getIpInfo } from "./api/ip.ts";
 import {
-    claimLocation,
     getAccountRolesForLocation,
     getAccountsForLocation,
     getLocation,
@@ -53,7 +52,6 @@ import {
     getLocationTagsV2,
     getNearbyLocations,
     getSimilarLocations,
-    proveLocationClaim,
     suggestLocation,
     updateLocation,
 } from "./api/location.ts";
@@ -864,8 +862,6 @@ export class Client {
     getLocationByGoogleId: ReturnType<typeof getLocationByGoogleId>;
     getLocationsByPlaceID: ReturnType<typeof getLocationsByPlaceID>;
     getNearbyLocations: ReturnType<typeof getNearbyLocations>;
-    private _claimLocation: ReturnType<typeof claimLocation>;
-    proveLocationClaim: ReturnType<typeof proveLocationClaim>;
     updateLocation: ReturnType<typeof updateLocation>;
     private getAccountsForLocation: ReturnType<typeof getAccountsForLocation>;
     getLocationGalleryImages: ReturnType<typeof getLocationGalleryImages>;
@@ -1667,12 +1663,6 @@ export class Client {
         this.getLocationByGoogleId = getLocationByGoogleId(rest_api_url);
         this.getLocationsByPlaceID = getLocationsByPlaceID(rest_api_url, getJwt);
         this.getNearbyLocations = getNearbyLocations(rest_api_url, getJwt);
-        this._claimLocation = claimLocation(rest_api_url, getJwt);
-        this.proveLocationClaim = proveLocationClaim(
-            rest_api_url,
-            getJwt,
-            getNostrSigner,
-        );
         this.updateLocation = updateLocation(rest_api_url, getJwt);
         this.getAccountsForLocation = getAccountsForLocation(rest_api_url);
         this.getLocationGalleryImages = getLocationGalleryImages(rest_api_url);
@@ -3338,35 +3328,6 @@ export class Client {
         }
         if (this.me) {
             this.me.interests = interests;
-        }
-    };
-
-    claimLocation = async (args: { locationId: number }) => {
-        const err = await this.becomeBusinessAccount();
-        if (err instanceof Error) {
-            return err;
-        }
-        return this._claimLocation(args);
-    };
-
-    private becomeBusinessAccount = async () => {
-        const signer = await this.getNostrSigner();
-        if (signer instanceof Error) {
-            return signer;
-        }
-        const kind0 = await prepareKind0(signer, this.me?.metaData || {});
-        if (kind0 instanceof Error) {
-            return kind0;
-        }
-        const res = await this.updateAccount({
-            npub: signer.publicKey.bech32(),
-            data: {
-                event: kind0,
-                isBusiness: true,
-            },
-        });
-        if (res instanceof Error) {
-            return res;
         }
     };
 
