@@ -11,8 +11,7 @@ import {
     type LocationTag,
 } from "../models/location.ts";
 import type { Place } from "../models/place.ts";
-import { prepareLocationSetEvent, preparePlaceEvent } from "../nostr-helpers.ts";
-import { type func_GetJwt, type func_GetNostrSigner } from "../sdk.ts";
+import { type func_GetJwt } from "../sdk.ts";
 
 const createPublicUrl = (urlArg: URL, path: string) => {
     const url = copyURL(urlArg);
@@ -299,27 +298,6 @@ async (args: {
     return handleResponse(response);
 };
 
-export const claimLocation = (urlArg: URL, getJwt: func_GetJwt) =>
-async (args: {
-    locationId: number;
-}) => {
-    const jwt = getJwt();
-    if (jwt == "") {
-        return new Error("jwt token is empty");
-    }
-    const headers = new Headers();
-    headers.set("Authorization", `Bearer ${jwt}`);
-
-    const url = copyURL(urlArg);
-    url.pathname = `/secure/claimLocation/${args.locationId}`;
-
-    const response = await safeFetch(url, { headers });
-    if (response instanceof Error) {
-        return response;
-    }
-    return handleResponse<{ code: string }>(response);
-};
-
 export type SuggestLocationArgs = {
     data: {
         placeId?: number;
@@ -350,63 +328,6 @@ export const suggestLocation = (urlArg: URL, getJwt: func_GetJwt) => async (args
     }
     return handleResponse<{ code: string }>(response);
 };
-
-/**
-type ProveLocationClaimRequest struct {
-    Url              string       `json:"url"`
-    ReferredBy       string       `json:"referredBy"`
-    LocationSetEvent *nostr.Event `json:"locationSetEvent"`
-    PlaceEvent       *nostr.Event `json:"placeEvent"`
-}
- */
-export const proveLocationClaim =
-    (urlArg: URL, getJwt: func_GetJwt, getSigner: func_GetNostrSigner) =>
-    async (args: {
-        locationId: number;
-        url: string;
-        referredBy: string;
-    }) => {
-        const jwt = getJwt();
-        if (jwt == "") {
-            return new Error("jwt token is empty");
-        }
-        const signer = await getSigner();
-        if (signer instanceof Error) {
-            return signer;
-        }
-
-        const event = await prepareLocationSetEvent(signer);
-        if (event instanceof Error) {
-            return event;
-        }
-
-        const event2 = await preparePlaceEvent(signer, { placeName: "" });
-        if (event instanceof Error) {
-            return event;
-        }
-
-        const headers = new Headers();
-        headers.set("Authorization", `Bearer ${jwt}`);
-
-        const url = copyURL(urlArg);
-        url.pathname = `/secure/place/${args.locationId}/claim/prove`;
-
-        const body = JSON.stringify({
-            url: args.url,
-            referredBy: args.referredBy,
-            locationSetEvent: event,
-            placeEvent: event2,
-        });
-        const response = await safeFetch(url, {
-            method: "POST",
-            headers,
-            body,
-        });
-        if (response instanceof Error) {
-            return response;
-        }
-        return handleResponse(response);
-    };
 
 // https://github.com/satlantis-dev/api/blob/46ec43557c194691fe62c5693ae4a9facd878702/rest/location.go#L1144
 export const updateLocation = (urlArg: URL, getJwt: func_GetJwt) =>
