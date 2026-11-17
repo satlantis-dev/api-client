@@ -9,8 +9,8 @@ import type {
     CalendarEventAnnouncement,
     CalendarEventNote,
     CalendarEventRSVP,
-    CalendarEventType,
     CalendarEventSpeaker,
+    CalendarEventType,
     Cohost,
 } from "../models/calendar.ts";
 import type { AccountEventTicket, CalendarEventTag, EventUserTimeline } from "../models/event.ts";
