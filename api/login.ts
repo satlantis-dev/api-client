@@ -26,13 +26,17 @@ export const loginNostr = (urlArg: URL) => async (signer: Signer, metadata?: Kin
     const url = copyURL(urlArg);
     url.pathname = `/login/nostr`;
     const stringifiedMetadata = JSON.stringify(metadata || {});
-    const body = JSON.stringify(
-        await prepareNostrEvent(signer, {
-            kind: 27236 as NostrKind,
-            content: stringifiedMetadata,
-            tags: [["auth", "satlantis"]],
-        }),
-    );
+    const event = await prepareNostrEvent(signer, {
+        kind: 27236 as NostrKind,
+        content: stringifiedMetadata,
+        tags: [["auth", "satlantis"]],
+    });
+    // Return the signer's own error (e.g. the extension was locked or disconnected) instead of
+    // posting an empty body and getting a generic backend error back.
+    if (event instanceof Error) {
+        return event;
+    }
+    const body = JSON.stringify(event);
     const response = await safeFetch(url, {
         method: "POST",
         body,
