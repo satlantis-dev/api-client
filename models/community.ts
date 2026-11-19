@@ -112,6 +112,7 @@ export interface CommunityMembershipTier {
     isHidden: boolean;
     currency?: OrderCurrency | null;
     monthlyAmount?: number | null;
+    quarterlyAmount?: number | null;
     yearlyAmount?: number | null;
     trialDays?: number | null;
     rank: number;
@@ -230,6 +231,7 @@ export type Theme = {
 
 export enum CommunityMembershipPeriod {
     MONTHLY = "monthly",
+    QUARTERLY = "quarterly",
     ANNUAL = "annual",
 }
 
