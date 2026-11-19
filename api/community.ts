@@ -1307,6 +1307,7 @@ export type MembershipTierPayload = {
     isRecommended?: boolean;
     currency?: OrderCurrency;
     monthlyAmount?: number;
+    quarterlyAmount?: number;
     yearlyAmount?: number;
     rank?: number;
 };
