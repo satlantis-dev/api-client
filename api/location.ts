@@ -279,25 +279,6 @@ async (args: {
     return x;
 };
 
-// Get location reviews
-export const getLocationReviews = (urlArg: URL) =>
-async (args: {
-    locationId: number;
-    limit: number;
-    page: number;
-}) => {
-    const url = copyURL(urlArg);
-    url.pathname = `/getLocationReviews/${args.locationId}`;
-    url.searchParams.append("limit", JSON.stringify(args.limit));
-    url.searchParams.append("page", JSON.stringify(args.page));
-
-    const response = await safeFetch(url);
-    if (response instanceof Error) {
-        return response;
-    }
-    return handleResponse(response);
-};
-
 export type SuggestLocationArgs = {
     data: {
         placeId?: number;
@@ -367,18 +348,23 @@ async (args: {
     return res_text;
 };
 
-export const getAccountsForLocation = (urlArg: URL) =>
+/**
+ * GET /place/{locationId}/owner
+ * Returns undefined when the location has no verified claim
+ * (the api answers 500 "record not found" in that case).
+ */
+export const getLocationOwner = (urlArg: URL) =>
 async (args: {
     locationId: number;
 }) => {
     const url = copyURL(urlArg);
-    url.pathname = `/getAccountsForLocation/${args.locationId}`;
+    url.pathname = `/place/${args.locationId}/owner`;
 
     const response = await safeFetch(url);
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{
+    const owner = await handleResponse<{
         readonly id: number;
         readonly about: string;
         readonly isAdmin: boolean;
@@ -388,7 +374,11 @@ async (args: {
         readonly npub: string;
         readonly picture: string;
         readonly pubKey: string;
-    }[]>(response);
+    }>(response);
+    if (owner instanceof ApiError && owner.text.includes("record not found")) {
+        return undefined;
+    }
+    return owner;
 };
 
 /**
@@ -406,52 +396,6 @@ async (args: {
         return response;
     }
     return handleResponse<LocationGalleryImage[]>(response);
-};
-
-/**
- * GET /getLocationsBySearch
- * https://github.com/satlantis-dev/api/blob/dev/rest/location.go#L203
- */
-export const getLocationsBySearch = (urlArg: URL) =>
-async (args: {
-    rating: number;
-    search?: string;
-    category?: string;
-    place_id?: number;
-    limit?: number;
-    page?: number;
-    sortColumn?: string;
-    sortDirection?: "asc" | "desc";
-}) => {
-    const url = copyURL(urlArg);
-    url.pathname = `/getLocationsBySearch`;
-    url.searchParams.set("rating", String(args.rating));
-    if (args.search) {
-        url.searchParams.set("search", args.search);
-    }
-    if (args.category) {
-        url.searchParams.set("category", args.category);
-    }
-    if (args.place_id) {
-        url.searchParams.set("place_id", String(args.place_id));
-    }
-    if (args.sortColumn) {
-        url.searchParams.set("sortColumn", args.sortColumn);
-    }
-    if (args.sortDirection) {
-        url.searchParams.set("sortDirection", args.sortDirection);
-    }
-    if (args.limit) {
-        url.searchParams.set("limit", String(args.limit));
-    }
-    if (args.page) {
-        url.searchParams.set("page", String(args.page));
-    }
-    const response = await safeFetch(url);
-    if (response instanceof Error) {
-        return response;
-    }
-    return handleResponse<LocationDTO[]>(response);
 };
 
 /**
