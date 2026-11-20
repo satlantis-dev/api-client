@@ -62,6 +62,8 @@ export type Nip46Session = {
     getPersistedState: () => Nip46PersistedSession | undefined;
     logout: (timeoutMs?: number) => Promise<void>;
     close: () => Promise<void>;
+    /** Call when the page returns to the foreground: re-opens the relay subscription so replies sent while it was suspended are received. */
+    reconnect: () => Promise<void>;
 };
 
 export type Nip46RestoredSession = {
@@ -69,6 +71,8 @@ export type Nip46RestoredSession = {
     getPersistedState: () => Nip46PersistedSession;
     logout: (timeoutMs?: number) => Promise<void>;
     close: () => Promise<void>;
+    /** Call when the page returns to the foreground: re-opens the relay subscription so replies sent while it was suspended are received. */
+    reconnect: () => Promise<void>;
 };
 
 class Nip46RemoteSigner implements NostrAccountContext {
@@ -240,13 +244,13 @@ async function logoutAndClose(
 
 type Nip46Stream = Exclude<Awaited<ReturnType<typeof openNip46Subscription>>, Error>;
 
+type Nip46PayloadHandler = (payload: Nip46ResponsePayload, event: NostrEvent) => boolean;
+
 type Nip46Transport = {
     request: (method: string, params: string[], timeoutMs?: number) => Promise<string | Error>;
     setup: Promise<Nip46Stream | Error>;
-    consume: (
-        stream: Nip46Stream,
-        onPayload?: (payload: Nip46ResponsePayload, event: NostrEvent) => boolean,
-    ) => Promise<void>;
+    consume: (stream: Nip46Stream, onPayload?: Nip46PayloadHandler) => Promise<void>;
+    reconnect: () => Promise<void>;
     isClosed: () => boolean;
     close: () => Promise<void>;
 };
@@ -259,11 +263,15 @@ function createNip46Transport(args: {
     tolerateRelayFailure: boolean;
 }): Nip46Transport {
     const { localSigner, relays, getRemoteSignerPubkey, setupErrorMessage, tolerateRelayFailure } = args;
-    const pool = new ConnectionPool({ signer: localSigner });
+    // Replaced by reconnect(), so always read it at use time.
+    let pool = new ConnectionPool({ signer: localSigner });
     const pendingRequests = new Map<string, PendingRequest>();
     let closed = false;
     let closePromise: Promise<void> | undefined;
     let stream: Nip46Stream | undefined;
+    // Kept so a stream opened by reconnect() still sees the connect ack.
+    let payloadHandler: Nip46PayloadHandler | undefined;
+    let reconnecting: Promise<void> | undefined;
 
     const isClosed = () => closed;
 
@@ -285,6 +293,9 @@ function createNip46Transport(args: {
     })();
 
     const consume: Nip46Transport["consume"] = async (streamToConsume, onPayload) => {
+        if (onPayload) {
+            payloadHandler = onPayload;
+        }
         for await (const msg of streamToConsume.chan) {
             if (closed) {
                 break;
@@ -315,7 +326,7 @@ function createNip46Transport(args: {
                 continue;
             }
 
-            if (onPayload?.(payload, event)) {
+            if (payloadHandler?.(payload, event)) {
                 continue;
             }
 
@@ -344,6 +355,7 @@ function createNip46Transport(args: {
 
     const ensureRelayOpen = async (): Promise<Error | undefined> => {
         await setup;
+        await reconnecting;
         if (closed) {
             return new Error("NIP46 session closed");
         }
@@ -434,15 +446,22 @@ function createNip46Transport(args: {
             });
         });
 
-        const sent = await pool.sendEvent(signed);
-        if (sent instanceof Error) {
+        // Not awaited: sendEvent waits for the relay's OK with no timeout, and on a socket that
+        // died while the page was suspended that OK never comes. The signer's reply is the real
+        // acknowledgement; the request timeout bounds the wait.
+        pool.sendEvent(signed).then((sent) => {
+            if (!(sent instanceof Error)) {
+                return;
+            }
             const pending = pendingRequests.get(id);
             if (pending) {
                 clearTimeout(pending.timeoutId);
                 pendingRequests.delete(id);
+                pending.reject(sent);
             }
-            return sent;
-        }
+        }).catch(() => {
+            // A send that throws is left to the request timeout.
+        });
 
         try {
             return await responsePromise;
@@ -466,12 +485,48 @@ function createNip46Transport(args: {
 
         closePromise = (async () => {
             await setup;
+            await reconnecting;
             await pool.close();
         })();
         return closePromise;
     };
 
-    return { request, setup, consume, isClosed, close };
+    // A phone browser suspends a page whose tab is in the background (e.g. while the user
+    // approves in the Primal app). Its relay socket can die there without a close event,
+    // so the pool never reconnects and replies sent meanwhile are never received. Call this
+    // when the page comes back: it opens a fresh connection and subscription, and the relay
+    // replays the stored kind-24133 replies (the connect ack, signatures) we missed.
+    const reconnect = async () => {
+        if (reconnecting) {
+            return reconnecting;
+        }
+        reconnecting = (async () => {
+            await setup;
+            if (closed) {
+                return;
+            }
+            const stalePool = pool;
+            pool = new ConnectionPool({ signer: localSigner });
+            stream = undefined;
+            // Not awaited: closing a dead socket can hang. Its consume loop ends with it.
+            stalePool.close().catch(() => {});
+
+            const opened = await openNip46Subscription(pool, localSigner.publicKey.hex, relays, true);
+            // On an error the next request opens the subscription (ensureRelayOpen).
+            if (closed || opened instanceof Error) {
+                return;
+            }
+            stream = opened;
+            consume(opened).catch(() => {
+                // Stream ended or failed; pending requests time out on their own.
+            });
+        })().finally(() => {
+            reconnecting = undefined;
+        });
+        return reconnecting;
+    };
+
+    return { request, setup, consume, reconnect, isClosed, close };
 }
 
 // Register the subscription before connecting relays. ConnectionPool
@@ -635,6 +690,7 @@ export function createNip46Session(options: Nip46Options): Nip46Session {
         logout: (timeoutMs = LOGOUT_TIMEOUT_MS) =>
             logoutAndClose(transport, remoteSignerPubkey !== "", close, timeoutMs),
         close,
+        reconnect: transport.reconnect,
     };
 }
 
@@ -674,6 +730,7 @@ export function restoreNip46Session(
             getPersistedState: () => persistedState,
             logout: async () => {},
             close: async () => {},
+            reconnect: async () => {},
         };
     }
 
@@ -710,5 +767,6 @@ export function restoreNip46Session(
         logout: (timeoutMs = LOGOUT_TIMEOUT_MS) =>
             logoutAndClose(transport, true, transport.close, timeoutMs),
         close: transport.close,
+        reconnect: transport.reconnect,
     };
 }
