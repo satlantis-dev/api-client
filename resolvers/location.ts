@@ -130,17 +130,6 @@ export class LocationResolver {
 
     /**
      * @unstable
-     */
-    getReviews = async (args: { limit: number; page: number }) => {
-        return this.client.getLocationReviews({
-            locationId: this.id,
-            limit: args.limit,
-            page: args.page,
-        });
-    };
-
-    /**
-     * @unstable
      * @deprecated This is an old location claim relationship that will be removed in the future
      */
     getOwner = async (): Promise<UserResolver | undefined | Error> => {

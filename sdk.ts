@@ -37,15 +37,13 @@ import {
 import { getIpInfo } from "./api/ip.ts";
 import {
     getAccountRolesForLocation,
-    getAccountsForLocation,
     getLocation,
     getLocationByGoogleId,
     getLocationGalleryImages,
     getLocationLinks,
-    getLocationReviews,
+    getLocationOwner,
     getLocationsByPlaceID,
     getLocationsByPlaceIDRandomized,
-    getLocationsBySearch,
     getLocationsWithinBoundingBox,
     getLocationTags,
     getLocationTagsByPlaceID,
@@ -856,14 +854,13 @@ export class Client {
     getLocationsWithinBoundingBox: ReturnType<
         typeof getLocationsWithinBoundingBox
     >;
-    getLocationReviews: ReturnType<typeof getLocationReviews>;
     suggestLocation: ReturnType<typeof suggestLocation>;
     getLocationByID: ReturnType<typeof getLocation>;
     getLocationByGoogleId: ReturnType<typeof getLocationByGoogleId>;
     getLocationsByPlaceID: ReturnType<typeof getLocationsByPlaceID>;
     getNearbyLocations: ReturnType<typeof getNearbyLocations>;
     updateLocation: ReturnType<typeof updateLocation>;
-    private getAccountsForLocation: ReturnType<typeof getAccountsForLocation>;
+    private getLocationOwner: ReturnType<typeof getLocationOwner>;
     getLocationGalleryImages: ReturnType<typeof getLocationGalleryImages>;
     private _postLocationGalleryImage: ReturnType<
         typeof postLocationGalleryImage
@@ -874,7 +871,6 @@ export class Client {
     promoteLocationGalleryImageToBanner: ReturnType<
         typeof promoteLocationGalleryImageToBanner
     >;
-    getLocationsBySearch: ReturnType<typeof getLocationsBySearch>;
     getLocationsByPlaceIDRandomized: ReturnType<
         typeof getLocationsByPlaceIDRandomized
     >;
@@ -1657,14 +1653,13 @@ export class Client {
             rest_api_url,
             getJwt,
         );
-        this.getLocationReviews = getLocationReviews(rest_api_url);
         this.suggestLocation = suggestLocation(rest_api_url, getJwt);
         this.getLocationByID = getLocation(rest_api_url);
         this.getLocationByGoogleId = getLocationByGoogleId(rest_api_url);
         this.getLocationsByPlaceID = getLocationsByPlaceID(rest_api_url, getJwt);
         this.getNearbyLocations = getNearbyLocations(rest_api_url, getJwt);
         this.updateLocation = updateLocation(rest_api_url, getJwt);
-        this.getAccountsForLocation = getAccountsForLocation(rest_api_url);
+        this.getLocationOwner = getLocationOwner(rest_api_url);
         this.getLocationGalleryImages = getLocationGalleryImages(rest_api_url);
         this._postLocationGalleryImage = postLocationGalleryImage(
             rest_api_url,
@@ -1680,7 +1675,6 @@ export class Client {
             getJwt,
         );
         this.promoteLocationGalleryImageToBanner = promoteLocationGalleryImageToBanner(rest_api_url, getJwt);
-        this.getLocationsBySearch = getLocationsBySearch(rest_api_url);
         this.getLocationsByPlaceIDRandomized = getLocationsByPlaceIDRandomized(rest_api_url);
         this.getLocationLinks = getLocationLinks(rest_api_url);
         this.getAccountRolesForLocation = getAccountRolesForLocation(rest_api_url);
@@ -4078,32 +4072,24 @@ export class Client {
          * @unstable
          */
         getOwnerForLocation: async (args: { locationId: number }) => {
-            const accounts = await this.getAccountsForLocation({
+            const account = await this.getLocationOwner({
                 locationId: args.locationId,
             });
-            if (accounts instanceof Error) {
-                return accounts;
+            if (account instanceof Error || account === undefined) {
+                return account;
             }
-            // https://linear.app/sat-lantis/issue/SAT-1161/endpoint-getaccountsforlocationlocationid#comment-18c9a50c
-            if (accounts.length > 1) {
-                console.warn(
-                    `more than one owner for the location, locationId: ${args.locationId}`,
-                );
+            const pubkey = PublicKey.FromHex(account.pubKey);
+            if (pubkey instanceof Error) {
+                return pubkey;
             }
-            for (const account of accounts) {
-                const pubkey = PublicKey.FromHex(account.pubKey);
-                if (pubkey instanceof Error) {
-                    return pubkey;
-                }
-                return new UserResolver(
-                    this,
-                    pubkey,
-                    account.isAdmin,
-                    account.isBusiness,
-                    account.nip05,
-                    account,
-                );
-            }
+            return new UserResolver(
+                this,
+                pubkey,
+                account.isAdmin,
+                account.isBusiness,
+                account.nip05,
+                account,
+            );
         },
         /**
          * @unstable
@@ -4162,25 +4148,6 @@ export class Client {
                 noteResolvers.push(r);
             }
             return noteResolvers;
-        },
-        /**
-         * @unstable
-         */
-        getLocationsBySearch: async (args: {
-            rating: number;
-            search?: string;
-            category?: string;
-            place_id?: number;
-            limit?: number;
-            page?: number;
-            sortColumn?: string;
-            sortDirection?: "asc" | "desc";
-        }) => {
-            const locations = await this.getLocationsBySearch(args);
-            if (locations instanceof Error) {
-                return locations;
-            }
-            return locations.map((l) => new LocationResolver(this, l));
         },
         /**
          * @unstable

@@ -204,9 +204,8 @@ export const verifyEmail = (urlArg: URL) => async (args: { token: string }) => {
     if (response instanceof Error) {
         return response;
     }
-    return handleResponse<{ success: boolean; account: Account; token: string; canSignNostrEvent: boolean }>(
-        response,
-    );
+    // Verifies the address only; no login token is returned (api #1253).
+    return handleResponse<{ success: boolean; message: string }>(response);
 };
 
 // The events endpoints accept `rsvp` as a comma-separated list, and treat a list
