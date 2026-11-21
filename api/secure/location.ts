@@ -39,7 +39,7 @@ async (args: {
 };
 
 /**
- * PUT /secure/updateLocationGalleryImage/{id}
+ * PUT /secure/place/{locationId}/image/{imageId}
  * Roles with permission: Admin and some other roles(see the backend)
  * @returns nothing
  * https://github.com/satlantis-dev/api/blob/dev/rest/location_gallery.go
@@ -47,6 +47,7 @@ async (args: {
 export const updateLocationGalleryImage = (urlArg: URL, getJwt: () => string) =>
 async (
     args: {
+        locationId: number;
         imageId: number;
         image: Partial<LocationGalleryImage>;
     },
@@ -57,7 +58,7 @@ async (
     }
 
     const url = copyURL(urlArg);
-    url.pathname = `/secure/updateLocationGalleryImage/${args.imageId}`;
+    url.pathname = `/secure/place/${args.locationId}/image/${args.imageId}`;
 
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
@@ -75,20 +76,20 @@ async (
 };
 
 /**
- * DELETE /secure/deleteLocationGalleryImage/{id}
+ * DELETE /secure/place/{locationId}/image/{id}
  * Roles with permission: Admin and some other roles(see the backend)
  * @returns nothing
  * https://github.com/satlantis-dev/api/blob/dev/rest/location_gallery.go
  */
 export const deleteLocationGalleryImage =
-    (urlArg: URL, getJwt: () => string) => async (args: { id: number }) => {
+    (urlArg: URL, getJwt: () => string) => async (args: { locationId: number; id: number }) => {
         const jwtToken = getJwt();
         if (jwtToken == "") {
             return new Error("jwt token is empty");
         }
 
         const url = copyURL(urlArg);
-        url.pathname = `/secure/deleteLocationGalleryImage/${args.id}`;
+        url.pathname = `/secure/place/${args.locationId}/image/${args.id}`;
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
@@ -104,19 +105,19 @@ export const deleteLocationGalleryImage =
     };
 
 /**
- * DELETE /secure/promoteLocationGalleryImageToBanner/{id}
+ * PUT /secure/place/{locationId}/image/{imageId}/promote
  * Roles with permission: Admin and some other roles(see the backend)
  * @returns nothing
  * https://github.com/satlantis-dev/api/blob/dev/rest/location_gallery.go
  */
 export const promoteLocationGalleryImageToBanner =
-    (urlArg: URL, getJwt: () => string) => async (args: { imageId: number }) => {
+    (urlArg: URL, getJwt: () => string) => async (args: { locationId: number; imageId: number }) => {
         const jwtToken = getJwt();
         if (jwtToken == "") {
             return new Error("jwt token is empty");
         }
         const url = copyURL(urlArg);
-        url.pathname = `/secure/promoteLocationGalleryImageToBanner/${args.imageId}`;
+        url.pathname = `/secure/place/${args.locationId}/image/${args.imageId}/promote`;
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
         const response = await safeFetch(url, {
