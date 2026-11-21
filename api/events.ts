@@ -159,6 +159,9 @@ export interface EventDetails {
     // hides its attendees, it is the only capacity information non-staff get:
     // rsvpLimit is null and every rsvp*Count is 0.
     isFull?: boolean;
+    // The organizer's plan allows embedding the ticket picker on another site
+    // (/embed/events/{id}/tickets). Growth and Pro for now.
+    ticketEmbedEnabled?: boolean;
     userRsvp?: {
         id: number;
         accountId: number;
