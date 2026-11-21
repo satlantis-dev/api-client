@@ -68,6 +68,7 @@ import { getAccountPlaceRoles } from "./api/people.ts";
 import {
     getAllPlaceRegionCountryNames,
     getCalendarEventTypes,
+    getNearbyDestinations,
     getPlace,
     getPlaceById,
     getPlaceByOsmRef,
@@ -82,6 +83,7 @@ import {
     getPlaces,
     getPlacesMinimal,
     getRegion,
+    suggestDestination,
 } from "./api/place.ts";
 import {
     addAccountRole,
@@ -855,6 +857,8 @@ export class Client {
         typeof getLocationsWithinBoundingBox
     >;
     suggestLocation: ReturnType<typeof suggestLocation>;
+    suggestDestination: ReturnType<typeof suggestDestination>;
+    getNearbyDestinations: ReturnType<typeof getNearbyDestinations>;
     getLocationByID: ReturnType<typeof getLocation>;
     getLocationByGoogleId: ReturnType<typeof getLocationByGoogleId>;
     getLocationsByPlaceID: ReturnType<typeof getLocationsByPlaceID>;
@@ -1654,6 +1658,8 @@ export class Client {
             getJwt,
         );
         this.suggestLocation = suggestLocation(rest_api_url, getJwt);
+        this.suggestDestination = suggestDestination(rest_api_url, getJwt);
+        this.getNearbyDestinations = getNearbyDestinations(rest_api_url);
         this.getLocationByID = getLocation(rest_api_url);
         this.getLocationByGoogleId = getLocationByGoogleId(rest_api_url);
         this.getLocationsByPlaceID = getLocationsByPlaceID(rest_api_url, getJwt);
