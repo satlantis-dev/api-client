@@ -6,6 +6,8 @@ export const presign = (urlArg: URL, getJwt: func_GetJwt, getSigner: func_GetNos
 async (args: {
     filename: string;
     directory?: string;
+    // MIME type of the file. Signed into the URL: the PUT must send the same Content-Type header.
+    content_type?: string;
 }) => {
     const jwtToken = getJwt();
     if (jwtToken == "") {
@@ -30,6 +32,7 @@ async (args: {
         method: "POST",
         body: JSON.stringify({
             filename: newFileName,
+            ...(args.content_type ? { content_type: args.content_type } : {}),
         }),
         headers,
     });

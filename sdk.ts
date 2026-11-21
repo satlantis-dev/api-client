@@ -3150,6 +3150,7 @@ export class Client {
         const res = await this.presign({
             filename: args.file.name,
             directory: args.directory,
+            content_type: args.file.type,
         });
         if (res instanceof Error) {
             return res;
