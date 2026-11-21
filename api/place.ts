@@ -315,3 +315,71 @@ export const getPlace = (urlArg: URL) => async (args: { id: number | string }) =
     }
     return handleResponse<Location>(response);
 };
+
+/** Body of POST /secure/destinations/suggest: a city or area that isn't a Satlantis destination yet. */
+export type SuggestDestinationRequest = {
+    /** Google Place ID of the suggested city or area. */
+    googlePlaceId: string;
+    /** Place name as Google shows it, e.g. "Cascais". */
+    name: string;
+    /** Google's full address, e.g. "Cascais, Portugal". */
+    formattedAddress?: string;
+    lat: number;
+    lng: number;
+    /** Optional note from the person suggesting it (max 1000 characters). */
+    comment?: string;
+    /** Community the suggestion was made for, if any. */
+    communityId?: number;
+    /** Calendar the destination is meant for, if any. */
+    calendarId?: number;
+};
+
+/**
+ * Emails a destination suggestion to the Satlantis reviewers; nothing is stored.
+ * Answers 204 on success, 429 past 5 suggestions an hour or 20 a day.
+ */
+export const suggestDestination =
+    (urlArg: URL, getJwt: func_GetJwt) => async (args: SuggestDestinationRequest) => {
+        const jwt = getJwt();
+        if (jwt == "") {
+            return new Error("jwt token is empty");
+        }
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwt}`);
+        headers.set("Content-Type", "application/json");
+
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/destinations/suggest`;
+        const response = await safeFetch(url, {
+            method: "POST",
+            headers,
+            body: JSON.stringify(args),
+        });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<{}>(response);
+    };
+
+/** An existing destination near a point, from GET /destinations/nearby. */
+export type NearbyDestination = {
+    id: number;
+    name: string;
+    osmRef: string;
+    active: boolean;
+    /** From the point to the destination's centre, rounded. */
+    distanceKm: number;
+};
+
+/** Active destinations within 100 km of lat/lng (or whose bounding box holds it), closest first. */
+export const getNearbyDestinations = (urlArg: URL) => async (args: { lat: number; lng: number }) => {
+    const url = copyURL(urlArg);
+    url.pathname = `/destinations/nearby`;
+    url.searchParams.set("lat", String(args.lat));
+    url.searchParams.set("lng", String(args.lng));
+    const response = await safeFetch(url);
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<NearbyDestination[]>(response);
+};
