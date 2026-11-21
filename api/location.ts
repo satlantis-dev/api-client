@@ -146,6 +146,7 @@ async (args: {
     tags?: { key: string; value: string }[];
     page?: number;
     limit?: number;
+    /** @deprecated ignored: the route is auth-only, a public `/getNearbyLocations` never existed */
     isSecure?: boolean;
     openOnly?: boolean;
 }) => {
@@ -154,16 +155,12 @@ async (args: {
     const url = copyURL(urlArg);
     const headers = new Headers();
 
-    if (args.isSecure) {
-        const jwt = getJwt();
-        if (jwt == "") {
-            return new Error("jwt token is empty");
-        }
-        headers.set("Authorization", `Bearer ${jwt}`);
-        url.pathname = `/secure/places/nearby`;
-    } else {
-        url.pathname = `/getNearbyLocations`;
+    const jwt = getJwt();
+    if (jwt == "") {
+        return new Error("jwt token is empty");
     }
+    headers.set("Authorization", `Bearer ${jwt}`);
+    url.pathname = `/secure/places/nearby`;
 
     url.searchParams.set("lat", String(args.lat));
     url.searchParams.set("lng", String(args.lng));

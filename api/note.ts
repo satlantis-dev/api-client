@@ -91,12 +91,13 @@ async (args: {
     limit: number;
     placeId?: string;
     sort?: "recent" | "trending";
+    /** @deprecated ignored: the route is auth-only, a public `/getNotes` (without npub) never existed */
     secure?: boolean;
     accountId?: number;
 }) => {
     const url = copyURL(urlArg);
     const headers = new Headers();
-    url.pathname = args.secure ? `/secure/feed/notes` : `/getNotes`;
+    url.pathname = `/secure/feed/notes`;
     url.searchParams.set("page", String(args.page));
     url.searchParams.set("limit", String(args.limit));
     if (args.placeId) {
@@ -109,13 +110,11 @@ async (args: {
         url.searchParams.set("accountId", String(args.accountId));
     }
 
-    if (args.secure) {
-        const jwtToken = getJwt();
-        if (jwtToken == "") {
-            return new Error("jwt token is empty");
-        }
-        headers.set("Authorization", `Bearer ${jwtToken}`);
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
     }
+    headers.set("Authorization", `Bearer ${jwtToken}`);
 
     const response = await safeFetch(url, { headers });
     if (response instanceof Error) {

@@ -65,20 +65,21 @@ async (args: {
 };
 
 /**
- * DELETE /secure/deletePlaceGalleryImage/:id
+ * DELETE /secure/destination/{placeId}/image/{id}
+ * The api rejects the call if the image doesn't belong to placeId.
  * Roles with permission: Admin and Place's Ambassador
  * @returns nothing
  * https://github.com/satlantis-dev/api/blob/dev/rest/place_gallery.go
  */
 export const deletePlaceGalleryImage =
-    (urlArg: URL, getJwt: () => string) => async (args: { id: number }) => {
+    (urlArg: URL, getJwt: () => string) => async (args: { placeId: number; id: number }) => {
         const jwtToken = getJwt();
         if (jwtToken == "") {
             return new Error("jwt token is empty");
         }
 
         const url = copyURL(urlArg);
-        url.pathname = `/secure/deletePlaceGalleryImage/${args.id}`;
+        url.pathname = `/secure/destination/${args.placeId}/image/${args.id}`;
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);
