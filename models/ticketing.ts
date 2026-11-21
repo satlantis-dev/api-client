@@ -204,7 +204,16 @@ export type CouponPreviewResponse = {
         discountPercent: number;
         discountedQty: number;
         ticketTypeId: number;
+        /** discount in displayCurrency, as the order records it (event checkout only) */
+        displayDiscount?: number;
     }[];
     totalDiscount: number;
     valid: boolean;
+    /** Event checkout only: the order's display (pricing) currency and its totals in that
+     *  currency, as the created order records them. Differs from currency/finalTotal/
+     *  totalDiscount when the ticket is priced in one currency and paid in another
+     *  (e.g. a USD price paid in sats). */
+    displayCurrency?: string;
+    displayFinalTotal?: number;
+    displayTotalDiscount?: number;
 };
