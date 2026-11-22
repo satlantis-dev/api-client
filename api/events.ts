@@ -2121,6 +2121,71 @@ async (
     return handleResponse<EventFinancialsSummaryResponse>(response);
 };
 
+export type EventPaymentKind = "payment" | "refund";
+
+/** One row of an event's payments list: a ticket payment in any currency, or a refund of one. */
+export interface EventPayment {
+    /** The ticket payment id (kind "payment") or the refund id (kind "refund"). */
+    id: number;
+    kind: EventPaymentKind;
+    orderId: number;
+    orderCode: string;
+    /** stripe, lightning, onchain or offline for payments; the refund method for refunds. */
+    method: string;
+    /** Minor unit of `currency`: cents for fiat, sats for BTC. */
+    amount: number;
+    currency: string;
+    /** Refunds only, same unit as `amount`. */
+    fee: number;
+    status: string;
+    timestamp: string;
+    buyer: {
+        accountId: number | null;
+        username: string | null;
+        displayName: string | null;
+        picture: string | null;
+        npub: string | null;
+        lightningAddress: string | null;
+        identifier: string;
+    } | null;
+    items?: {
+        ticketTypeId: number;
+        ticketTypeName: string;
+        quantity: number;
+        priceEach: number;
+    }[];
+    reason?: string;
+}
+
+export interface EventPaymentsResponse {
+    payments: EventPayment[];
+    pagination: { page: number; limit: number; total: number; totalPages: number };
+}
+
+/** Paginated ticket payments and refunds of an event, in every currency. Organizer, cohosts or admin. */
+export const getEventPayments = (urlArg: URL, getJwt: func_GetJwt) =>
+async (
+    args: { eventId: number; page?: number; limit?: number },
+): Promise<EventPaymentsResponse | null | Error> => {
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/events/${args.eventId}/payments`;
+    url.searchParams.set("page", String(args.page ?? 1));
+    url.searchParams.set("limit", String(args.limit ?? 20));
+
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    const jwtToken = getJwt();
+    if (jwtToken) {
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+    }
+
+    const response = await safeFetch(url, { method: "GET", headers });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<EventPaymentsResponse>(response);
+};
+
 /**
  * Withdrawal status enum with
  */
