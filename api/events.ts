@@ -2072,6 +2072,15 @@ export interface CurrencyEarnings {
     // rail's smallest unit. Absent on older deploys.
     cancelledUnrefundedTickets?: number;
     cancelledUnrefundedAmount?: number;
+    // Bitcoin only. Sats received on on-chain ticket payments that never became
+    // a ticket (underpaid and expired, or paid after expiry), less any refund of
+    // that order. In `totalEarnings` and `availableBalance`, since the sats are
+    // in the wallet, but the host has not earned them. Absent on older deploys.
+    unissuedReceivedAmount?: number;
+    // Bitcoin only. Sats received above the invoiced amount on settled on-chain
+    // ticket payments. In `totalEarnings` and `availableBalance`, but not earned.
+    // Absent on older deploys.
+    overpaidAmount?: number;
 }
 
 export interface EventFinancialsSummaryResponse {
