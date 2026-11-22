@@ -128,10 +128,12 @@ export const setPlacesActive =
         adminPlacesRequest(urlArg, getJwt, "PUT", "/secure/admin/destinations/active", args);
 
 // DELETE /secure/admin/destinations — soft-deletes the listed destinations. All or nothing:
-// 409 (naming them) when any still has a calendar or an upcoming event, or is the Satlantis
-// fallback destination.
-export const deletePlaces = (urlArg: URL, getJwt: () => string) => async (args: { ids: number[] }) =>
-    adminPlacesRequest(urlArg, getJwt, "DELETE", "/secure/admin/destinations", args);
+// 409 (naming them) when any still has a calendar or an upcoming event, unless `force` is set
+// (the admin has seen what is attached, see getPlaceUsage), or is the Satlantis fallback
+// destination, which can't be deleted even with `force`.
+export const deletePlaces =
+    (urlArg: URL, getJwt: () => string) => async (args: { ids: number[]; force?: boolean }) =>
+        adminPlacesRequest(urlArg, getJwt, "DELETE", "/secure/admin/destinations", args);
 
 export interface AdminPlaceChanges {
     name?: string;
@@ -168,3 +170,38 @@ export const adminUpdatePlace =
         }
         return handleResponse<Place>(response);
     };
+
+export interface PlaceUsage {
+    name: string;
+    /** Live events in the destination, past and upcoming. */
+    events: number;
+    /** Of those, the ones that haven't ended. */
+    upcomingEvents: number;
+    /** Places (locations) in the destination. */
+    locations: number;
+    /** Collections holding at least one of its locations. */
+    collections: number;
+    calendars: number;
+}
+
+/**
+ * GET /secure/admin/destinations/{placeId}/usage
+ * Platform admins only. What is attached to a destination, to show before deleting it.
+ */
+export const getPlaceUsage = (urlArg: URL, getJwt: () => string) => async (args: { placeId: number }) => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/admin/destinations/${args.placeId}/usage`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+
+    const response = await safeFetch(url, { headers });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<PlaceUsage>(response);
+};
