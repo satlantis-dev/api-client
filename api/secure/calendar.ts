@@ -1264,6 +1264,8 @@ export type CreateCalendarRequest = {
     banner?: string;
     placeId?: number;
     communityId?: number;
+    /** With communityId, unlink the community's other calendars in the same transaction. */
+    replace?: boolean;
 };
 
 export const createCalendar = (urlArg: URL, getJwt: () => string) => async (args: CreateCalendarRequest) => {
@@ -1272,12 +1274,16 @@ export const createCalendar = (urlArg: URL, getJwt: () => string) => async (args
         return new Error("jwt token is empty");
     }
 
+    const { replace, ...calendar } = args;
     const url = copyURL(urlArg);
     url.pathname = `/secure/calendars`;
+    if (replace) {
+        url.searchParams.set("replace", "true");
+    }
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
     headers.set("Content-Type", "application/json");
-    const body = JSON.stringify(args);
+    const body = JSON.stringify(calendar);
     const response = await safeFetch(url, {
         method: "POST",
         body,

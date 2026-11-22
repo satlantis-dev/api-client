@@ -449,6 +449,8 @@ async (args: RespondCommunityAdminInvitationArgs) => {
 export type LinkCalendarToCommunityArgs = {
     communityId: number;
     calendarId: number;
+    /** Unlink the community's other calendars in the same transaction; a calendar already linked to this community is accepted. */
+    replace?: boolean;
 };
 
 export const linkCalendarToCommunity = (
@@ -462,6 +464,9 @@ async (args: LinkCalendarToCommunityArgs) => {
     }
     const url = copyURL(urlArg);
     url.pathname = `/secure/communities/${args.communityId}/calendars/${args.calendarId}`;
+    if (args.replace) {
+        url.searchParams.set("replace", "true");
+    }
 
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${jwtToken}`);
