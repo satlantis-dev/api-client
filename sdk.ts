@@ -136,6 +136,7 @@ import {
     adminUpdatePlace,
     deletePlaceGalleryImage,
     deletePlaces,
+    getPlaceUsage,
     postPlaceGalleryImage,
     setPlacesActive,
     updatePlace,
@@ -969,6 +970,7 @@ export class Client {
     updatePlace: ReturnType<typeof updatePlace>;
     setPlacesActive: ReturnType<typeof setPlacesActive>;
     adminUpdatePlace: ReturnType<typeof adminUpdatePlace>;
+    getPlaceUsage: ReturnType<typeof getPlaceUsage>;
     deletePlaces: ReturnType<typeof deletePlaces>;
 
     // Ambassador
@@ -1750,6 +1752,7 @@ export class Client {
         this.updatePlace = updatePlace(rest_api_url, this.getJwt);
         this.setPlacesActive = setPlacesActive(rest_api_url, this.getJwt);
         this.adminUpdatePlace = adminUpdatePlace(rest_api_url, this.getJwt);
+        this.getPlaceUsage = getPlaceUsage(rest_api_url, this.getJwt);
         this.deletePlaces = deletePlaces(rest_api_url, this.getJwt);
 
         // sign-in / sign-up
