@@ -1,6 +1,6 @@
 import { copyURL, handleResponse } from "../../helpers/_helper.ts";
 import { safeFetch } from "../../helpers/safe-fetch.ts";
-import type { Place } from "../../models/place.ts";
+import type { BoundingBox, Place } from "../../models/place.ts";
 
 export const updatePlace = (urlArg: URL, getJwt: () => string) => async (place: Partial<Place>) => {
     if (!place.id) {
@@ -132,3 +132,39 @@ export const setPlacesActive =
 // fallback destination.
 export const deletePlaces = (urlArg: URL, getJwt: () => string) => async (args: { ids: number[] }) =>
     adminPlacesRequest(urlArg, getJwt, "DELETE", "/secure/admin/destinations", args);
+
+export interface AdminPlaceChanges {
+    name?: string;
+    description?: string;
+    hashtags?: string[];
+    boundingBox?: BoundingBox;
+    /** New tier (the places.tier column). */
+    tier?: number;
+    /** Sets the tier to null; don't combine with `tier`. */
+    clearTier?: boolean;
+}
+
+/**
+ * PUT /secure/admin/destinations/{placeId}
+ * Platform admins only. Fields left out are unchanged; an empty description or hashtag list clears it.
+ * @returns the updated place
+ */
+export const adminUpdatePlace =
+    (urlArg: URL, getJwt: () => string) => async (args: { placeId: number } & AdminPlaceChanges) => {
+        const jwtToken = getJwt();
+        if (jwtToken == "") {
+            return new Error("jwt token is empty");
+        }
+        const { placeId, ...changes } = args;
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/admin/destinations/${placeId}`;
+
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${jwtToken}`);
+
+        const response = await safeFetch(url, { method: "PUT", body: JSON.stringify(changes), headers });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<Place>(response);
+    };
