@@ -3334,6 +3334,63 @@ async (
     return handleResponse<CommunityInvitationResult>(response);
 };
 
+/** Result of importing contacts as prospects; nobody is invited. */
+export type CommunityProspectImportResult = {
+    /** Newly added as prospects. */
+    imported: AccountSearchDTO[];
+    /** Already had a prospect row, invited or not. */
+    alreadyProspects: AccountSearchDTO[];
+    /** Members with a tier, or community admins. */
+    alreadyMembers: AccountSearchDTO[];
+    failed: InvitationFailure[];
+};
+
+export type ImportCommunityProspectsByContactsArgs = {
+    communityId: number;
+    contacts: InvitationContact[];
+    options?: {
+        signal: AbortSignal;
+    };
+};
+
+/**
+ * Adds up to `MAX_INVITATION_CONTACTS` people as prospects without inviting them: no
+ * email is sent and nobody is marked invited. Each contact is an email address, npub,
+ * or account ID (as a string); accounts are created for unknown emails and npubs.
+ * A batch larger than that is rejected with a 400, so chunk before calling.
+ */
+export const importCommunityProspectsByContacts = (
+    urlArg: URL,
+    getJwt: func_GetJwt,
+) =>
+async (
+    args: ImportCommunityProspectsByContactsArgs,
+): Promise<CommunityProspectImportResult | Error> => {
+    const jwtToken = getJwt();
+    if (jwtToken == "") {
+        return new Error("jwt token is empty");
+    }
+    const url = copyURL(urlArg);
+    url.pathname = `/secure/communities/${args.communityId}/prospects`;
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${jwtToken}`);
+    headers.set("Content-Type", "application/json");
+
+    const response = await safeFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+            contacts: args.contacts,
+        }),
+        signal: args.options?.signal,
+    });
+    if (response instanceof Error) {
+        return response;
+    }
+    return handleResponse<CommunityProspectImportResult>(response);
+};
+
 export type InviteCommunityMembersCSVArgs = {
     communityId: number;
     file: File;
