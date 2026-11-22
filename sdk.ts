@@ -492,6 +492,7 @@ import {
     getUserCommunityMembershipPayments,
     getUserCommunityMembershipRequests,
     getUserCommunityMemberships,
+    importCommunityProspectsByContacts,
     inviteCommunityAdmin,
     inviteCommunityMembers,
     inviteCommunityMembersByContacts,
@@ -1116,6 +1117,9 @@ export class Client {
     inviteCommunityMembers: ReturnType<typeof inviteCommunityMembers>;
     inviteCommunityMembersByContacts: ReturnType<
         typeof inviteCommunityMembersByContacts
+    >;
+    importCommunityProspectsByContacts: ReturnType<
+        typeof importCommunityProspectsByContacts
     >;
     inviteCommunityMembersCSV: ReturnType<typeof inviteCommunityMembersCSV>;
     declineCommunityAdminInvitation: ReturnType<typeof declineCommunityAdminInvitation>;
@@ -1949,6 +1953,10 @@ export class Client {
         this.acceptCommunityAdminInvitation = acceptCommunityAdminInvitation(rest_api_url, getJwt);
         this.inviteCommunityMembers = inviteCommunityMembers(rest_api_url, getJwt);
         this.inviteCommunityMembersByContacts = inviteCommunityMembersByContacts(
+            rest_api_url,
+            getJwt,
+        );
+        this.importCommunityProspectsByContacts = importCommunityProspectsByContacts(
             rest_api_url,
             getJwt,
         );
