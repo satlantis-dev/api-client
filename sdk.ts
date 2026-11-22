@@ -133,6 +133,7 @@ import {
     updatePlan,
 } from "./api/premium.ts";
 import {
+    adminUpdatePlace,
     deletePlaceGalleryImage,
     deletePlaces,
     postPlaceGalleryImage,
@@ -967,6 +968,7 @@ export class Client {
     // place
     updatePlace: ReturnType<typeof updatePlace>;
     setPlacesActive: ReturnType<typeof setPlacesActive>;
+    adminUpdatePlace: ReturnType<typeof adminUpdatePlace>;
     deletePlaces: ReturnType<typeof deletePlaces>;
 
     // Ambassador
@@ -1747,6 +1749,7 @@ export class Client {
         this.signEvent = signEvent(rest_api_url, getJwt);
         this.updatePlace = updatePlace(rest_api_url, this.getJwt);
         this.setPlacesActive = setPlacesActive(rest_api_url, this.getJwt);
+        this.adminUpdatePlace = adminUpdatePlace(rest_api_url, this.getJwt);
         this.deletePlaces = deletePlaces(rest_api_url, this.getJwt);
 
         // sign-in / sign-up

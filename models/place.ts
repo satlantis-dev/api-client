@@ -56,6 +56,8 @@ export type Place = {
     weatherId: number;
     weather: Weather;
     hashtags: string[];
+    /** Destination tier (1, 2, 3); null when it has none. */
+    tier?: number | null;
     timezone: string;
 };
 
