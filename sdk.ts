@@ -336,6 +336,7 @@ import {
     getEventFinancialsSummary,
     getEventFinancialsWithdrawalFeeEstimations,
     getEventFinancialsWithdrawalStatus,
+    getEventPayments,
     getEventRsvps,
     getEvents,
     getEventsContacts,
@@ -679,6 +680,7 @@ export class Client {
     removeTicketFromUser: ReturnType<typeof removeTicketFromUser>;
     refundTicketsInRsvp: ReturnType<typeof refundTicketsInRsvp>;
     getEventFinancialsSummary: ReturnType<typeof getEventFinancialsSummary>;
+    getEventPayments: ReturnType<typeof getEventPayments>;
     getEventTicketWithdrawalFee: ReturnType<typeof getEventTicketWithdrawalFee>;
     getEventFinancialsWithdrawalStatus: ReturnType<
         typeof getEventFinancialsWithdrawalStatus
@@ -1455,6 +1457,7 @@ export class Client {
             rest_api_url,
             getJwt,
         );
+        this.getEventPayments = getEventPayments(rest_api_url, getJwt);
         this.getEventTicketWithdrawalFee = getEventTicketWithdrawalFee(
             rest_api_url,
             getJwt,
