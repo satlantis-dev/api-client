@@ -332,6 +332,7 @@ import {
     getEventCalendars,
     getEventCouponByCode,
     getEventCoupons,
+    getPlanCoupons,
     getEventDetails,
     getEventFinancialsSummary,
     getEventFinancialsWithdrawalFeeEstimations,
@@ -662,6 +663,7 @@ export class Client {
     deleteEventCoupon: ReturnType<typeof deleteEventCoupon>;
     getEventCouponByCode: ReturnType<typeof getEventCouponByCode>;
     getEventCoupons: ReturnType<typeof getEventCoupons>;
+    getPlanCoupons: ReturnType<typeof getPlanCoupons>;
     previewEventCoupon: ReturnType<typeof previewEventCoupon>;
     createEventTicketType: ReturnType<typeof createEventTicketType>;
     updateEventTicketType: ReturnType<typeof updateEventTicketType>;
@@ -1426,6 +1428,7 @@ export class Client {
         this.deleteEventCoupon = deleteEventCoupon(rest_api_url, getJwt);
         this.getEventCouponByCode = getEventCouponByCode(rest_api_url);
         this.getEventCoupons = getEventCoupons(rest_api_url, getJwt);
+        this.getPlanCoupons = getPlanCoupons(rest_api_url, getJwt);
         this.previewEventCoupon = previewEventCoupon(rest_api_url, getJwt);
         this.createEventTicketType = createEventTicketType(rest_api_url, getJwt);
         this.updateEventTicketType = updateEventTicketType(rest_api_url, getJwt);
