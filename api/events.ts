@@ -2634,23 +2634,23 @@ async (
 };
 
 // GET /secure/plans/coupons — platform admins only; every plan-scoped coupon, bucketed.
-export const getPlanCoupons = (urlArg: URL, getJwt: func_GetJwt) =>
-async (): Promise<GetEventCouponsResponse | Error> => {
-    const url = copyURL(urlArg);
-    url.pathname = `/secure/plans/coupons`;
+export const getPlanCoupons =
+    (urlArg: URL, getJwt: func_GetJwt) => async (): Promise<GetEventCouponsResponse | Error> => {
+        const url = copyURL(urlArg);
+        url.pathname = `/secure/plans/coupons`;
 
-    const jwtToken = getJwt();
-    const headers = new Headers();
-    if (jwtToken) {
-        headers.set("Authorization", `Bearer ${jwtToken}`);
-    }
+        const jwtToken = getJwt();
+        const headers = new Headers();
+        if (jwtToken) {
+            headers.set("Authorization", `Bearer ${jwtToken}`);
+        }
 
-    const response = await safeFetch(url, { method: "GET", headers });
-    if (response instanceof Error) {
-        return response;
-    }
-    return handleResponse<GetEventCouponsResponse>(response);
-};
+        const response = await safeFetch(url, { method: "GET", headers });
+        if (response instanceof Error) {
+            return response;
+        }
+        return handleResponse<GetEventCouponsResponse>(response);
+    };
 
 export const createEventCoupon = (urlArg: URL, getJwt: func_GetJwt) =>
 async (
