@@ -37,6 +37,7 @@ export enum CouponDiscountType {
 export enum CouponScope {
     Event = "event",
     Calendar = "calendar",
+    Plan = "plan",
 }
 
 export type CalendarEventTicketOrder = {
@@ -142,6 +143,7 @@ export type CreateCouponPayload = {
     isActive?: boolean;
     isSingleUse?: boolean;
     maxRedemptions?: number | null;
+    planIds?: number[] | null;
     scope: CouponScope;
     startsAt?: string | null;
     ticketTypeIds?: number[] | null;
@@ -153,6 +155,7 @@ export type CalendarEventCoupon = {
     calendarEventId?: number;
     calendarId?: number;
     ticketTypeIds?: number[];
+    planIds?: number[];
     code: string;
     description?: string;
     discountType: CouponDiscountType;
