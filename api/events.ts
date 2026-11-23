@@ -343,12 +343,20 @@ export interface CalendarEventRSVPExtended extends CalendarEventRSVP {
     IsSatlantisCreated: boolean;
 }
 
+/**
+ * `markdown: true` returns the description as Markdown in `content`, which is how it is stored
+ * and what the web-app renders and edits. Without it the api returns the same description as
+ * plain text, for clients that do not render Markdown.
+ */
 export const getEventDetails = (urlArg: URL, getJwt: func_GetJwt) =>
 async (
-    args: { eventId: string },
+    args: { eventId: string; markdown?: boolean },
 ): Promise<EventDetails | Error> => {
     const url = copyURL(urlArg);
     url.pathname = `/events/${args.eventId}`;
+    if (args.markdown) {
+        url.searchParams.set("markdown", "true");
+    }
 
     const jwtToken = getJwt();
 
