@@ -605,8 +605,8 @@ export const getEventInCalendarSettings =
 
 /**
  * `options.markdown: true` says the caller reads and writes the description as Markdown. Without
- * it the api refuses an update whose description has no Markdown when the stored one has some,
- * so a client that only sees plain text cannot flatten it.
+ * it the api refuses any change to the description when the stored one has Markdown, so a
+ * client that only sees plain text cannot flatten it.
  */
 export const putUpdateCalendarEvent =
     (urlArg: URL, getJwt: () => string) =>
