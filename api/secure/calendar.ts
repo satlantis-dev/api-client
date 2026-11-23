@@ -603,8 +603,14 @@ export const getEventInCalendarSettings =
         return handleResponse<EventInCalendarSettings>(response);
     };
 
+/**
+ * `options.markdown: true` says the caller reads and writes the description as Markdown. Without
+ * it the api refuses an update whose description has no Markdown when the stored one has some,
+ * so a client that only sees plain text cannot flatten it.
+ */
 export const putUpdateCalendarEvent =
-    (urlArg: URL, getJwt: () => string) => async (args: PlaceCalendarEventPut) => {
+    (urlArg: URL, getJwt: () => string) =>
+    async (args: PlaceCalendarEventPut, options?: { markdown?: boolean }) => {
         const jwtToken = getJwt();
         if (jwtToken == "") {
             return new Error("jwt token is empty");
@@ -612,6 +618,9 @@ export const putUpdateCalendarEvent =
 
         const url = copyURL(urlArg);
         url.pathname = `/secure/events`;
+        if (options?.markdown) {
+            url.searchParams.set("markdown", "true");
+        }
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${jwtToken}`);

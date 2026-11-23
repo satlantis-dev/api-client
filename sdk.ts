@@ -2520,6 +2520,8 @@ export class Client {
     updateCalendarEvent = async (args: {
         calendarEventId: number;
         description: string;
+        /** The description is Markdown (web-app). Without it the api refuses to drop Markdown from a Markdown description. */
+        markdown?: boolean;
         dTag?: string; // the event's current d tag; looked up from the event when missing
         placeATag: string | undefined;
         calendarEventType: string;
@@ -2675,7 +2677,7 @@ export class Client {
             isHidingAttendees: args.isHidingAttendees,
             isUnlisted: args.isUnlisted,
             isOnline: args.isOnline ?? false,
-        });
+        }, { markdown: args.markdown });
         if (res instanceof Error) {
             return res;
         }
