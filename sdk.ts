@@ -3270,6 +3270,8 @@ export class Client {
         metaData: Kind0MetaData,
         options?: { onStage?: (stage: "checking" | "signing" | "saving") => void },
     ) => {
+        // Reported before the first await, so a UI gets it synchronously from this call.
+        options?.onStage?.("checking");
         const signer = await this.getNostrSigner();
         if (signer instanceof Error) {
             return signer;
@@ -3289,7 +3291,6 @@ export class Client {
         const handle = metaData.username || metaData.name || "";
         const displayName = metaData.displayName || metaData.display_name || "";
 
-        options?.onStage?.("checking");
         // The stored account is what the edit started from: a field equal to it wasn't changed.
         const stored = await this.getAccount({ npub: signer.publicKey.bech32() });
         if (stored instanceof Error) {
