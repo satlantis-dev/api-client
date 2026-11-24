@@ -144,7 +144,7 @@ import {
 import { deleteNote, postNote, postReaction, recordNotesAsSeen } from "./api/secure/note.ts";
 import { getNotifications } from "./api/secure/notification.ts";
 import { presign } from "./api/secure/presign.ts";
-import { generateUUID, newURL } from "./helpers/_helper.ts";
+import { ApiError, generateUUID, newURL } from "./helpers/_helper.ts";
 import { addressLookup, getCoordinatesByAddress, getCoordinatesByGoogleId } from "./api/address.ts";
 import { signEvent } from "./api/nostr_event.ts";
 import {
@@ -3188,9 +3188,14 @@ export class Client {
         if (response instanceof Error) {
             return response;
         }
-        const _ = await response.text();
-        if (_ instanceof Error) {
-            return _;
+        const body = await response.text();
+        if (body instanceof Error) {
+            return body;
+        }
+        // S3 answers a rejected PUT (e.g. a Content-Type that doesn't match the signed one) with a
+        // non-2xx status and no object; returning the URL would point callers at a missing file.
+        if (response.status < 200 || response.status >= 300) {
+            return new ApiError(response.status, body);
         }
         const url = newURL(res.url);
         if (url instanceof Error) {
