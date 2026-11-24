@@ -3261,7 +3261,15 @@ export class Client {
         return me;
     };
 
-    updateMyProfile = async (metaData: Kind0MetaData) => {
+    /**
+     * @param options.onStage tells the caller which step the save is on, so a UI can say what it waits for:
+     * "checking" (reading the stored account and the newest kind 0 from the relays), "signing" (waiting on
+     * the signer) and "saving" (sending the signed event to the api).
+     */
+    updateMyProfile = async (
+        metaData: Kind0MetaData,
+        options?: { onStage?: (stage: "checking" | "signing" | "saving") => void },
+    ) => {
         const signer = await this.getNostrSigner();
         if (signer instanceof Error) {
             return signer;
@@ -3281,6 +3289,7 @@ export class Client {
         const handle = metaData.username || metaData.name || "";
         const displayName = metaData.displayName || metaData.display_name || "";
 
+        options?.onStage?.("checking");
         // The stored account is what the edit started from: a field equal to it wasn't changed.
         const stored = await this.getAccount({ npub: signer.publicKey.bech32() });
         if (stored instanceof Error) {
@@ -3308,6 +3317,7 @@ export class Client {
             ...(latest ? parseKind0Content(latest.content) : {}),
             ...changed,
         };
+        options?.onStage?.("signing");
         const kind0 = await prepareKind0(signer, kind0MetaData, latest?.tags ?? []);
         if (kind0 instanceof Error) {
             return kind0;
@@ -3315,6 +3325,7 @@ export class Client {
 
         // Send REST body with original field semantics (backend expects `name` = display name)
         this.me.metaData = metaData;
+        options?.onStage?.("saving");
         {
             const res = await this.updateAccount({
                 npub: signer.publicKey.bech32(),
