@@ -3278,14 +3278,37 @@ export class Client {
         // Build NIP-24 compliant kind0 for Nostr relays:
         // NIP-24: `name` = handle/username, `display_name` = display name
         // Backend: `name` = display name, `displayName` = display name, `username` = handle
-        // deno-lint-ignore no-unused-vars -- removed banner from Nostr metaData
-        const { banner, ...metaDataWithoutBanner } = metaData;
+        const handle = metaData.username || metaData.name || "";
+        const displayName = metaData.displayName || metaData.display_name || "";
+
+        // The stored account is what the edit started from: a field equal to it wasn't changed.
+        const stored = await this.getAccount({ npub: signer.publicKey.bech32() });
+        if (stored instanceof Error) {
+            return stored;
+        }
+        const storedFields = stored as unknown as Record<string, unknown>;
+        const changed: Record<string, unknown> = {};
+        for (const [key, value] of Object.entries(metaData)) {
+            if (KIND0_NAME_KEYS.has(key) || value === undefined || value === null) continue;
+            if (!sameProfileValue(value, storedFields[key])) changed[key] = value;
+        }
+        if (!sameProfileValue(handle, stored.username || stored.name)) {
+            Object.assign(changed, { name: handle, username: handle });
+        }
+        if (!sameProfileValue(displayName, stored.displayName)) {
+            Object.assign(changed, { display_name: displayName, displayName });
+        }
+
+        // Kind 0 is replaceable, so whatever the user didn't change is kept from their newest kind 0
+        // (other clients' values, fields Satlantis doesn't edit, NIP-39 `i` tags). Satlantis' own
+        // values only fill what the relays don't have, or everything when no relay answers.
+        const latest = await this.getLatestKind0(signer.publicKey);
         const kind0MetaData = {
-            ...metaDataWithoutBanner,
-            name: metaData.username || metaData.name || "",
-            display_name: metaData.displayName || metaData.display_name || "",
+            ...withoutEmptyValues({ ...metaData, name: handle, display_name: displayName }),
+            ...(latest ? parseKind0Content(latest.content) : {}),
+            ...changed,
         };
-        const kind0 = await prepareKind0(signer, kind0MetaData);
+        const kind0 = await prepareKind0(signer, kind0MetaData, latest?.tags ?? []);
         if (kind0 instanceof Error) {
             return kind0;
         }
@@ -3305,23 +3328,7 @@ export class Client {
             }
         }
 
-        // Fire-and-forget: broadcast kind0 to public relays so Primal/Nostr.Band see the update
-        // Only use relay.nostr.band (indexer) to avoid creating extra sessions on relay.primal.net
-        const publicRelays = [
-            "wss://relay.nostr.band",
-        ];
-        Promise.allSettled(
-            publicRelays.map(async (relayUrl) => {
-                const relay = SingleRelayConnection.New(relayUrl);
-                if (relay instanceof Error) return;
-                try {
-                    await relay.sendEvent(kind0);
-                } finally {
-                    await relay.close();
-                }
-            }),
-        ).catch(() => {});
-
+        // The api publishes the stored kind 0 to its relays.
         return this.me;
     };
 
@@ -3836,6 +3843,29 @@ export class Client {
         return metadataEvents;
     };
 
+    /** Newest verified kind 0 of `pubkey` on the Satlantis relay and PROFILE_SOURCE_RELAYS, if any answers. */
+    private getLatestKind0 = async (pubkey: PublicKey) => {
+        const results = await Promise.allSettled(
+            [this.relay_url, ...PROFILE_SOURCE_RELAYS].map((relayUrl) =>
+                this.fetchMetadataEventsFromRelay({
+                    relayUrl,
+                    limit: 5,
+                    since: new Date(0),
+                    pubkey,
+                    timeoutMs: PROFILE_SOURCE_TIMEOUT_MS,
+                })
+            ),
+        );
+        let latest: NostrEvent<NostrKind.META_DATA> | undefined;
+        for (const result of results) {
+            if (result.status !== "fulfilled" || result.value instanceof Error) continue;
+            for (const { event } of result.value) {
+                if (!latest || event.created_at > latest.created_at) latest = event;
+            }
+        }
+        return latest;
+    };
+
     fetchMetadataFromRelay = async (args: {
         relayUrl: string;
         limit: number;
@@ -4234,11 +4264,40 @@ export { followPubkeys, getContactList, isUserAFollowingUserB } from "./nostr-he
 ////////////////////////////////
 // Private/Unexported Helpers //
 ////////////////////////////////
-async function prepareKind0(signer: Signer, metadata: Kind0MetaData) {
+async function prepareKind0(signer: Signer, metadata: Record<string, unknown>, tags: Tag[] = []) {
     return await prepareNostrEvent(signer, {
         content: JSON.stringify(metadata),
         kind: NostrKind.META_DATA,
+        tags,
     });
+}
+
+// Relays read for the user's newest kind 0 before a profile save, besides the Satlantis relay.
+const PROFILE_SOURCE_RELAYS = ["wss://relay.primal.net", "wss://purplepag.es", "wss://relay.damus.io"];
+const PROFILE_SOURCE_TIMEOUT_MS = 3000;
+
+// Kind 0 name fields; updateMyProfile maps them from Satlantis' username/display name itself.
+const KIND0_NAME_KEYS = new Set(["name", "display_name", "username", "displayName"]);
+
+const isEmptyProfileValue = (value: unknown) => value === undefined || value === null || value === "";
+
+// Missing, null and "" all mean "not set", so loading an unset field doesn't count as a change.
+function sameProfileValue(a: unknown, b: unknown) {
+    if (isEmptyProfileValue(a) && isEmptyProfileValue(b)) return true;
+    return JSON.stringify(a) === JSON.stringify(b);
+}
+
+function withoutEmptyValues(fields: Record<string, unknown>) {
+    return Object.fromEntries(Object.entries(fields).filter(([, value]) => !isEmptyProfileValue(value)));
+}
+
+function parseKind0Content(content: string): Record<string, unknown> {
+    try {
+        const parsed = JSON.parse(content);
+        return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+    } catch {
+        return {};
+    }
 }
 
 function convertToLocationCategories(
