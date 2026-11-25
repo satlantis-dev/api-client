@@ -125,6 +125,7 @@ import {
     getPlanPaymentStatus,
     getPlans,
     getUserPlan,
+    modifyPlanSubscription,
     previewPlanCoupon,
     startPlanCardSetup,
     startPlanLightningInvoice,
@@ -802,6 +803,7 @@ export class Client {
     previewPlanCoupon: ReturnType<typeof previewPlanCoupon>;
     subscribeToPlan: ReturnType<typeof subscribeToPlan>;
     cancelScheduledPlanChange: ReturnType<typeof cancelScheduledPlanChange>;
+    modifyPlanSubscription: ReturnType<typeof modifyPlanSubscription>;
     startPlanCardSetup: ReturnType<typeof startPlanCardSetup>;
     confirmPlanCardSetup: ReturnType<typeof confirmPlanCardSetup>;
     startPlanLightningInvoice: ReturnType<typeof startPlanLightningInvoice>;
@@ -1616,6 +1618,7 @@ export class Client {
         this.previewPlanCoupon = previewPlanCoupon(rest_api_url, getJwt);
         this.subscribeToPlan = subscribeToPlan(rest_api_url, getJwt);
         this.cancelScheduledPlanChange = cancelScheduledPlanChange(rest_api_url, getJwt);
+        this.modifyPlanSubscription = modifyPlanSubscription(rest_api_url, getJwt);
         this.startPlanCardSetup = startPlanCardSetup(rest_api_url, getJwt);
         this.confirmPlanCardSetup = confirmPlanCardSetup(rest_api_url, getJwt);
         this.startPlanLightningInvoice = startPlanLightningInvoice(rest_api_url, getJwt);

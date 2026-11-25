@@ -12,6 +12,7 @@ import type {
     PlanPaymentMethod,
     PlanPaymentStatus,
     PlanPeriod,
+    PlanSubscription,
 } from "../models/premium.ts";
 
 // Premium plans: listing, the account's current plan, subscribing (upgrade or scheduled
@@ -143,6 +144,27 @@ export const cancelScheduledPlanChange =
             "DELETE",
             `/secure/plans/subscriptions/${args.subscriptionId}/scheduled-change`,
         );
+
+export type ModifyPlanSubscriptionArgs = PlanSubscriptionArgs & {
+    // true turns auto-renewal off (the plan ends at period end), false turns it back on.
+    cancelAtPeriodEnd?: boolean;
+    // Re-derives the renewal amount (BTC discount for lightning/onchain) and drops any saved card.
+    paymentMethod?: PlanPaymentMethod;
+};
+
+// PUT /secure/plans/subscriptions/{id} — changes auto-renewal and/or the payment method of the
+// account's active plan subscription. At least one field is required.
+export const modifyPlanSubscription =
+    (urlArg: URL, getJwt: func_GetJwt) => async (args: ModifyPlanSubscriptionArgs) => {
+        const { subscriptionId, ...body } = args;
+        return secureRequest<PlanSubscription>(
+            urlArg,
+            getJwt,
+            "PUT",
+            `/secure/plans/subscriptions/${subscriptionId}`,
+            body,
+        );
+    };
 
 // POST /secure/plans/subscriptions/{id}/setup-intent — starts saving a card with Stripe.
 export const startPlanCardSetup = (urlArg: URL, getJwt: func_GetJwt) => async (args: PlanSubscriptionArgs) =>
