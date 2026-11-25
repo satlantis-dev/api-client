@@ -51,6 +51,8 @@ export const loginNostr = (urlArg: URL) => async (signer: Signer, metadata?: Kin
         token: string;
         account: Account;
         canSignNostrEvent: boolean;
+        /** First Satlantis sign-in: account created now, or stored from relays and never signed in. */
+        isNewAccount?: boolean;
     }>(response);
 };
 
