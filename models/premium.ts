@@ -41,13 +41,17 @@ export type PlanSubscription = {
     status: PlanSubscriptionStatus;
     currentPeriodEnd?: string;
     cancelAtPeriodEnd?: boolean;
-    paymentMethod?: PlanPaymentMethod;
+    // "offline" for subscriptions granted by Satlantis (no payment, not renewable by the account).
+    paymentMethod?: PlanPaymentMethod | "offline" | (string & {});
     amount?: number;
     currency?: string;
     // Used instead of `amount` for the single next charge (a coupon's first period, an upgrade's
     // prorated credit), in the same currency; cleared once that charge resolves.
     nextChargeAmountOverride?: number | null;
     cardLast4?: string;
+    cardBrand?: string;
+    cardExpMonth?: number;
+    cardExpYear?: number;
     scheduledChanges?: PlanSubscriptionChange[];
 };
 
