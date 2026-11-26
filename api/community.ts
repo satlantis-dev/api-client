@@ -1308,6 +1308,7 @@ export type MembershipTierPayload = {
     description?: string;
     blurb?: string;
     buttonText?: string;
+    memberGreeting?: string; // empty string clears it (falls back to the community greeting)
     registrationQuestions?: Record<string, unknown>;
     isGated?: boolean;
     isPaid?: boolean;
