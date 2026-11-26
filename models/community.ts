@@ -107,6 +107,7 @@ export interface CommunityMembershipTier {
     description?: string;
     blurb?: string;
     buttonText?: string;
+    memberGreeting?: string; // admins only; overrides the community member greeting (blurb) for this tier's members
     registrationQuestions?: Record<string, unknown>;
     isGated: boolean;
     isPaid: boolean;
