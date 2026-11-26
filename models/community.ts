@@ -9,6 +9,8 @@ export type Community = {
     bio?: string; // shown in the public view
     blurb?: string; // shown in the member view
     notice?: string; // shown in the member view, not returned in the public view
+    // When set, new members must accept these terms (acceptTerms) when requesting to join.
+    termsAndConditions?: string;
     description?: string;
     banner?: string;
     accountId: number;
@@ -271,6 +273,7 @@ export type CommunityMembershipRequest = {
     requestedTier?: CommunityMembershipTier | null;
     status: CommunityMembershipRequestStatus;
     registrationAnswers?: Record<string, unknown> | null;
+    termsAcceptedAt?: string | null; // when the requester accepted the community's terms and conditions
     reviewedByAccountId?: number | null;
     reviewedByAccount?: AccountDTO | null;
     reviewNotes?: string | null;
