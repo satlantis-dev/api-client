@@ -1156,6 +1156,7 @@ export type CreateCommunityArgs = {
     description?: string;
     banner?: string;
     notice?: string;
+    termsAndConditions?: string;
     faq?: CommunityFAQ[];
     socialLinks?: Record<string, unknown>;
     chatLinks?: Record<string, unknown>;
@@ -1228,6 +1229,7 @@ export type UpdateCommunityArgs = {
     description?: string;
     banner?: string;
     notice?: string;
+    termsAndConditions?: string; // "" clears them
     faq?: CommunityFAQ[];
     socialLinks?: Record<string, string>;
     chatLinks?: Record<string, string>;
@@ -1423,6 +1425,9 @@ export type SubmitCommunityMembershipRequestArgs = {
     // Required when the requested tier is paid.
     period?: CommunityMembershipPeriod;
     paymentMethod?: PaymentMethod;
+    // Accepts the community's terms and conditions; required when the community has them
+    // and the account isn't on a tier yet.
+    acceptTerms?: boolean;
 };
 
 export type MembershipCardSetup = {
@@ -1465,6 +1470,7 @@ async (args: SubmitCommunityMembershipRequestArgs) => {
             registrationAnswers: args.registrationAnswers,
             period: args.period,
             paymentMethod: args.paymentMethod,
+            acceptTerms: args.acceptTerms,
         }),
     });
     if (response instanceof Error) {
