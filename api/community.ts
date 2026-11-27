@@ -1309,6 +1309,7 @@ export type MembershipTierPayload = {
     blurb?: string;
     buttonText?: string;
     memberGreeting?: string; // empty string clears it (falls back to the community greeting)
+    chatLinks?: Record<string, string>; // replaces the whole map; an empty map clears it (falls back to the community chat links)
     registrationQuestions?: Record<string, unknown>;
     isGated?: boolean;
     isPaid?: boolean;
