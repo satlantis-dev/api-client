@@ -108,6 +108,7 @@ export interface CommunityMembershipTier {
     blurb?: string;
     buttonText?: string;
     memberGreeting?: string; // admins only; overrides the community member greeting (blurb) for this tier's members
+    chatLinks?: Record<string, string>; // admins only; overrides the community chat links for this tier's members
     registrationQuestions?: Record<string, unknown>;
     isGated: boolean;
     isPaid: boolean;
