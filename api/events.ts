@@ -1501,6 +1501,8 @@ export interface EventTicketType {
     priceAmountForBTC?: number | null;
     isHidden: boolean;
     promotion?: PromotionResponse | null;
+    /** Registration confirmation shown to guests of this ticket type instead of the event's. */
+    rsvpConfirmationMessage?: EventRsvpConfirmationMessage | null;
 }
 
 export type FiatCurrency = Exclude<`${OrderCurrency}`, "BTC">;
@@ -1517,6 +1519,11 @@ export interface GetEventTicketTypeResponse extends EventTicketType {
 export interface CreateTicketType {
     name: string;
     description: string;
+    /**
+     * Registration confirmation shown to guests of this ticket type instead of the event's.
+     * On update, omit it to keep the stored one; an empty title clears it.
+     */
+    rsvpConfirmationMessage?: EventRsvpConfirmationMessage;
     maxCapacity: number | null;
     sellStartDate: string;
     sellEndDate: string;
